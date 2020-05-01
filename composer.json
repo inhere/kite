@@ -1,0 +1,27 @@
+{
+    "name": "inhere/ptool",
+    "description": "person tool by php",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "inhere",
+            "email": "in.798@qq.com"
+        }
+    ],
+    "require": {
+        "inhere/console": "dev-master",
+        "inhere/sroute": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Inhere\\PTool\\": "app/"
+        }
+    },
+    "repositories": {
+      "packagist": {
+        "type": "composer",
+        "url": "https://mirrors.aliyun.com/composer/"
+      }
+    }
+}

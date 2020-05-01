@@ -1,0 +1,15 @@
+.buildpath
+.settings/
+.project
+*.patch
+.idea/
+.git/
+runtime/
+vendor/
+*.lock
+*.phar
+.phpintel/
+.env
+.phpstorm.meta.php
+.DS_Store
+bin/php-cs-fixer
