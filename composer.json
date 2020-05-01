@@ -10,6 +10,9 @@
         }
     ],
     "require": {
+        "php": ">7.1.0",
+        "ext-json": "*",
+        "ext-mbstring": "*",
         "inhere/console": "dev-master",
         "inhere/sroute": "dev-master"
     },

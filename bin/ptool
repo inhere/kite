@@ -1,0 +1,12 @@
+#!/usr/bin/env php
+<?php
+
+define('BASE_PATH', dirname(__DIR__));
+
+require dirname(__DIR__) . '/vendor/autoload.php';
+
+$app = new Inhere\PTool\Console\Application;
+
+require dirname(__DIR__) . '/app/Console/routes.php';
+
+$app->run();
