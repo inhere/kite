@@ -12,4 +12,5 @@ vendor/
 .env
 .phpstorm.meta.php
 .DS_Store
+.ptool.inc
 bin/php-cs-fixer
