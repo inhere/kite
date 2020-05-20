@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/inhere/php-console.git",
-                "reference": "e2548fbd17f9276e342df4ebd32bde7279e6a978"
+                "reference": "281dea03b4b370ca5130004668b343f3349685a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/inhere/php-console/zipball/e2548fbd17f9276e342df4ebd32bde7279e6a978",
-                "reference": "e2548fbd17f9276e342df4ebd32bde7279e6a978",
+                "url": "https://api.github.com/repos/inhere/php-console/zipball/281dea03b4b370ca5130004668b343f3349685a9",
+                "reference": "281dea03b4b370ca5130004668b343f3349685a9",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -70,7 +70,7 @@
                 "console-color",
                 "phar"
             ],
-            "time": "2020-04-29T02:23:52+00:00"
+            "time": "2020-05-03T04:10:52+00:00"
         },
         {
             "name": "inhere/sroute",
@@ -78,12 +78,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/inhere/php-srouter.git",
-                "reference": "46d84461993c3682efb9e008b483d198c991dae7"
+                "reference": "38600815d6efd6fe2e99b3e755b1bef3373387d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/inhere/php-srouter/zipball/46d84461993c3682efb9e008b483d198c991dae7",
-                "reference": "46d84461993c3682efb9e008b483d198c991dae7",
+                "url": "https://api.github.com/repos/inhere/php-srouter/zipball/38600815d6efd6fe2e99b3e755b1bef3373387d0",
+                "reference": "38600815d6efd6fe2e99b3e755b1bef3373387d0",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -129,7 +129,7 @@
                 "route",
                 "router"
             ],
-            "time": "2019-07-18T03:38:04+00:00"
+            "time": "2020-05-19T12:16:27+00:00"
         },
         {
             "name": "toolkit/cli-utils",

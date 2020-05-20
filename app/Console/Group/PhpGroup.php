@@ -12,11 +12,11 @@ use Inhere\Console\Controller;
 
 /**
  * Class GitGroup
- * - git:tag:push   add tag and push to remote
- * - git:tag:delete detele the tag on remote
+ * - php:cs-fix   add tag and push to remote
+ * - php:lint detele the tag on remote
  *
  */
-class GitGroup extends Controller
+class PhpGroup extends Controller
 {
     protected static $name = 'gitflow';
     protected static $description = 'Some useful tool commands for git flow development';
