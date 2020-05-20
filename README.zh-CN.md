@@ -1,4 +1,4 @@
-# PTool | [English](README.md)
+# PTool [English](README.md)
 
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/inhere/ptool)](https://github.com/inhere/ptool)
 
@@ -34,8 +34,6 @@ chmod a+x bin/ptool
 ```
 
 ## Usage
-
-First use git to pull the latest swoft-components or swoft-ext to the local, go to the repository directory.
 
 Execute:
 

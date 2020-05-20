@@ -1,4 +1,4 @@
-# PTool | [中文说明](README.zh-CN.md)
+# PTool [中文说明](README.zh-CN.md)
 
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/inhere/ptool)](https://github.com/inhere/ptool)
 

@@ -13,9 +13,9 @@ use Inhere\Console\Command;
 /**
  * Class DemoCommand
  */
-class DemoCommand extends Command
+class GitSyncCommand extends Command
 {
-    protected static $name = 'test';
+    protected static $name = 'git:sync';
     protected static $description = 'a test command';
 
     /**
@@ -27,5 +27,6 @@ class DemoCommand extends Command
     protected function execute($input, $output)
     {
         $output->write('hello, this in ' . __METHOD__);
+
     }
 }
