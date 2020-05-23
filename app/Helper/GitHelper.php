@@ -1,4 +1,11 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of PTool.
+ *
+ * @link     https://github.com/inhere
+ * @author   https://github.com/inhere
+ * @license  MIT
+ */
 
 namespace Inhere\PTool\Helper;
 
@@ -21,7 +28,6 @@ class GitHelper
             echo $ret['output'] . PHP_EOL;
         }
     }
-
 
     /**
      * @param string $workDir

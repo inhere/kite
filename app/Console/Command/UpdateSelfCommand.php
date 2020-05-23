@@ -1,14 +1,19 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-02-27
- * Time: 18:58
+ * This file is part of PTool.
+ *
+ * @link     https://github.com/inhere
+ * @author   https://github.com/inhere
+ * @license  MIT
  */
 
 namespace Inhere\PTool\Console\Command;
 
 use Inhere\Console\Command;
+use Inhere\Console\Console;
+use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
+use Inhere\PTool\Helper\SysCmd;
 use Toolkit\Cli\Color;
 
 /**
@@ -17,6 +22,7 @@ use Toolkit\Cli\Color;
 class UpdateSelfCommand extends Command
 {
     protected static $name = 'updateself';
+
     protected static $description = 'update self to latest by git pull';
 
     /**
@@ -27,39 +33,37 @@ class UpdateSelfCommand extends Command
     /**
      * @var string
      */
-    protected $libsDir;
-
-    /**
-     * @var string
-     */
     protected $repoDir;
+
+    public static function aliases(): array
+    {
+        return ['upself', 'update-self'];
+    }
 
     protected function init(): void
     {
         $this->baseDir = BASE_PATH;
-        $this->repoDir = App::$i->getPwd();
-        $this->libsDir = $this->repoDir . '/src/';
+        $this->repoDir = Console::app()->getInput()->getPwd();
     }
 
     /**
      * do execute
-     * @param  \Inhere\Console\IO\Input $input
-     * @param  \Inhere\Console\IO\Output $output
-     * @return int
+     * @param  Input $input
+     * @param  Output $output
      */
     protected function execute($input, $output)
     {
         Color::println('Update to latest:');
 
         $cmd = "cd {$this->baseDir} && git checkout . && git pull";
-        $ret = self::exec($cmd);
+        $ret = SysCmd::exec($cmd);
 
         echo $ret['output'];
 
         Color::println('Add execute perm:');
 
-        $binName = $app->getScriptName();
-        self::exec("cd {$this->baseDir} && chmod a+x bin/$binName");
+        $binName = $input->getScriptName();
+        SysCmd::exec("cd {$this->baseDir} && chmod a+x bin/$binName");
 
         Color::println('Complete');
     }

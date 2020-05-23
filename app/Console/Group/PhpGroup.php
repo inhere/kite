@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-10-18
- * Time: 18:58
+ * This file is part of PTool.
+ *
+ * @link     https://github.com/inhere
+ * @author   https://github.com/inhere
+ * @license  MIT
  */
 
 namespace Inhere\PTool\Console\Group;
@@ -23,6 +24,7 @@ use function is_dir;
 class PhpGroup extends Controller
 {
     protected static $name = 'php';
+
     protected static $description = 'Some useful tool commands for php development';
 
     protected static function commandAliases(): array

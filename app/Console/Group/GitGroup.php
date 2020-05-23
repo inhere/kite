@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-10-18
- * Time: 18:58
+ * This file is part of PTool.
+ *
+ * @link     https://github.com/inhere
+ * @author   https://github.com/inhere
+ * @license  MIT
  */
 
 namespace Inhere\PTool\Console\Group;
@@ -23,6 +24,7 @@ use Toolkit\Cli\Color;
 class GitGroup extends Controller
 {
     protected static $name = 'git';
+
     protected static $description = 'Some useful tool commands for git flow development';
 
     public static function aliases(): array
@@ -110,7 +112,6 @@ class GitGroup extends Controller
 
         return implode('.', $nodes);
     }
-
 
     /**
      * Add new tag version and push to the remote git repos

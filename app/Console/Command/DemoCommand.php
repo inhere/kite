@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-02-27
- * Time: 18:58
+ * This file is part of PTool.
+ *
+ * @link     https://github.com/inhere
+ * @author   https://github.com/inhere
+ * @license  MIT
  */
 
 namespace Inhere\PTool\Console\Command;
@@ -18,6 +19,7 @@ use Inhere\Console\IO\Output;
 class DemoCommand extends Command
 {
     protected static $name = 'test';
+
     protected static $description = 'a test command';
 
     /**

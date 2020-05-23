@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017/11/27
- * Time: 下午10:58
+ * This file is part of PTool.
  *
- * @var Inhere\PTool\Console\Application $app
+ * @link     https://github.com/inhere
+ * @author   https://github.com/inhere
+ * @license  MIT
  */
 
 $app->registerCommands('Inhere\PTool\\Console\\Command', __DIR__ . '/Command');
