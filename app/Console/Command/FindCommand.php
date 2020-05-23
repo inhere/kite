@@ -13,12 +13,17 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 
 /**
- * Class DemoCommand
+ * Class FindCommand
  */
-class DemoCommand extends Command
+class FindCommand extends Command
 {
-    protected static $name = 'test';
-    protected static $description = 'a test command';
+    protected static $name = 'find';
+    protected static $description = 'find file content by grep command';
+
+    public static function aliases(): array
+    {
+        return ['grep'];
+    }
 
     /**
      * do execute

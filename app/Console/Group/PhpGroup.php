@@ -28,12 +28,16 @@ class PhpGroup extends Controller
     protected static function commandAliases(): array
     {
         return [
+            'csfix'  => 'csFix',
             'cs-fix' => 'csFix',
         ];
     }
 
     /**
      * run php-cs-fixer for an dir, and auto add git commit message
+     *
+     * @options
+     *  --not-commit  Dont run `git add` and `git commit` commands
      *
      * @arguments
      *  directory  The directory for run php-cs-fixer
@@ -56,6 +60,8 @@ class PhpGroup extends Controller
 
         if ($code === 0) {
             $gitCommand = "git add . && git commit -m \"up: format codes by run php-cs-fixer for $dir\"";
+            $output->colored('> ' . $gitCommand, 'comment');
+
             [$code1, $outMsg,] = Sys::run($gitCommand);
 
             echo $outMsg, "\n";

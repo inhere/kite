@@ -34,7 +34,7 @@ class UpdateSelfCommand extends Command
      */
     protected $repoDir;
 
-    public function __construct()
+    protected function init(): void
     {
         $this->baseDir = BASE_PATH;
         $this->repoDir = App::$i->getPwd();

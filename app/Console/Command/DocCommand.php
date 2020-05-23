@@ -9,24 +9,24 @@
 namespace Inhere\PTool\Console\Command;
 
 use Inhere\Console\Command;
+use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
 
 /**
  * Class DemoCommand
  */
-class GitSyncCommand extends Command
+class DocCommand extends Command
 {
-    protected static $name = 'git:sync';
+    protected static $name = 'doc';
     protected static $description = 'a test command';
 
     /**
      * do execute
-     * @param  \Inhere\Console\IO\Input $input
-     * @param  \Inhere\Console\IO\Output $output
-     * @return int
+     * @param  Input $input
+     * @param  Output $output
      */
     protected function execute($input, $output)
     {
         $output->write('hello, this in ' . __METHOD__);
-
     }
 }
