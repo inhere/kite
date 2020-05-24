@@ -12,7 +12,7 @@ namespace Inhere\PTool\Console\Group;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\PTool\Helper\GitHelper;
+use Inhere\PTool\Helper\GitUtil;
 use Toolkit\Cli\Color;
 
 /**
@@ -29,7 +29,7 @@ class GitGroup extends Controller
 
     public static function aliases(): array
     {
-        return ['gf'];
+        return ['g'];
     }
 
     protected static function commandAliases(): array
@@ -71,7 +71,7 @@ class GitGroup extends Controller
         $onlyTag = $input->getBoolOpt('only-tag');
         $nextTag = $input->getBoolOpt('next-tag');
 
-        $tagName = GitHelper::findTag($dir, !$onlyTag);
+        $tagName = GitUtil::findTag($dir, !$onlyTag);
         if (!$tagName) {
             Color::println('No any tags of the project', 'error');
             return;
@@ -136,16 +136,18 @@ class GitGroup extends Controller
      * @usage
      *  {command} [-S HOST:PORT]
      *  {command} [-H HOST] [-p PORT]
+     *
      * @options
-     *  -S         The server address. e.g 127.0.0.1:5577
-     *  -H,--host  The server host address. e.g 127.0.0.1
-     *  -p,--port  The server host address. e.g 5577
+     *  -r, --remote The remote name. default <comment>origin</comment>
+     *  -v, --tag    The tag version. eg: v2.0.3
      *
      * @param Input  $input
      * @param Output $output
      */
     public function tagDeleteCommand(Input $input, Output $output): void
     {
-        echo "string\n";
+        $remote = $input->getSameOpt(['r', 'remote'], 'origin');
+
+        GitUtil::delRemoteTag($remote, $tag);
     }
 }

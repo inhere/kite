@@ -12,13 +12,18 @@ namespace Inhere\PTool\Console\Group;
 use Inhere\Console\Controller;
 
 /**
- * Class GitflowGroup
+ * Class GitFlowGroup
  */
-class GitflowGroup extends Controller
+class GitFlowGroup extends Controller
 {
     protected static $name = 'gitflow';
 
     protected static $description = 'Some useful tool commands for git flow development';
+
+    public static function aliases(): array
+    {
+        return ['git-flow', 'gf'];
+    }
 
     /**
      * run a php built-in server for development(is alias of the command 'server:dev')

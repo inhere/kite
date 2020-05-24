@@ -16,7 +16,7 @@ use Inhere\Console\Controller;
  */
 class DemoGroup extends Controller
 {
-    protected static $name = 'dev';
+    protected static $name = 'demo';
 
     protected static $description = 'Some useful development tool commands';
 

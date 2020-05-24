@@ -15,7 +15,12 @@ use function is_dir;
 use function sprintf;
 use function trim;
 
-class GitHelper
+/**
+ * Class GitUtil
+ *
+ * @package Inhere\PTool\Helper
+ */
+class GitUtil
 {
     /**
      * @param string $message
@@ -24,9 +29,7 @@ class GitHelper
     {
         $ret = SysCmd::exec(sprintf('git add . && git commit -m "%s"', $message));
 
-        if ($ret['code'] === 0) {
-            echo $ret['output'] . PHP_EOL;
-        }
+        echo $ret['output'] . PHP_EOL;
     }
 
     /**
@@ -53,5 +56,18 @@ class GitHelper
         }
 
         return trim($tagName);
+    }
+
+    /**
+     * @param string $remote
+     * @param string $tag
+     * @param string $workDir
+     */
+    public static function delRemoteTag(string $remote, string $tag, string $workDir = ''): void
+    {
+        $cmd = "git push $remote :refs/tags/$tag";
+        $ret = SysCmd::exec($cmd, $workDir);
+
+        echo $ret['output'] . PHP_EOL;
     }
 }

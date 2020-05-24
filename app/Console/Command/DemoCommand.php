@@ -18,7 +18,7 @@ use Inhere\Console\IO\Output;
  */
 class DemoCommand extends Command
 {
-    protected static $name = 'test';
+    protected static $name = 'demo1';
 
     protected static $description = 'a test command';
 

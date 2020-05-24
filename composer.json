@@ -14,7 +14,8 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "inhere/console": "dev-master",
-        "inhere/sroute": "dev-master"
+        "inhere/sroute": "dev-master",
+        "cebe/markdown": "^1.2"
     },
     "autoload": {
         "psr-4": {
