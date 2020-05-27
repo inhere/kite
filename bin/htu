@@ -1,0 +1,33 @@
+#!/usr/bin/env php
+<?php
+
+use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
+use Inhere\PTool\Console\Command\DocCommand;
+
+define('BASE_PATH', dirname(__DIR__));
+
+require dirname(__DIR__) . '/vendor/autoload.php';
+
+// app config
+$conf = [
+    'rootPath' => BASE_PATH,
+];
+
+// create input
+// $in  = new Input();
+$in = new Input\AloneInput();
+$in->setCommand(DocCommand::getName());
+
+// create output
+$out = new Output();
+
+// man command
+$htc = new DocCommand($in, $out);
+
+// create an application
+$app = new Inhere\PTool\Console\Application($conf, $in, $out);
+
+$htc->setApp($app);
+$htc->run();
+// $app->subRun('doc', $in, $out);

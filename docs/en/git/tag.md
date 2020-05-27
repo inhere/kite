@@ -1,11 +1,16 @@
-# git tag
+# Git Tag
+
+some useful examples for git tag.
 
 ## Create tag
 
-    git tag -a TAG_NAME -m MESSAGE</yellow>
+usage
+
+    git tag -a TAG_NAME -m MESSAGE
 
 example: 
 
+    git tag -a v2.0.3 -m "release v2.0.3"
     git tag -a v2.0.3 -m "release v2.0.3"
 
 ## Delete tag

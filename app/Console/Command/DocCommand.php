@@ -12,7 +12,12 @@ namespace Inhere\PTool\Console\Command;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\PTool\Common\CliMarkdown;
+use Inhere\PTool\ManDoc\Document;
+use Toolkit\Cli\Color;
+use Toolkit\Cli\ColorTag;
 use function array_keys;
+use function rtrim;
 
 /**
  * Class DemoCommand
@@ -21,7 +26,7 @@ class DocCommand extends Command
 {
     protected static $name = 'doc';
 
-    protected static $description = 'Provide some useful docs for git,linux commands';
+    protected static $description = 'Provide some useful man docs for git,linux and more commands';
 
     public static function aliases(): array
     {
@@ -29,47 +34,90 @@ class DocCommand extends Command
     }
 
     /**
-     * do execute
-     *
-     * @arguments
-     *  top  The keywords
-     *  sub  The sub keywords
-     *
+     * Configure command
+     */
+    protected function configure(): void
+    {
+        $def = $this->createDefinition();
+
+        $def->addArgument('top', Input::ARG_OPTIONAL, 'The top document topic name');
+        $def->addArgument('subs', Input::ARG_IS_ARRAY, 'The more sub document topic name(s)');
+
+        $def->addOption('list-topic', 'l', Input::OPT_BOOLEAN, 'list all top/sub topics');
+    }
+
+    /**
+     * @return Document
+     */
+    private function prepareManDoc(): Document
+    {
+        $info = $this->app->getParam('manDocs');
+
+        $lang  = $info['lang'] ?? 'en';
+        $paths = $info['paths'] ?? [];
+
+        $man = new Document($paths, $lang);
+        $man->prepare();
+
+        return $man;
+    }
+
+    /**
      * @param Input  $input
      * @param Output $output
      *
      * @example
+     *  {fullCmd} -l
+     *  {fullCmd} git -l
      *  {fullCmd} git tag
      *  {fullCmd} git branch
      */
     protected function execute($input, $output)
     {
-        $top = $input->getRequiredArg(0);
-        $docs = $this->app->getParam('cmdDocs');
+        $man = $this->prepareManDoc();
 
-        if (!isset($docs[$top])) {
-            $output->aList(array_keys($docs), "not found docs for the '{$top}', allow");
+        if ($errPaths = $man->getErrorPaths()) {
+            $output->aList($errPaths, 'error paths');
+        }
+
+        if (!$man->getRealPaths()) {
+            $output->liteError('paths is empty! please config manDocs.paths');
             return;
         }
 
-        $map = $docs[$top];
-        $sub = $input->getArg(1, '');
-        if (!$sub) {
-            $output->aList(array_keys($map), "please input sub key for '{$top}', allow");
-            // $output->info("not found docs for the '{$sub}' in '{$top}'");
+        $top  = $input->getStringArg('top', '');
+        $subs = $input->getArrayArg('subs', []);
+
+        $nameString = Document::names2string($top, $subs);
+        if ($input->getBoolOpt('list-topic')) {
+            $topics = $man->getTopicsInfo($top, $subs);
+
+            $output->aList($topics, 'document topics list on the #' . $nameString);
             return;
         }
 
-        if (!isset($map[$sub])) {
-            $output->aList(array_keys($map), "invalid sub key for '{$top}', allow");
+        $topic = $man->findTopic($top, $subs);
+        if (!$topic) {
+            $output->liteError('The topic is not found! #' . $nameString);
             return;
         }
 
-        $doc = $map[$sub];
+        if (!$file = $topic->getDocFile()) {
+            $output->liteError("not found document for the topic #$nameString");
+            return;
+        }
 
-        $output->title("Doc for the '{$top} {$sub}'", [
+        $text = $file->getFileContent();
+
+        $md = new CliMarkdown();
+        $doc = $md->parse($text);
+
+        $output->title("Doc for the #$nameString", [
+            'indent'     => 0,
             'ucWords' => false,
         ]);
-        $output->write($doc);
+
+        $doc = Color::parseTag(rtrim($doc));
+        $output->writeRaw($doc);
     }
 }

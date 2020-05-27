@@ -2,6 +2,8 @@
 
 namespace Inhere\PTool\Helper;
 
+use Inhere\Console\Util\Show;
+use Toolkit\Sys\Sys;
 use function trim;
 
 /**
@@ -24,5 +26,33 @@ class AppHelper
         }
 
         return 'v' . $tag;
+    }
+
+    /**
+     * Open browser URL
+     *
+     * Mac：
+     * open 'https://swoft.org'
+     *
+     * Linux:
+     * x-www-browser 'https://swoft.org'
+     *
+     * Windows:
+     * cmd /c start https://swoft.org
+     *
+     * @param string $pageUrl
+     */
+    public static function openBrowser(string $pageUrl): void
+    {
+        if (Sys::isMac()) {
+            $cmd = 'open';
+        } elseif (Sys::isWin()) {
+            $cmd = 'cmd /c start';
+        } else {
+            $cmd = 'x-www-browser';
+        }
+
+        Show::info("Will open the page on browser: $pageUrl");
+        Sys::execute($cmd . ' ' . $pageUrl);
     }
 }
