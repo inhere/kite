@@ -219,12 +219,13 @@ class Document
     }
 
     /**
-     * @param string $top
-     * @param array  $subs
+     * @param string        $top
+     * @param array         $subs
+     * @param callable|null $filter
      *
      * @return array
      */
-    public function iterTopics(string $top = '', array $subs = []): array
+    public function iterTopics(string $top = '', array $subs = [], callable $filter = null): array
     {
         return [];
     }

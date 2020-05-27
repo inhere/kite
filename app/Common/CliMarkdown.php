@@ -69,7 +69,10 @@ class CliMarkdown extends GithubMarkdown
      */
     protected function renderCode($block)
     {
-        return "\n    " . ColorTag::add($block['content'], 'brown') . self::NL2;
+        $lines = \explode(self::NL, $block['content']);
+        $text  = \implode("\n    ", $lines);
+
+        return "\n    " . ColorTag::add($text, 'brown') . self::NL2;
     }
 
     /**

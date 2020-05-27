@@ -26,6 +26,16 @@ class DocCommand extends Command
 
     protected static $description = 'Provide some useful man docs for git,linux and more commands';
 
+    /**
+     * @var string
+     */
+    private $topName = '';
+
+    /**
+     * @var array
+     */
+    private $subNames = [];
+
     public static function aliases(): array
     {
         return ['man', 'docs'];
@@ -82,25 +92,24 @@ class DocCommand extends Command
             return;
         }
 
-        $top  = $input->getStringArg('top', '');
-        $subs = $input->getArrayArg('subs', []);
+        $this->topName  = $input->getStringArg('top', '');
+        $this->subNames = $input->getArrayArg('subs', []);
 
-        $nameString = Document::names2string($top, $subs);
+        $nameString = Document::names2string($this->topName, $this->subNames);
+
         if ($input->getBoolOpt('list-topic')) {
-            $topics = $man->getTopicsInfo($top, $subs);
-
-            $output->aList($topics, 'document topics list on the #' . $nameString);
+            $this->listTopicInfo($man, $nameString);
             return;
         }
 
-        if (!$top) {
-            $output->error('please input an topic for see document');
+        if (!$this->topName) {
+            $output->error('please input an topic name for see document');
             return;
         }
 
-        $topic = $man->findTopic($top, $subs);
+        $topic = $man->findTopic($this->topName, $this->subNames);
         if (!$topic) {
-            $output->liteError('The topic is not found! #' . $nameString);
+            $output->error('The topic is not found! #' . $nameString);
             return;
         }
 
@@ -119,5 +128,51 @@ class DocCommand extends Command
 
         $output->colored("Document for the #$nameString");
         $output->writeRaw($doc);
+    }
+
+    private function listTopicInfo(Document $man, string $nameString): void
+    {
+        if (!$this->topName) {
+            $info = $man->getTopicsInfo();
+            $this->output->aList($info, 'document topics list on the #' . $nameString);
+            return;
+        }
+
+        $topic = $man->findTopic($this->topName, $this->subNames);
+        if (!$topic) {
+            $this->output->error('The topic is not found! #' . $nameString);
+            return;
+        }
+
+        // is doc file
+        if ($topic->isFile()) {
+            $info = [
+                'name' => $topic->getName(),
+                'node' => '#' . $nameString,
+                'file' => $topic->getPath(),
+            ];
+
+            $this->output->aList($info, "topic information for #$nameString", [
+                'ucFirst' => false,
+            ]);
+            return;
+        }
+
+        $topics = $topic->getChildsInfo();
+        $info = [
+            'metadata' => [
+                'name' => $topic->getName(),
+                'node' => '#' . $nameString,
+                'file' => $topic->getPath(),
+            ],
+            'topics' => $topics,
+        ];
+
+        $this->output->title('topics information for #' . $nameString, [
+            'indent' => 0,
+        ]);
+        $this->output->mList($info, [
+            'ucFirst' => false,
+        ]);
     }
 }

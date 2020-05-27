@@ -206,6 +206,26 @@ class DocTopic
     }
 
     /**
+     * @param array|null $hidden
+     *
+     * @return array
+     */
+    public function getChildsInfo(array $hidden = null): array
+    {
+        $topics = [];
+
+        if (null === $hidden) {
+            $hidden = ['level', 'isDir', 'parent', 'childs'];
+        }
+
+        foreach ($this->load()->getChilds() as $name => $topic) {
+            $topics[$name] = $topic->toArray($hidden);
+        }
+
+        return $topics;
+    }
+
+    /**
      * @param bool  $parentAsName
      * @param array $hidden
      *
@@ -369,6 +389,14 @@ class DocTopic
     public function setLevel(int $level): void
     {
         $this->level = $level;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFile(): bool
+    {
+        return false === $this->isDir;
     }
 
     /**
