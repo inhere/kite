@@ -15,8 +15,6 @@ use Inhere\Console\IO\Output;
 use Inhere\PTool\Common\CliMarkdown;
 use Inhere\PTool\ManDoc\Document;
 use Toolkit\Cli\Color;
-use Toolkit\Cli\ColorTag;
-use function array_keys;
 use function rtrim;
 
 /**
@@ -75,7 +73,6 @@ class DocCommand extends Command
     protected function execute($input, $output)
     {
         $man = $this->prepareManDoc();
-
         if ($errPaths = $man->getErrorPaths()) {
             $output->aList($errPaths, 'error paths');
         }
@@ -96,6 +93,11 @@ class DocCommand extends Command
             return;
         }
 
+        if (!$top) {
+            $output->error('please input an topic for see document');
+            return;
+        }
+
         $topic = $man->findTopic($top, $subs);
         if (!$topic) {
             $output->liteError('The topic is not found! #' . $nameString);
@@ -107,17 +109,15 @@ class DocCommand extends Command
             return;
         }
 
+        // read content
         $text = $file->getFileContent();
 
-        $md = new CliMarkdown();
+        // parse content
+        $md  = new CliMarkdown();
         $doc = $md->parse($text);
-
-        $output->title("Doc for the #$nameString", [
-            'indent'     => 0,
-            'ucWords' => false,
-        ]);
-
         $doc = Color::parseTag(rtrim($doc));
+
+        $output->colored("Document for the #$nameString");
         $output->writeRaw($doc);
     }
 }

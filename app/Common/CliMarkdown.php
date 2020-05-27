@@ -17,6 +17,8 @@ class CliMarkdown extends GithubMarkdown
     public const NL = "\n";
     public const NL2 = "\n\n";
 
+    public const POINT = '●•○◦◉◎⦿✓✔︎✕✖︎✗';
+
     /**
      * @param array $block
      *
@@ -40,6 +42,24 @@ class CliMarkdown extends GithubMarkdown
     protected function renderParagraph($block): string
     {
         return $this->renderAbsy($block['content']) . self::NL;
+    }
+
+    /**
+     * Renders a list
+     *
+     * @param array $block
+     *
+     * @return string
+     */
+    protected function renderList($block): string
+    {
+        $output = self::NL;
+
+        foreach ($block['items'] as $item => $itemLines) {
+            $output .= '● ' . $this->renderAbsy($itemLines). "\n";
+        }
+
+        return $output . self::NL2;
     }
 
     /**

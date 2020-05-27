@@ -238,7 +238,7 @@ class Document
     public function getTopicsInfo(string $top = '', array $subs = []): array
     {
         $topics = [];
-        $hidden = ['level', 'parent', 'childs'];
+        $hidden = ['level', 'isDir', 'parent', 'childs'];
 
         if (!$top) {
             foreach ($this->topics as $name => $topic) {
