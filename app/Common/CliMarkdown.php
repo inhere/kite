@@ -67,6 +67,17 @@ class CliMarkdown extends GithubMarkdown
     }
 
     /**
+     * @param $block
+     *
+     * @return mixed|string
+     */
+    protected function renderLink($block)
+    {
+        // \var_dump($block);
+        return ColorTag::add($block['orig'], 'info');
+    }
+
+    /**
      * @param array $block
      *
      * @return string|void
