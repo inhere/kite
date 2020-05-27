@@ -13,6 +13,7 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\PTool\Common\CliMarkdown;
+use Inhere\PTool\Helper\AppHelper;
 use Inhere\PTool\ManDoc\Document;
 use Toolkit\Cli\Color;
 use function rtrim;
@@ -83,7 +84,7 @@ TXT;
         $paths = $info['paths'] ?? [];
         $lang  = $this->input->getStringOpt('lang');
         if (!$lang) {
-            $lang = $info['lang'] ?? Document::DEF_LANG;
+            $lang = $info['lang'] ?? AppHelper::getLangFromENV(Document::DEF_LANG);
         }
 
         $man = new Document($paths, $lang);

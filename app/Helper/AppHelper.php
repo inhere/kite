@@ -4,6 +4,9 @@ namespace Inhere\PTool\Helper;
 
 use Inhere\Console\Util\Show;
 use Toolkit\Sys\Sys;
+use function explode;
+use function getenv;
+use function strpos;
 use function trim;
 
 /**
@@ -13,6 +16,10 @@ use function trim;
  */
 class AppHelper
 {
+    public const LANG_MAP = [
+        'zh_CN' => 'zh-CN',
+    ];
+
     /**
      * @param string $tag
      *
@@ -26,6 +33,27 @@ class AppHelper
         }
 
         return 'v' . $tag;
+    }
+
+    /**
+     * env: LC_CTYPE=zh_CN.UTF-8
+     *
+     * @param string $default
+     *
+     * @return string
+     */
+    public static function getLangFromENV(string $default = ''): string
+    {
+        $value = getenv('LC_CTYPE');
+
+        // zh_CN.UTF-8
+        if (strpos($value, '.') > 0) {
+            [$value, ] = explode('.', $value);
+
+            return self::LANG_MAP[$value] ?? $value;
+        }
+
+        return $default;
     }
 
     /**

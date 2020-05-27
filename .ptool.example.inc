@@ -8,7 +8,8 @@ return [
     ],
     // tool command usage docs
     'manDocs' => [
-        'lang'  => 'en',
+        // if 'lang' not setting, will read from ENV.
+        // 'lang'  => 'en',
         'paths' => [
             'root' => BASE_PATH . '/docs'
         ],

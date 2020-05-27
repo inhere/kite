@@ -56,7 +56,7 @@ class Document
      * @param array  $paths
      * @param string $lang
      */
-    public function __construct(array $paths, string $lang = 'en')
+    public function __construct(array $paths, string $lang)
     {
         $this->paths = $paths;
         $this->lang  = $lang;
