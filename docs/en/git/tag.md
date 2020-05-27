@@ -1,6 +1,6 @@
 # Git Tag
 
-some useful examples for git tag.
+There are some examples for use `git tag`
 
 ## Create tag
 

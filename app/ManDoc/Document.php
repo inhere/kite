@@ -18,6 +18,8 @@ class Document
 {
     public const EXT = '.md';
 
+    public const DEF_LANG = 'en';
+
     /**
      * @var array
      */

@@ -1,6 +1,10 @@
-# tmux usage
+# Tmux Usage
 
-## create session
+There are some examples for use `tmux`
+
+## Create session
+
+create a new session
 
 ```bash
 tmux
@@ -13,7 +17,9 @@ examples:
 tmux new -s mywork
 ```
 
-## attach session
+## Attach session
+
+attach to an existing session
 
 ```bash
 tmux a

@@ -16,6 +16,7 @@ use Inhere\PTool\Common\CliMarkdown;
 use Inhere\PTool\ManDoc\Document;
 use Toolkit\Cli\Color;
 use function rtrim;
+use function str_replace;
 
 /**
  * Class DemoCommand
@@ -24,7 +25,7 @@ class DocCommand extends Command
 {
     protected static $name = 'doc';
 
-    protected static $description = 'Provide some useful man docs for git,linux and more commands';
+    protected static $description = 'Useful documents for how to use git,tmux and more tool';
 
     /**
      * @var string
@@ -51,7 +52,25 @@ class DocCommand extends Command
         $def->addArgument('top', Input::ARG_OPTIONAL, 'The top document topic name');
         $def->addArgument('subs', Input::ARG_IS_ARRAY, 'The more sub document topic name(s)');
 
+        $def->addOption('lang', '', Input::OPT_OPTIONAL, 'use the language for find topic document',
+            Document::DEF_LANG);
+        $def->addOption('create', '', Input::OPT_BOOLEAN, 'create an new topic document');
+        $def->addOption('edit', '', Input::OPT_BOOLEAN, 'edit an topic document');
         $def->addOption('list-topic', 'l', Input::OPT_BOOLEAN, 'list all top/sub topics');
+
+        $example = <<<TXT
+{fullCmd} -l   List all top topics
+  {fullCmd} git -l   List all topics on the #git
+  {fullCmd} git tag
+  {fullCmd} git branch
+  {fullCmd} tmux --lang zh-CN
+TXT;
+
+        if ($this->input instanceof Input\AloneInput) {
+            $example = str_replace('fullCmd', 'binName', $example);
+        }
+
+        $def->setExample($example);
     }
 
     /**
@@ -61,8 +80,11 @@ class DocCommand extends Command
     {
         $info = $this->app->getParam('manDocs');
 
-        $lang  = $info['lang'] ?? 'en';
         $paths = $info['paths'] ?? [];
+        $lang  = $this->input->getStringOpt('lang');
+        if (!$lang) {
+            $lang = $info['lang'] ?? Document::DEF_LANG;
+        }
 
         $man = new Document($paths, $lang);
         $man->prepare();
@@ -73,12 +95,6 @@ class DocCommand extends Command
     /**
      * @param Input  $input
      * @param Output $output
-     *
-     * @example
-     *  {fullCmd} -l
-     *  {fullCmd} git -l
-     *  {fullCmd} git tag
-     *  {fullCmd} git branch
      */
     protected function execute($input, $output)
     {
@@ -126,10 +142,14 @@ class DocCommand extends Command
         $doc = $md->parse($text);
         $doc = Color::parseTag(rtrim($doc));
 
-        $output->colored("Document for the #$nameString");
+        // $output->colored("Document for the #$nameString");
         $output->writeRaw($doc);
     }
 
+    /**
+     * @param Document $man
+     * @param string   $nameString
+     */
     private function listTopicInfo(Document $man, string $nameString): void
     {
         if (!$this->topName) {
@@ -159,13 +179,13 @@ class DocCommand extends Command
         }
 
         $topics = $topic->getChildsInfo();
-        $info = [
+        $info   = [
             'metadata' => [
                 'name' => $topic->getName(),
                 'node' => '#' . $nameString,
                 'file' => $topic->getPath(),
             ],
-            'topics' => $topics,
+            'topics'   => $topics,
         ];
 
         $this->output->title('topics information for #' . $nameString, [

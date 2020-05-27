@@ -4,7 +4,10 @@ namespace Inhere\PTool\Common;
 
 use cebe\markdown\GithubMarkdown;
 use Toolkit\Cli\ColorTag;
+use function explode;
+use function implode;
 use function str_repeat;
+use function ucwords;
 
 /**
  * Class CliMarkdown
@@ -29,7 +32,8 @@ class CliMarkdown extends GithubMarkdown
         $level = (int)$block['level'];
 
         $prefix = str_repeat('#', $level);
-        $hlText = $prefix . ' ' .  $this->renderAbsy($block['content']);
+        $title  = $this->renderAbsy($block['content']);
+        $hlText = $prefix . ' ' .  ucwords($title);
 
         return self::NL . ColorTag::add($hlText, 'lightBlue') . self::NL2;
     }
@@ -69,8 +73,8 @@ class CliMarkdown extends GithubMarkdown
      */
     protected function renderCode($block)
     {
-        $lines = \explode(self::NL, $block['content']);
-        $text  = \implode("\n    ", $lines);
+        $lines = explode(self::NL, $block['content']);
+        $text  = implode("\n    ", $lines);
 
         return "\n    " . ColorTag::add($text, 'brown') . self::NL2;
     }
@@ -82,6 +86,6 @@ class CliMarkdown extends GithubMarkdown
      */
     protected function renderInlineCode($block): string
     {
-        return ColorTag::add($block[1], 'magenta');
+        return ColorTag::add($block[1], 'light_red_ex');
     }
 }
