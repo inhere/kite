@@ -15,6 +15,7 @@ use Toolkit\Sys\Sys;
 use function array_filter;
 use function explode;
 use function sprintf;
+use function str_replace;
 use function trim;
 
 /**
@@ -75,6 +76,9 @@ class GitUtil
 
         $remotes = [];
         foreach ($lines as $line) {
+            // format
+            $line = str_replace("\t", ' ', $line);
+            // parse
             [$name, $url] = array_filter(explode(' ', trim($line)));
             // add
             $remotes[$name] = $url;

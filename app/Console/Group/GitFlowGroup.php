@@ -14,6 +14,8 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\GitUtil;
+use function array_keys;
+use function implode;
 
 /**
  * Class GitFlowGroup
@@ -91,7 +93,9 @@ class GitFlowGroup extends Controller
 
         $remotes = GitUtil::getRemotes($pwd);
         if (!isset($remotes[$mainRemote])) {
-            $output->liteError("The remote '{$mainRemote}' is not exists");
+            $names = array_keys($remotes);
+
+            $output->liteError("The remote '{$mainRemote}' is not exists. remotes: ", implode(',', $names));
             return;
         }
 
