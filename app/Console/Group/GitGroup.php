@@ -13,7 +13,9 @@ use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\PTool\Helper\GitUtil;
+use Inhere\PTool\Helper\SysCmd;
 use Toolkit\Cli\Color;
+use function sprintf;
 
 /**
  * Class GitGroup
@@ -131,7 +133,7 @@ class GitGroup extends Controller
     }
 
     /**
-     * run a php built-in server for development(is alias of the command 'server:dev')
+     * delete an remote tag by git
      *
      * @usage
      *  {command} [-S HOST:PORT]
@@ -147,7 +149,37 @@ class GitGroup extends Controller
     public function tagDeleteCommand(Input $input, Output $output): void
     {
         $remote = $input->getSameOpt(['r', 'remote'], 'origin');
+        $tag = $input->getSameOpt(['v', 'tag']);
 
         GitUtil::delRemoteTag($remote, $tag);
+
+        $output->info('Complete');
+    }
+
+    /**
+     * run git add/commit/push at once command
+     *
+     * @options
+     *  -m, --message The commit message
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function ampCommand(Input $input, Output $output): void
+    {
+        $message = $input->getSameOpt(['m', 'message'], '');
+        if (!$message) {
+            $output->liteError('please input commit message');
+            return;
+        }
+
+        $output->info('Work Dir: ' . $input->getPwd());
+        SysCmd::exec('git add .');
+
+        SysCmd::exec(sprintf('git commit -m "%s"', $message));
+
+        SysCmd::exec('git push');
+
+        $output->info('Complete');
     }
 }

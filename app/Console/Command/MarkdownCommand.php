@@ -24,6 +24,11 @@ class MarkdownCommand extends Command
 
     protected static $description = 'render markdown file on terminal';
 
+    public static function aliases(): array
+    {
+        return ['md', 'md:read'];
+    }
+
     /**
      * do execute
      * @param  Input $input

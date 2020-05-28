@@ -12,8 +12,7 @@ namespace Inhere\PTool\Console\Command;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Toolkit\Cli\Color;
-use Toolkit\Sys\Sys;
+use Inhere\PTool\Helper\SysCmd;
 use function is_array;
 use function is_string;
 
@@ -31,14 +30,14 @@ class RunCommand extends Command
      */
     public static function aliases(): array
     {
-        return ['exec'];
+        return ['exec', 'script'];
     }
 
     /**
      * Do execute
      *
      * @options
-     *  -l, --list List all script names
+     *  -l, --list  List all script names
      *
      * @param Input  $input
      * @param Output $output
@@ -71,20 +70,24 @@ class RunCommand extends Command
 
         $commands = $scripts[$name];
         if (is_string($commands)) {
-            Color::println("run > $commands", 'comment');
-            Sys::execute($commands, false);
+            // Color::println("run > $commands", 'comment');
+            // Sys::execute($commands, false);
+            $ret = SysCmd::exec($commands);
+            echo $ret['output'];
             return;
         }
 
         if (is_array($commands)) {
             foreach ($commands as $index => $command) {
-                if (is_string($command)) {
-                    $output->liteWarning("The {$name}.{$index} command is not string, skip run");
+                if (!is_string($command)) {
+                    $output->liteError("The {$name}.{$index} command is not string, skip run");
                     continue;
                 }
 
-                Color::println("run > $command", 'comment');
-                Sys::execute($command, false);
+                // Color::println("run > $command", 'comment');
+                // Sys::execute($command, false);
+                $ret = SysCmd::exec($command);
+                echo $ret['output'];
             }
             return;
         }
