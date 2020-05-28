@@ -53,4 +53,16 @@ class SysCmd
             'output' => $output,
         ];
     }
+
+    /**
+     * @param string $cmd
+     * @param string $workDir
+     * @param bool   $coRun
+     */
+    public static function execAndPrintResult(string $cmd, string $workDir = '', bool $coRun = false): void
+    {
+        $ret = self::exec($cmd, $workDir, $coRun);
+
+        echo $ret['output'];
+    }
 }

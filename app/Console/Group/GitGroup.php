@@ -174,11 +174,11 @@ class GitGroup extends Controller
         }
 
         $output->info('Work Dir: ' . $input->getPwd());
-        SysCmd::exec('git add .');
+        SysCmd::execAndPrintResult('git add .');
 
-        SysCmd::exec(sprintf('git commit -m "%s"', $message));
+        SysCmd::execAndPrintResult(sprintf('git commit -m "%s"', $message));
 
-        SysCmd::exec('git push');
+        SysCmd::execAndPrintResult('git push');
 
         $output->info('Complete');
     }
