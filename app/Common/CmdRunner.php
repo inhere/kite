@@ -3,6 +3,7 @@
 namespace Inhere\Kite\Common;
 
 use Inhere\Kite\Helper\SysCmd;
+use RuntimeException;
 use Toolkit\Cli\Color;
 use function trim;
 
@@ -85,6 +86,10 @@ class CmdRunner
      */
     public function do(bool $printOutput = false): self
     {
+        if (!$this->cmd) {
+            throw new RuntimeException('The execute command cannot be empty');
+        }
+
         if ($this->printCmd) {
             Color::println("> {$this->cmd}", 'yellow');
         }

@@ -13,8 +13,8 @@ use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
+use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
-use Inhere\Kite\Helper\SysCmd;
 use Toolkit\Cli\Color;
 use function sprintf;
 
@@ -38,8 +38,8 @@ class GitGroup extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'tag-find'  => 'tagFind',
-            'tag:find'  => 'tagFind',
+            'tag-find' => 'tagFind',
+            'tag:find' => 'tagFind',
             'tagfind'  => 'tagFind',
             'tagpush'  => 'tagPush',
             'tag-push' => 'tagPush',
@@ -76,7 +76,7 @@ class GitGroup extends Controller
 
         $tagName = GitUtil::findTag($dir, !$onlyTag);
         if (!$tagName) {
-            Color::println('No any tags of the project', 'error');
+            $output->error('No any tags of the project');
             return;
         }
 
@@ -84,11 +84,7 @@ class GitGroup extends Controller
 
         if ($nextTag) {
             $title = "The next tag: %s (current: {$tagName})";
-            $nodes = explode('.', $tagName);
-
-            $lastNum = array_pop($nodes);
-            $nodes[] = (int)$lastNum + 1;
-            $tagName = implode('.', $nodes);
+            $tagName = $this->buildNextTag($tagName);
         }
 
         if ($onlyTag) {
@@ -96,7 +92,7 @@ class GitGroup extends Controller
             return;
         }
 
-        Color::printf("<info>$title</info> $tagName\n");
+        Color::println("<info>$title</info> $tagName");
     }
 
     /**
@@ -106,7 +102,7 @@ class GitGroup extends Controller
      *
      * @return string
      */
-    public function buildNextTag(string $tagName): string
+    private function buildNextTag(string $tagName): string
     {
         $nodes = explode('.', $tagName);
 
@@ -117,20 +113,53 @@ class GitGroup extends Controller
     }
 
     /**
+     * list all git tags
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function tagListCommand(Input $input, Output $output): void
+    {
+        $output->info('TODO');
+    }
+
+    /**
      * Add new tag version and push to the remote git repos
      *
-     * @usage
-     *  {command} [-S HOST:PORT]
-     *  {command} [-H HOST] [-p PORT]
      * @options
-     *  -v         The new version. e.g: v2.0.4
+     *  -v, --version       *The new tag version. e.g: v2.0.4
+     *  -m, --message       The message for add new tag.
      *
      * @param Input  $input
      * @param Output $output
      */
     public function tagPushCommand(Input $input, Output $output): void
     {
-        echo "string ddd\n";
+        $tag = $input->getSameOpt(['v', 'tag'], '');
+        if (!$tag) {
+            $output->error('please input new tag version, like: v2.0.4');
+            return;
+        }
+
+        if (!AppHelper::isVersion($tag)) {
+            $output->error('please input an valid tag version, like: v2.0.4');
+            return;
+        }
+
+        $output->aList([
+            'Work Dir' => $input->getPwd(),
+            'New Tag'  => $input->getSameOpt(['v', 'tag']),
+        ], 'Information');
+
+        $msg = $input->getSameArg(['m', 'message']);
+        $msg = $msg ?: "Release $tag";
+
+        // git tag -a $1 -m "Release $1"
+        // git push origin --tags
+        $cmd = sprintf('git tag -a %s -m "Release %s"; git push origin %s', $tag, $msg, $tag);
+        CmdRunner::new($cmd)->do(true);
+
+        $output->success('Complete');
     }
 
     /**
@@ -150,7 +179,7 @@ class GitGroup extends Controller
     public function tagDeleteCommand(Input $input, Output $output): void
     {
         $remote = $input->getSameOpt(['r', 'remote'], 'origin');
-        $tag = $input->getSameOpt(['v', 'tag']);
+        $tag    = $input->getSameOpt(['v', 'tag']);
 
         GitUtil::delRemoteTag($remote, $tag);
 
