@@ -12,6 +12,7 @@ namespace Inhere\Kite\Console\Group;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\GitUtil;
 use Inhere\Kite\Helper\SysCmd;
 use Toolkit\Cli\Color;
@@ -169,17 +170,16 @@ class GitGroup extends Controller
     {
         $message = $input->getSameOpt(['m', 'message'], '');
         if (!$message) {
-            $output->liteError('please input commit message');
+            $output->liteError('please input an message for git commit');
             return;
         }
 
         $output->info('Work Dir: ' . $input->getPwd());
 
-        SysCmd::execAndPrintResult('git add .');
+        $run = CmdRunner::new('git add .')->do(true);
 
-        SysCmd::execAndPrintResult(sprintf('git commit -m "%s"', $message));
-
-        SysCmd::execAndPrintResult('git push');
+        $run->okDoRun(sprintf('git commit -m "%s"', $message));
+        $run->okDoRun('git push');
 
         $output->info('Complete');
     }

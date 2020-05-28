@@ -64,7 +64,7 @@ class GitUtil
         // git remote -v
         $cmd = 'git remote -v';
         $run = CmdRunner::new($cmd, $workDir);
-        $out = $run->do(false)->getOutput(true);
+        $out = $run->do()->getOutput(true);
 
         if (!$out) {
             return [];

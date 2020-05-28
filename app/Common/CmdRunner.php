@@ -3,6 +3,7 @@
 namespace Inhere\Kite\Common;
 
 use Inhere\Kite\Helper\SysCmd;
+use Toolkit\Cli\Color;
 use function trim;
 
 /**
@@ -31,6 +32,16 @@ class CmdRunner
      * @var string
      */
     private $output = '';
+
+    /**
+     * @var bool
+     */
+    private $printCmd = true;
+
+    /**
+     * @var bool
+     */
+    private $printOutput = false;
 
     /**
      * @param string $cmd
@@ -74,17 +85,43 @@ class CmdRunner
      */
     public function do(bool $printOutput = false): self
     {
+        if ($this->printCmd) {
+            Color::println("> {$this->cmd}", 'yellow');
+        }
+
         // $ret = SysCmd::exec($this->cmd, $this->workDir);
         $ret = SysCmd::exec2($this->cmd, $this->workDir);
 
         $this->code   = $ret['code'];
         $this->output = $ret['output'];
 
-        if ($printOutput) {
+        // print output
+        if ($this->printOutput = $printOutput) {
             echo $this->output;
         }
 
         return $this;
+    }
+
+    /**
+     * @param string      $cmd
+     * @param string|null $workDir
+     *
+     * @return $this
+     */
+    public function okDoRun(string $cmd, string $workDir = null): self
+    {
+        if (0 !== $this->code) {
+            return $this;
+        }
+
+        if ($workDir !== null) {
+            $this->workDir = $workDir;
+        }
+
+        $this->cmd = $cmd;
+
+        return $this->do($this->printOutput);
     }
 
     /**
@@ -100,7 +137,7 @@ class CmdRunner
      *
      * @return CmdRunner
      */
-    public function setCmd(string $cmd): CmdRunner
+    public function setCmd(string $cmd): self
     {
         $this->cmd = $cmd;
         return $this;
@@ -119,7 +156,7 @@ class CmdRunner
      *
      * @return CmdRunner
      */
-    public function setWorkDir(string $workDir): CmdRunner
+    public function setWorkDir(string $workDir): self
     {
         $this->workDir = $workDir;
         return $this;
@@ -152,5 +189,27 @@ class CmdRunner
             'code'   => $this->code,
             'output' => $this->output,
         ];
+    }
+
+    /**
+     * @param bool $printCmd
+     *
+     * @return CmdRunner
+     */
+    public function setPrintCmd(bool $printCmd): self
+    {
+        $this->printCmd = $printCmd;
+        return $this;
+    }
+
+    /**
+     * @param bool $printOutput
+     *
+     * @return CmdRunner
+     */
+    public function setPrintOutput(bool $printOutput): self
+    {
+        $this->printOutput = $printOutput;
+        return $this;
     }
 }
