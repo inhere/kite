@@ -29,6 +29,11 @@ class GitFlowGroup extends Controller
      */
     private $config = [];
 
+    /**
+     * @var string
+     */
+    private $curBranchName = '';
+
     public static function aliases(): array
     {
         return ['git-flow', 'gf'];
@@ -39,7 +44,9 @@ class GitFlowGroup extends Controller
         $action = $this->getAction();
 
         if ($action === 'sync') {
-            $this->addCommentsVar('curBranchName', GitUtil::getCurrentBranchName());
+            $this->curBranchName = GitUtil::getCurrentBranchName();
+
+            $this->addCommentsVar('curBranchName', $this->curBranchName);
         }
     }
 
@@ -59,24 +66,34 @@ class GitFlowGroup extends Controller
      * @options
      *  -b, --branch  The sync code branch name, default is current branch
      *
-     * @param Input $input
+     * @param Input  $input
      * @param Output $output
      *
      * @example
-     *  {binWithCmd}          Sync code from the main repo remote {curBranchName} branch
-     *  {binWithCmd} master   Sync code from the main repo remote master branch
+     *  {binWithCmd}             Sync code from the main repo remote {curBranchName} branch
+     *  {binWithCmd} -b master   Sync code from the main repo remote master branch
      *
      */
     public function syncCommand(Input $input, Output $output): void
     {
-        $output->aList([
-            'Work Dir' => $input->getPwd(),
-        ], 'Work Information');
+        $pwd  = $input->getPwd();
+        $info = [
+            'Work Dir' => $pwd,
+        ];
+        $output->aList($info, 'Work Information');
 
-        $curBranch = GitUtil::getCurrentBranchName();
+        if (!$curBranch = $this->curBranchName) {
+            $curBranch = GitUtil::getCurrentBranchName();
+        }
 
         $forkRemote = $this->config['fork']['remote'];
         $mainRemote = $this->config['main']['remote'];
+
+        $remotes = GitUtil::getRemotes($pwd);
+        if (!isset($remotes[$mainRemote])) {
+            $output->liteError("The remote '{$mainRemote}' is not exists");
+            return;
+        }
 
         // git pull main BRANCH
         $str = "git pull {$mainRemote} $curBranch";

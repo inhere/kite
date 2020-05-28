@@ -12,6 +12,8 @@ namespace Inhere\Kite\Helper;
 use Inhere\Kite\Common\CmdRunner;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Sys;
+use function array_filter;
+use function explode;
 use function sprintf;
 use function trim;
 
@@ -50,6 +52,35 @@ class GitUtil
         $cmd = CmdRunner::new($str, $workDir);
 
         return $cmd->do()->getOutput(true);
+    }
+
+    /**
+     * @param string $workDir
+     *
+     * @return array
+     */
+    public static function getRemotes(string $workDir = ''): array
+    {
+        // git remote -v
+        $cmd = 'git remote -v';
+        $run = CmdRunner::new($cmd, $workDir);
+        $out = $run->do(false)->getOutput(true);
+
+        if (!$out) {
+            return [];
+        }
+
+        // parse
+        $lines = explode("\n", $out);
+
+        $remotes = [];
+        foreach ($lines as $line) {
+            [$name, $url] = array_filter(explode(' ', trim($line)));
+            // add
+            $remotes[$name] = $url;
+        }
+
+        return $remotes;
     }
 
     /**

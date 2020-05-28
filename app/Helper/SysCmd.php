@@ -65,56 +65,53 @@ class SysCmd
     }
 
     /**
-     * Method to execute a command in the sys
+     * Method to execute a command in the system
      * Uses :
      * 1. system
      * 2. passthru
      * 3. exec
      * 4. shell_exec
      *
-     * @param string      $command
-     * @param bool        $returnStatus
-     * @param string|null $cwd
+     * @param string $command
+     * @param string $workDir
+     * @param bool   $returnStatus
      *
      * @return array|string
      */
-    public static function exec2(string $command, bool $returnStatus = true, string $cwd = null)
+    public static function exec2(string $command, string $workDir = '', bool $returnStatus = true)
     {
-        $output   = '';
-        $exitCode = 1;
-
-        if ($cwd) {
-            chdir($cwd);
+        if ($workDir) {
+            chdir($workDir);
         }
 
         // system
+        $status = 1;
         if (function_exists('system')) {
             ob_start();
-            system($command, $exitCode);
+            system($command, $status);
             $output = ob_get_clean();
 
             // passthru
         } elseif (function_exists('passthru')) {
             ob_start();
-            passthru($command, $exitCode);
+            passthru($command, $status);
             $output = ob_get_clean();
             // exec
         } elseif (function_exists('exec')) {
-            exec($command, $output, $exitCode);
-            $output = implode("\n", $output);
+            exec($command, $outputs, $status);
+            $output = implode("\n", $outputs);
 
             // shell_exec
         } elseif (function_exists('shell_exec')) {
             $output = shell_exec($command);
         } else {
-            $output   = 'Command execution not possible on this system';
-            $exitCode = 0;
+            $output = 'Command execution not possible on this system';
         }
 
         if ($returnStatus) {
             return [
+                'code'   => $status,
                 'output' => trim($output),
-                'status' => $exitCode
             ];
         }
 

@@ -33,11 +33,6 @@ class CmdRunner
     private $output = '';
 
     /**
-     * @var bool
-     */
-    private $printOutput = false;
-
-    /**
      * @param string $cmd
      * @param string $workDir
      *
@@ -61,26 +56,31 @@ class CmdRunner
     }
 
     /**
+     * @param bool $printOutput
+     *
      * @return array
      */
-    public function exec(): array
+    public function exec(bool $printOutput = false): array
     {
-        $this->do();
+        $this->do($printOutput);
 
         return $this->getResult();
     }
 
     /**
+     * @param bool $printOutput
+     *
      * @return $this
      */
-    public function do(): self
+    public function do(bool $printOutput = false): self
     {
-        $ret = SysCmd::exec($this->cmd, $this->workDir);
+        // $ret = SysCmd::exec($this->cmd, $this->workDir);
+        $ret = SysCmd::exec2($this->cmd, $this->workDir);
 
         $this->code   = $ret['code'];
         $this->output = $ret['output'];
 
-        if ($this->printOutput) {
+        if ($printOutput) {
             echo $this->output;
         }
 
@@ -152,16 +152,5 @@ class CmdRunner
             'code'   => $this->code,
             'output' => $this->output,
         ];
-    }
-
-    /**
-     * @param bool $printOutput
-     *
-     * @return CmdRunner
-     */
-    public function setPrintOutput(bool $printOutput): CmdRunner
-    {
-        $this->printOutput = $printOutput;
-        return $this;
     }
 }

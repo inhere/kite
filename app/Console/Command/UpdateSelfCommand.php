@@ -35,6 +35,9 @@ class UpdateSelfCommand extends Command
      */
     protected $repoDir;
 
+    /**
+     * @return string[]
+     */
     public static function aliases(): array
     {
         return ['upself', 'update-self'];
@@ -47,7 +50,6 @@ class UpdateSelfCommand extends Command
     }
 
     /**
-     * do execute
      * @param  Input $input
      * @param  Output $output
      */
