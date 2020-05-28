@@ -22,41 +22,29 @@ class GitHubGroup extends Controller
 
     protected static $description = 'Some useful development tool commands';
 
-    public static function ali()
-    {
-
-    }
-
     /**
-     * run a php built-in server for development(is alias of the command 'server:dev')
-     *
-     * @usage
-     *  {command} [-S HOST:PORT]
-     *  {command} [-H HOST] [-p PORT]
-     *
-     * @options
-     *  -S         The server address. e.g 127.0.0.1:5577
-     *  -H,--host  The server host address. e.g 127.0.0.1
-     *  -p,--port  The server host address. e.g 5577
-     *
-     * @param Input  $input
-     * @param Output $output
+     * @return array
      */
-    public function serveCommand(Input $input, Output $output): void
+    public static function aliases(): array
     {
-        echo "string\n";
+        return ['gh'];
     }
 
     /**
      * @arguments
      *  repo    The remote git repo URL or repo name
+     *  name    The repo name at local
+     *
+     * @param Input  $input
+     * @param Output $output
      *
      * @example
      *  {fullCmd}  php-toolkit/cli-utils
      *  {fullCmd}  php-toolkit/cli-utils my-repo
      */
-    public function cloneCommand(): void
+    public function cloneCommand(Input $input, Output $output): void
     {
-
+        $repo = $input->getFirstArg();
+        $name = $input->getSecondArg();
     }
 }
