@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\PTool\Helper;
+namespace Inhere\Kite\Helper;
 
 use Inhere\Console\Util\Show;
 use Toolkit\Sys\Sys;
@@ -12,7 +12,7 @@ use function trim;
 /**
  * Class AppHelper
  *
- * @package Inhere\PTool\Helper
+ * @package Inhere\Kite\Helper
  */
 class AppHelper
 {

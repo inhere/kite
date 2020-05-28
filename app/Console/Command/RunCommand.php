@@ -1,18 +1,18 @@
 <?php declare(strict_types=1);
 /**
- * This file is part of PTool.
+ * This file is part of Kite.
  *
  * @link     https://github.com/inhere
  * @author   https://github.com/inhere
  * @license  MIT
  */
 
-namespace Inhere\PTool\Console\Command;
+namespace Inhere\Kite\Console\Command;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\PTool\Helper\SysCmd;
+use Inhere\Kite\Helper\SysCmd;
 use function is_array;
 use function is_string;
 
@@ -23,7 +23,7 @@ class RunCommand extends Command
 {
     protected static $name = 'run';
 
-    protected static $description = 'run an script command in the .ptool.inc';
+    protected static $description = 'run an script command in the .kite.inc';
 
     /**
      * @return string[]

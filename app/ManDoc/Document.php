@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\PTool\ManDoc;
+namespace Inhere\Kite\ManDoc;
 
-use Inhere\PTool\Exception\TopicNotFoundException;
+use Inhere\Kite\Exception\TopicNotFoundException;
 use function glob;
 use function implode;
 use function is_dir;
@@ -12,7 +12,7 @@ use function rtrim;
 /**
  * Class ManDocument
  *
- * @package Inhere\PTool\ManDoc
+ * @package Inhere\Kite\ManDoc
  */
 class Document
 {

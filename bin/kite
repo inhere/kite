@@ -5,7 +5,7 @@ define('BASE_PATH', dirname(__DIR__));
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-$app = new Inhere\PTool\Console\Application([
+$app = new Inhere\Kite\Console\Application([
   'rootPath' => BASE_PATH,
 ]);
 

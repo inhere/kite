@@ -1,19 +1,19 @@
 <?php declare(strict_types=1);
 /**
- * This file is part of PTool.
+ * This file is part of Kite.
  *
  * @link     https://github.com/inhere
  * @author   https://github.com/inhere
  * @license  MIT
  */
 
-namespace Inhere\PTool\Console\Group;
+namespace Inhere\Kite\Console\Group;
 
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\PTool\Helper\GitUtil;
-use Inhere\PTool\Helper\SysCmd;
+use Inhere\Kite\Helper\GitUtil;
+use Inhere\Kite\Helper\SysCmd;
 use Toolkit\Cli\Color;
 use function sprintf;
 
@@ -174,6 +174,7 @@ class GitGroup extends Controller
         }
 
         $output->info('Work Dir: ' . $input->getPwd());
+
         SysCmd::execAndPrintResult('git add .');
 
         SysCmd::execAndPrintResult(sprintf('git commit -m "%s"', $message));
@@ -182,4 +183,5 @@ class GitGroup extends Controller
 
         $output->info('Complete');
     }
+
 }

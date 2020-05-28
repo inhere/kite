@@ -14,13 +14,21 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 
 /**
- * Class DemoGroup
+ * Class SnippetsGroup
  */
-class DemoGroup extends Controller
+class SnippetsGroup extends Controller
 {
-    protected static $name = 'demo';
+    protected static $name = 'snippet';
 
     protected static $description = 'Some useful development tool commands';
+
+    /**
+     * @return string[]
+     */
+    public static function aliases(): array
+    {
+        return ['snippets', 'snip'];
+    }
 
     /**
      * run a php built-in server for development(is alias of the command 'server:dev')

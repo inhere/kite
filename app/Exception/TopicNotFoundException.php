@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\PTool\Exception;
+namespace Inhere\Kite\Exception;
 
 use RuntimeException;
 use Throwable;
@@ -8,7 +8,7 @@ use Throwable;
 /**
  * Class TopicNotFoundException
  *
- * @package Inhere\PTool\Exception
+ * @package Inhere\Kite\Exception
  */
 class TopicNotFoundException extends RuntimeException
 {

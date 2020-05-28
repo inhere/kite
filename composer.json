@@ -1,8 +1,9 @@
 {
-    "name": "inhere/ptool",
+    "name": "inhere/kite",
     "description": "person tool by php",
     "type": "project",
     "license": "MIT",
+    "homepage": "https://github/inhere/kite.git",
     "authors": [
         {
             "name": "inhere",
@@ -19,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Inhere\\PTool\\": "app/"
+            "Inhere\\Kite\\": "app/"
         }
     },
     "repositories": {

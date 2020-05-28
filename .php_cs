@@ -1,7 +1,7 @@
 <?php
 
 $header = <<<'EOF'
-This file is part of PTool.
+This file is part of Kite.
 
 @link     https://github.com/inhere
 @author   https://github.com/inhere

@@ -1,19 +1,19 @@
 <?php declare(strict_types=1);
 /**
- * This file is part of PTool.
+ * This file is part of Kite.
  *
  * @link     https://github.com/inhere
  * @author   https://github.com/inhere
  * @license  MIT
  */
 
-namespace Inhere\PTool\Console\Command;
+namespace Inhere\Kite\Console\Command;
 
 use Inhere\Console\Command;
 use Inhere\Console\Console;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\PTool\Helper\SysCmd;
+use Inhere\Kite\Helper\SysCmd;
 use Toolkit\Cli\Color;
 
 /**

@@ -14,13 +14,18 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 
 /**
- * Class DemoGroup
+ * Class GitHubGroup
  */
-class DemoGroup extends Controller
+class GitHubGroup extends Controller
 {
-    protected static $name = 'demo';
+    protected static $name = 'github';
 
     protected static $description = 'Some useful development tool commands';
+
+    public static function ali()
+    {
+
+    }
 
     /**
      * run a php built-in server for development(is alias of the command 'server:dev')
@@ -40,5 +45,18 @@ class DemoGroup extends Controller
     public function serveCommand(Input $input, Output $output): void
     {
         echo "string\n";
+    }
+
+    /**
+     * @arguments
+     *  repo    The remote git repo URL or repo name
+     *
+     * @example
+     *  {fullCmd}  php-toolkit/cli-utils
+     *  {fullCmd}  php-toolkit/cli-utils my-repo
+     */
+    public function cloneCommand(): void
+    {
+
     }
 }

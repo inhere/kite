@@ -3,7 +3,7 @@
 
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\PTool\Console\Command\DocCommand;
+use Inhere\Kite\Console\Command\DocCommand;
 
 define('BASE_PATH', dirname(__DIR__));
 
@@ -26,7 +26,7 @@ $out = new Output();
 $htc = new DocCommand($in, $out);
 
 // create an application
-$app = new Inhere\PTool\Console\Application($conf, $in, $out);
+$app = new Inhere\Kite\Console\Application($conf, $in, $out);
 
 $htc->setApp($app);
 $htc->run();

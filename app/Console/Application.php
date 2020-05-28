@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 /**
- * This file is part of PTool.
+ * This file is part of Kite.
  *
  * @link     https://github.com/inhere
  * @author   https://github.com/inhere
  * @license  MIT
  */
 
-namespace Inhere\PTool\Console;
+namespace Inhere\Kite\Console;
 
 use function array_merge;
 use function file_exists;
@@ -17,7 +17,7 @@ use const BASE_PATH;
 /**
  * Class Application
  *
- * @package Inhere\PTool\Console
+ * @package Inhere\Kite\Console
  */
 class Application extends \Inhere\Console\Application
 {
@@ -38,8 +38,8 @@ class Application extends \Inhere\Console\Application
     private function loadAppConfig(): void
     {
         $curDir = $this->getInput()->getPwd();
-        $ucFile = $curDir . '/.ptool.inc';
-        $bcFile = BASE_PATH . '/.ptool.inc';
+        $ucFile = $curDir . '/.kite.inc';
+        $bcFile = BASE_PATH . '/.kite.inc';
         $config = $userConfig = [];
 
         if (file_exists($ucFile)) {

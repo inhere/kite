@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\PTool\Common;
+namespace Inhere\Kite\Common;
 
 use cebe\markdown\GithubMarkdown;
 use Toolkit\Cli\ColorTag;
@@ -12,7 +12,7 @@ use function ucwords;
 /**
  * Class CliMarkdown
  *
- * @package Inhere\PTool\Common
+ * @package Inhere\Kite\Common
  * @link https://github.com/charmbracelet/glow color refer
  */
 class CliMarkdown extends GithubMarkdown

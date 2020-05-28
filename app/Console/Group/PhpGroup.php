@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 /**
- * This file is part of PTool.
+ * This file is part of Kite.
  *
  * @link     https://github.com/inhere
  * @author   https://github.com/inhere
  * @license  MIT
  */
 
-namespace Inhere\PTool\Console\Group;
+namespace Inhere\Kite\Console\Group;
 
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
