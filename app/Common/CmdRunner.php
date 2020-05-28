@@ -96,8 +96,9 @@ class CmdRunner
         $this->output = $ret['output'];
 
         // print output
-        if ($this->printOutput = $printOutput) {
-            echo $this->output;
+        $this->printOutput = $printOutput;
+        if ($this->printOutput && $ret['output']) {
+            echo $ret['output'] . "\n";
         }
 
         return $this;

@@ -183,5 +183,4 @@ class GitGroup extends Controller
 
         $output->info('Complete');
     }
-
 }
