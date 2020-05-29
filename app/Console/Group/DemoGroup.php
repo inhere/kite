@@ -39,6 +39,6 @@ class DemoGroup extends Controller
      */
     public function serveCommand(Input $input, Output $output): void
     {
-        echo "string\n";
+        $output->success('Complete');
     }
 }

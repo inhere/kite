@@ -14,9 +14,9 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 
 /**
- * Class SnippetsGroup
+ * Class SnippetGroup
  */
-class SnippetsGroup extends Controller
+class SnippetGroup extends Controller
 {
     protected static $name = 'snippet';
 
@@ -31,21 +31,12 @@ class SnippetsGroup extends Controller
     }
 
     /**
-     * run a php built-in server for development(is alias of the command 'server:dev')
-     *
-     * @usage
-     *  {command} [-S HOST:PORT]
-     *  {command} [-H HOST] [-p PORT]
-     *
-     * @options
-     *  -S         The server address. e.g 127.0.0.1:5577
-     *  -H,--host  The server host address. e.g 127.0.0.1
-     *  -p,--port  The server host address. e.g 5577
+     * list all code snippets
      *
      * @param Input  $input
      * @param Output $output
      */
-    public function serveCommand(Input $input, Output $output): void
+    public function listCommand(Input $input, Output $output): void
     {
         echo "string\n";
     }

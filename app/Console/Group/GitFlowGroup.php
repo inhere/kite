@@ -104,6 +104,6 @@ class GitFlowGroup extends Controller
         $cmd = CmdRunner::new($str);
         $cmd->do();
 
-        $output->info('Complete');
+        $output->success('Complete');
     }
 }

@@ -28,7 +28,7 @@ class GitGroup extends Controller
 {
     protected static $name = 'git';
 
-    protected static $description = 'Some useful tool commands for git flow development';
+    protected static $description = 'Some useful tool commands for quick use git';
 
     public static function aliases(): array
     {
@@ -38,10 +38,13 @@ class GitGroup extends Controller
     protected static function commandAliases(): array
     {
         return [
+            'tl'       => 'tagList',
+            'taglist'  => 'tagList',
             'tag-find' => 'tagFind',
             'tag:find' => 'tagFind',
             'tagfind'  => 'tagFind',
             'tagpush'  => 'tagPush',
+            'tp'       => 'tagPush',
             'tag-push' => 'tagPush',
             'tag:push' => 'tagPush',
             'tag:del'  => 'tagDelete',
@@ -83,7 +86,7 @@ class GitGroup extends Controller
         $title = 'The latest tag: %s';
 
         if ($nextTag) {
-            $title = "The next tag: %s (current: {$tagName})";
+            $title   = "The next tag: %s (current: {$tagName})";
             $tagName = $this->buildNextTag($tagName);
         }
 
@@ -149,7 +152,7 @@ class GitGroup extends Controller
         $output->aList([
             'Work Dir' => $input->getPwd(),
             'New Tag'  => $input->getSameOpt(['v', 'tag']),
-        ], 'Information');
+        ], 'Information', ['ucFirst' => false]);
 
         $msg = $input->getSameArg(['m', 'message']);
         $msg = $msg ?: "Release $tag";
@@ -183,7 +186,7 @@ class GitGroup extends Controller
 
         GitUtil::delRemoteTag($remote, $tag);
 
-        $output->info('Complete');
+        $output->success('Complete');
     }
 
     /**
@@ -210,6 +213,6 @@ class GitGroup extends Controller
         $run->okDoRun(sprintf('git commit -m "%s"', $message));
         $run->okDoRun('git push');
 
-        $output->info('Complete');
+        $output->success('Complete');
     }
 }
