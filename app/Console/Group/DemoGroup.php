@@ -22,6 +22,11 @@ class DemoGroup extends Controller
 
     protected static $description = 'Some useful development tool commands';
 
+    public static function isEnabled(): bool
+    {
+        return false;
+    }
+
     /**
      * run a php built-in server for development(is alias of the command 'server:dev')
      *

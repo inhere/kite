@@ -22,6 +22,11 @@ class DemoCommand extends Command
 
     protected static $description = 'a test command';
 
+    public static function isEnabled(): bool
+    {
+        return false;
+    }
+
     /**
      * do execute
      * @param  Input $input

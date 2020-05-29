@@ -7,6 +7,9 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 $app = new Inhere\Kite\Console\Application([
   'rootPath' => BASE_PATH,
+  'version'      => '0.5.1',
+  'publishAt'    => '2020.05.24',
+  'updateAt'     => date('Y.m.d'),
 ]);
 
 require dirname(__DIR__) . '/app/Console/routes.php';
