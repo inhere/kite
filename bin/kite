@@ -29,8 +29,9 @@ $app->on(Application::ON_NOT_FOUND, static function (string $cmd, Application $a
     $app->getOutput()->note("command not found, redirect to run script: $cmd");
 
     $args = $app->getInput()->getArgs();
+    $args = array_merge([$cmd], $args);
 
-    $app->getInput()->setArgs(array_merge([$cmd], $args));
+    $app->getInput()->setArgs($args, true);
     $app->dispatch('run');
 
     return true;

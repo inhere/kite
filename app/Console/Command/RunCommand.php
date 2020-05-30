@@ -10,6 +10,8 @@
 namespace Inhere\Kite\Console\Command;
 
 use Inhere\Console\Command;
+use Inhere\Console\Exception\ConsoleException;
+use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Helper\SysCmd;
@@ -78,7 +80,7 @@ class RunCommand extends Command
         }
 
         if (!isset($scripts[$name])) {
-            $output->liteError('please input an exists script name for run');
+            $output->liteError("please input an exists script name for run. ('{$name}' not exists)");
             return;
         }
 
@@ -121,20 +123,24 @@ class RunCommand extends Command
 
     /**
      * @param string $cmdString
-     * @param array  $args
+     * @param array  $scriptArgs
      *
      * @return string
      */
-    private function replaceScriptVars(string $cmdString, array $args): string
+    private function replaceScriptVars(string $cmdString, array $scriptArgs): string
     {
-        if (!$args || strpos($cmdString, '$') === false) {
+        if (strpos($cmdString, '$') === false) {
             return $cmdString;
+        }
+
+        if (!$scriptArgs) {
+            throw new PromptException('missing arguments for run script');
         }
 
         $pairs = [];
 
         // like bash script, first var is '$1'
-        foreach ($args as $i => $arg) {
+        foreach ($scriptArgs as $i => $arg) {
             $pairs['$' . $i] = $arg;
         }
 

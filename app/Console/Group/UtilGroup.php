@@ -34,4 +34,21 @@ class UtilGroup extends Controller
         $output->println('Time: ' . date('Y-m-d H:i:s'));
         // $output->success('Complete');
     }
+
+    /**
+     * print system ENV information
+     *
+     * @options
+     *  --format    Format the env value
+     *
+     * @arguments
+     *  keywords    The keywords for search ENV
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function envCommand(Input $input, Output $output): void
+    {
+        // env | grep XXX
+    }
 }
