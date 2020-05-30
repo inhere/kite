@@ -14,6 +14,7 @@ use Inhere\Console\Exception\ConsoleException;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\SysCmd;
 use function is_array;
 use function is_string;
@@ -93,8 +94,8 @@ class RunCommand extends Command
         if (is_string($commands)) {
             // Color::println("run > $commands", 'comment');
             // Sys::execute($commands, false);
-            $ret = SysCmd::exec($this->replaceScriptVars($name, $commands, $runArgs));
-            echo $ret['output'];
+            $command = $this->replaceScriptVars($name, $commands, $runArgs);
+            CmdRunner::new($command)->do(true);
             return;
         }
 
@@ -111,10 +112,8 @@ class RunCommand extends Command
                     continue;
                 }
 
-                // Color::println("run > $command", 'comment');
-                // Sys::execute($command, false);
-                $ret = SysCmd::exec($this->replaceScriptVars($pos, $command, $runArgs));
-                echo $ret['output'];
+                $command = $this->replaceScriptVars($name, $command, $runArgs);
+                CmdRunner::new($command)->do(true);
             }
             return;
         }

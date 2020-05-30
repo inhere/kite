@@ -36,6 +36,16 @@ class GitFlowGroup extends Controller
      */
     private $curBranchName = '';
 
+    /**
+     * @var string
+     */
+    private $forkRemote = '';
+
+    /**
+     * @var string
+     */
+    private $mainRemote = '';
+
     public static function aliases(): array
     {
         return ['git-flow', 'gf'];
@@ -43,23 +53,23 @@ class GitFlowGroup extends Controller
 
     protected function configure(): void
     {
+        $this->config = $this->app->getParam('gitflow', []);
+
         $action = $this->getAction();
 
         if ($action === 'sync') {
             $this->curBranchName = GitUtil::getCurrentBranchName();
 
+            $this->forkRemote = $this->config['fork']['remote'] ?? '';
+            $this->mainRemote = $this->config['main']['remote'] ?? '';
+
+            if (!$this->forkRemote || !$this->mainRemote) {
+                $this->output->liteError('missing config for "fork.remote" and "main.remote" on "gitflow"');
+                return;
+            }
+
             $this->addCommentsVar('curBranchName', $this->curBranchName);
         }
-    }
-
-    /**
-     * @return bool
-     */
-    protected function beforeExecute(): bool
-    {
-        $this->config = $this->app->getParam('gitflow', []);
-
-        return true;
     }
 
     /**
@@ -67,6 +77,7 @@ class GitFlowGroup extends Controller
      *
      * @options
      *  -b, --branch  The sync code branch name, default is current branch
+     *  -r, --remote  The main remote name, default is {mainRemote}
      *
      * @param Input  $input
      * @param Output $output
@@ -78,8 +89,12 @@ class GitFlowGroup extends Controller
      */
     public function syncCommand(Input $input, Output $output): void
     {
-        $forkRemote = $this->config['fork']['remote'] ?? '';
-        $mainRemote = $this->config['main']['remote'] ?? '';
+        $forkRemote = $this->forkRemote;
+
+        if (!$mainRemote = $input->getSameOpt(['r', 'remote'], '')) {
+            $mainRemote = $this->mainRemote;
+        }
+
         if (!$forkRemote || !$mainRemote) {
             $output->liteError('missing config for "fork.remote" and "main.remote" on "gitflow"');
             return;

@@ -82,10 +82,10 @@ class GitGroup extends Controller
             return;
         }
 
-        $title = '<info>The latest tag</info>: <b>%s</b>';
+        $title = '<info>The latest tag version</info>: <b>%s</b>';
 
         if ($nextTag) {
-            $title   = "<info>The latest tag</info>: <b>%s</b> (current: {$tagName})";
+            $title   = "<info>The next tag version</info>: <b>%s</b> (current: {$tagName})";
             $tagName = $this->buildNextTag($tagName);
         }
 
@@ -129,8 +129,9 @@ class GitGroup extends Controller
      * Add new tag version and push to the remote git repos
      *
      * @options
-     *  -v, --version       *The new tag version. e.g: v2.0.4
+     *  -v, --version       The new tag version. e.g: v2.0.4
      *  -m, --message       The message for add new tag.
+     *      --next          Auto calc next version for add new tag.
      *
      * @param Input  $input
      * @param Output $output
