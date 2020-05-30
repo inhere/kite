@@ -68,6 +68,7 @@ class GitFlowGroup extends Controller
                 return;
             }
 
+            $this->addCommentsVar('mainRemote', $this->mainRemote);
             $this->addCommentsVar('curBranchName', $this->curBranchName);
         }
     }
@@ -76,8 +77,9 @@ class GitFlowGroup extends Controller
      * sync codes from remote main repo
      *
      * @options
-     *  -b, --branch  The sync code branch name, default is current branch
-     *  -r, --remote  The main remote name, default is {mainRemote}
+     *  -b, --branch  The sync code branch name, default is current branch(<info>{curBranchName}</info>)
+     *  -r, --remote  The main remote name, default: {mainRemote}
+     *      --push    Push to origin remote after update
      *
      * @param Input  $input
      * @param Output $output
@@ -124,7 +126,7 @@ class GitFlowGroup extends Controller
 
         // git pull main BRANCH
         $cmd = "git pull {$mainRemote} $curBranch";
-        CmdRunner::new($cmd, $pwd)->do(true)->okDoRun('git status');
+        CmdRunner::new($cmd, $pwd)->do(true)->afterOkRun('git status');
 
         $output->success('Complete');
     }

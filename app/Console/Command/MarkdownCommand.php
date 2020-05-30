@@ -14,13 +14,14 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CliMarkdown;
 use Toolkit\Cli\Color;
+use function file_get_contents;
 
 /**
  * Class MarkdownCommand
  */
 class MarkdownCommand extends Command
 {
-    protected static $name = 'md:render';
+    protected static $name = 'markdown';
 
     protected static $description = 'render markdown file on terminal';
 
@@ -38,7 +39,7 @@ class MarkdownCommand extends Command
     {
         $filename = $input->getFirstArg();
 
-        $text = \file_get_contents($filename);
+        $text = file_get_contents($filename);
 
         // parse content
         $md  = new CliMarkdown();

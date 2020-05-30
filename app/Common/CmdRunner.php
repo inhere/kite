@@ -110,12 +110,38 @@ class CmdRunner
     }
 
     /**
+     * @param string $cmd
+     *
+     * @return $this
+     */
+    public function afterRun(string $cmd): self
+    {
+        return $this->setCmd($cmd)->do($this->printOutput);
+    }
+
+    /**
+     * @param string   $cmd
+     * @param callable $whereFunc
+     *
+     * @return $this
+     */
+    public function whereRun(string $cmd, callable $whereFunc) :self
+    {
+        // only run on return TRUE
+        if (true === $whereFunc()) {
+            $this->setCmd($cmd)->do($this->printOutput);
+        }
+
+        return $this;
+    }
+
+    /**
      * @param string      $cmd
      * @param string|null $workDir
      *
      * @return $this
      */
-    public function okDoRun(string $cmd, string $workDir = null): self
+    public function afterOkRun(string $cmd, string $workDir = null): self
     {
         if (0 !== $this->code) {
             return $this;

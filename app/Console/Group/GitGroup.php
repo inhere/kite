@@ -210,8 +210,8 @@ class GitGroup extends Controller
 
         $run = CmdRunner::new('git add .')->do(true);
 
-        $run->okDoRun(sprintf('git commit -m "%s"', $message));
-        $run->okDoRun('git push');
+        $run->afterOkRun(sprintf('git commit -m "%s"', $message));
+        $run->afterOkRun('git push');
 
         $output->success('Complete');
     }
