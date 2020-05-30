@@ -15,7 +15,6 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
-use Toolkit\Cli\Color;
 use function sprintf;
 
 /**
@@ -83,10 +82,10 @@ class GitGroup extends Controller
             return;
         }
 
-        $title = 'The latest tag: %s';
+        $title = '<info>The latest tag</info>: <b>%s</b>';
 
         if ($nextTag) {
-            $title   = "The next tag: %s (current: {$tagName})";
+            $title   = "<info>The latest tag</info>: <b>%s</b> (current: {$tagName})";
             $tagName = $this->buildNextTag($tagName);
         }
 
@@ -95,7 +94,7 @@ class GitGroup extends Controller
             return;
         }
 
-        Color::println("<info>$title</info> $tagName");
+        $output->printf($title, $tagName);
     }
 
     /**
@@ -198,7 +197,7 @@ class GitGroup extends Controller
      * @param Input  $input
      * @param Output $output
      */
-    public function ampCommand(Input $input, Output $output): void
+    public function acpCommand(Input $input, Output $output): void
     {
         $message = $input->getSameOpt(['m', 'message'], '');
         if (!$message) {

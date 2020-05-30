@@ -1,17 +1,39 @@
 #!/usr/bin/env php
 <?php
 
+use Inhere\Kite\Console\Application;
+
 define('BASE_PATH', dirname(__DIR__));
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-$app = new Inhere\Kite\Console\Application([
+$app = new Application([
   'rootPath' => BASE_PATH,
   'version'      => '0.5.1',
   'publishAt'    => '2020.05.24',
   'updateAt'     => date('Y.m.d'),
 ]);
 
+// register routes
 require dirname(__DIR__) . '/app/Console/routes.php';
+
+// add event
+$app->on(Application::ON_NOT_FOUND, static function (string $cmd, Application $app) {
+    $scripts = $app->getParam('scripts', []);
+    if (!$scripts || !isset($scripts[$cmd])) {
+      return false;
+    }
+
+    // redirect to run script.
+    /** @see \Inhere\Kite\Console\Command\RunCommand::execute() */
+    $app->getOutput()->note("command not found, redirect to run script: $cmd");
+
+    $args = $app->getInput()->getArgs();
+
+    $app->getInput()->setArgs(array_merge([$cmd], $args));
+    $app->dispatch('run');
+
+    return true;
+});
 
 $app->run();

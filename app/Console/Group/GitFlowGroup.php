@@ -80,7 +80,8 @@ class GitFlowGroup extends Controller
     {
         $pwd  = $input->getPwd();
         $info = [
-            'Work Dir' => $pwd,
+            'Work Dir'   => $pwd,
+            'Cur Branch' => $this->curBranchName,
         ];
         $output->aList($info, 'Work Information');
 
@@ -100,9 +101,8 @@ class GitFlowGroup extends Controller
         }
 
         // git pull main BRANCH
-        $str = "git pull {$mainRemote} $curBranch";
-        $cmd = CmdRunner::new($str);
-        $cmd->do();
+        $cmd = "git pull {$mainRemote} $curBranch";
+        CmdRunner::new($cmd)->do();
 
         $output->success('Complete');
     }

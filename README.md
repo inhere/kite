@@ -29,25 +29,16 @@ cd ~
 git clone https://github.com/inhere/kite .kite
 cd .kite
 composer install
-ln -s $PWD/bin/kite /usr/local/bin/kite
 chmod a+x bin/kite
+ln -s $PWD/bin/kite /usr/local/bin/kite
 ```
 
 ## Usage
 
-First use git to pull the latest swoft-components or swoft-ext to the local, go to the repository directory.
-
-Execute:
+### All commands
 
 ```bash
-# 1. add remote for all components
-kite git:addrmt --all
-
-# 2. force push all change to every github repo
-kite git:fpush --all
-
-# 3. release new version for all components
-kite git:release --all -y -t v2.0.8
+kite
 ```
 
 ## Update
