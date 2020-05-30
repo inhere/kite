@@ -93,26 +93,27 @@ class RunCommand extends Command
         if (is_string($commands)) {
             // Color::println("run > $commands", 'comment');
             // Sys::execute($commands, false);
-            $ret = SysCmd::exec($this->replaceScriptVars($commands, $runArgs));
+            $ret = SysCmd::exec($this->replaceScriptVars($name, $commands, $runArgs));
             echo $ret['output'];
             return;
         }
 
         if (is_array($commands)) {
             foreach ($commands as $index => $command) {
+                $pos = $name . '.' . $index;
                 if (!$command) {
-                    $output->liteError("The script {$name}.{$index} command is empty, skip run it");
+                    $output->liteError("The script {$pos} command is empty, skip run it");
                     continue;
                 }
 
                 if (!is_string($command)) {
-                    $output->liteError("The script {$name}.{$index} command is not string, skip run it");
+                    $output->liteError("The script {$pos} command is not string, skip run it");
                     continue;
                 }
 
                 // Color::println("run > $command", 'comment');
                 // Sys::execute($command, false);
-                $ret = SysCmd::exec($this->replaceScriptVars($command, $runArgs));
+                $ret = SysCmd::exec($this->replaceScriptVars($pos, $command, $runArgs));
                 echo $ret['output'];
             }
             return;
@@ -122,19 +123,20 @@ class RunCommand extends Command
     }
 
     /**
+     * @param string $name
      * @param string $cmdString
      * @param array  $scriptArgs
      *
      * @return string
      */
-    private function replaceScriptVars(string $cmdString, array $scriptArgs): string
+    private function replaceScriptVars(string $name, string $cmdString, array $scriptArgs): string
     {
         if (strpos($cmdString, '$') === false) {
             return $cmdString;
         }
 
         if (!$scriptArgs) {
-            throw new PromptException('missing arguments for run script');
+            throw new PromptException("missing arguments for run script '{$name}'");
         }
 
         $pairs = [];

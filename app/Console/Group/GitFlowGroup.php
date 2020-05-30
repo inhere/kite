@@ -78,19 +78,26 @@ class GitFlowGroup extends Controller
      */
     public function syncCommand(Input $input, Output $output): void
     {
+        $forkRemote = $this->config['fork']['remote'] ?? '';
+        $mainRemote = $this->config['main']['remote'] ?? '';
+        if (!$forkRemote || !$mainRemote) {
+            $output->liteError('missing config for "fork.remote" and "main.remote" on "gitflow"');
+            return;
+        }
+
         $pwd  = $input->getPwd();
         $info = [
-            'Work Dir'   => $pwd,
-            'Cur Branch' => $this->curBranchName,
+            'Work Dir'    => $pwd,
+            'Cur Branch'  => $this->curBranchName,
+            'Fork Remote' => $forkRemote,
+            'Main Remote' => $mainRemote,
         ];
-        $output->aList($info, 'Work Information');
+
+        $output->aList($info, 'Work Information', ['ucFirst' => false]);
 
         if (!$curBranch = $this->curBranchName) {
             $curBranch = GitUtil::getCurrentBranchName();
         }
-
-        $forkRemote = $this->config['fork']['remote'];
-        $mainRemote = $this->config['main']['remote'];
 
         $remotes = GitUtil::getRemotes($pwd);
         if (!isset($remotes[$mainRemote])) {
@@ -102,7 +109,7 @@ class GitFlowGroup extends Controller
 
         // git pull main BRANCH
         $cmd = "git pull {$mainRemote} $curBranch";
-        CmdRunner::new($cmd)->do();
+        CmdRunner::new($cmd, $pwd)->do(true)->okDoRun('git status');
 
         $output->success('Complete');
     }
