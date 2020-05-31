@@ -21,7 +21,7 @@ class FileGroup extends Controller
     protected static $description = 'Some useful development tool commands';
 
     /**
-     * run a php built-in server for development(is alias of the command 'server:dev')
+     * create ln
      *
      * @options
      *  -s, --src  The server address. e.g 127.0.0.1:5577

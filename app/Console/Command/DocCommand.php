@@ -60,15 +60,15 @@ class DocCommand extends Command
         $def->addOption('list-topic', 'l', Input::OPT_BOOLEAN, 'list all top/sub topics');
 
         $example = <<<TXT
-{fullCmd} -l   List all top topics
-  {fullCmd} git -l   List all topics on the #git
-  {fullCmd} git tag
-  {fullCmd} git branch
-  {fullCmd} tmux --lang zh-CN
+{binWithCmd} -l   List all top topics
+  {binWithCmd} git -l   List all topics on the #git
+  {binWithCmd} git tag
+  {binWithCmd} git branch
+  {binWithCmd} tmux --lang zh-CN
 TXT;
 
         if ($this->input instanceof Input\AloneInput) {
-            $example = str_replace('fullCmd', 'binName', $example);
+            $example = str_replace('binWithCmd', 'binName', $example);
         }
 
         $def->setExample($example);

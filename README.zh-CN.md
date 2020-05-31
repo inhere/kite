@@ -54,7 +54,7 @@ kite upself
 ### Manual update
 
 ```bash
-cd ~/kite
+cd ~/.kite
 git pull
 chmod a+x bin/kite
 ```

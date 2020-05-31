@@ -172,6 +172,26 @@ class DocTopic
     }
 
     /**
+     * @param array $subs
+     *
+     * @return $this|null
+     */
+    public function findTopicByPaths(array $subs): ?self
+    {
+        $topic = null;
+        foreach ($subs as $sub) {
+            if ($child = $this->load()->getChild($sub)) {
+                $topic = $child;
+            } else {
+                $topic = null;
+                break;
+            }
+        }
+
+        return $topic;
+    }
+
+    /**
      * @return $this|null
      */
     public function getDocFile(): ?self

@@ -18,6 +18,7 @@ class Document
 {
     public const EXT = '.md';
 
+    public const DEF_TOPIC = 'common';
     public const DEF_LANG = 'en';
 
     /**
@@ -164,24 +165,23 @@ class Document
     public function findTopic(string $top, array $subs = []): ?DocTopic
     {
         if (!isset($this->topics[$top])) {
-            return null;
-        }
-
-        $topic = $this->topics[$top];
-        if (!$subs) {
-            return $topic;
-        }
-
-        // find sub topic
-        foreach ($subs as $sub) {
-            if ($child = $topic->load()->getChild($sub)) {
-                $topic = $child;
-            } else {
+            // find from common topic
+            $topTopic = $this->topics[self::DEF_TOPIC] ?? null;
+            if (!$topTopic) {
                 return null;
             }
+
+            $subs = [$top];
+        } else {
+            $topTopic = $this->topics[$top];
         }
 
-        return $topic;
+        if (!$subs) {
+            return $topTopic;
+        }
+
+        // find sub topic from the top-topic
+        return $topTopic->findTopicByPaths($subs);
     }
 
     /**
