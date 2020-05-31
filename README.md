@@ -41,6 +41,8 @@ ln -s $PWD/bin/kite /usr/local/bin/kite
 kite
 ```
 
+![](resource/images/kite-help.png)
+
 ## Update
 
 ### Builtin command
@@ -61,10 +63,8 @@ chmod a+x bin/kite
 
 ## Build Phar
 
-> Required the `swoftcli`
-
 ```bash
-php -d phar.readonly=0 ~/.composer/vendor/bin/swoftcli phar:pack -o=kite.phar
+php -d phar.readonly=0 bin/kite phar:pack -o=kite.phar
 ```
 
 ## Uninstall

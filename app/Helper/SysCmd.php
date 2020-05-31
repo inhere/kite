@@ -90,12 +90,6 @@ class SysCmd
             ob_start();
             system($command, $status);
             $output = ob_get_clean();
-
-            // passthru
-        } elseif (function_exists('passthru')) {
-            ob_start();
-            passthru($command, $status);
-            $output = ob_get_clean();
             // exec
         } elseif (function_exists('exec')) {
             exec($command, $outputs, $status);
