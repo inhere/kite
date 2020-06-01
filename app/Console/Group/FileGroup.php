@@ -10,6 +10,12 @@
 namespace Inhere\Kite\Console\Group;
 
 use Inhere\Console\Controller;
+use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
+use Inhere\Console\Util\Show;
+use function basename;
+use function glob;
+use const GLOB_MARK;
 
 /**
  * Class FileGroup
@@ -20,6 +26,51 @@ class FileGroup extends Controller
 
     protected static $description = 'Some useful development tool commands';
 
+    public static function aliases(): array
+    {
+        return ['fs'];
+    }
+
+    /**
+     * ls files
+     *
+     * @options
+     *  --file          Only display files
+     *  --dir           Only display directories
+     *  --only-name     Only display file/dir name
+     *  --prefix        Add prefix before each path
+     *  --filter        Filter match path by given string
+     *
+     * @arguments
+     *  path  The ls path
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function lsCommand(Input $input, Output $output): void
+    {
+        $path = $input->getStringArg(0);
+
+        $filter = $input->getStringOpt('filter');
+        $prefix = $input->getStringOpt('prefix');
+
+        $onlyName = $input->getBoolOpt('only-name');
+
+        foreach (glob($path . '/*', GLOB_MARK) as $item) {
+            $line = $item;
+            if ($onlyName) {
+                $line = basename($item);
+            }
+
+            // filter path
+            if ($filter && \preg_match("#$filter#", $line) === false) {
+                continue;
+            }
+
+            echo "{$prefix}$line\n";
+        }
+    }
+
     /**
      * create ln
      *
@@ -28,10 +79,11 @@ class FileGroup extends Controller
      *  -d, --dst  The server host address. e.g 127.0.0.1
      *
      */
-    public function lnCommand(): void
+    public function lnCommand(Input $input, Output $output): void
     {
         // ln -s "$PWD"/bin/htu /usr/local/bin/htu
 
-        echo "string\n";
+        Show::success('ddd');
+        // $output->success('hello');
     }
 }

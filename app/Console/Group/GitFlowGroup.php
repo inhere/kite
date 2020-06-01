@@ -48,7 +48,7 @@ class GitFlowGroup extends Controller
 
     public static function aliases(): array
     {
-        return ['git-flow', 'gf'];
+        return ['gf', 'git-flow'];
     }
 
     protected function configure(): void

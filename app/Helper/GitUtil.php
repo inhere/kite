@@ -105,6 +105,12 @@ class GitUtil
      */
     public static function findTag(string $workDir = '', bool $showInfo = false): string
     {
+        // fix: update tags to latest
+        $ret = SysCmd::exec('git pull --tags', $workDir);
+        if ($showInfo) {
+            echo $ret['output'] . PHP_EOL;
+        }
+
         $cmd = 'git describe --tags $(git rev-list --tags --max-count=1)';
 
         if ($showInfo) {

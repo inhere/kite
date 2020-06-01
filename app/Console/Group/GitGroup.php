@@ -131,6 +131,7 @@ class GitGroup extends Controller
      * @options
      *  -v, --version       The new tag version. e.g: v2.0.4
      *  -m, --message       The message for add new tag.
+     *      --dry-run       Dont real send git tag and push command
      *      --next          Auto calc next version for add new tag.
      *
      * @param Input  $input
@@ -138,29 +139,62 @@ class GitGroup extends Controller
      */
     public function tagPushCommand(Input $input, Output $output): void
     {
-        $tag = $input->getSameOpt(['v', 'tag'], '');
-        if (!$tag) {
-            $output->error('please input new tag version, like: v2.0.4');
-            return;
+        $lTag = '';
+        $dir  = $input->getPwd();
+
+        if ($input->getBoolOpt('next')) {
+            $lTag = GitUtil::findTag($dir, false);
+            if (!$lTag) {
+                $output->error('No any tags found of the project');
+                return;
+            }
+
+            $tag = $this->buildNextTag($lTag);
+        } else {
+            $tag = $input->getSameOpt(['v', 'version'], '');
+            if (!$tag) {
+                $output->error('please input new tag version, like: -v v2.0.4');
+                return;
+            }
         }
 
         if (!AppHelper::isVersion($tag)) {
-            $output->error('please input an valid tag version, like: v2.0.4');
+            $output->error('please input an valid tag version, like: -v v2.0.4');
             return;
         }
 
-        $output->aList([
-            'Work Dir' => $input->getPwd(),
-            'New Tag'  => $input->getSameOpt(['v', 'tag']),
-        ], 'Information', ['ucFirst' => false]);
+        $info = [
+            'Work Dir' => $dir,
+            'New Tag'  => $tag,
+        ];
+
+        if ($lTag) {
+            $info['Old Tag'] = $lTag;
+        }
 
         $msg = $input->getSameArg(['m', 'message']);
         $msg = $msg ?: "Release $tag";
+        // add message
+        $info['Message'] = $msg;
+
+        $output->aList($info, 'Information', ['ucFirst' => false]);
+
+        if ($this->isInteractive() && $output->unConfirm('please ensure create and push new tag')) {
+            $output->colored('  GoodBye!');
+            return;
+        }
 
         // git tag -a $1 -m "Release $1"
         // git push origin --tags
-        $cmd = sprintf('git tag -a %s -m "Release %s"; git push origin %s', $tag, $msg, $tag);
-        CmdRunner::new($cmd)->do(true);
+        $cmd = sprintf('git tag -a %s -m "%s"; git push origin %s', $tag, $msg, $tag);
+
+        $dryRun = $input->getBoolOpt('dry-run');
+        if ($dryRun) {
+            $output->info('... DRY-RUN ...');
+            $output->colored('> ' . $cmd, 'ylw');
+        } else {
+            CmdRunner::new($cmd)->do(true);
+        }
 
         $output->success('Complete');
     }
