@@ -80,7 +80,7 @@ class DocTopic
      *
      * @return static
      */
-    public static function create(string $name, string $path, string $fsName, bool $isDir = false): self
+    public static function new(string $name, string $path, string $fsName, bool $isDir = false): self
     {
         return new self($name, $path, $fsName, $isDir);
     }
@@ -101,6 +101,10 @@ class DocTopic
 
         $this->fsName = $fsName;
     }
+
+    /*******************************************************************
+     * load and find sub topics
+     ******************************************************************/
 
     /**
      * @return $this
@@ -244,6 +248,27 @@ class DocTopic
 
         return $topics;
     }
+
+    /*******************************************************************
+     * create or edit topic
+     ******************************************************************/
+
+    public function create(): void
+    {
+
+    }
+
+    /**
+     * @param string $content
+     */
+    public function write(string $content): void
+    {
+
+    }
+
+    /*******************************************************************
+     * help methods
+     ******************************************************************/
 
     /**
      * @param bool  $parentAsName

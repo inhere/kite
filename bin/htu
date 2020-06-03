@@ -29,5 +29,7 @@ $htc = new DocCommand($in, $out);
 $app = new Inhere\Kite\Console\Application($conf, $in, $out);
 
 $htc->setApp($app);
+$htc->setAttached(false);
+
+// alone running
 $htc->run();
-// $app->subRun('doc', $in, $out);

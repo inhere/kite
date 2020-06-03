@@ -146,7 +146,7 @@ class Document
                 }
 
                 // create topic object
-                $topic = DocTopic::create($tpName, $subPath, $fsName, $isDir);
+                $topic = DocTopic::new($tpName, $subPath, $fsName, $isDir);
 
                 // save name
                 $this->topicNames[$tpName] = $isDir;
@@ -182,34 +182,6 @@ class Document
 
         // find sub topic from the top-topic
         return $topTopic->findTopicByPaths($subs);
-    }
-
-    /**
-     * @param string $top
-     * @param array  $subs
-     *
-     * @return DocTopic
-     */
-    public function mustFindTopic(string $top, array $subs = []): DocTopic
-    {
-        if (!isset($this->topics[$top])) {
-            throw new TopicNotFoundException($top);
-        }
-
-        if (!$subs) {
-            return $this->topics[$top];
-        }
-
-        $topic = $this->topics[$top];
-        foreach ($subs as $sub) {
-            if ($child = $topic->load()->getChild($sub)) {
-                $topic = $child;
-            } else {
-                throw new TopicNotFoundException($sub, $topic->getName());
-            }
-        }
-
-        return $topic;
     }
 
     /**

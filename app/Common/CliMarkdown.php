@@ -22,6 +22,25 @@ class CliMarkdown extends GithubMarkdown
 
     public const POINT = '●•○◦◉◎⦿✓✔︎✕✖︎✗';
 
+    public const LANG_EN = 'en';
+
+    /**
+     * The document content language
+     *
+     * @var string
+     */
+    private $lang;
+
+    /**
+     * Class constructor.
+     *
+     * @param string $lang
+     */
+    public function __construct(string $lang = '')
+    {
+        $this->lang = $lang;
+    }
+
     /**
      * @param array $block
      *
@@ -33,7 +52,12 @@ class CliMarkdown extends GithubMarkdown
 
         $prefix = str_repeat('#', $level);
         $title  = $this->renderAbsy($block['content']);
-        $hlText = $prefix . ' ' .  ucwords($title);
+
+        if ($this->lang === self::LANG_EN) {
+            $title = ucwords($title);
+        }
+
+        $hlText = $prefix . ' ' .  $title;
 
         return self::NL . ColorTag::add($hlText, 'lightBlue') . self::NL2;
     }

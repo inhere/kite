@@ -56,7 +56,7 @@ class DocCommand extends Command
         $def->addOption('lang', '', Input::OPT_OPTIONAL, 'use the language for find topic document',
             Document::DEF_LANG);
         $def->addOption('create', '', Input::OPT_BOOLEAN, 'create an new topic document');
-        $def->addOption('edit', '', Input::OPT_BOOLEAN, 'edit an topic document');
+        $def->addOption('edit', 'e', Input::OPT_BOOLEAN, 'edit an topic document');
         $def->addOption('list-topic', 'l', Input::OPT_BOOLEAN, 'list all top/sub topics');
 
         $example = <<<TXT
@@ -139,12 +139,28 @@ TXT;
         $text = $file->getFileContent();
 
         // parse content
-        $md  = new CliMarkdown();
+        $md  = new CliMarkdown($man->getLang());
         $doc = $md->parse($text);
         $doc = Color::parseTag(rtrim($doc));
 
         // $output->colored("Document for the #$nameString");
         $output->writeRaw($doc);
+    }
+
+    /**
+     *
+     */
+    private function createTopic(): void
+    {
+
+    }
+
+    /**
+     *
+     */
+    private function editTopic(): void
+    {
+
     }
 
     /**
