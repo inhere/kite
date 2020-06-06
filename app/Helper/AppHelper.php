@@ -91,6 +91,6 @@ class AppHelper
         }
 
         Show::info("Will open the page on browser: $pageUrl");
-        Sys::execute($cmd . ' ' . $pageUrl);
+        Sys::execute($cmd . " \"{$pageUrl}\"");
     }
 }

@@ -13,10 +13,12 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use function array_merge;
 use function explode;
 use function http_build_query;
+use function in_array;
 use function parse_str;
 use function parse_url;
 use function trim;
@@ -106,6 +108,7 @@ class GitLabGroup extends Controller
      * @options
      *  -s, --source    The source branch
      *  -t, --target    The target branch
+     *  -o, --open      Open the generated PR link on browser
      *      --sync      The target branch will same source branch
      *
      * @argument
@@ -132,7 +135,7 @@ class GitLabGroup extends Controller
         $pjInfo = $this->projects[$pjName];
 
         $link = $this->config['hostUrl'];
-        $link .= "/{$pjInfo['group']}/{$pjInfo['group']}/merge_requests/new?";
+        $link .= "/{$pjInfo['group']}/{$pjInfo['name']}/merge_requests/new?";
 
         $brPrefix = $this->config['branchPrefix'];
         $fixedBrs = $this->config['fixedBranch'];
@@ -141,12 +144,11 @@ class GitLabGroup extends Controller
         $forkPjId = $pjInfo['forkProjectId'];
 
         $curBranch = GitUtil::getCurrentBranchName();
-
         $srcBranch = $input->getSameStringOpt(['s', 'source']);
         $tgtBranch = $input->getSameStringOpt(['t', 'target']);
 
         if ($srcBranch ) {
-            if (!\in_array($srcBranch, $fixedBrs, true)) {
+            if (!in_array($srcBranch, $fixedBrs, true)) {
                 $srcBranch = $brPrefix . $srcBranch;
             }
         } else {
@@ -154,7 +156,7 @@ class GitLabGroup extends Controller
         }
 
         if ($tgtBranch) {
-            if (!\in_array($tgtBranch, $fixedBrs, true)) {
+            if (!in_array($tgtBranch, $fixedBrs, true)) {
                 $tgtBranch = $brPrefix . $tgtBranch;
             }
         } else {
@@ -171,15 +173,21 @@ class GitLabGroup extends Controller
         $tipInfo = array_merge([
             'project' => $pjName,
         ], $prInfo);
-        $output->aList($tipInfo, 'PR information', ['ucFirst' => false]);
+        $output->aList($tipInfo, 'information', ['ucFirst' => false]);
         $query = [
             'utf8'          => '✓',
             'merge_request' => $prInfo
         ];
 
-        $queryString = http_build_query($query, '', '&');
+        $link .= http_build_query($query, '', '&');
 
-        $output->info("PR link:\n  " . $link . $queryString);
+        if ($input->getSameBoolOpt(['o', 'open'])) {
+            // $output->info('will auto open link on browser');
+            AppHelper::openBrowser($link);
+        } else {
+            $output->colored("PR Link:\n  " . $link);
+        }
+
         $output->success('Complete');
     }
 
