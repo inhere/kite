@@ -5,12 +5,8 @@ This file is part of {{pkgName}}.
 
 @link     https://github.com/{{pkgName}}
 @author   https://github.com/{{author}}
-@license  MIT
+@license  https://github.com/{{pkgName}}/blob/master/LICENSE
 EOF;
-
-$finder = PhpCsFixer\Finder::create()
-    // ->exclude('test')
-                           ->exclude('runtime')->exclude('vendor')->in(__DIR__);
 
 $rules = [
     '@PSR2'                       => true,
@@ -30,4 +26,14 @@ $rules = [
     'standardize_not_equals'      => true,
 ];
 
-return PhpCsFixer\Config::create()->setRiskyAllowed(true)->setRules($rules)->setFinder($finder)->setUsingCache(false);
+$finder = PhpCsFixer\Finder::create()
+    // ->exclude('test')
+                           ->exclude('docs')
+                           ->exclude('vendor')
+                           ->in(__DIR__);
+
+return PhpCsFixer\Config::create()
+                        ->setRiskyAllowed(true)
+                        ->setRules($rules)
+                        ->setFinder($finder)
+                        ->setUsingCache(false);

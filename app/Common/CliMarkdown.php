@@ -13,16 +13,29 @@ use function ucwords;
  * Class CliMarkdown
  *
  * @package Inhere\Kite\Common
- * @link https://github.com/charmbracelet/glow color refer
+ * @link    https://github.com/charmbracelet/glow color refer
  */
 class CliMarkdown extends GithubMarkdown
 {
-    public const NL = "\n";
+    public const NL  = "\n";
     public const NL2 = "\n\n";
 
     public const POINT = '●•○◦◉◎⦿✓✔︎✕✖︎✗';
 
     public const LANG_EN = 'en';
+
+    public const THEME_LIGHT = [
+        'headline'   => 'lightBlue',
+        'paragraph'  => '',
+        'list'       => '',
+        'link'       => 'info',
+        'code'       => 'brown',
+        'inlineCode' => 'light_red_ex',
+    ];
+
+    public const THEME_DARK = [
+
+    ];
 
     /**
      * The document content language
@@ -57,7 +70,7 @@ class CliMarkdown extends GithubMarkdown
             $title = ucwords($title);
         }
 
-        $hlText = $prefix . ' ' .  $title;
+        $hlText = $prefix . ' ' . $title;
 
         return self::NL . ColorTag::add($hlText, 'lightBlue') . self::NL2;
     }
@@ -84,7 +97,7 @@ class CliMarkdown extends GithubMarkdown
         $output = self::NL;
 
         foreach ($block['items'] as $item => $itemLines) {
-            $output .= '● ' . $this->renderAbsy($itemLines). "\n";
+            $output .= '● ' . $this->renderAbsy($itemLines) . "\n";
         }
 
         return $output . self::NL2;

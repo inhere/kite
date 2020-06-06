@@ -53,6 +53,8 @@ class GitFlowGroup extends Controller
 
     protected function configure(): void
     {
+        parent::configure();
+
         $this->config = $this->app->getParam('gitflow', []);
 
         $action = $this->getAction();

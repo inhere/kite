@@ -13,9 +13,13 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CliMarkdown;
+use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\AppHelper;
+use Inhere\Kite\Helper\SysCmd;
+use Inhere\Kite\ManDoc\DocTopic;
 use Inhere\Kite\ManDoc\Document;
 use Toolkit\Cli\Color;
+use Toolkit\Sys\Sys;
 use function rtrim;
 use function str_replace;
 
@@ -57,6 +61,7 @@ class DocCommand extends Command
             Document::DEF_LANG);
         $def->addOption('create', '', Input::OPT_BOOLEAN, 'create an new topic document');
         $def->addOption('edit', 'e', Input::OPT_BOOLEAN, 'edit an topic document');
+        $def->addOption('editor', '', Input::OPT_OPTIONAL, 'editor for edit the topic document', 'vim');
         $def->addOption('list-topic', 'l', Input::OPT_BOOLEAN, 'list all top/sub topics');
 
         $example = <<<TXT
@@ -67,7 +72,8 @@ class DocCommand extends Command
   {binWithCmd} tmux --lang zh-CN
 TXT;
 
-        if ($this->input instanceof Input\AloneInput) {
+        // alone running
+        if (!$this->isAttached()) {
             $example = str_replace('binWithCmd', 'binName', $example);
         }
 
@@ -135,6 +141,12 @@ TXT;
             return;
         }
 
+        // edit document
+        if ($input->getSameOpt(['e', 'edit'], false)) {
+            $this->editTopic($file);
+            return;
+        }
+
         // read content
         $text = $file->getFileContent();
 
@@ -156,11 +168,19 @@ TXT;
     }
 
     /**
-     *
+     * @param DocTopic $topic
      */
-    private function editTopic(): void
+    private function editTopic(DocTopic $topic): void
     {
+        $path = $topic->getPath();
 
+        $editor = $this->input->getStringOpt('editor', 'vim');
+
+        $this->output->title("will use '{$editor}' for edit the document");
+        // CmdRunner::new("$editor $path")->do(true);
+        $ret = SysCmd::exec("$editor $path");
+
+        echo $ret['output'] . \PHP_EOL;
     }
 
     /**
