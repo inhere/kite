@@ -48,7 +48,7 @@ class GitFlowGroup extends Controller
 
     public static function aliases(): array
     {
-        return ['gf', 'git-flow'];
+        return ['gf'];
     }
 
     protected function configure(): void
@@ -95,7 +95,7 @@ class GitFlowGroup extends Controller
     {
         $forkRemote = $this->forkRemote;
 
-        if (!$mainRemote = $input->getSameOpt(['r', 'remote'], '')) {
+        if (!$mainRemote = $input->getSameStringOpt(['r', 'remote'], '')) {
             $mainRemote = $this->mainRemote;
         }
 
