@@ -16,6 +16,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use function array_merge;
+use function basename;
 use function explode;
 use function http_build_query;
 use function in_array;
@@ -152,7 +153,7 @@ class GitLabGroup extends Controller
         $pjName = '';
         // http://gitlab.gongzl.com/wzl/order/merge_requests/new?utf8=%E2%9C%93&merge_request%5Bsource_project_id%5D=319&merge_request%5Bsource_branch%5D=fea_4_16&merge_request%5Btarget_project_id%5D=319&merge_request%5Btarget_branch%5D=qa
         $workDir = $input->getWorkDir();
-        $dirName = \basename($workDir);
+        $dirName = basename($workDir);
         $dirPfx  = $this->config['dirPrefix'];
 
         // try auto parse project name for dirname.
