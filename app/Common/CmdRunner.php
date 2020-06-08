@@ -102,7 +102,7 @@ class CmdRunner
 
         // print output
         $this->printOutput = $printOutput;
-        if ($this->printOutput && $ret['output']) {
+        if ($printOutput && $ret['output']) {
             echo $ret['output'] . "\n";
         }
 

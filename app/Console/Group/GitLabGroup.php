@@ -51,8 +51,10 @@ class GitLabGroup extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'pr' => 'prLink',
-            'li' => 'linkInfo',
+            'pr'   => 'prLink',
+            'li'   => 'linkInfo',
+            'cf'   => 'config',
+            'conf' => 'config',
         ];
     }
 
@@ -74,7 +76,26 @@ class GitLabGroup extends Controller
     // }
 
     /**
-     * parse link print information
+     * show gitlab config information
+     *
+     * @options
+     *  -l, --list    List all project information
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function configCommand(Input $input, Output $output): void
+    {
+        if ($input->getSameBoolOpt(['l', 'list'])) {
+            $output->json($this->config);
+            return;
+        }
+
+        $output->success('Complete');
+    }
+
+    /**
+     * show gitlab project config information
      *
      * @options
      *  -l, --list    List all project information
@@ -147,7 +168,7 @@ class GitLabGroup extends Controller
         $srcBranch = $input->getSameStringOpt(['s', 'source']);
         $tgtBranch = $input->getSameStringOpt(['t', 'target']);
 
-        if ($srcBranch ) {
+        if ($srcBranch) {
             if (!in_array($srcBranch, $fixedBrs, true)) {
                 $srcBranch = $brPrefix . $srcBranch;
             }
