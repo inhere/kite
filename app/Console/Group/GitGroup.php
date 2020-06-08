@@ -42,10 +42,11 @@ class GitGroup extends Controller
             'tag-find' => 'tagFind',
             'tag:find' => 'tagFind',
             'tagfind'  => 'tagFind',
+            'tag:del'  => 'tagDelete',
             'tagPush' => [
                 'tagpush', 'tp', 'tag-push', 'tag:push'
             ],
-            'tag:del'  => 'tagDelete',
+            'tagList' => ['tag', 'tl', 'taglist']
         ];
     }
 
@@ -114,14 +115,29 @@ class GitGroup extends Controller
     }
 
     /**
-     * list all git tags
+     * list all git tags for the project
+     *
+     * @options
+     *  --filter    Filter by input keywords
      *
      * @param Input  $input
      * @param Output $output
+     *
+     * @example
+     *  {binWithCmd} --filter v2
      */
     public function tagListCommand(Input $input, Output $output): void
     {
-        $output->info('TODO');
+        $cmd = 'git tag -l';
+
+        $kw = $input->getStringOpt('filter');
+        if ($kw) {
+            $cmd .= " | grep $kw";
+        }
+
+        CmdRunner::new($cmd)->do(true);
+
+        $output->success('Complete');
     }
 
     /**

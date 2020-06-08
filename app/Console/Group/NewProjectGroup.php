@@ -39,8 +39,14 @@ class NewProjectGroup extends Controller
         $output->success('Complete');
     }
 
+    /**
+     * @param Input  $input
+     * @param Output $output
+     */
     public function packageCommand(Input $input, Output $output): void
     {
+
+
         $output->success('Complete');
     }
 }

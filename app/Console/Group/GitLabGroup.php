@@ -21,6 +21,9 @@ use function http_build_query;
 use function in_array;
 use function parse_str;
 use function parse_url;
+use function strlen;
+use function strpos;
+use function substr;
 use function trim;
 
 /**
@@ -146,23 +149,40 @@ class GitLabGroup extends Controller
      */
     public function prLinkCommand(Input $input, Output $output): void
     {
+        $pjName = '';
         // http://gitlab.gongzl.com/wzl/order/merge_requests/new?utf8=%E2%9C%93&merge_request%5Bsource_project_id%5D=319&merge_request%5Bsource_branch%5D=fea_4_16&merge_request%5Btarget_project_id%5D=319&merge_request%5Btarget_branch%5D=qa
+        $workDir = $input->getWorkDir();
+        $dirName = \basename($workDir);
+        $dirPfx  = $this->config['dirPrefix'];
 
-        $pjName = $input->getRequiredArg('project');
+        // try auto parse project name for dirname.
+        if ($dirPfx && strpos($dirName, $dirPfx) === 0) {
+            $tmpName = substr($dirName, strlen($dirPfx));
+
+            if (isset($this->projects[$tmpName])) {
+                $pjName = $tmpName;
+                $output->liteNotice('auto parse project name for dirname.');
+            }
+        }
+
+        if (!$pjName) {
+            $pjName = $input->getRequiredArg('project');
+        }
+
         if (!isset($this->projects[$pjName])) {
             throw new PromptException("project '{$pjName}' is not found in the config");
         }
 
         $pjInfo = $this->projects[$pjName];
 
-        $link = $this->config['hostUrl'];
-        $link .= "/{$pjInfo['group']}/{$pjInfo['name']}/merge_requests/new?";
+        $group = $pjInfo['group'] ?? $this->config['defaultGroup'];
+        $name  = $pjInfo['name'];
 
         $brPrefix = $this->config['branchPrefix'];
         $fixedBrs = $this->config['fixedBranch'];
 
-        $mainPjId = $pjInfo['mainProjectId'];
-        $forkPjId = $pjInfo['forkProjectId'];
+        $srcPjId = $pjInfo['forkProjectId'];
+        $tgtPjId = $pjInfo['mainProjectId'];
 
         $curBranch = GitUtil::getCurrentBranchName();
         $srcBranch = $input->getSameStringOpt(['s', 'source']);
@@ -184,22 +204,32 @@ class GitLabGroup extends Controller
             $tgtBranch = $curBranch;
         }
 
+        // Is sync to remote
+        if ($srcBranch === $tgtBranch) {
+            $group = $pjInfo['forkGroup'] ?? $this->config['defaultForkGroup'];
+        } else {
+            $srcPjId = $tgtPjId;
+        }
+
         $prInfo = [
-            'source_project_id' => $forkPjId,
+            'source_project_id' => $srcPjId,
             'source_branch'     => $srcBranch,
-            'target_project_id' => $mainPjId,
+            'target_project_id' => $tgtPjId,
             'target_branch'     => $tgtBranch
         ];
 
         $tipInfo = array_merge([
             'project' => $pjName,
+            'glPath'  => "$group/$name",
         ], $prInfo);
-        $output->aList($tipInfo, 'information', ['ucFirst' => false]);
+        $output->aList($tipInfo, 'project information', ['ucFirst' => false]);
         $query = [
             'utf8'          => '✓',
             'merge_request' => $prInfo
         ];
 
+        $link = $this->config['hostUrl'];
+        $link .= "/{$group}/{$name}/merge_requests/new?";
         $link .= http_build_query($query, '', '&');
 
         if ($input->getSameBoolOpt(['o', 'open'])) {
@@ -234,14 +264,22 @@ class GitLabGroup extends Controller
     public function linkInfoCommand(Input $input, Output $output): void
     {
         $link = $input->getRequiredArg('link');
+
+        // \var_dump(\urlencode('✓'), $link = \rawurldecode(\rawurlencode($link)));
         $info = (array)parse_url($link);
 
         [$group, $name,] = explode('/', trim($info['path'], '/'), 3);
 
         if (!empty($info['query'])) {
+            $qStr = $info['query'];
+            // $qStr  = \rawurlencode($info['query']);
             $query = [];
-            parse_str($info['query'], $query);
+            parse_str($qStr, $query);
 
+            if (isset($query['utf8'])) {
+                // $query['utf8'] = '%E2%9C%93'; // ✓
+                unset($query['utf8']);
+            }
             $info['queryMap'] = $query;
         }
 
