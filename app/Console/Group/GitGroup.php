@@ -42,10 +42,9 @@ class GitGroup extends Controller
             'tag-find' => 'tagFind',
             'tag:find' => 'tagFind',
             'tagfind'  => 'tagFind',
-            'tagpush'  => 'tagPush',
-            'tp'       => 'tagPush',
-            'tag-push' => 'tagPush',
-            'tag:push' => 'tagPush',
+            'tagPush' => [
+                'tagpush', 'tp', 'tag-push', 'tag:push'
+            ],
             'tag:del'  => 'tagDelete',
         ];
     }
@@ -224,6 +223,31 @@ class GitGroup extends Controller
     }
 
     /**
+     * run git add/commit at once command
+     *
+     * @options
+     *  -m, --message The commit message
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function acCommand(Input $input, Output $output): void
+    {
+        $message = $input->getSameStringOpt(['m', 'message']);
+        if (!$message) {
+            $output->liteError('please input an message for git commit');
+            return;
+        }
+
+        $output->info('Work Dir: ' . $input->getPwd());
+
+        $run = CmdRunner::new('git add .')->do(true);
+        $run->afterOkRun(sprintf('git commit -m "%s"', $message));
+
+        $output->success('Complete');
+    }
+
+    /**
      * run git add/commit/push at once command
      *
      * @options
@@ -234,7 +258,7 @@ class GitGroup extends Controller
      */
     public function acpCommand(Input $input, Output $output): void
     {
-        $message = $input->getSameOpt(['m', 'message'], '');
+        $message = $input->getSameStringOpt(['m', 'message']);
         if (!$message) {
             $output->liteError('please input an message for git commit');
             return;
@@ -243,7 +267,6 @@ class GitGroup extends Controller
         $output->info('Work Dir: ' . $input->getPwd());
 
         $run = CmdRunner::new('git add .')->do(true);
-
         $run->afterOkRun(sprintf('git commit -m "%s"', $message));
         $run->afterOkRun('git push');
 

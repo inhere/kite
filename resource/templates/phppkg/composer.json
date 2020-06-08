@@ -1,0 +1,41 @@
+{
+  "name": "{{pkgName}}",
+  "type": "library",
+  "description": "{{pkgDesc}}",
+  "keywords": [
+    "library",
+    "tool",
+    "php"
+  ],
+  "homepage": "https://github.com/{{pkgGhPath}}",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "inhere",
+      "email": "in.798@qq.com",
+      "homepage": "http://www.yzone.net/"
+    }
+  ],
+  "require": {
+    "php": ">7.1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "{{pkgNamespace}}\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "{{pkgNamespace}}Test\\": "src/"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit"
+  },
+  "suggest": {
+    "inhere/console": "a lightweight php console application library."
+  }
+}
