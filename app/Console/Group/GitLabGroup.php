@@ -162,7 +162,7 @@ class GitLabGroup extends Controller
 
             if (isset($this->projects[$tmpName])) {
                 $pjName = $tmpName;
-                $output->liteNotice('auto parse project name for dirname.');
+                $output->liteNote('auto parse project name for dirname.');
             }
         }
 
@@ -185,6 +185,7 @@ class GitLabGroup extends Controller
         $srcPjId = $pjInfo['forkProjectId'];
         $tgtPjId = $pjInfo['mainProjectId'];
 
+        $output->info('auto fetch current branch name');
         $curBranch = GitUtil::getCurrentBranchName();
         $srcBranch = $input->getSameStringOpt(['s', 'source']);
         $tgtBranch = $input->getSameStringOpt(['t', 'target']);
@@ -223,7 +224,7 @@ class GitLabGroup extends Controller
             'project' => $pjName,
             'glPath'  => "$group/$name",
         ], $prInfo);
-        $output->aList($tipInfo, 'project information', ['ucFirst' => false]);
+        $output->aList($tipInfo, '- project information', ['ucFirst' => false]);
         $query = [
             'utf8'          => '✓',
             'merge_request' => $prInfo
@@ -236,11 +237,12 @@ class GitLabGroup extends Controller
         if ($input->getSameBoolOpt(['o', 'open'])) {
             // $output->info('will auto open link on browser');
             AppHelper::openBrowser($link);
+            $output->success('Complete');
         } else {
-            $output->colored("PR Link:\n  " . $link);
+            $output->colored("PR LINK: ");
+            $output->writeln('  ' . $link);
+            $output->colored('Complete, please open the link on browser');
         }
-
-        $output->success('Complete');
     }
 
     /**
@@ -268,8 +270,6 @@ class GitLabGroup extends Controller
     public function linkInfoCommand(Input $input, Output $output): void
     {
         $link = $input->getRequiredArg('link');
-
-        // \var_dump(\urlencode('✓'), $link = \rawurldecode(\rawurlencode($link)));
         $info = (array)parse_url($link);
 
         [$group, $name,] = explode('/', trim($info['path'], '/'), 3);

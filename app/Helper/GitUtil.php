@@ -29,6 +29,27 @@ use function trim;
 class GitUtil
 {
     /**
+     * @param string $str
+     * @return boolean
+     */
+    public static function isFullUrl(string $str): bool
+    {
+        if (strpos($str, 'http:') === 0) {
+            return true;
+        }
+
+        if (strpos($str, 'https:') === 0) {
+            return true;
+        }
+
+        if (strpos($str, 'git@') === 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * @param string $workDir
      *
      * @return string

@@ -12,6 +12,8 @@ namespace Inhere\Kite\Console\Group;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Common\CmdRunner;
+use Inhere\Kite\Common\GitLocal\GitHub;
 
 /**
  * Class GitHubGroup
@@ -30,10 +32,20 @@ class GitHubGroup extends Controller
         return ['gh'];
     }
 
+    protected function cloneConfigure(Input $input): void
+    {
+        $input->bindArguments([
+            'repo' => 0,
+            'name' => 1,
+        ]);
+    }
+
     /**
+     * Clone an github repository to local
+     *
      * @arguments
-     *  repo    The remote git repo URL or repo name
-     *  name    The repo name at local
+     *  repo    The remote git repo URL or repository name
+     *  name    The repository name at local, default is same `repo`
      *
      * @param Input  $input
      * @param Output $output
@@ -41,10 +53,26 @@ class GitHubGroup extends Controller
      * @example
      *  {fullCmd}  php-toolkit/cli-utils
      *  {fullCmd}  php-toolkit/cli-utils my-repo
+     *  {fullCmd}  https://github.com/php-toolkit/cli-utils
      */
     public function cloneCommand(Input $input, Output $output): void
     {
-        $repo = $input->getFirstArg();
-        $name = $input->getSecondArg();
+        $repo = $input->getRequiredArg('repo');
+        $name = $input->getStringArg('name');
+
+        $repoUrl = GitHub::new()->getRepoUrl($repo);
+        if (!$repoUrl) {
+            $output->error("invalid github 'repo' address: $repo");
+            return;
+        }
+
+        $cmd = "git clone $repoUrl";
+        if ($name) {
+            $cmd .= " $name";
+        }
+
+        CmdRunner::new($cmd)->do(true);
+
+        $output->success('Complete');
     }
 }

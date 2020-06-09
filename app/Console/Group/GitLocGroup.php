@@ -18,12 +18,12 @@ use Inhere\Kite\Helper\GitUtil;
 use function sprintf;
 
 /**
- * Class GitGroup
+ * Class GitLocGroup
  * - git:tag:push   add tag and push to remote
  * - git:tag:delete delete the tag on remote
  *
  */
-class GitGroup extends Controller
+class GitLocGroup extends Controller
 {
     protected static $name = 'git';
 
@@ -48,6 +48,29 @@ class GitGroup extends Controller
             ],
             'tagList' => ['tag', 'tl', 'taglist']
         ];
+    }
+
+    /**
+     * Clone an remote git repository to local
+     *
+     * @options
+     *  --gh        Define the remote repository is on github
+     *
+     * @arguments
+     *  repo    The remote git repo URL or repository name
+     *  name    The repository name at local, default is same `repo`
+     *
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @example
+     *  {fullCmd}  php-toolkit/cli-utils --gh
+     *  {fullCmd}  php-toolkit/cli-utils my-repo --gh
+     *  {fullCmd}  https://github.com/php-toolkit/cli-utils
+     */
+    public function cloneCommand(Input $input, Output $output): void
+    {
+        $output->success('TODO');
     }
 
     /**

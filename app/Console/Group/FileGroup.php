@@ -78,6 +78,8 @@ class FileGroup extends Controller
      *  -s, --src  The server address. e.g 127.0.0.1:5577
      *  -d, --dst  The server host address. e.g 127.0.0.1
      *
+     * @param Input  $input
+     * @param Output $output
      */
     public function lnCommand(Input $input, Output $output): void
     {
@@ -85,5 +87,18 @@ class FileGroup extends Controller
 
         Show::success('ddd');
         // $output->success('hello');
+    }
+
+    public function vimCommand(Input $input, Output $output): void
+    {
+        $file = $input->getRequiredArg(0);
+
+        $descriptors = [
+            ['file', '/dev/tty', 'r'],
+            ['file', '/dev/tty', 'w'],
+            ['file', '/dev/tty', 'w']
+        ];
+
+        $process = proc_open("vim $file", $descriptors, $pipes);
     }
 }
