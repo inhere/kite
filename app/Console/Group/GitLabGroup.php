@@ -259,6 +259,9 @@ class GitLabGroup extends Controller
      * @arguments
      * link     Please input an gitlab link
      *
+     * @options
+     *  --config    Convert to config data
+     *
      * @param Input  $input
      * @param Output $output
      */
@@ -280,6 +283,7 @@ class GitLabGroup extends Controller
             if (isset($query['utf8'])) {
                 // $query['utf8'] = '%E2%9C%93'; // ✓
                 unset($query['utf8']);
+                $info['query'] = http_build_query($query, '', '&');
             }
             $info['queryMap'] = $query;
         }
@@ -292,5 +296,12 @@ class GitLabGroup extends Controller
 
         $output->title('link information', ['indent' => 0]);
         $output->json($info);
+
+        if ($input->getBoolOpt('config')) {
+            $pjInfo = [
+                'group' => $group,
+                'name'  => $name,
+            ];
+        }
     }
 }

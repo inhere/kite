@@ -1,3 +1,23 @@
+# php cs fixer
+
+github: [PHP-CS-Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer)
+
+## install
+
+1. install from github release page
+2. install by `brew` on macOS
+
+example:
+
+```bash
+brew install php-cs-fixer
+```
+
+## config
+
+the `.php_cs` examples: 
+
+```php
 <?php
 
 $header = <<<'EOF'
@@ -43,3 +63,14 @@ return PhpCsFixer\Config::create()
                         ->setRules($rules)
                         ->setFinder($finder)
                         ->setUsingCache(false);
+
+```
+
+## usage
+
+usage examples:
+
+```bash
+php-cs-fixer fix
+php-cs-fixer fix ./some/path
+```
