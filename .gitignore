@@ -8,6 +8,8 @@ runtime/
 vendor/
 *.lock
 *.phar
+*.log
+*.txt
 .phpintel/
 .env
 .phpstorm.meta.php

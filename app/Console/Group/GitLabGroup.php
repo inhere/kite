@@ -262,7 +262,7 @@ class GitLabGroup extends Controller
      * link     Please input an gitlab link
      *
      * @options
-     *  --config    Convert to config data
+     *  --config    Convert to config data TODO
      *
      * @param Input  $input
      * @param Output $output
@@ -296,12 +296,5 @@ class GitLabGroup extends Controller
 
         $output->title('link information', ['indent' => 0]);
         $output->json($info);
-
-        if ($input->getBoolOpt('config')) {
-            $pjInfo = [
-                'group' => $group,
-                'name'  => $name,
-            ];
-        }
     }
 }

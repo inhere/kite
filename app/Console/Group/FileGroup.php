@@ -89,9 +89,18 @@ class FileGroup extends Controller
         // $output->success('hello');
     }
 
+    /**
+     * use vim edit an input file
+     *
+     * @arguments
+     *  path  The ls path
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
     public function vimCommand(Input $input, Output $output): void
     {
-        $file = $input->getRequiredArg(0);
+        $file = $input->bindArgument('file', 0)->getRequiredArg('file');
 
         $descriptors = [
             ['file', '/dev/tty', 'r'],
@@ -100,5 +109,20 @@ class FileGroup extends Controller
         ];
 
         $process = proc_open("vim $file", $descriptors, $pipes);
+
+        // \var_dump(proc_get_status($process));
+
+        // if(is_resource($process))
+        while(true){
+            if (proc_get_status($process)['running'] === false){
+                break;
+            }
+        }
+
+        // \var_dump(proc_get_status($process));
+        \proc_close($process);
+
+        // $editor = 'vim';
+        // ProcWrapper::runEditor($editor, $file);
     }
 }
