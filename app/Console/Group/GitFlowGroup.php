@@ -75,6 +75,27 @@ class GitFlowGroup extends Controller
         }
     }
 
+
+    /**
+     * Resolve git conflicts
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function resolveCommand(Input $input, Output $output): void
+    {
+        // curBranch, tgtBranch
+        // git checkout TGT_BRANCH
+        // git pull && git push
+        // git pull main TGT_BRANCH
+        // git merge CUR_BRANCH
+        // resolve conflicts
+        // git add . && git ci
+
+        $output->success('Complete');
+    }
+
+
     /**
      * sync codes from remote main repo
      *

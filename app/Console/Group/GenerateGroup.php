@@ -15,14 +15,18 @@ class GenerateGroup extends Controller
 {
     protected static $name = 'gen';
 
-    protected static $description = 'quick create new project or package or library tool commands';
+    protected static $description = 'quick generate new class or file from template';
 
     public static function aliases(): array
     {
         return ['generate'];
     }
 
-    public function serveCommand(Input $input, Output $output): void
+    /**
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function readmeCommand(Input $input, Output $output): void
     {
         $output->success('Complete');
     }

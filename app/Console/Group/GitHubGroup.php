@@ -32,6 +32,14 @@ class GitHubGroup extends Controller
         return ['gh'];
     }
 
+    public function workflowCommand(): void
+    {
+
+    }
+
+    /**
+     * @param Input $input
+     */
     protected function cloneConfigure(Input $input): void
     {
         $input->bindArguments([

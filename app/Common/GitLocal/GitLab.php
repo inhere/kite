@@ -28,6 +28,11 @@ class GitLab extends AbstractGitLocal
         $this->config = $config;
     }
 
+    public function createPRLink(string $pjName): string
+    {
+
+    }
+
     /**
      * @return array
      */

@@ -2,9 +2,9 @@
 
 namespace Inhere\Kite\Common;
 
-use Inhere\Kite\Helper\SysCmd;
 use RuntimeException;
 use Toolkit\Cli\Color;
+use Toolkit\Sys\Sys;
 use function trim;
 
 /**
@@ -95,9 +95,9 @@ class CmdRunner
         }
 
         // $ret = SysCmd::exec($this->cmd, $this->workDir);
-        $ret = SysCmd::exec2($this->cmd, $this->workDir);
+        $ret = Sys::execute($this->cmd, true, $this->workDir);
 
-        $this->code   = $ret['code'];
+        $this->code   = $ret['status'];
         $this->output = $ret['output'];
 
         // print output

@@ -13,13 +13,11 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CliMarkdown;
-use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\AppHelper;
-use Inhere\Kite\Helper\SysCmd;
 use Inhere\Kite\ManDoc\DocTopic;
 use Inhere\Kite\ManDoc\Document;
 use Toolkit\Cli\Color;
-use Toolkit\Sys\Sys;
+use Toolkit\Sys\Proc\ProcWrapper;
 use function rtrim;
 use function str_replace;
 
@@ -172,15 +170,12 @@ TXT;
      */
     private function editTopic(DocTopic $topic): void
     {
-        $path = $topic->getPath();
-
-        $editor = $this->input->getStringOpt('editor', 'vim');
+        $filepath = $topic->getPath();
+        $editor   = $this->input->getStringOpt('editor', 'vim');
 
         $this->output->title("will use '{$editor}' for edit the document");
-        // CmdRunner::new("$editor $path")->do(true);
-        $ret = SysCmd::exec("$editor $path");
 
-        echo $ret['output'] . \PHP_EOL;
+        ProcWrapper::runEditor($editor, $filepath);
     }
 
     /**
@@ -191,7 +186,7 @@ TXT;
     {
         if (!$this->topName) {
             $info = $man->getTopicsInfo();
-            $this->output->aList($info, 'document topics list on the #' . $nameString);
+            $this->output->aList($info, 'All top-level topics list');
             return;
         }
 

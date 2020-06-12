@@ -23,6 +23,11 @@ abstract class AbstractGitLocal
     protected $host = '';
 
     /**
+     * @var string
+     */
+    protected $workDir = '';
+
+    /**
      * @var array
      */
     protected $config;
@@ -110,5 +115,21 @@ abstract class AbstractGitLocal
     public function setConfig(array $config): void
     {
         $this->config = $config;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWorkDir(): string
+    {
+        return $this->workDir;
+    }
+
+    /**
+     * @param string $workDir
+     */
+    public function setWorkDir(string $workDir): void
+    {
+        $this->workDir = $workDir;
     }
 }

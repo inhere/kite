@@ -117,6 +117,21 @@ class GitLabGroup extends Controller
         $output->success('Complete');
     }
 
+
+    /**
+     * Resolve git conflicts
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function resolveCommand(Input $input, Output $output): void
+    {
+        // ...
+        // kite gl:pr
+
+        $output->success('Complete');
+    }
+
     /**
      * Configure for the `linkInfoCommand`
      *

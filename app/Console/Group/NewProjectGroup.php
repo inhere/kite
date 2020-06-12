@@ -29,7 +29,7 @@ class NewProjectGroup extends Controller
                 'pro', 'app', 'application'
             ],
             'package' => [
-                'pkg', 'lib', 'library'
+                'pkg', 'lib', 'cpt', 'library'
             ],
         ];
     }
