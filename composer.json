@@ -17,7 +17,7 @@
         "inhere/console": "dev-master",
         "inhere/sroute": "dev-master",
         "cebe/markdown": "^1.2",
-        "php-comp/http-client": "^1.0"
+        "php-comp/http-client": "dev-master"
     },
     "autoload": {
         "psr-4": {

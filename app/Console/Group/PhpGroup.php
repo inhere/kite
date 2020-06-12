@@ -10,8 +10,12 @@
 namespace Inhere\Kite\Console\Group;
 
 use Inhere\Console\Controller;
+use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Common\CmdRunner;
+use Inhere\Kite\Common\GitLocal\GitHub;
+use Toolkit\Stdlib\Json;
 use Toolkit\Sys\Sys;
 use function is_dir;
 
@@ -32,6 +36,7 @@ class PhpGroup extends Controller
         return [
             'csfix'  => 'csFix',
             'cs-fix' => 'csFix',
+            'ghpkg'  => 'ghPkg'
         ];
     }
 
@@ -85,8 +90,71 @@ class PhpGroup extends Controller
      *  -H,--host  The server host address. e.g 127.0.0.1
      *  -p,--port  The server host address. e.g 5577
      */
-    public function sync2Command()
+    public function sync2Command(): void
     {
         echo "string\n";
+    }
+
+    /**
+     * Search php package from packagist.org
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function pkgSearch(Input $input, Output $output): void
+    {
+
+    }
+
+    /**
+     * @param Input $input
+     */
+    protected function ghPkgConfigure(Input $input): void
+    {
+        $input->bindArguments(['pkgName' => 0]);
+    }
+
+    /**
+     * Replace the local package use github repository codes
+     *
+     * @arguments
+     *  pkgName     The package name. eg: inhere/console
+     *
+     * @param Input  $input
+     * @param Output $output
+     * @example
+     *  {binWithCmd} inhere/console
+     */
+    public function ghPkgCommand(Input $input, Output $output): void
+    {
+        $pkgName = $input->getRequiredArg('pkgName');
+        $pkgPath = 'vendor/' . $pkgName;
+
+        if (!is_dir($pkgPath)) {
+            throw new PromptException("package path '{$pkgPath}' is not exists");
+        }
+
+        $composerJson = $pkgPath . '/composer.json';
+        $composerInfo = Json::decodeFile($composerJson, true);
+
+        $homepage = GitHub::GITHUB_HOST . "/$pkgName";
+        if (!empty($composerInfo['homepage'])) {
+            $homepage = $composerInfo['homepage'];
+        }
+
+        $output->aList([
+            'pkgName' => $pkgName,
+            'pkgPath' => $pkgPath,
+            'pkgJson' => $composerJson,
+        ], 'information', ['ucFirst' => false]);
+
+        if ($this->unConfirm('continue')) {
+            $output->colored('GoodBye');
+            return;
+        }
+
+        CmdRunner::new('rm -rf ' . $pkgPath)
+                 ->do(true)
+                 ->afterOkRun("git clone $homepage $pkgPath");
     }
 }

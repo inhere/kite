@@ -31,6 +31,16 @@ class AppHelper
     }
 
     /**
+     * @param string $pkgName 'inhere/console'
+     *
+     * @return bool
+     */
+    public static function isPhpPkgName(string $pkgName): bool
+    {
+
+    }
+
+    /**
      * @param string $tag
      *
      * @return string

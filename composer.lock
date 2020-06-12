@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "95fe6450042b0e92e0109737cd27c21d",
+    "content-hash": "1dd190d9ef3e9741453bb7ac58559209",
     "packages": [
         {
             "name": "cebe/markdown",
@@ -78,12 +78,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/inhere/php-console.git",
-                "reference": "281dea03b4b370ca5130004668b343f3349685a9"
+                "reference": "0b65cccf27b6b79be96246fd145c585a255ef7e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/inhere/php-console/zipball/281dea03b4b370ca5130004668b343f3349685a9",
-                "reference": "281dea03b4b370ca5130004668b343f3349685a9",
+                "url": "https://api.github.com/repos/inhere/php-console/zipball/0b65cccf27b6b79be96246fd145c585a255ef7e3",
+                "reference": "0b65cccf27b6b79be96246fd145c585a255ef7e3",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -95,8 +95,7 @@
             "require": {
                 "php": ">7.1.0",
                 "toolkit/cli-utils": "~1.0",
-                "toolkit/php-utils": "~1.0",
-                "toolkit/str-utils": "~1.0",
+                "toolkit/stdlib": "~1.0",
                 "toolkit/sys-utils": "~1.0"
             },
             "require-dev": {
@@ -136,7 +135,7 @@
                 "console-color",
                 "phar"
             ],
-            "time": "2020-05-03T04:10:52+00:00"
+            "time": "2020-06-11T13:13:40+00:00"
         },
         {
             "name": "inhere/sroute",
@@ -199,16 +198,16 @@
         },
         {
             "name": "php-comp/http-client",
-            "version": "v1.0.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-comp/http-client.git",
-                "reference": "edc27580b394f1f1a4f6fd44093a24f5b1e164ce"
+                "reference": "2de69cd430aca11c1cabbc398509b92e3b9fcaf4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-comp/http-client/zipball/edc27580b394f1f1a4f6fd44093a24f5b1e164ce",
-                "reference": "edc27580b394f1f1a4f6fd44093a24f5b1e164ce",
+                "url": "https://api.github.com/repos/php-comp/http-client/zipball/2de69cd430aca11c1cabbc398509b92e3b9fcaf4",
+                "reference": "2de69cd430aca11c1cabbc398509b92e3b9fcaf4",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -249,7 +248,7 @@
                 "library",
                 "tool"
             ],
-            "time": "2018-11-25T07:21:45+00:00"
+            "time": "2019-01-21T16:27:20+00:00"
         },
         {
             "name": "psr/http-client",
@@ -364,16 +363,16 @@
         },
         {
             "name": "toolkit/cli-utils",
-            "version": "v1.1.1",
+            "version": "v1.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/cli-utils.git",
-                "reference": "4ec2f5bb0f44c727dae9f6e1ee14b49c53be0908"
+                "reference": "919e9868edfd0203cba26b801870ebeaac15218c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/cli-utils/zipball/4ec2f5bb0f44c727dae9f6e1ee14b49c53be0908",
-                "reference": "4ec2f5bb0f44c727dae9f6e1ee14b49c53be0908",
+                "url": "https://api.github.com/repos/php-toolkit/cli-utils/zipball/919e9868edfd0203cba26b801870ebeaac15218c",
+                "reference": "919e9868edfd0203cba26b801870ebeaac15218c",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -389,8 +388,7 @@
                 "phpunit/phpunit": "^7.5"
             },
             "suggest": {
-                "inhere/console": "a lightweight php console application library.",
-                "inhere/php-validate": "Very lightweight data validate tool"
+                "inhere/console": "a lightweight php console application library."
             },
             "type": "library",
             "autoload": {
@@ -416,73 +414,20 @@
                 "php",
                 "tool"
             ],
-            "time": "2020-01-04T09:50:38+00:00"
+            "time": "2020-06-06T08:02:53+00:00"
         },
         {
-            "name": "toolkit/php-utils",
-            "version": "v1.0.4",
+            "name": "toolkit/stdlib",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/php-toolkit/php-utils.git",
-                "reference": "6e4b249b1c3cae36e19db466ddf5c7dd2c985904"
+                "url": "https://github.com/php-toolkit/stdlib.git",
+                "reference": "e8c65f7d268c8010c254fc68d0c5274c0ff4e82c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/php-utils/zipball/6e4b249b1c3cae36e19db466ddf5c7dd2c985904",
-                "reference": "6e4b249b1c3cae36e19db466ddf5c7dd2c985904",
-                "shasum": "",
-                "mirrors": [
-                    {
-                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
-                        "preferred": true
-                    }
-                ]
-            },
-            "require": {
-                "php": ">7.1.0"
-            },
-            "suggest": {
-                "inhere/console": "a lightweight php console application library.",
-                "inhere/php-validate": "Very lightweight data validate tool"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Toolkit\\PhpUtil\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "inhere",
-                    "email": "in.798@qq.com",
-                    "homepage": "http://www.yzone.net/"
-                }
-            ],
-            "description": "some php tool library of the php",
-            "homepage": "https://github.com/php-toolkit/php-utils",
-            "keywords": [
-                "library",
-                "php",
-                "tool"
-            ],
-            "time": "2019-02-02T16:35:42+00:00"
-        },
-        {
-            "name": "toolkit/str-utils",
-            "version": "v1.0.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-toolkit/str-utils.git",
-                "reference": "2e0b081c7c86e4fb92d1dca63bd8c0449cb6b278"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/str-utils/zipball/2e0b081c7c86e4fb92d1dca63bd8c0449cb6b278",
-                "reference": "2e0b081c7c86e4fb92d1dca63bd8c0449cb6b278",
+                "url": "https://api.github.com/repos/php-toolkit/stdlib/zipball/e8c65f7d268c8010c254fc68d0c5274c0ff4e82c",
+                "reference": "e8c65f7d268c8010c254fc68d0c5274c0ff4e82c",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -501,7 +446,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Toolkit\\StrUtil\\": "src/"
+                    "Toolkit\\Stdlib\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -515,28 +460,30 @@
                     "homepage": "http://www.yzone.net/"
                 }
             ],
-            "description": "some string tool library of the php",
-            "homepage": "https://github.com/php-toolkit/str-utils",
+            "description": "some stdlib tool library of the php",
+            "homepage": "https://github.com/php-toolkit/stdlib",
             "keywords": [
+                "array",
                 "library",
+                "object",
                 "php",
                 "string",
                 "tool"
             ],
-            "time": "2019-02-27T15:38:11+00:00"
+            "time": "2020-06-11T11:45:16+00:00"
         },
         {
             "name": "toolkit/sys-utils",
-            "version": "v1.0.6",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/sys-utils.git",
-                "reference": "cf6ca81efed472ca4457e6f4325fe00398d2d0ca"
+                "reference": "bcb82d87e2a22e2d1000210b39a0b3f111bb1daf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/sys-utils/zipball/cf6ca81efed472ca4457e6f4325fe00398d2d0ca",
-                "reference": "cf6ca81efed472ca4457e6f4325fe00398d2d0ca",
+                "url": "https://api.github.com/repos/php-toolkit/sys-utils/zipball/bcb82d87e2a22e2d1000210b39a0b3f111bb1daf",
+                "reference": "bcb82d87e2a22e2d1000210b39a0b3f111bb1daf",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -546,7 +493,8 @@
                 ]
             },
             "require": {
-                "php": ">7.1.0"
+                "php": ">7.1.0",
+                "toolkit/stdlib": "^1.0"
             },
             "suggest": {
                 "inhere/console": "a lightweight php console application library.",
@@ -576,7 +524,7 @@
                 "php",
                 "tool"
             ],
-            "time": "2019-02-02T16:24:48+00:00"
+            "time": "2020-06-11T10:05:25+00:00"
         }
     ],
     "packages-dev": [],
@@ -584,7 +532,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "inhere/console": 20,
-        "inhere/sroute": 20
+        "inhere/sroute": 20,
+        "php-comp/http-client": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
