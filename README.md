@@ -64,8 +64,10 @@ chmod a+x bin/kite
 ## Build Phar
 
 ```bash
-php -d phar.readonly=0 bin/kite phar:pack -o=kite.phar
+php -d phar.readonly=0 bin/kite phar:pack -o kite.phar
 ```
+
+![](resource/images/build-phar.png)
 
 ## Uninstall
 
@@ -76,6 +78,7 @@ rm -rf ~/.kite
 
 ## Dep Packages
 
-- https://github.com/php-toolkit/cli-utils
 - https://github.com/inhere/php-console
-- https://github.com/swoft-cloud/swoft-stdlib
+- https://github.com/php-toolkit/cli-utils
+- https://github.com/php-toolkit/stdlib
+

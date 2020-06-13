@@ -33,7 +33,7 @@ ln -s $PWD/bin/kite /usr/local/bin/kite
 chmod a+x bin/kite
 ```
 
-## Usage
+## 使用
 
 ```bash
 kite
@@ -41,9 +41,9 @@ kite
 
 ![](resource/images/kite-help.png)
 
-## Update
+## 更新
 
-### Builtin command
+### 内置命令
 
 Use builtin command for update tool to latest
 
@@ -51,7 +51,7 @@ Use builtin command for update tool to latest
 kite upself
 ```
 
-### Manual update
+### 手动更新
 
 ```bash
 cd ~/.kite
@@ -59,11 +59,13 @@ git pull
 chmod a+x bin/kite
 ```
 
-## Build Phar
+## 构建Phar包
 
 ```bash
-php -d phar.readonly=0 /bin/kite phar:pack -o=kite.phar
+php -d phar.readonly=0 bin/kite phar:pack
 ```
+
+![](resource/images/build-phar.png)
 
 ## Uninstall
 
@@ -74,6 +76,6 @@ rm -rf ~/.kite
 
 ## Dep Packages
 
-- https://github.com/php-toolkit/cli-utils
 - https://github.com/inhere/php-console
-- https://github.com/swoft-cloud/swoft-stdlib
+- https://github.com/php-toolkit/cli-utils
+- https://github.com/php-toolkit/stdlib
