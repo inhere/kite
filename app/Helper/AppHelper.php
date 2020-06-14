@@ -64,7 +64,7 @@ class AppHelper
      */
     public static function getLangFromENV(string $default = ''): string
     {
-        $value = getenv('LC_CTYPE');
+        $value = (string)getenv('LC_CTYPE');
 
         // zh_CN.UTF-8
         if (strpos($value, '.') > 0) {

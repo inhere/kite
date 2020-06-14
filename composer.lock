@@ -78,12 +78,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/inhere/php-console.git",
-                "reference": "0b65cccf27b6b79be96246fd145c585a255ef7e3"
+                "reference": "a47bc1d82411006cbd4924b7480fbd4d2e4c466c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/inhere/php-console/zipball/0b65cccf27b6b79be96246fd145c585a255ef7e3",
-                "reference": "0b65cccf27b6b79be96246fd145c585a255ef7e3",
+                "url": "https://api.github.com/repos/inhere/php-console/zipball/a47bc1d82411006cbd4924b7480fbd4d2e4c466c",
+                "reference": "a47bc1d82411006cbd4924b7480fbd4d2e4c466c",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -135,7 +135,7 @@
                 "console-color",
                 "phar"
             ],
-            "time": "2020-06-11T13:13:40+00:00"
+            "time": "2020-06-13T03:38:01+00:00"
         },
         {
             "name": "inhere/sroute",
