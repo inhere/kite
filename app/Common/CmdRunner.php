@@ -17,7 +17,7 @@ class CmdRunner
     /**
      * @var string
      */
-    private $cmd;
+    private $command;
 
     /**
      * @var string
@@ -35,6 +35,23 @@ class CmdRunner
     private $output = '';
 
     /**
+     * [
+     *  'echo hi',
+     *  'do something'
+     * ]
+     *
+     * @var array
+     */
+    private $commands = [];
+
+    /**
+     * Ignore check prevision return code
+     *
+     * @var bool
+     */
+    private $ignoreCode = false;
+
+    /**
      * @var bool
      */
     private $printCmd = true;
@@ -50,7 +67,7 @@ class CmdRunner
      *
      * @return static
      */
-    public static function new(string $cmd, string $workDir = ''): self
+    public static function new(string $cmd = '', string $workDir = ''): self
     {
         return new self($cmd, $workDir);
     }
@@ -58,13 +75,34 @@ class CmdRunner
     /**
      * Class constructor.
      *
-     * @param string $cmd
+     * @param string $command
      * @param string $workDir
      */
-    public function __construct(string $cmd, string $workDir = '')
+    public function __construct(string $command = '', string $workDir = '')
     {
-        $this->cmd     = $cmd;
+        $this->command = $command;
         $this->workDir = $workDir;
+    }
+
+    /**
+     * @param string $workDir
+     *
+     * @return $this
+     */
+    public function chDir(string $workDir): self
+    {
+        return $this->changeDir($workDir);
+    }
+
+    /**
+     * @param string $workDir
+     *
+     * @return $this
+     */
+    public function changeDir(string $workDir): self
+    {
+        $this->workDir = $workDir;
+        return $this;
     }
 
     /**
@@ -86,27 +124,53 @@ class CmdRunner
      */
     public function do(bool $printOutput = false): self
     {
-        if (!$this->cmd) {
+        $this->printOutput = $printOutput;
+        $this->execute($this->command);
+
+        return $this;
+    }
+
+    /**
+     * @param string $command
+     */
+    protected function execute(string $command): void
+    {
+        if (!$command) {
             throw new RuntimeException('The execute command cannot be empty');
         }
 
         if ($this->printCmd) {
-            Color::println("> {$this->cmd}", 'yellow');
+            Color::println("> {$command}", 'yellow');
         }
 
         // $ret = SysCmd::exec($this->cmd, $this->workDir);
-        $ret = Sys::execute($this->cmd, true, $this->workDir);
+        $ret = Sys::execute($command, true, $this->workDir);
 
         $this->code   = $ret['status'];
         $this->output = $ret['output'];
 
         // print output
-        $this->printOutput = $printOutput;
-        if ($printOutput && $ret['output']) {
+        if ($this->printOutput && $ret['output']) {
             echo $ret['output'] . "\n";
         }
 
+    }
+
+    /**
+     * @param array $commands
+     *
+     * @return $this
+     */
+    public function batch(array $commands): self
+    {
+        $this->commands = $commands;
+
         return $this;
+    }
+
+    public function run(): self
+    {
+
     }
 
     /**
@@ -116,7 +180,7 @@ class CmdRunner
      */
     public function afterRun(string $cmd): self
     {
-        return $this->setCmd($cmd)->do($this->printOutput);
+        return $this->setCommand($cmd)->do($this->printOutput);
     }
 
     /**
@@ -129,7 +193,7 @@ class CmdRunner
     {
         // only run on return TRUE
         if (true === $whereFunc()) {
-            $this->setCmd($cmd)->do($this->printOutput);
+            $this->setCommand($cmd)->do($this->printOutput);
         }
 
         return $this;
@@ -151,7 +215,7 @@ class CmdRunner
             $this->workDir = $workDir;
         }
 
-        $this->cmd = $cmd;
+        $this->command = $cmd;
 
         return $this->do($this->printOutput);
     }
@@ -159,19 +223,19 @@ class CmdRunner
     /**
      * @return string
      */
-    public function getCmd(): string
+    public function getCommand(): string
     {
-        return $this->cmd;
+        return $this->command;
     }
 
     /**
-     * @param string $cmd
+     * @param string $command
      *
      * @return CmdRunner
      */
-    public function setCmd(string $cmd): self
+    public function setCommand(string $command): self
     {
-        $this->cmd = $cmd;
+        $this->command = $command;
         return $this;
     }
 
@@ -242,6 +306,44 @@ class CmdRunner
     public function setPrintOutput(bool $printOutput): self
     {
         $this->printOutput = $printOutput;
+        return $this;
+    }
+
+    /**
+     * @param bool $ignoreCode
+     *
+     * @return self
+     */
+    public function setIgnoreCode(bool $ignoreCode): self
+    {
+        $this->ignoreCode = $ignoreCode;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIgnoreCode(): bool
+    {
+        return $this->ignoreCode;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommands(): array
+    {
+        return $this->commands;
+    }
+
+    /**
+     * @param array $commands
+     *
+     * @return CmdRunner
+     */
+    public function setCommands(array $commands): CmdRunner
+    {
+        $this->commands = $commands;
         return $this;
     }
 }

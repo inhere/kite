@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Console\Group;
+namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;

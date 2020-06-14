@@ -12,7 +12,7 @@ use Inhere\Kite\Console\Application;
 
 /** @var Application $app */
 $app->registerCommands('Inhere\\Kite\\Console\\Command', __DIR__ . '/Command');
-$app->registerGroups('Inhere\\Kite\\Console\\Group', __DIR__ . '/Group');
+$app->registerGroups('Inhere\\Kite\\Console\\Controller', __DIR__ . '/Controller');
 
 // internal group
 $app->addController(PharController::class);

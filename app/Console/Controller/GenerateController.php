@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Console\Group;
+namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
@@ -11,7 +11,7 @@ use Inhere\Console\IO\Output;
  *
  * @package Inhere\Kite\Console\Group
  */
-class GenerateGroup extends Controller
+class GenerateController extends Controller
 {
     protected static $name = 'gen';
 

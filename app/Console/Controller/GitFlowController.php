@@ -7,7 +7,7 @@
  * @license  MIT
  */
 
-namespace Inhere\Kite\Console\Group;
+namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
@@ -20,7 +20,7 @@ use function implode;
 /**
  * Class GitFlowGroup
  */
-class GitFlowGroup extends Controller
+class GitFlowController extends Controller
 {
     protected static $name = 'gitflow';
 

@@ -7,7 +7,7 @@
  * @license  MIT
  */
 
-namespace Inhere\Kite\Console\Group;
+namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
@@ -25,7 +25,7 @@ use function is_dir;
  * - php:lint delete the tag on remote
  *
  */
-class PhpGroup extends Controller
+class PhpController extends Controller
 {
     protected static $name = 'php';
 
@@ -146,10 +146,11 @@ class PhpGroup extends Controller
             'pkgName' => $pkgName,
             'pkgPath' => $pkgPath,
             'pkgJson' => $composerJson,
+            'github'  => $homepage,
         ], 'information', ['ucFirst' => false]);
 
         if ($this->unConfirm('continue')) {
-            $output->colored('GoodBye');
+            $output->colored('  GoodBye');
             return;
         }
 

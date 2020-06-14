@@ -7,7 +7,7 @@
  * @license  MIT
  */
 
-namespace Inhere\Kite\Console\Group;
+namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
@@ -48,6 +48,16 @@ class GitLocGroup extends Controller
             ],
             'tagList' => ['tag', 'tl', 'taglist']
         ];
+    }
+
+    public function statusCommand(): void
+    {
+        $commands = [
+            'echo hi',
+            'git status'
+        ];
+
+        CmdRunner::new()->batch($commands)->run();
     }
 
     /**

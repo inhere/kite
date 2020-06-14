@@ -7,7 +7,7 @@
  * @license  MIT
  */
 
-namespace Inhere\Kite\Console\Group;
+namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;

@@ -7,7 +7,7 @@
  * @license  MIT
  */
 
-namespace Inhere\Kite\Console\Group;
+namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
@@ -15,12 +15,13 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Show;
 use function basename;
 use function glob;
+use function preg_match;
 use const GLOB_MARK;
 
 /**
- * Class FileGroup
+ * Class FileController
  */
-class FileGroup extends Controller
+class FileController extends Controller
 {
     protected static $name = 'file';
 
@@ -31,8 +32,16 @@ class FileGroup extends Controller
         return ['fs'];
     }
 
+    protected static function commandAliases(): array
+    {
+        return [
+            'ls' => 'list',
+            'rn' => 'rename',
+        ];
+    }
+
     /**
-     * ls files
+     * list files like linux command `ls`
      *
      * @options
      *  --file          Only display files
@@ -47,7 +56,7 @@ class FileGroup extends Controller
      * @param Input  $input
      * @param Output $output
      */
-    public function lsCommand(Input $input, Output $output): void
+    public function listCommand(Input $input, Output $output): void
     {
         $path = $input->getStringArg(0);
 
@@ -63,7 +72,7 @@ class FileGroup extends Controller
             }
 
             // filter path
-            if ($filter && \preg_match("#$filter#", $line) === false) {
+            if ($filter && preg_match("#$filter#", $line) === false) {
                 continue;
             }
 
@@ -109,7 +118,6 @@ class FileGroup extends Controller
         ];
 
         $process = proc_open("vim $file", $descriptors, $pipes);
-
         // \var_dump(proc_get_status($process));
 
         // if(is_resource($process))
@@ -121,8 +129,19 @@ class FileGroup extends Controller
 
         // \var_dump(proc_get_status($process));
         \proc_close($process);
+    }
 
-        // $editor = 'vim';
-        // ProcWrapper::runEditor($editor, $file);
+    /**
+     * @options
+     *  -d, --dir STRING    The files directory for rename.
+     *  --driver STRING     The path match driver.
+     *                      allow: fn - fnmatch, reg - preg_match. (default: <cyan>fn</cyan>)
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function renameCommand(Input $input, Output $output): void
+    {
+        $output->success('hello');
     }
 }
