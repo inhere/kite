@@ -130,6 +130,11 @@ TXT;
 
         $topic = $man->findTopic($this->topName, $this->subNames);
         if (!$topic) {
+            if ($input->getBoolOpt('create')) {
+                $this->createTopic($output);
+                return;
+            }
+
             $output->error('The topic is not found! #' . $nameString);
             return;
         }
@@ -158,11 +163,11 @@ TXT;
     }
 
     /**
-     *
+     * @param Output $output
      */
-    private function createTopic(): void
+    private function createTopic(Output $output): void
     {
-
+        $output->notice('TODO');
     }
 
     /**

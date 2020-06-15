@@ -149,7 +149,7 @@ class GitLabController extends Controller
      *  -s, --source    The source branch
      *  -t, --target    The target branch
      *  -o, --open      Open the generated PR link on browser
-     *      --sync      The target branch will same source branch
+     *      --direct    The PR is from fork to main repository
      *
      * @argument
      *  project   The project key in 'gitlab' config. eg: group-name, name
@@ -158,10 +158,10 @@ class GitLabController extends Controller
      * @param Output $output
      *
      * @example
-     *  {binWithCmd} -s 4_16 -t qa          Will generate PR link for fork 'PREFIX_4_16' to main 'qa'
-     *  {binWithCmd} -t qa                  Will generate PR link for fork 'HEAD_BRANCH' to main 'qa'
-     *  {binWithCmd} -s 4_16 --sync         Will generate PR link for fork 'PREFIX_4_16' to main 'PREFIX_4_16'
-     *  {binWithCmd} --sync                 Will generate PR link for fork 'HEAD_BRANCH' to main 'HEAD_BRANCH'
+     *  {binWithCmd}                       Will generate PR link for fork 'HEAD_BRANCH' to main 'HEAD_BRANCH'
+     *  {binWithCmd} -s 4_16 -t qa         Will generate PR link for main 'PREFIX_4_16' to main 'qa'
+     *  {binWithCmd} -t qa                 Will generate PR link for main 'HEAD_BRANCH' to main 'qa'
+     *  {binWithCmd} -t qa  --direct       Will generate PR link for fork 'HEAD_BRANCH' to main 'qa'
      */
     public function prLinkCommand(Input $input, Output $output): void
     {
@@ -222,7 +222,8 @@ class GitLabController extends Controller
         }
 
         // Is sync to remote
-        if ($srcBranch === $tgtBranch) {
+        $isDirect = $input->getBoolOpt('direct');
+        if ($isDirect || $srcBranch === $tgtBranch) {
             $group = $pjInfo['forkGroup'] ?? $this->config['defaultForkGroup'];
         } else {
             $srcPjId = $tgtPjId;

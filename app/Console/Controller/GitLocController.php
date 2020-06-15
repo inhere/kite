@@ -119,7 +119,7 @@ class GitLocController extends Controller
 
         if ($nextTag) {
             $title   = "<info>The next tag version</info>: <b>%s</b> (current: {$tagName})";
-            $tagName = $this->buildNextTag($tagName);
+            $tagName = GitUtil::buildNextTag($tagName);
         }
 
         if ($onlyTag) {
@@ -128,23 +128,6 @@ class GitLocController extends Controller
         }
 
         $output->printf($title, $tagName);
-    }
-
-    /**
-     * Get next tag version. eg: v2.0.3 => v2.0.4
-     *
-     * @param string $tagName
-     *
-     * @return string
-     */
-    private function buildNextTag(string $tagName): string
-    {
-        $nodes = explode('.', $tagName);
-
-        $lastNum = array_pop($nodes);
-        $nodes[] = (int)$lastNum + 1;
-
-        return implode('.', $nodes);
     }
 
     /**
@@ -197,7 +180,7 @@ class GitLocController extends Controller
                 return;
             }
 
-            $tag = $this->buildNextTag($lTag);
+            $tag = GitUtil::buildNextTag($lTag);
         } else {
             $tag = $input->getSameOpt(['v', 'version'], '');
             if (!$tag) {

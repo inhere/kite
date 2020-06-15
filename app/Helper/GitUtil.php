@@ -13,7 +13,9 @@ use Inhere\Kite\Common\CmdRunner;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Sys;
 use function array_filter;
+use function array_pop;
 use function explode;
+use function implode;
 use function sprintf;
 use function str_replace;
 use function trim;
@@ -144,6 +146,23 @@ class GitUtil
         }
 
         return trim($tagName);
+    }
+
+    /**
+     * Get next tag version. eg: v2.0.3 => v2.0.4
+     *
+     * @param string $tagName
+     *
+     * @return string
+     */
+    public static function buildNextTag(string $tagName): string
+    {
+        $nodes = explode('.', $tagName);
+
+        $lastNum = array_pop($nodes);
+        $nodes[] = (int)$lastNum + 1;
+
+        return implode('.', $nodes);
     }
 
     /**
