@@ -16,7 +16,7 @@ use Inhere\Console\IO\Output;
 /**
  * Class SnippetGroup
  */
-class SnippetGroup extends Controller
+class SnippetController extends Controller
 {
     protected static $name = 'snippet';
 

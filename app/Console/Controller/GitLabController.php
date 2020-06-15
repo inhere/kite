@@ -30,7 +30,7 @@ use function trim;
 /**
  * Class GitLabGroup
  */
-class GitLabGroup extends Controller
+class GitLabController extends Controller
 {
     protected static $name = 'gitlab';
 

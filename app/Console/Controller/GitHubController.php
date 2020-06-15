@@ -18,7 +18,7 @@ use Inhere\Kite\Common\GitLocal\GitHub;
 /**
  * Class GitHubGroup
  */
-class GitHubGroup extends Controller
+class GitHubController extends Controller
 {
     protected static $name = 'github';
 
@@ -32,9 +32,40 @@ class GitHubGroup extends Controller
         return ['gh'];
     }
 
-    public function workflowCommand(): void
+    protected static function commandAliases(): array
     {
+        return [
+            'wf'  => 'workflow',
+            'rls' => 'release',
+        ];
+    }
 
+    /**
+     * Release new version and push to the remote github repos
+     *
+     * @options
+     *  -b, --body          The body contents for new release. allow markdown text
+     *  -m, --message       The title message for new release
+     *  -v, --version       The new tag version. e.g: v2.0.4
+     *      --dry-run       Dont real send git tag and push command
+     *      --last          Use the latest tag for new release
+     *      --next          Auto calc next version for new release
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function releaseCommand(Input $input, Output $output): void
+    {
+        $output->success('Complete');
+    }
+
+    /**
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function workflowCommand(Input $input, Output $output): void
+    {
+        $output->success('Complete');
     }
 
     /**

@@ -23,7 +23,7 @@ use function sprintf;
  * - git:tag:delete delete the tag on remote
  *
  */
-class GitLocGroup extends Controller
+class GitLocController extends Controller
 {
     protected static $name = 'git';
 
