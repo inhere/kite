@@ -12,12 +12,16 @@ namespace Inhere\Kite\Console\Command;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Console\Util\Helper;
 use Inhere\Kite\Common\CliMarkdown;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\ManDoc\DocTopic;
 use Inhere\Kite\ManDoc\Document;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Proc\ProcWrapper;
+use function array_pop;
+use function dirname;
+use function implode;
 use function rtrim;
 use function str_replace;
 
@@ -131,7 +135,7 @@ TXT;
         $topic = $man->findTopic($this->topName, $this->subNames);
         if (!$topic) {
             if ($input->getBoolOpt('create')) {
-                $this->createTopic($output);
+                $this->createTopic($man, $output, $nameString);
                 return;
             }
 
@@ -163,11 +167,32 @@ TXT;
     }
 
     /**
-     * @param Output $output
+     * @param Document $doc
+     * @param Output   $output
      */
-    private function createTopic(Output $output): void
+    private function createTopic(Document $doc, Output $output, string $nameString): void
     {
-        $output->notice('TODO');
+        $path = $this->topName;
+        if ($this->subNames) {
+            $path .= '/' . implode('/', $this->subNames);
+        }
+
+        $realPaths = $doc->getRealPaths();
+        $lastPath  = array_pop($realPaths);
+        $filepath  = $lastPath . '/' . $path . Document::EXT;
+
+        $output->info('will create document #' . $nameString);
+        $output->aList([
+            'topic' => $nameString,
+            'file'  => $filepath,
+        ], 'document info', ['ucFirst' => false]);
+
+        Helper::mkdir(dirname($filepath), 0755);
+
+        $editor = $this->input->getStringOpt('editor', 'vim');
+        ProcWrapper::runEditor($editor, $filepath);
+
+        $output->success('new document is created');
     }
 
     /**
@@ -181,6 +206,8 @@ TXT;
         $this->output->title("will use '{$editor}' for edit the document");
 
         ProcWrapper::runEditor($editor, $filepath);
+
+        $this->output->success('the document is changed');
     }
 
     /**
@@ -215,12 +242,15 @@ TXT;
             return;
         }
 
+        // is topic dir.
         $topics = $topic->getChildsInfo();
+        $default = $topic->getDefault();
+
         $info   = [
             'metadata' => [
                 'name' => $topic->getName(),
                 'node' => '#' . $nameString,
-                'file' => $topic->getPath(),
+                'file' => $default ? $default->getPath() : 'No default file',
             ],
             'topics'   => $topics,
         ];

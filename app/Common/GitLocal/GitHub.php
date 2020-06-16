@@ -13,6 +13,40 @@ use RuntimeException;
 class GitHub extends AbstractGitLocal
 {
     /**
+     * @var array
+     */
+    private $projects;
+
+    /**
+     * current project owner/group name
+     *
+     * @var string
+     */
+    private $curOwner = '';
+
+    /**
+     * current project name
+     *
+     * @var string
+     */
+    private $curPName = '';
+
+    /**
+     * @var string
+     */
+    private $curBranch = '';
+
+    /**
+     * @var string
+     */
+    private $srcBranch = '';
+
+    /**
+     * @var string
+     */
+    private $dstBranch = '';
+
+    /**
      * Class constructor.
      *
      * @param array $config
@@ -25,10 +59,20 @@ class GitHub extends AbstractGitLocal
     }
 
     /**
+     * @param string $owner
+     * @param string $pName
+     */
+    public function setCurrent(string $owner, string $pName): void
+    {
+        $this->curOwner = $owner;
+        $this->curPName = $pName;
+    }
+
+    /**
      * @param string $host
      */
     public function setHost(string $host): void
     {
-        throw new RuntimeException('The host is fixed for github, cannot change it.');
+        throw new RuntimeException('The github host is fixed, cannot change it.');
     }
 }

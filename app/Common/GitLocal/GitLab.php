@@ -15,6 +15,26 @@ class GitLab extends AbstractGitLocal
     private $projects;
 
     /**
+     * @var string
+     */
+    private $curPjName = '';
+
+    /**
+     * @var string
+     */
+    private $curBranch = '';
+
+    /**
+     * @var string
+     */
+    private $srcBranch = '';
+
+    /**
+     * @var string
+     */
+    private $dstBranch = '';
+
+    /**
      * Class constructor.
      *
      * @param array $config
@@ -28,9 +48,9 @@ class GitLab extends AbstractGitLocal
         $this->config = $config;
     }
 
-    public function createPRLink(string $pjName): string
+    public function createPRLink(string $srcBranch, string $dstBranch, bool $direct = false): string
     {
-
+        return '';
     }
 
     /**
@@ -49,4 +69,19 @@ class GitLab extends AbstractGitLocal
         $this->projects = $projects;
     }
 
+    /**
+     * @return string
+     */
+    public function getCurPjName(): string
+    {
+        return $this->curPjName;
+    }
+
+    /**
+     * @param string $curPjName
+     */
+    public function setCurPjName(string $curPjName): void
+    {
+        $this->curPjName = $curPjName;
+    }
 }

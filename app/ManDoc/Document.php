@@ -18,6 +18,7 @@ class Document
 {
     public const EXT = '.md';
 
+    public const DEF_EDITOR = 'vim';
     public const DEF_TOPIC = 'common';
     public const DEF_LANG = 'en';
 
