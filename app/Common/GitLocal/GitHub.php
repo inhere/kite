@@ -46,14 +46,9 @@ class GitHub extends AbstractGitLocal
      */
     private $dstBranch = '';
 
-    /**
-     * Class constructor.
-     *
-     * @param array $config
-     */
-    public function __construct(array $config = [])
+    protected function init(array $config): void
     {
-        parent::__construct($config);
+        parent::init($config);
 
         $this->host = self::GITHUB_HOST;
     }

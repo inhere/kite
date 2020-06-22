@@ -51,6 +51,8 @@ class PhpController extends Controller
      *
      * @param Input  $input
      * @param Output $output
+     * @example
+     *  {binWithCmd} src/rpc-client
      */
     public function csFixCommand(Input $input, Output $output): void
     {

@@ -39,9 +39,8 @@ class GitLab extends AbstractGitLocal
      *
      * @param array $config
      */
-    public function __construct(array $config = [])
+    protected function init(array $config): void
     {
-        parent::__construct();
         $this->projects = $config['projects'] ?? [];
 
         unset($config['projects']);

@@ -32,6 +32,7 @@ return PhpCsFixer\Config::create()
         'no_unused_imports' => true,
         'single_quote' => true,
         'standardize_not_equals' => true,
+        'void_return' => true, // add :void for method
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()

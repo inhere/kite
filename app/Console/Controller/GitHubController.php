@@ -10,6 +10,7 @@
 namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
+use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
@@ -37,6 +38,7 @@ class GitHubController extends Controller
         return [
             'wf'  => 'workflow',
             'rls' => 'release',
+            'pr' => 'pullRequest',
         ];
     }
 
@@ -111,6 +113,55 @@ class GitHubController extends Controller
         }
 
         CmdRunner::new($cmd)->do(true);
+
+        $output->success('Complete');
+    }
+
+    /**
+     * Configure for the `pullRequestCommand`
+     *
+     * @param Input $input
+     */
+    protected function pullRequestConfigure(Input $input): void
+    {
+        $input->bindArgument('project', 0);
+    }
+
+    /**
+     * generate an PR link for given project information
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function pullRequestCommand(Input $input, Output $output): void
+    {
+        $gh = GitHub::new($output, $this->app->getParam('github', []));
+
+        $workDir = $input->getWorkDir();
+        $gh->setWorkDir($workDir);
+
+        // https://github.com/swoft-cloud/swoft-component/compare/master...ulue:dev2
+        $pjName  = '';
+        $dirName = basename($workDir);
+        $dirPfx  = $this->config['dirPrefix'];
+
+        // try auto parse project name for dirname.
+        if ($dirPfx && strpos($dirName, $dirPfx) === 0) {
+            $tmpName = substr($dirName, strlen($dirPfx));
+
+            if (isset($this->projects[$tmpName])) {
+                $pjName = $tmpName;
+                $output->liteNote('auto parse project name for dirname.');
+            }
+        }
+
+        if (!$pjName) {
+            $pjName = $input->getRequiredArg('project');
+        }
+
+        if (!isset($this->projects[$pjName])) {
+            throw new PromptException("project '{$pjName}' is not found in the config");
+        }
 
         $output->success('Complete');
     }

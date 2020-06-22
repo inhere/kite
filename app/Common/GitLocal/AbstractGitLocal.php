@@ -2,6 +2,7 @@
 
 namespace Inhere\Kite\Common\GitLocal;
 
+use Inhere\Console\IO\Output;
 use Inhere\Kite\Helper\GitUtil;
 use function count;
 use function explode;
@@ -33,21 +34,35 @@ abstract class AbstractGitLocal
     protected $config;
 
     /**
-     * @param array $config
+     * @var Output
+     */
+    protected $output;
+
+    /**
+     * @param Output $output
+     * @param array  $config
      *
      * @return static
      */
-    public static function new(array $config = [])
+    public static function new(Output $output, array $config = [])
     {
-        return new static($config);
+        return new static($output, $config);
     }
 
     /**
      * Class constructor.
      *
-     * @param array $config
+     * @param Output $output
+     * @param array  $config
      */
-    public function __construct(array $config = [])
+    public function __construct(Output $output,array $config = [])
+    {
+        $this->output = $output;
+
+        $this->init($config);
+    }
+
+    protected function init(array $config): void
     {
         $this->config = $config;
     }

@@ -55,7 +55,7 @@ class GitLabController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'pr'   => 'prLink',
+            'pr'   => 'pullRequest',
             'li'   => 'linkInfo',
             'cf'   => 'config',
             'conf' => 'config',
@@ -133,11 +133,11 @@ class GitLabController extends Controller
     }
 
     /**
-     * Configure for the `linkInfoCommand`
+     * Configure for the `pullRequestCommand`
      *
      * @param Input $input
      */
-    protected function prLinkConfigure(Input $input): void
+    protected function pullRequestConfigure(Input $input): void
     {
         $input->bindArgument('project', 0);
     }
@@ -163,7 +163,7 @@ class GitLabController extends Controller
      *  {binWithCmd} -t qa                 Will generate PR link for main 'HEAD_BRANCH' to main 'qa'
      *  {binWithCmd} -t qa  --direct       Will generate PR link for fork 'HEAD_BRANCH' to main 'qa'
      */
-    public function prLinkCommand(Input $input, Output $output): void
+    public function pullRequestCommand(Input $input, Output $output): void
     {
         $pjName = '';
         // http://gitlab.gongzl.com/wzl/order/merge_requests/new?utf8=%E2%9C%93&merge_request%5Bsource_project_id%5D=319&merge_request%5Bsource_branch%5D=fea_4_16&merge_request%5Btarget_project_id%5D=319&merge_request%5Btarget_branch%5D=qa

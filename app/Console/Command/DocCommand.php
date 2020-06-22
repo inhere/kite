@@ -62,6 +62,7 @@ class DocCommand extends Command
         $def->addOption('lang', '', Input::OPT_OPTIONAL, 'use the language for find topic document',
             Document::DEF_LANG);
         $def->addOption('create', '', Input::OPT_BOOLEAN, 'create an new topic document');
+        $def->addOption('cat', '', Input::OPT_BOOLEAN, 'see the document file contents');
         $def->addOption('edit', 'e', Input::OPT_BOOLEAN, 'edit an topic document');
         $def->addOption('editor', '', Input::OPT_OPTIONAL, 'editor for edit the topic document', 'vim');
         $def->addOption('list-topic', 'l', Input::OPT_BOOLEAN, 'list all top/sub topics');
@@ -156,6 +157,10 @@ TXT;
 
         // read content
         $text = $file->getFileContent();
+        if ($input->getBoolOpt('cat')) {
+            $output->writeRaw($text);
+            return;
+        }
 
         // parse content
         $md  = new CliMarkdown($man->getLang());
