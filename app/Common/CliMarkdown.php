@@ -3,6 +3,7 @@
 namespace Inhere\Kite\Common;
 
 use cebe\markdown\GithubMarkdown;
+use Toolkit\Cli\Color;
 use Toolkit\Cli\ColorTag;
 use function explode;
 use function implode;
@@ -104,7 +105,7 @@ class CliMarkdown extends GithubMarkdown
     }
 
     /**
-     * @param $block
+     * @param array $block
      *
      * @return mixed|string
      */
@@ -112,6 +113,19 @@ class CliMarkdown extends GithubMarkdown
     {
         // \var_dump($block);
         return ColorTag::add($block['orig'], 'info');
+    }
+
+    /**
+     * @param array $block
+     *
+     * @return string
+     */
+    protected function renderQuote($block): string
+    {
+        // ¶ §
+        $prefix = Color::render('¶ ', [Color::FG_GREEN, Color::BOLD]);
+
+        return $prefix . ColorTag::add($this->renderAbsy($block['content']), 'cyan');
     }
 
     /**
