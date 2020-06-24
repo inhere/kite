@@ -83,5 +83,6 @@ class UtilGroup extends Controller
     public function envCommand(Input $input, Output $output): void
     {
         // env | grep XXX
+        $output->aList($_SERVER, 'ENV Information', ['ucFirst' => false]);
     }
 }
