@@ -217,7 +217,7 @@ class GitLocController extends Controller
 
         // git tag -a $1 -m "Release $1"
         // git push origin --tags
-        $cmd = sprintf('git tag -a %s -m "%s"; git push origin %s', $tag, $msg, $tag);
+        $cmd = sprintf('git tag -a %s -m "%s" && git push origin %s', $tag, $msg, $tag);
 
         $dryRun = $input->getBoolOpt('dry-run');
         if ($dryRun) {
