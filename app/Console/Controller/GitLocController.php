@@ -37,14 +37,16 @@ class GitLocController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'tl'       => 'tagList',
-            'taglist'  => 'tagList',
-            'tag-find' => 'tagFind',
-            'tag:find' => 'tagFind',
-            'tagfind'  => 'tagFind',
-            'tag:del'  => 'tagDelete',
+            'tl'      => 'tagList',
+            'cl'      => 'changelog',
+            'tag:del' => 'tagDelete',
+            'taglist' => 'tagList',
+            'tagFind' => ['tagfind', 'tag-find', 'tag:find'],
             'tagPush' => [
-                'tagpush', 'tp', 'tag-push', 'tag:push'
+                'tagpush',
+                'tp',
+                'tag-push',
+                'tag:push'
             ],
             'tagList' => ['tag', 'tl', 'taglist']
         ];
@@ -303,5 +305,10 @@ class GitLocController extends Controller
         $run->afterOkRun('git push');
 
         $output->success('Complete');
+    }
+
+    public function changelogCommand(): void
+    {
+
     }
 }
