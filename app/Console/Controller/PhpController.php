@@ -129,15 +129,22 @@ class PhpController extends Controller
      */
     public function ghPkgCommand(Input $input, Output $output): void
     {
-        $pkgName = $input->getRequiredArg('pkgName');
-        $pkgPath = 'vendor/' . $pkgName;
+        $pkgPath = $pkgName = $input->getRequiredArg('pkgName');
 
+        // an dirname
         if (!is_dir($pkgPath)) {
-            throw new PromptException("package path '{$pkgPath}' is not exists");
+            $pkgPath = 'vendor/' . $pkgName;
+            if (!is_dir($pkgPath)) {
+                throw new PromptException("package path '{$pkgPath}' is not exists");
+            }
         }
 
         $composerJson = $pkgPath . '/composer.json';
         $composerInfo = Json::decodeFile($composerJson, true);
+
+        if (!empty($composerInfo['name'])) {
+            $pkgName = $composerInfo['neme'];
+        }
 
         $homepage = GitHub::GITHUB_HOST . "/$pkgName";
         if (!empty($composerInfo['homepage'])) {

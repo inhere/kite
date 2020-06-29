@@ -78,12 +78,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/inhere/php-console.git",
-                "reference": "a47bc1d82411006cbd4924b7480fbd4d2e4c466c"
+                "reference": "1fb59e66980c860019e991427d75ec28575a6f9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/inhere/php-console/zipball/a47bc1d82411006cbd4924b7480fbd4d2e4c466c",
-                "reference": "a47bc1d82411006cbd4924b7480fbd4d2e4c466c",
+                "url": "https://api.github.com/repos/inhere/php-console/zipball/1fb59e66980c860019e991427d75ec28575a6f9d",
+                "reference": "1fb59e66980c860019e991427d75ec28575a6f9d",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -135,7 +135,7 @@
                 "console-color",
                 "phar"
             ],
-            "time": "2020-06-13T03:38:01+00:00"
+            "time": "2020-06-18T17:06:58+00:00"
         },
         {
             "name": "inhere/sroute",
@@ -202,12 +202,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-comp/http-client.git",
-                "reference": "2de69cd430aca11c1cabbc398509b92e3b9fcaf4"
+                "reference": "283617559951828622630c9cc6277fa371c349c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-comp/http-client/zipball/2de69cd430aca11c1cabbc398509b92e3b9fcaf4",
-                "reference": "2de69cd430aca11c1cabbc398509b92e3b9fcaf4",
+                "url": "https://api.github.com/repos/php-comp/http-client/zipball/283617559951828622630c9cc6277fa371c349c9",
+                "reference": "283617559951828622630c9cc6277fa371c349c9",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -217,7 +217,7 @@
                 ]
             },
             "require": {
-                "php": ">7.0.0",
+                "php": ">7.1.1",
                 "psr/http-client": "^1.0"
             },
             "suggest": {
@@ -240,7 +240,7 @@
                     "homepage": "http://www.yzone.net/"
                 }
             ],
-            "description": "some useful http client library of the php",
+            "description": "an simple http client library of the php",
             "homepage": "https://github.com/php-comp/http-client",
             "keywords": [
                 "curl",
@@ -248,7 +248,7 @@
                 "library",
                 "tool"
             ],
-            "time": "2019-01-21T16:27:20+00:00"
+            "time": "2020-06-10T13:03:55+00:00"
         },
         {
             "name": "psr/http-client",
@@ -363,16 +363,16 @@
         },
         {
             "name": "toolkit/cli-utils",
-            "version": "v1.1.5",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/cli-utils.git",
-                "reference": "919e9868edfd0203cba26b801870ebeaac15218c"
+                "reference": "c95008a4996755df2103d069d5324f822311cf6f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/cli-utils/zipball/919e9868edfd0203cba26b801870ebeaac15218c",
-                "reference": "919e9868edfd0203cba26b801870ebeaac15218c",
+                "url": "https://api.github.com/repos/php-toolkit/cli-utils/zipball/c95008a4996755df2103d069d5324f822311cf6f",
+                "reference": "c95008a4996755df2103d069d5324f822311cf6f",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -414,20 +414,20 @@
                 "php",
                 "tool"
             ],
-            "time": "2020-06-06T08:02:53+00:00"
+            "time": "2020-06-18T16:56:24+00:00"
         },
         {
             "name": "toolkit/stdlib",
-            "version": "v1.0.2",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/stdlib.git",
-                "reference": "e8c65f7d268c8010c254fc68d0c5274c0ff4e82c"
+                "reference": "7a1b23aea91b5968d9c1aaf80208aaf7e2e01842"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/stdlib/zipball/e8c65f7d268c8010c254fc68d0c5274c0ff4e82c",
-                "reference": "e8c65f7d268c8010c254fc68d0c5274c0ff4e82c",
+                "url": "https://api.github.com/repos/php-toolkit/stdlib/zipball/7a1b23aea91b5968d9c1aaf80208aaf7e2e01842",
+                "reference": "7a1b23aea91b5968d9c1aaf80208aaf7e2e01842",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -470,7 +470,7 @@
                 "string",
                 "tool"
             ],
-            "time": "2020-06-11T11:45:16+00:00"
+            "time": "2020-06-18T16:25:01+00:00"
         },
         {
             "name": "toolkit/sys-utils",
