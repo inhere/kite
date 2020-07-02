@@ -51,30 +51,82 @@ class GitFlowController extends Controller
         return ['gf'];
     }
 
-    protected function configure(): void
+    protected static function commandAliases(): array
     {
-        parent::configure();
-
-        $this->config = $this->app->getParam('gitflow', []);
-
-        $action = $this->getAction();
-
-        if ($action === 'sync') {
-            $this->curBranchName = GitUtil::getCurrentBranchName();
-
-            $this->forkRemote = $this->config['fork']['remote'] ?? '';
-            $this->mainRemote = $this->config['main']['remote'] ?? '';
-
-            if (!$this->forkRemote || !$this->mainRemote) {
-                $this->output->liteError('missing config for "fork.remote" and "main.remote" on "gitflow"');
-                return;
-            }
-
-            $this->addCommentsVar('mainRemote', $this->mainRemote);
-            $this->addCommentsVar('curBranchName', $this->curBranchName);
-        }
+        return [
+            'nb' => 'newBranch',
+        ];
     }
 
+    protected function configure(): void
+    {
+        $this->config = $this->app->getParam('gitflow', []);
+
+        $this->forkRemote = $this->config['fork']['remote'] ?? '';
+        $this->mainRemote = $this->config['main']['remote'] ?? '';
+
+        if (!$this->forkRemote || !$this->mainRemote) {
+            $this->output->liteError('missing config for "fork.remote" and "main.remote" on "gitflow"');
+            return;
+        }
+
+        $this->addCommentsVars([
+            'forkRemote' => $this->forkRemote,
+            'mainRemote' => $this->mainRemote,
+        ]);
+
+        parent::configure();
+
+        // $action === 'sync'
+        // $action = $this->getAction();
+    }
+
+    protected function newBranchConfigure(Input $input): void
+    {
+        $input->bindArgument('branch', 0);
+    }
+
+    /**
+     * checkout an new branch for development
+     *
+     * @arguments
+     *  branch      The new branch name. eg: fea_6_12
+     *
+     * @param Input  $input
+     * @param Output $output
+     * @example
+     * Workflow:
+     *  1. git checkout to master
+     *  2. git pull <info>{mainRemote}</info> master
+     *  3. git checkout -b NEW_BRANCH
+     *  4. git push -u <info>{forkRemote}</info> NEW_BRANCH
+     *  5. git push <info>{mainRemote}</info> NEW_BRANCH
+     */
+    public function newBranchCommand(Input $input, Output $output): void
+    {
+        $newBranch = $input->getRequiredArg('branch');
+
+        // $cmd = CmdRunner::new('git checkout master')->do(true);
+        // $cmd->afterOkRun("git pull {$this->mainRemote} master")
+        //     ->afterOkRun("git checkout -b {$newBranch}")
+        //     ->afterOkRun("git push -u {$this->forkRemote} {$newBranch}")
+        //     ->afterOkRun("git push {$this->mainRemote} {$newBranch}");
+
+        $cmd = CmdRunner::new()
+            ->add('git checkout master')
+            ->addf('git pull %s master', $this->mainRemote)
+            ->addf('git checkout -b %s', $newBranch)
+            ->addf('git push -u %s %s', $this->forkRemote, $newBranch)
+            ->addf('git push %s %s', $this->mainRemote, $newBranch)
+            ->run(true);
+
+        if ($cmd->isFail()) {
+            $output->error($cmd->getOutput() ?: 'Failure');
+            return;
+        }
+
+        $output->success('Complete');
+    }
 
     /**
      * Resolve git conflicts
@@ -95,6 +147,13 @@ class GitFlowController extends Controller
         $output->success('Complete');
     }
 
+    protected function syncConfigure(): void
+    {
+        $this->curBranchName = GitUtil::getCurrentBranchName();
+
+        $this->addCommentsVar('mainRemote', $this->mainRemote);
+        $this->addCommentsVar('curBranchName', $this->curBranchName);
+    }
 
     /**
      * sync codes from remote main repo
@@ -149,7 +208,7 @@ class GitFlowController extends Controller
 
         // git pull main BRANCH
         $cmd = "git pull {$mainRemote} $curBranch";
-        CmdRunner::new($cmd, $pwd)->do(true)->afterOkRun('git status');
+        CmdRunner::new($cmd, $pwd)->do(true)->afterOkDo('git status');
 
         $output->success('Complete');
     }

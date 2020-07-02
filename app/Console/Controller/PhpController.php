@@ -165,6 +165,6 @@ class PhpController extends Controller
 
         CmdRunner::new('rm -rf ' . $pkgPath)
                  ->do(true)
-                 ->afterOkRun("git clone $homepage $pkgPath");
+                 ->afterOkDo("git clone $homepage $pkgPath");
     }
 }

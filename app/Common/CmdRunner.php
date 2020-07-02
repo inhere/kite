@@ -5,6 +5,7 @@ namespace Inhere\Kite\Common;
 use RuntimeException;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Sys;
+use function sprintf;
 use function trim;
 
 /**
@@ -49,7 +50,7 @@ class CmdRunner
      *
      * @var bool
      */
-    private $ignoreCode = false;
+    private $ignoreError = false;
 
     /**
      * @var bool
@@ -105,6 +106,10 @@ class CmdRunner
         return $this;
     }
 
+    /**************************************************************************
+     * add ant run
+     *************************************************************************/
+
     /**
      * @param bool $printOutput
      *
@@ -125,52 +130,9 @@ class CmdRunner
     public function do(bool $printOutput = false): self
     {
         $this->printOutput = $printOutput;
-        $this->execute($this->command);
+        $this->execute($this->command, $this->workDir);
 
         return $this;
-    }
-
-    /**
-     * @param string $command
-     */
-    protected function execute(string $command): void
-    {
-        if (!$command) {
-            throw new RuntimeException('The execute command cannot be empty');
-        }
-
-        if ($this->printCmd) {
-            Color::println("> {$command}", 'yellow');
-        }
-
-        // $ret = SysCmd::exec($this->cmd, $this->workDir);
-        $ret = Sys::execute($command, true, $this->workDir);
-
-        $this->code   = $ret['status'];
-        $this->output = $ret['output'];
-
-        // print output
-        if ($this->printOutput && $ret['output']) {
-            echo $ret['output'] . "\n";
-        }
-
-    }
-
-    /**
-     * @param array $commands
-     *
-     * @return $this
-     */
-    public function batch(array $commands): self
-    {
-        $this->commands = $commands;
-
-        return $this;
-    }
-
-    public function run(): self
-    {
-
     }
 
     /**
@@ -178,7 +140,7 @@ class CmdRunner
      *
      * @return $this
      */
-    public function afterRun(string $cmd): self
+    public function afterDo(string $cmd): self
     {
         return $this->setCommand($cmd)->do($this->printOutput);
     }
@@ -189,7 +151,7 @@ class CmdRunner
      *
      * @return $this
      */
-    public function whereRun(string $cmd, callable $whereFunc) :self
+    public function whereDo(string $cmd, callable $whereFunc) :self
     {
         // only run on return TRUE
         if (true === $whereFunc()) {
@@ -205,7 +167,7 @@ class CmdRunner
      *
      * @return $this
      */
-    public function afterOkRun(string $cmd, string $workDir = null): self
+    public function afterOkDo(string $cmd, string $workDir = null): self
     {
         if (0 !== $this->code) {
             return $this;
@@ -221,14 +183,6 @@ class CmdRunner
     }
 
     /**
-     * @return string
-     */
-    public function getCommand(): string
-    {
-        return $this->command;
-    }
-
-    /**
      * @param string $command
      *
      * @return CmdRunner
@@ -237,6 +191,113 @@ class CmdRunner
     {
         $this->command = $command;
         return $this;
+    }
+
+    /**************************************************************************
+     * batch add then run
+     *************************************************************************/
+
+    /**
+     * @param array $commands
+     *
+     * @return $this
+     */
+    public function batch(array $commands): self
+    {
+        $this->commands = $commands;
+
+        return $this;
+    }
+
+    /**
+     * @param string $cmdTpl
+     * @param mixed  ...$args
+     *
+     * @return $this
+     */
+    public function addf(string $cmdTpl, ...$args): self
+    {
+        return $this->add(sprintf($cmdTpl, ...$args));
+    }
+
+    /**
+     * @param string $command
+     * @param string $key
+     *
+     * @return $this
+     */
+    public function add(string $command, string $key = ''): self
+    {
+        if ($key) {
+            $this->commands[$key] = $command;
+        } else {
+            $this->commands[] = $command;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param bool $printOutput
+     *
+     * @return $this
+     */
+    public function run(bool $printOutput = false): self
+    {
+        $this->printOutput = $printOutput;
+
+        foreach ($this->commands as $command) {
+            // if ($workDir !== null) {
+            //     $this->workDir = $workDir;
+            // }
+
+            $this->execute($command, $this->workDir);
+
+            // stop on error
+            if (0 !== $this->code && false === $this->ignoreError) {
+                break;
+            }
+        }
+
+        return $this;
+    }
+
+    /**************************************************************************
+     * helper methods
+     *************************************************************************/
+
+    /**
+     * @param string $command
+     * @param string $workDir
+     */
+    protected function execute(string $command, string $workDir): void
+    {
+        if (!$command) {
+            throw new RuntimeException('The execute command cannot be empty');
+        }
+
+        if ($this->printCmd) {
+            Color::println("> {$command}", 'yellow');
+        }
+
+        // $ret = SysCmd::exec($this->cmd, $this->workDir);
+        $ret = Sys::execute($command, true, $workDir);
+
+        $this->code   = $ret['status'];
+        $this->output = $ret['output'];
+
+        // print output
+        if ($this->printOutput && $ret['output']) {
+            echo $ret['output'] . "\n";
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getCommand(): string
+    {
+        return $this->command;
     }
 
     /**
@@ -264,6 +325,22 @@ class CmdRunner
     public function getCode(): int
     {
         return $this->code;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFail(): bool
+    {
+        return $this->code !== 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSuccess(): bool
+    {
+        return $this->code === 0;
     }
 
     /**
@@ -310,25 +387,6 @@ class CmdRunner
     }
 
     /**
-     * @param bool $ignoreCode
-     *
-     * @return self
-     */
-    public function setIgnoreCode(bool $ignoreCode): self
-    {
-        $this->ignoreCode = $ignoreCode;
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isIgnoreCode(): bool
-    {
-        return $this->ignoreCode;
-    }
-
-    /**
      * @return array
      */
     public function getCommands(): array
@@ -344,6 +402,25 @@ class CmdRunner
     public function setCommands(array $commands): CmdRunner
     {
         $this->commands = $commands;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIgnoreError(): bool
+    {
+        return $this->ignoreError;
+    }
+
+    /**
+     * @param bool $ignoreError
+     *
+     * @return CmdRunner
+     */
+    public function setIgnoreError(bool $ignoreError): self
+    {
+        $this->ignoreError = $ignoreError;
         return $this;
     }
 }
