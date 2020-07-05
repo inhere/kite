@@ -33,10 +33,10 @@ ln -s $PWD/bin/kite /usr/local/bin/kite
 chmod a+x bin/kite
 ```
 
-## 使用
+## 使用帮助
 
 ```bash
-kite
+kite -h
 ```
 
 ![](resource/images/kite-help.png)
