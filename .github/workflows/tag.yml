@@ -40,5 +40,4 @@ jobs:
         run: php -d phar.readonly=0 bin/kite phar:pack -o kite.phar
 
       - name: Post to github assets
-        run:
-
+        run: echo hi
