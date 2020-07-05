@@ -46,16 +46,23 @@ class CmdRunner
     private $commands = [];
 
     /**
-     * Ignore check prevision return code
+     * Dry run all commands
      *
      * @var bool
      */
-    private $ignoreError = false;
+    private $dryRun = false;
 
     /**
      * @var bool
      */
     private $printCmd = true;
+
+    /**
+     * Ignore check prevision return code
+     *
+     * @var bool
+     */
+    private $ignoreError = false;
 
     /**
      * @var bool
@@ -246,12 +253,14 @@ class CmdRunner
     {
         $this->printOutput = $printOutput;
 
+        $step = 1;
         foreach ($this->commands as $command) {
             // if ($workDir !== null) {
             //     $this->workDir = $workDir;
             // }
-
+            Color::println("Step {$step}:", 'mga0');
             $this->execute($command, $this->workDir);
+            $step++;
 
             // stop on error
             if (0 !== $this->code && false === $this->ignoreError) {
@@ -281,7 +290,14 @@ class CmdRunner
         }
 
         // $ret = SysCmd::exec($this->cmd, $this->workDir);
-        $ret = Sys::execute($command, true, $workDir);
+        if ($this->dryRun) {
+            $ret = [
+                'status' => 0,
+                'output' => 'Command execute success',
+            ];
+        } else {
+            $ret = Sys::execute($command, true, $workDir);
+        }
 
         $this->code   = $ret['status'];
         $this->output = $ret['output'];
@@ -422,5 +438,24 @@ class CmdRunner
     {
         $this->ignoreError = $ignoreError;
         return $this;
+    }
+
+    /**
+     * @param bool $dryRun
+     *
+     * @return $this
+     */
+    public function setDryRun(bool $dryRun): self
+    {
+        $this->dryRun = $dryRun;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDryRun(): bool
+    {
+        return $this->dryRun;
     }
 }

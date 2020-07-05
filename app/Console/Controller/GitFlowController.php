@@ -89,6 +89,9 @@ class GitFlowController extends Controller
     /**
      * checkout an new branch for development
      *
+     * @options
+     *  --dry-run   Dry-run the workflow
+     *
      * @arguments
      *  branch      The new branch name. eg: fea_6_12
      *
@@ -118,6 +121,7 @@ class GitFlowController extends Controller
             ->addf('git checkout -b %s', $newBranch)
             ->addf('git push -u %s %s', $this->forkRemote, $newBranch)
             ->addf('git push %s %s', $this->mainRemote, $newBranch)
+            ->setDryRun($input->getBoolOpt('dry-run'))
             ->run(true);
 
         if ($cmd->isFail()) {
