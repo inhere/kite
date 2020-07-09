@@ -16,7 +16,7 @@ use Inhere\Console\IO\Output;
 /**
  * Class DemoGroup
  */
-class SysGroup extends Controller
+class SysController extends Controller
 {
     protected static $name = 'sys';
 

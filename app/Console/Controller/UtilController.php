@@ -16,9 +16,9 @@ use Inhere\Console\IO\Output;
 use function date;
 
 /**
- * Class DemoGroup
+ * Class UtilController
  */
-class UtilGroup extends Controller
+class UtilController extends Controller
 {
     protected static $name = 'util';
 
@@ -42,7 +42,7 @@ class UtilGroup extends Controller
     }
 
     /**
-     * timestamp to datetime
+     * convert timestamp to datetime
      *
      * @param Input  $input
      * @param Output $output
@@ -62,27 +62,9 @@ class UtilGroup extends Controller
             ];
         }
 
+        $output->colored('- Current Time: ' . date('Y-m-d H:i:s'));
         $output->table($data, 'Time to date', [
-
+            // opts
         ]);
-        $output->colored('Current Time: ' . date('Y-m-d H:i:s'));
-    }
-
-    /**
-     * print system ENV information
-     *
-     * @options
-     *  --format    Format the env value
-     *
-     * @arguments
-     *  keywords    The keywords for search ENV
-     *
-     * @param Input  $input
-     * @param Output $output
-     */
-    public function envCommand(Input $input, Output $output): void
-    {
-        // env | grep XXX
-        $output->aList($_SERVER, 'ENV Information', ['ucFirst' => false]);
     }
 }
