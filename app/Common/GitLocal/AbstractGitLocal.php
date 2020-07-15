@@ -55,7 +55,7 @@ abstract class AbstractGitLocal
      * @param Output $output
      * @param array  $config
      */
-    public function __construct(Output $output,array $config = [])
+    public function __construct(Output $output, array $config = [])
     {
         $this->output = $output;
 
@@ -122,6 +122,17 @@ abstract class AbstractGitLocal
     public function getConfig(): array
     {
         return $this->config;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed   $default
+     *
+     * @return mixed
+     */
+    public function getValue(string $key, $default = null)
+    {
+        return $this->config[$key] ?? $default;
     }
 
     /**

@@ -13,6 +13,8 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Common\CmdRunner;
+use Inhere\Kite\Common\GitLocal\GitLab;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use function array_merge;
@@ -35,10 +37,12 @@ class GitLabController extends Controller
     protected static $name = 'gitlab';
 
     protected static $description = 'Some useful tool commands for gitlab development';
+
     /**
      * @var array
      */
     private $config = [];
+
     /**
      * @var array
      */
@@ -72,6 +76,59 @@ class GitLabController extends Controller
         parent::configure();
     }
 
+    private function gitlab(): GitLab
+    {
+        $config = $this->app->getParam('gitlab', []);
+
+        return GitLab::new($this->output, $config);
+    }
+
+    /**
+     * @param Input $input
+     */
+    protected function cloneConfigure(Input $input): void
+    {
+        $input->bindArguments([
+            'repo' => 0,
+            'name' => 1,
+        ]);
+    }
+
+    /**
+     * Clone an gitlab repository to local
+     **
+     * @arguments
+     *  repo    The remote git repo URL or repository name
+     *  name    The repository name at local, default is same `repo`
+     *
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @example
+     *  {fullCmd}  mylib/some-utils
+     *  {fullCmd}  mylib/some-utils local-repo
+     *  {fullCmd}  https://gitlab.com/some/pkg
+     */
+    public function cloneCommand(Input $input, Output $output): void
+    {
+        $repo = $input->getRequiredArg('repo');
+
+        $repoUrl = $this->gitlab()->getRepoUrl($repo);
+        if (!$repoUrl) {
+            $output->error("invalid github 'repo' address: $repo");
+            return;
+        }
+
+        $cmd = "git clone $repoUrl";
+        if ($name = $input->getStringArg('name')) {
+            $cmd .= " $name";
+        }
+
+        CmdRunner::new($cmd)->do(true);
+
+        $output->success('Complete');
+    }
+
     // protected function groupOptions(): array
     // {
     //     return [
@@ -91,7 +148,8 @@ class GitLabController extends Controller
     public function configCommand(Input $input, Output $output): void
     {
         if ($input->getSameBoolOpt(['l', 'list'])) {
-            $output->json($this->config);
+            $config  = $this->gitlab()->getConfig();
+            $output->json($config);
             return;
         }
 

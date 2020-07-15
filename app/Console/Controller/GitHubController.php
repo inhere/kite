@@ -101,7 +101,7 @@ class GitHubController extends Controller
         $repo = $input->getRequiredArg('repo');
         $name = $input->getStringArg('name');
 
-        $repoUrl = GitHub::new()->getRepoUrl($repo);
+        $repoUrl = GitHub::new($output)->getRepoUrl($repo);
         if (!$repoUrl) {
             $output->error("invalid github 'repo' address: $repo");
             return;
@@ -143,7 +143,8 @@ class GitHubController extends Controller
         // https://github.com/swoft-cloud/swoft-component/compare/master...ulue:dev2
         $pjName  = '';
         $dirName = basename($workDir);
-        $dirPfx  = $this->config['dirPrefix'];
+        // $dirPfx  = $this->config['dirPrefix'];
+        $dirPfx  = $gh->getValue('dirPrefix', '');
 
         // try auto parse project name for dirname.
         if ($dirPfx && strpos($dirName, $dirPfx) === 0) {

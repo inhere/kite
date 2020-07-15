@@ -45,6 +45,10 @@ class GitLab extends AbstractGitLocal
 
         unset($config['projects']);
         $this->config = $config;
+
+        if (isset($config['hostUrl'])) {
+            $this->setHost($config['hostUrl']);
+        }
     }
 
     public function createPRLink(string $srcBranch, string $dstBranch, bool $direct = false): string
