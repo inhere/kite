@@ -10,6 +10,7 @@ use Toolkit\Sys\Proc\ProcWrapper;
 use function date;
 use function explode;
 use function file_get_contents;
+use function implode;
 use function parse_ini_string;
 use function str_replace;
 use function trim;
@@ -97,16 +98,14 @@ class GenerateController extends Controller
     public function repeatCommand(Input $input, Output $output): void
     {
         $tplFile = $input->getRequiredArg('tpl');
-
         $content = file_get_contents($tplFile);
 
         [$varDefine, $template] = explode('###', $content);
 
-        $vars = (array)parse_ini_string(trim($varDefine), true);
-
-        $template = trim($template);
         $snippets = [''];
+        $template = trim($template);
 
+        $vars = (array)parse_ini_string(trim($varDefine), true);
         foreach ($vars as $var => $valString) {
             $values = Str::explode($valString, ',');
 
@@ -117,6 +116,6 @@ class GenerateController extends Controller
         }
 
         $output->success('Complete');
-        $output->writeRaw(\implode("\n", $snippets));
+        $output->writeRaw(implode("\n\n", $snippets));
     }
 }
