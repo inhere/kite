@@ -177,6 +177,26 @@ class GitLabController extends Controller
 
 
     /**
+     * open gitlab project page on browser
+     *
+     * @options
+     *  -l, --list    List all project information
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function openCommand(Input $input, Output $output): void
+    {
+        if ($input->getSameBoolOpt(['l', 'list'])) {
+            $output->json($this->projects);
+            return;
+        }
+
+        $output->success('Complete');
+    }
+
+
+    /**
      * Resolve git conflicts
      *
      * @param Input  $input
@@ -208,6 +228,7 @@ class GitLabController extends Controller
      *  -t, --target    The target branch
      *  -o, --open      Open the generated PR link on browser
      *      --direct    The PR is from fork to main repository
+     *      --new       Open new pr page on browser http://my.gitlab.com/group/repo/merge_requests/new
      *
      * @argument
      *  project   The project key in 'gitlab' config. eg: group-name, name

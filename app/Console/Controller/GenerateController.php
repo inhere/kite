@@ -3,6 +3,7 @@
 namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
+use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Toolkit\Stdlib\Str;
@@ -12,7 +13,7 @@ use function explode;
 use function file_get_contents;
 use function implode;
 use function parse_ini_string;
-use function str_replace;
+use function strtr;
 use function trim;
 
 /**
@@ -106,13 +107,26 @@ class GenerateController extends Controller
         $template = trim($template);
 
         $vars = (array)parse_ini_string(trim($varDefine), true);
-        foreach ($vars as $var => $valString) {
-            $values = Str::explode($valString, ',');
+        if (!isset($vars['copy'])) {
+            throw new PromptException('Must contains "copy" var on header define');
+        }
 
-            // repeat by values
-            foreach ($values as $val) {
-                $snippets[] = str_replace('{$' . $var . '}', $val, $template);
-            }
+        $pairs  = [];
+        $values = Str::explode($vars['copy'], ',');
+        unset($vars['copy']);
+
+        // collect other vars
+        foreach ($vars as $var => $val) {
+            $tplKey = '{$' . $var . '}';
+
+            $pairs[$tplKey] = $val;
+        }
+
+        // repeat by values
+        foreach ($values as $val) {
+            $pairs['{$copy}'] = $val;
+
+            $snippets[] = strtr($template, $pairs);
         }
 
         $output->success('Complete');

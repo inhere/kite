@@ -5,11 +5,11 @@ namespace Inhere\Kite\Common\GitLocal;
 use Toolkit\Sys\Sys;
 
 /**
- * Class GitLocal
+ * Class GitUse
  *
  * @package Inhere\Kite\Common\GitLocal
  */
-class GitLocal extends AbstractGitLocal
+class GitUse extends AbstractGitLocal
 {
     /**
      * Error code

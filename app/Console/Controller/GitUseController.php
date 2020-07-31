@@ -18,12 +18,12 @@ use Inhere\Kite\Helper\GitUtil;
 use function sprintf;
 
 /**
- * Class GitLocGroup
+ * Class GitUseController
  * - git:tag:push   add tag and push to remote
  * - git:tag:delete delete the tag on remote
  *
  */
-class GitLocController extends Controller
+class GitUseController extends Controller
 {
     protected static $name = 'git';
 
@@ -184,7 +184,7 @@ class GitLocController extends Controller
 
             $tag = GitUtil::buildNextTag($lTag);
         } else {
-            $tag = $input->getSameOpt(['v', 'version'], '');
+            $tag = $input->getSameStringOpt(['v', 'version']);
             if (!$tag) {
                 $output->error('please input new tag version, like: -v v2.0.4');
                 return;
