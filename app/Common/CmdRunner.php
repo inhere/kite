@@ -5,6 +5,7 @@ namespace Inhere\Kite\Common;
 use RuntimeException;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Sys;
+use function is_array;
 use function sprintf;
 use function trim;
 
@@ -158,7 +159,7 @@ class CmdRunner
      *
      * @return $this
      */
-    public function whereDo(string $cmd, callable $whereFunc) :self
+    public function whereDo(string $cmd, callable $whereFunc): self
     {
         // only run on return TRUE
         if (true === $whereFunc()) {
@@ -228,6 +229,41 @@ class CmdRunner
     }
 
     /**
+     * @param callable $checker
+     * @param string   $cmdTpl
+     * @param mixed    ...$args
+     *
+     * @return $this
+     */
+    public function addWheref(callable $checker, string $cmdTpl, ...$args): self
+    {
+        return $this->addWhere($checker, sprintf($cmdTpl, ...$args));
+    }
+
+    /**
+     * @param callable $checker
+     * @param string   $command
+     * @param string   $key
+     *
+     * @return $this
+     */
+    public function addWhere(callable $checker, string $command, string $key = ''): self
+    {
+        $item = [
+            'where'   => $checker,
+            'command' => $command,
+        ];
+
+        if ($key) {
+            $this->commands[$key] = $item;
+        } else {
+            $this->commands[] = $item;
+        }
+
+        return $this;
+    }
+
+    /**
      * @param string $command
      * @param string $key
      *
@@ -258,12 +294,28 @@ class CmdRunner
             // if ($workDir !== null) {
             //     $this->workDir = $workDir;
             // }
+
+            // see addWhere()
+            if (is_array($command)) {
+                $item = $command;
+                $func = $item['where'];
+
+                if (!$func()) {
+                    Color::println("Skip {$step} ...", 'cyan');
+                    Color::println("- Does not meet the conditions", 'cyan');
+                    continue;
+                }
+
+                $command = $item['command'];
+            }
+
             Color::println("Step {$step}:", 'mga0');
             $this->execute($command, $this->workDir);
             $step++;
 
             // stop on error
             if (0 !== $this->code && false === $this->ignoreError) {
+                Color::println("Command exit code != 0, stop run.", 'red');
                 break;
             }
         }

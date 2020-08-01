@@ -90,7 +90,8 @@ class GitFlowController extends Controller
      * checkout an new branch for development
      *
      * @options
-     *  --dry-run   Dry-run the workflow
+     *  --dry-run    Dry-run the workflow
+     *  --not-main   Dont push new branch to the main remote
      *
      * @arguments
      *  branch      The new branch name. eg: fea_6_12
@@ -108,6 +109,7 @@ class GitFlowController extends Controller
     public function newBranchCommand(Input $input, Output $output): void
     {
         $newBranch = $input->getRequiredArg('branch');
+        $notToMain = $input->getBoolOpt('not-main');
 
         // $cmd = CmdRunner::new('git checkout master')->do(true);
         // $cmd->afterOkRun("git pull {$this->mainRemote} master")
@@ -120,7 +122,10 @@ class GitFlowController extends Controller
             ->addf('git pull %s master', $this->mainRemote)
             ->addf('git checkout -b %s', $newBranch)
             ->addf('git push -u %s %s', $this->forkRemote, $newBranch)
-            ->addf('git push %s %s', $this->mainRemote, $newBranch)
+            ->addWheref(static function () use ($notToMain) {
+                return $notToMain === false;
+            }, 'git push %s %s', $this->mainRemote, $newBranch)
+            // ->addf('git push %s %s', $this->mainRemote, $newBranch)
             ->setDryRun($input->getBoolOpt('dry-run'))
             ->run(true);
 
