@@ -2,6 +2,9 @@
 
 namespace Inhere\Kite\Common\GitLocal;
 
+use Inhere\Console\Exception\PromptException;
+use RuntimeException;
+
 /**
  * Class GitLab
  *
@@ -18,6 +21,11 @@ class GitLab extends AbstractGitLocal
      * @var string
      */
     private $curPjName = '';
+
+    /**
+     * @var array
+     */
+    private $curPjInfo = [];
 
     /**
      * @var string
@@ -51,9 +59,65 @@ class GitLab extends AbstractGitLocal
         }
     }
 
+    /**
+     * @return $this
+     */
+    public function loadCurPjInfo(): self
+    {
+        $pjName = $this->curPjName;
+
+        if (!isset($this->projects[$pjName])) {
+            throw new RuntimeException("project '{$pjName}' is not found in the projects");
+        }
+
+        $this->curPjInfo = $this->projects[$pjName];
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function findPjName(): string
+    {
+        $pjName  = '';
+        $dirName = $this->getDirName();
+        $dirPfx  = $this->getValue('dirPrefix', '');
+
+        // try auto parse project name for dirname.
+        if (isset($this->projects[$dirName])) {
+            $pjName = $dirName;
+            $this->output->liteNote('auto parse project name from dirname.');
+        } elseif ($dirPfx && strpos($dirName, $dirPfx) === 0) {
+            $tmpName = substr($dirName, strlen($dirPfx));
+
+            if (isset($this->projects[$tmpName])) {
+                $pjName = $tmpName;
+                $this->output->liteNote('auto parse project name from dirname.');
+            }
+        } else {
+            $info = $this->parseRemote()->getRemoteInfo();
+            if ($path = $info['path'] ?? '') {
+                $pjName = $path;
+                $this->output->liteNote('auto parse project name from git remote url');
+            }
+        }
+
+        return $pjName;
+    }
+
     public function createPRLink(string $srcBranch, string $dstBranch, bool $direct = false): string
     {
         return '';
+    }
+
+    /**
+     * @param string $pjName
+     *
+     * @return bool
+     */
+    public function hasProject(string $pjName): bool
+    {
+        return isset($this->projects[$pjName]);
     }
 
     /**
@@ -82,9 +146,20 @@ class GitLab extends AbstractGitLocal
 
     /**
      * @param string $curPjName
+     *
+     * @return GitLab
      */
-    public function setCurPjName(string $curPjName): void
+    public function setCurPjName(string $curPjName): self
     {
         $this->curPjName = $curPjName;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCurPjInfo(): array
+    {
+        return $this->curPjInfo;
     }
 }

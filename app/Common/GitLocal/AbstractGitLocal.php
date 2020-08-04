@@ -3,7 +3,9 @@
 namespace Inhere\Kite\Common\GitLocal;
 
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\GitUtil;
+use function basename;
 use function count;
 use function explode;
 use function strpos;
@@ -39,12 +41,22 @@ abstract class AbstractGitLocal
     protected $output;
 
     /**
+     * @var string
+     */
+    private $remote = 'origin';
+
+    /**
+     * @var array
+     */
+    private $remoteInfo = [];
+
+    /**
      * @param Output $output
      * @param array  $config
      *
      * @return static
      */
-    public static function new(Output $output, array $config = [])
+    public static function new(Output $output = null, array $config = [])
     {
         return new static($output, $config);
     }
@@ -55,9 +67,11 @@ abstract class AbstractGitLocal
      * @param Output $output
      * @param array  $config
      */
-    public function __construct(Output $output, array $config = [])
+    public function __construct(Output $output = null, array $config = [])
     {
-        $this->output = $output;
+        if ($output) {
+            $this->output = $output;
+        }
 
         $this->init($config);
     }
@@ -73,6 +87,56 @@ abstract class AbstractGitLocal
     public function clone(): array
     {
         return [];
+    }
+
+    /**
+     * @param string $remote
+     *
+     * @return $this
+     */
+    public function setRemote(string $remote): self
+    {
+        $this->remote = $remote;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function parseRemote(): self
+    {
+        $str = 'git remote get-url --push ' . $this->remote;
+        $url = CmdRunner::new($str, $this->workDir)->do()->getOutput(true);
+
+        // git@gitlab.my.com:group/some-lib.git
+        if (strpos($url, 'git') === 0) {
+            [$host, $path] = explode(':', trim($url, 'git.@'), 2);
+            [$group, $name] = explode('/', $path, 2);
+
+            $this->remoteInfo = [
+                'host'  => $host,
+                'path'  => $path,
+                'url'   => $url,
+                'group' => $group,
+                'repo'  => $name,
+            ];
+        } else {
+            $info = parse_url($url);
+            // add
+            $info['url'] = $url;
+
+            $this->remoteInfo = $info;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRemoteInfo(): array
+    {
+        return $this->remoteInfo;
     }
 
     /**
@@ -126,7 +190,7 @@ abstract class AbstractGitLocal
 
     /**
      * @param string $key
-     * @param mixed   $default
+     * @param mixed  $default
      *
      * @return mixed
      */
@@ -157,5 +221,21 @@ abstract class AbstractGitLocal
     public function setWorkDir(string $workDir): void
     {
         $this->workDir = $workDir;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDirName(): string
+    {
+        return basename($this->workDir);
+    }
+
+    /**
+     * @param Output $output
+     */
+    public function setOutput(Output $output): void
+    {
+        $this->output = $output;
     }
 }

@@ -9,6 +9,7 @@
 
 namespace Inhere\Kite\Console\Controller;
 
+use Inhere\Console\Console;
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
@@ -17,8 +18,8 @@ use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitLab;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
+use ReflectionException;
 use function array_merge;
-use function basename;
 use function explode;
 use function http_build_query;
 use function in_array;
@@ -79,8 +80,10 @@ class GitLabController extends Controller
     private function gitlab(): GitLab
     {
         $config = $this->app->getParam('gitlab', []);
+        $gitlab = GitLab::new($this->output, $config);
+        $gitlab->setWorkDir($this->input->getWorkDir());
 
-        return GitLab::new($this->output, $config);
+        return $gitlab;
     }
 
     /**
@@ -96,7 +99,7 @@ class GitLabController extends Controller
 
     /**
      * Clone an gitlab repository to local
-     **
+     *
      * @arguments
      *  repo    The remote git repo URL or repository name
      *  name    The repository name at local, default is same `repo`
@@ -148,12 +151,32 @@ class GitLabController extends Controller
     public function configCommand(Input $input, Output $output): void
     {
         if ($input->getSameBoolOpt(['l', 'list'])) {
-            $config  = $this->gitlab()->getConfig();
+            $config = $this->gitlab()->getConfig();
             $output->json($config);
             return;
         }
 
         $output->success('Complete');
+    }
+
+    /**
+     * run git add/commit/push at once command
+     *
+     * @options
+     *  -m, --message   The commit message
+     *
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @throws ReflectionException
+     */
+    public function acpCommand(Input $input, Output $output): void
+    {
+        $binName = $input->getBinName();
+
+        Console::app()->dispatch('git:acp');
+
+        $output->info("TIPS:\n $binName gl:pr -o -t BRANCH");
     }
 
     /**
@@ -244,34 +267,23 @@ class GitLabController extends Controller
      */
     public function pullRequestCommand(Input $input, Output $output): void
     {
-        $pjName = '';
-        // http://gitlab.gongzl.com/wzl/order/merge_requests/new?utf8=%E2%9C%93&merge_request%5Bsource_project_id%5D=319&merge_request%5Bsource_branch%5D=fea_4_16&merge_request%5Btarget_project_id%5D=319&merge_request%5Btarget_branch%5D=qa
-        $workDir = $input->getWorkDir();
-        $dirName = basename($workDir);
-        $dirPfx  = $this->config['dirPrefix'];
+        // http://gitlab.my.com/group/repo/merge_requests/new?utf8=%E2%9C%93&merge_request%5Bsource_project_id%5D=319&merge_request%5Bsource_branch%5D=fea_4_16&merge_request%5Btarget_project_id%5D=319&merge_request%5Btarget_branch%5D=qa
+        $git = $this->gitlab();
 
-        // try auto parse project name for dirname.
-        if ($dirPfx && strpos($dirName, $dirPfx) === 0) {
-            $tmpName = substr($dirName, strlen($dirPfx));
-
-            if (isset($this->projects[$tmpName])) {
-                $pjName = $tmpName;
-                $output->liteNote('auto parse project name for dirname.');
-            }
-        }
-
-        if (!$pjName) {
+        if (!$pjName = $git->findPjName()) {
             $pjName = $input->getRequiredArg('project');
         }
 
-        if (!isset($this->projects[$pjName])) {
+        if (!$git->hasProject($pjName)) {
             throw new PromptException("project '{$pjName}' is not found in the config");
         }
 
-        $pjInfo = $this->projects[$pjName];
+        $git->setCurPjName($pjName)->loadCurPjInfo();
+
+        $pjInfo = $git->getCurPjInfo();
 
         $group = $pjInfo['group'] ?? $this->config['defaultGroup'];
-        $name  = $pjInfo['name'];
+        $repo  = $pjInfo['repo'];
 
         $brPrefix = $this->config['branchPrefix'];
         $fixedBrs = $this->config['fixedBranch'];
@@ -317,7 +329,7 @@ class GitLabController extends Controller
 
         $tipInfo = array_merge([
             'project' => $pjName,
-            'glPath'  => "$group/$name",
+            'glPath'  => "$group/$repo",
         ], $prInfo);
         $output->aList($tipInfo, '- project information', ['ucFirst' => false]);
         $query = [
@@ -326,7 +338,7 @@ class GitLabController extends Controller
         ];
 
         $link = $this->config['hostUrl'];
-        $link .= "/{$group}/{$name}/merge_requests/new?";
+        $link .= "/{$group}/{$repo}/merge_requests/new?";
         $link .= http_build_query($query, '', '&');
 
         if ($input->getSameBoolOpt(['o', 'open'])) {
@@ -367,7 +379,7 @@ class GitLabController extends Controller
         $link = $input->getRequiredArg('link');
         $info = (array)parse_url($link);
 
-        [$group, $name,] = explode('/', trim($info['path'], '/'), 3);
+        [$group, $repo,] = explode('/', trim($info['path'], '/'), 3);
 
         if (!empty($info['query'])) {
             $qStr = $info['query'];
@@ -384,9 +396,9 @@ class GitLabController extends Controller
         }
 
         $info['project'] = [
-            'path'  => $group . '/' . $name,
+            'path'  => $group . '/' . $repo,
             'group' => $group,
-            'name'  => $name,
+            'repo'  => $repo,
         ];
 
         $output->title('link information', ['indent' => 0]);

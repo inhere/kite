@@ -2,14 +2,16 @@
 
 namespace Inhere\Kite\Common\GitLocal;
 
+use Inhere\Kite\Common\CmdRunner;
 use Toolkit\Sys\Sys;
+use function parse_url;
 
 /**
- * Class GitUse
+ * Class GitRepo
  *
  * @package Inhere\Kite\Common\GitLocal
  */
-class GitUse extends AbstractGitLocal
+class GitRepo extends AbstractGitLocal
 {
     /**
      * Error code

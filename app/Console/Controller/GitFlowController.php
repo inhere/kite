@@ -120,6 +120,7 @@ class GitFlowController extends Controller
         $cmd = CmdRunner::new()
             ->add('git checkout master')
             ->addf('git pull %s master', $this->mainRemote)
+            ->add('git push') // update to origin
             ->addf('git checkout -b %s', $newBranch)
             ->addf('git push -u %s %s', $this->forkRemote, $newBranch)
             ->addWheref(static function () use ($notToMain) {
