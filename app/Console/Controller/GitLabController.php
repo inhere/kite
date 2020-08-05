@@ -25,9 +25,6 @@ use function http_build_query;
 use function in_array;
 use function parse_str;
 use function parse_url;
-use function strlen;
-use function strpos;
-use function substr;
 use function trim;
 
 /**
@@ -64,6 +61,7 @@ class GitLabController extends Controller
             'li'   => 'linkInfo',
             'cf'   => 'config',
             'conf' => 'config',
+            'pj'   => 'project',
         ];
     }
 
@@ -185,16 +183,28 @@ class GitLabController extends Controller
      * @options
      *  -l, --list    List all project information
      *
+     * @argument
+     *  name     Display project information for given name
+     *
      * @param Input  $input
      * @param Output $output
      */
     public function projectCommand(Input $input, Output $output): void
     {
+        $gitlab = $this->gitlab();
         if ($input->getSameBoolOpt(['l', 'list'])) {
-            $output->json($this->projects);
+            $output->json($gitlab->getProjects());
             return;
         }
 
+        if (!$pjName = $gitlab->findPjName()) {
+            $pjName = $input->getArg(0);
+        }
+
+        $gitlab->loadCurPjInfo($pjName);
+        $project = $gitlab->getCurProject();
+
+        $output->json($project->toArray());
         $output->success('Complete');
     }
 
@@ -268,28 +278,27 @@ class GitLabController extends Controller
     public function pullRequestCommand(Input $input, Output $output): void
     {
         // http://gitlab.my.com/group/repo/merge_requests/new?utf8=%E2%9C%93&merge_request%5Bsource_project_id%5D=319&merge_request%5Bsource_branch%5D=fea_4_16&merge_request%5Btarget_project_id%5D=319&merge_request%5Btarget_branch%5D=qa
-        $git = $this->gitlab();
-
-        if (!$pjName = $git->findPjName()) {
+        $gitlab = $this->gitlab();
+        if (!$pjName = $gitlab->findPjName()) {
             $pjName = $input->getRequiredArg('project');
         }
 
-        if (!$git->hasProject($pjName)) {
+        if (!$gitlab->hasProject($pjName)) {
             throw new PromptException("project '{$pjName}' is not found in the config");
         }
 
-        $git->setCurPjName($pjName)->loadCurPjInfo();
+        $gitlab->loadCurPjInfo($pjName);
 
-        $pjInfo = $git->getCurPjInfo();
+        $project = $gitlab->getCurProject();
 
-        $group = $pjInfo['group'] ?? $this->config['defaultGroup'];
-        $repo  = $pjInfo['repo'];
+        $repo  = $project->getRepo();
+        $group = $project->getGroup();
 
-        $brPrefix = $this->config['branchPrefix'];
-        $fixedBrs = $this->config['fixedBranch'];
+        $brPrefix = $gitlab->getValue('branchPrefix', '');
+        $fixedBrs = $gitlab->getValue('fixedBranch', []);
 
-        $srcPjId = $pjInfo['forkProjectId'];
-        $tgtPjId = $pjInfo['mainProjectId'];
+        $srcPjId = $project->getForkPid();
+        $tgtPjId = $project->getMainPid();
 
         $output->info('auto fetch current branch name');
         $curBranch = GitUtil::getCurrentBranchName();
@@ -315,7 +324,7 @@ class GitLabController extends Controller
         // Is sync to remote
         $isDirect = $input->getBoolOpt('direct');
         if ($isDirect || $srcBranch === $tgtBranch) {
-            $group = $pjInfo['forkGroup'] ?? $this->config['defaultForkGroup'];
+            $group = $project->getForkGroup();
         } else {
             $srcPjId = $tgtPjId;
         }
@@ -367,9 +376,6 @@ class GitLabController extends Controller
      *
      * @arguments
      * link     Please input an gitlab link
-     *
-     * @options
-     *  --config    Convert to config data TODO
      *
      * @param Input  $input
      * @param Output $output

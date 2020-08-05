@@ -2,8 +2,9 @@
 
 namespace Inhere\Kite\Common\GitLocal;
 
-use Inhere\Console\Exception\PromptException;
+use Inhere\Kite\Common\GitLocal\GitLab\Project;
 use RuntimeException;
+use function array_merge;
 
 /**
  * Class GitLab
@@ -60,17 +61,29 @@ class GitLab extends AbstractGitLocal
     }
 
     /**
+     * @param string $pjName
+     *
      * @return $this
      */
-    public function loadCurPjInfo(): self
+    public function loadCurPjInfo(string $pjName = ''): self
     {
-        $pjName = $this->curPjName;
+        if ($pjName) {
+            $this->setCurPjName($pjName);
+        }
 
+        $pjName = $this->curPjName;
         if (!isset($this->projects[$pjName])) {
             throw new RuntimeException("project '{$pjName}' is not found in the projects");
         }
 
-        $this->curPjInfo = $this->projects[$pjName];
+        $defaultInfo = [
+            'name'      => $pjName,
+            'group'     => $this->getValue('defaultGroup', ''),
+            'forkGroup' => $this->getValue('defaultForkGroup', ''),
+        ];
+
+        $this->curPjInfo = array_merge($defaultInfo, $this->projects[$pjName]);
+
         return $this;
     }
 
@@ -161,5 +174,13 @@ class GitLab extends AbstractGitLocal
     public function getCurPjInfo(): array
     {
         return $this->curPjInfo;
+    }
+
+    /**
+     * @return Project
+     */
+    public function getCurProject(): Project
+    {
+        return Project::new($this->curPjInfo);
     }
 }
