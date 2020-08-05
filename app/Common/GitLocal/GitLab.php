@@ -112,7 +112,9 @@ class GitLab extends AbstractGitLocal
             }
         } else {
             $info = $this->parseRemote()->getRemoteInfo();
-            if ($path = $info['path'] ?? '') {
+            $path = $info['path'] ?? '';
+
+            if ($path && isset($this->projects[$path])) {
                 $pjName = $path;
                 $this->output->liteNote('auto parse project name from git remote url');
             }

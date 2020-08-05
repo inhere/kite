@@ -238,7 +238,7 @@ class GitLabController extends Controller
         $toMain = $input->getSameBoolOpt(['m', 'main']);
         $remote = $input->getArg('remote', 'origin');
 
-        $info = $gitlab->parseRemote($remote)->getRemoteInfo();
+        $gitlab->parseRemote($remote);
 
         $link = $gitlab->getRepoUrl($toMain);
         AppHelper::openBrowser($link);
