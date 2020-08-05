@@ -78,11 +78,14 @@ class GitLab extends AbstractGitLocal
 
         $defaultInfo = [
             'name'      => $pjName,
+            'repo'      => $pjName, // default use project nam as repo name.
             'group'     => $this->getValue('defaultGroup', ''),
             'forkGroup' => $this->getValue('defaultForkGroup', ''),
         ];
 
         $this->curPjInfo = array_merge($defaultInfo, $this->projects[$pjName]);
+        // set current repo
+        $this->curRepo = $this->curPjInfo['repo'];
 
         return $this;
     }

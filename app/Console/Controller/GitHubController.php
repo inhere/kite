@@ -43,6 +43,35 @@ class GitHubController extends Controller
     }
 
     /**
+     * @return GitHub
+     */
+    private function newGithub(): GitHub
+    {
+        $config = $this->app->getParam('github', []);
+
+        return GitHub::new($this->output, $config)->setWorkDir($this->input->getWorkDir());
+    }
+
+    protected function configure(): void
+    {
+        parent::configure();
+
+        // binding arguments
+        switch ($this->getAction()) {
+            case 'open':
+                $this->input->bindArgument('remote', 0);
+                break;
+            case 'project':
+                $this->input->bindArgument('name', 0);
+                break;
+            case 'pullRequest':
+                // Configure for the `pullRequestCommand`
+                $this->input->bindArgument('project', 0);
+                break;
+        }
+    }
+
+    /**
      * Release new version and push to the remote github repos
      *
      * @options
@@ -101,7 +130,9 @@ class GitHubController extends Controller
         $repo = $input->getRequiredArg('repo');
         $name = $input->getStringArg('name');
 
-        $repoUrl = GitHub::new($output)->getRepoUrl($repo);
+        $gh = $this->newGithub();
+
+        $repoUrl = $gh->parseRepoUrl($repo);
         if (!$repoUrl) {
             $output->error("invalid github 'repo' address: $repo");
             return;
@@ -118,16 +149,6 @@ class GitHubController extends Controller
     }
 
     /**
-     * Configure for the `pullRequestCommand`
-     *
-     * @param Input $input
-     */
-    protected function pullRequestConfigure(Input $input): void
-    {
-        $input->bindArgument('project', 0);
-    }
-
-    /**
      * generate an PR link for given project information
      *
      * @param Input  $input
@@ -135,14 +156,11 @@ class GitHubController extends Controller
      */
     public function pullRequestCommand(Input $input, Output $output): void
     {
-        $gh = GitHub::new($output, $this->app->getParam('github', []));
-
-        $workDir = $input->getWorkDir();
-        $gh->setWorkDir($workDir);
+        $gh = $this->newGithub();
 
         // https://github.com/swoft-cloud/swoft-component/compare/master...ulue:dev2
         $pjName  = '';
-        $dirName = basename($workDir);
+        $dirName = $gh->getDirName();
         // $dirPfx  = $this->config['dirPrefix'];
         $dirPfx  = $gh->getValue('dirPrefix', '');
 

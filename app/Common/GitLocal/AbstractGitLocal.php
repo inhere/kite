@@ -9,6 +9,7 @@ use function basename;
 use function count;
 use function explode;
 use function strpos;
+use function substr;
 use function trim;
 
 /**
@@ -43,12 +44,17 @@ abstract class AbstractGitLocal
     /**
      * @var string
      */
-    private $remote = 'origin';
+    protected $remote = 'origin';
 
     /**
      * @var array
      */
-    private $remoteInfo = [];
+    protected $remoteInfo = [];
+
+    /**
+     * @var string
+     */
+    protected $curRepo = '';
 
     /**
      * @param Output $output
@@ -90,6 +96,35 @@ abstract class AbstractGitLocal
     }
 
     /**
+     * @param bool $toMain
+     *
+     * @return string
+     */
+    public function getRepoUrl(bool $toMain = false): string
+    {
+        $group = $toMain ? $this->getGroupName() : $this->getForkGroupName();
+        $path = "$group/{$this->curRepo}";
+
+        return $this->host . '/' . $path . '.git';
+    }
+
+    /**
+     * @return string
+     */
+    public function getGroupName(): string
+    {
+        return $this->getValue('defaultGroup', '');
+    }
+
+    /**
+     * @return string
+     */
+    public function getForkGroupName(): string
+    {
+        return $this->getValue('defaultForkGroup', '');
+    }
+
+    /**
      * @param string $remote
      *
      * @return $this
@@ -101,24 +136,38 @@ abstract class AbstractGitLocal
     }
 
     /**
+     * @param string $remote
+     *
      * @return $this
      */
-    public function parseRemote(): self
+    public function parseRemote(string $remote = ''): self
     {
+        if ($remote) {
+            $this->setRemote($remote);
+        }
+
         $str = 'git remote get-url --push ' . $this->remote;
         $url = CmdRunner::new($str, $this->workDir)->do()->getOutput(true);
 
         // git@gitlab.my.com:group/some-lib.git
-        if (strpos($url, 'git') === 0) {
-            [$host, $path] = explode(':', trim($url, 'git.@'), 2);
-            [$group, $name] = explode('/', $path, 2);
+        if (strpos($url, 'git@') === 0) {
+            if (substr($url, -4) === '.git') {
+                $url = substr($url, 4, -4);
+            } else {
+                $url = substr($url, 4);
+            }
 
+            // $url = gitlab.my.com:group/some-lib
+            [$host, $path]  = explode(':', $url, 2);
+            [$group, $repo] = explode('/', $path, 2);
+
+            $this->curRepo    = $repo;
             $this->remoteInfo = [
                 'host'  => $host,
                 'path'  => $path,
                 'url'   => $url,
                 'group' => $group,
-                'repo'  => $name,
+                'repo'  => $repo,
             ];
         } else {
             $info = parse_url($url);
@@ -144,7 +193,7 @@ abstract class AbstractGitLocal
      *
      * @return string
      */
-    public function getRepoUrl(string $repo): string
+    public function parseRepoUrl(string $repo): string
     {
         $repoUrl = '';
 
@@ -217,10 +266,13 @@ abstract class AbstractGitLocal
 
     /**
      * @param string $workDir
+     *
+     * @return AbstractGitLocal
      */
-    public function setWorkDir(string $workDir): void
+    public function setWorkDir(string $workDir): self
     {
         $this->workDir = $workDir;
+        return $this;
     }
 
     /**
@@ -237,5 +289,21 @@ abstract class AbstractGitLocal
     public function setOutput(Output $output): void
     {
         $this->output = $output;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurRepo(): string
+    {
+        return $this->curRepo;
+    }
+
+    /**
+     * @param string $curRepo
+     */
+    public function setCurRepo(string $curRepo): void
+    {
+        $this->curRepo = $curRepo;
     }
 }

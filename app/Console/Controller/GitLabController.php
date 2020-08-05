@@ -73,6 +73,16 @@ class GitLabController extends Controller
         unset($this->config['projects']);
 
         parent::configure();
+
+        // binding arguments
+        switch ($this->getAction()) {
+            case 'open':
+                $this->input->bindArgument('remote', 0);
+                break;
+            case 'project':
+                $this->input->bindArgument('name', 0);
+                break;
+        }
     }
 
     private function gitlab(): GitLab
@@ -114,7 +124,7 @@ class GitLabController extends Controller
     {
         $repo = $input->getRequiredArg('repo');
 
-        $repoUrl = $this->gitlab()->getRepoUrl($repo);
+        $repoUrl = $this->gitlab()->parseRepoUrl($repo);
         if (!$repoUrl) {
             $output->error("invalid github 'repo' address: $repo");
             return;
@@ -198,7 +208,7 @@ class GitLabController extends Controller
         }
 
         if (!$pjName = $gitlab->findPjName()) {
-            $pjName = $input->getArg(0);
+            $pjName = $input->getArg('name');
         }
 
         $gitlab->loadCurPjInfo($pjName);
@@ -213,17 +223,25 @@ class GitLabController extends Controller
      * open gitlab project page on browser
      *
      * @options
-     *  -l, --list    List all project information
+     *  -m, --main   Open the main repo page
+     *
+     * @argument
+     *  remote     The remote name. default: origin
      *
      * @param Input  $input
      * @param Output $output
      */
     public function openCommand(Input $input, Output $output): void
     {
-        if ($input->getSameBoolOpt(['l', 'list'])) {
-            $output->json($this->projects);
-            return;
-        }
+        $gitlab = $this->gitlab();
+
+        $toMain = $input->getSameBoolOpt(['m', 'main']);
+        $remote = $input->getArg('remote', 'origin');
+
+        $info = $gitlab->parseRemote($remote)->getRemoteInfo();
+
+        $link = $gitlab->getRepoUrl($toMain);
+        AppHelper::openBrowser($link);
 
         $output->success('Complete');
     }
