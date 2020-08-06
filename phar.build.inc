@@ -32,5 +32,7 @@ $compiler
 $compiler->on(PharCompiler::ADD_CLI_INDEX, static function ($file, $content) {
     echo "Set publish date to {$file}\n";
 
-    return str_replace("date('Y.m.d')", date('Y.m.d H:i'), $content);
+    $pubDate = date('Y.m.d H:i');
+
+    return str_replace("date('Y.m.d')", "'{$pubDate}'", $content);
 });
