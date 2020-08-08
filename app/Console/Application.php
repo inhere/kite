@@ -42,16 +42,20 @@ class Application extends \Inhere\Console\Application
         $bcFile = BASE_PATH . '/.kite.inc';
         $config = $userConfig = [];
 
+        $loaded = [];
         if (file_exists($ucFile)) {
+            $loaded[] = $ucFile;
             /** @noinspection PhpIncludeInspection */
             $userConfig = require $ucFile;
         }
 
-        if (file_exists($bcFile)) {
+        if ($ucFile !== $bcFile && file_exists($bcFile)) {
+            $loaded[] = $bcFile;
             /** @noinspection PhpIncludeInspection */
             $config = require $bcFile;
         }
 
+        $config['__loaded_file'] = $loaded;
         if ($userConfig && $config) {
             $this->mergeUserConfig($userConfig, $config);
         } else {

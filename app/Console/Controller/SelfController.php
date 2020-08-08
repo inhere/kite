@@ -8,6 +8,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Sys;
+use function count;
 
 /**
  * Class SelfController
@@ -42,7 +43,26 @@ class SelfController extends Controller
         parent::init();
 
         $this->baseDir = BASE_PATH;
-        $this->repoDir = Console::app()->getInput()->getPwd();
+        $this->repoDir = $this->input->getPwd();
+    }
+
+    /**
+     * show the application information
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function infoCommand(Input $input, Output $output): void
+    {
+        $app  = $this->getApp();
+        $conf = $app->getConfig();
+
+        $output->aList([
+            'work path' => $this->repoDir,
+            'root path' => $conf['rootPath'],
+            'loaded file' => $conf['__loaded_file'],
+            'script count' => count($conf['scripts']),
+        ], 'information');
     }
 
     /**
