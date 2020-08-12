@@ -35,7 +35,7 @@ jobs:
           ini-values: post_max_size=56M, short_open_tag=On #optional, setup php.ini configuration
           coverage: none #optional, setup coverage driver: xdebug, none
 
-      - name: Install dependencies
+      - name: Install dependencies # eg: v1.0.3
         run: |
           tag1=${GITHUB_REF#refs/*/}
           echo "release tag: ${tag1}"
@@ -46,13 +46,11 @@ jobs:
 
       - name: Build phar and send to github assets
         run: |
-         tag=${GITHUB_REF:10}
-         echo "release tag: ${tag}"
-         php -d phar.readonly=0 bin/kite phar:pack -o kite-${tag}.phar
+         php -d phar.readonly=0 bin/kite phar:pack -o kite-${RELEASE_TAG}.phar --no-progress
 
       - uses: meeDamian/github-release@2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.RELEASE_TAG }}
           name: ${{ env.RELEASE_NAME }}
-          files: kite-${tag}.phar
+          files: kite-${{ env.RELEASE_TAG }}.phar

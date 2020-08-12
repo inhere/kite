@@ -33,6 +33,10 @@ ln -s $PWD/bin/kite /usr/local/bin/kite
 chmod a+x bin/kite
 ```
 
+### 下载PHAR
+
+- https://github.com/inhere/kite/releases
+
 ## 使用帮助
 
 ```bash
