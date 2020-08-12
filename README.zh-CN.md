@@ -35,7 +35,15 @@ chmod a+x bin/kite
 
 ### 下载PHAR
 
-- https://github.com/inhere/kite/releases
+- release page: https://github.com/inhere/kite/releases
+
+eg:
+
+```bash
+wget -c https://github.com/inhere/kite/releases/download/v1.0.4/kite-v1.0.5.phar
+mv kite-v1.0.5.phar /usr/local/bin/kite
+chmod a+x /usr/local/bin/kite
+```
 
 ## 使用帮助
 

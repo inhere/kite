@@ -54,5 +54,5 @@ jobs:
           gzip: false
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.RELEASE_TAG }}
-          name: ${{ env.RELEASE_NAME }}
+          name: ${{ env.RELEASE_TAG }}
           files: kite-${{ env.RELEASE_TAG }}.phar

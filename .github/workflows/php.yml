@@ -1,6 +1,11 @@
 name: Unit-tests
 
-on: [push]
+on:
+  push:
+    paths:
+      - '**.php'
+      - 'composer.json'
+      - '**.yml'
 
 jobs:
   test:
