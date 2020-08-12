@@ -19,6 +19,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Set ENV for github-release
+        run: |
+          echo ::set-env name=RELEASE_TAG::$(echo ${GITHUB_REF:10})
+          echo ::set-env name=RELEASE_NAME::"$GITHUB_WORKFLOW"
+
       # usage refer https://github.com/shivammathur/setup-php
       - name: Setup PHP
         timeout-minutes: 5
@@ -31,19 +36,23 @@ jobs:
           coverage: none #optional, setup coverage driver: xdebug, none
 
       - name: Install dependencies
-        run: composer install --no-progress --no-suggest
+        run: |
+          tag1=${GITHUB_REF#refs/*/}
+          echo "release tag: ${tag1}"
+          composer install --no-progress --no-suggest
 
       # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
       # Docs: https://getcomposer.org/doc/articles/scripts.md
 
-      - name: Build phar package
-        run: php -d phar.readonly=0 bin/kite phar:pack -o kite.phar
-
-      - name: Post to github assets
+      - name: Build phar and send to github assets
         run: |
-          curl \
-          -X POST \
-          -H "Accept: application/vnd.github.v3+json" \
-          -T kite.phar
-#          -H "Content-Type: application/gzip" \
-          https://api.github.com/repos/inere/kite/releases/42/assets
+         tag=${GITHUB_REF:10}
+         echo "release tag: ${tag}"
+         php -d phar.readonly=0 bin/kite phar:pack -o kite-${tag}.phar
+
+      - uses: meeDamian/github-release@2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ env.RELEASE_TAG }}
+          name: ${{ env.RELEASE_NAME }}
+          files: kite-${tag}.phar

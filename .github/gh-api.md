@@ -1,4 +1,4 @@
-# 
+# GH API
 
 see https://docs.github.com/en/rest/reference/repos#get-a-release-by-tag-name
 

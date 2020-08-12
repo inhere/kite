@@ -15,6 +15,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
+use PhpComp\Http\Client\Client;
 
 /**
  * Class GitHubGroup
@@ -76,17 +77,42 @@ class GitHubController extends Controller
      *
      * @options
      *  -b, --body          The body contents for new release. allow markdown text
-     *  -m, --message       The title message for new release
-     *  -v, --version       The new tag version. e.g: v2.0.4
+     *  -m, --message       The body message for new release
+     *  -v, --version       The new release tag version. e.g: v2.0.4
      *      --dry-run       Dont real send git tag and push command
      *      --last          Use the latest tag for new release
      *      --next          Auto calc next version for new release
+     * @example
+     *  see github API: https://developer.github.com/v3/repos/releases/#create-a-release
      *
      * @param Input  $input
      * @param Output $output
      */
     public function releaseCommand(Input $input, Output $output): void
     {
+        /*
+{
+  "tag_name": "v1.0.0",
+  "target_commitish": "master",
+  "name": "v1.0.0",
+  "body": "Description of the release",
+  "draft": false,
+  "prerelease": false
+}
+          curl \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/inhere/kite/releases/tags/${tag}
+          curl \
+          -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          -T kite-${tag}.phar
+           -H "Content-Type: application/gzip" \
+          https://api.github.com/repos/ingere/kite/releases/42/assets
+         */
+
+        $http = Client::factory();
+
+
         $output->success('Complete');
     }
 
