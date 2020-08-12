@@ -47,9 +47,11 @@ jobs:
       - name: Build phar and send to github assets
         run: |
          php -d phar.readonly=0 bin/kite phar:pack -o kite-${RELEASE_TAG}.phar --no-progress
+         php kite-${RELEASE_TAG}.phar -V
 
       - uses: meeDamian/github-release@2.0
         with:
+          gzip: false
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.RELEASE_TAG }}
           name: ${{ env.RELEASE_NAME }}

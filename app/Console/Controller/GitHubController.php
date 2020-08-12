@@ -15,6 +15,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
+use Inhere\Kite\Helper\AppHelper;
 use PhpComp\Http\Client\Client;
 
 /**
@@ -122,6 +123,45 @@ class GitHubController extends Controller
      */
     public function workflowCommand(Input $input, Output $output): void
     {
+        $output->success('Complete');
+    }
+
+    /**
+     * @param Input $input
+     */
+    protected function openConfigure(Input $input): void
+    {
+        $input->bindArguments([
+            'repo' => 0,
+        ]);
+    }
+
+    /**
+     * Open an github repository by browser
+     *
+     * @arguments
+     *  repo    The remote git repo URL or repository group/name
+     *
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @example
+     *  {fullCmd}  php-toolkit/cli-utils
+     *  {fullCmd}  https://github.com/php-toolkit/cli-utils
+     */
+    public function openCommand(Input $input, Output $output): void
+    {
+        $gh = $this->newGithub();
+
+        $repo = $input->getRequiredArg('repo');
+        $repoUrl = $gh->parseRepoUrl($repo);
+        if (!$repoUrl) {
+            $output->error("invalid github 'repo' address: $repo");
+            return;
+        }
+
+        AppHelper::openBrowser($repoUrl);
+
         $output->success('Complete');
     }
 

@@ -8,8 +8,8 @@ define('BASE_PATH', dirname(__DIR__));
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 $app = new Application([
-  'rootPath' => BASE_PATH,
-  'version'      => '0.5.1',
+  'rootPath'     => BASE_PATH,
+  'version'      => '1.0.5',
   'publishAt'    => '2020.05.24',
   'updateAt'     => date('Y.m.d'),
   'description'  => 'Kite is an help commands tool for development',

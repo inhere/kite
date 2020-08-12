@@ -9,6 +9,7 @@ vendor/
 *.lock
 *.phar
 *.log
+*.tgz
 *.txt
 .phpintel/
 .env
