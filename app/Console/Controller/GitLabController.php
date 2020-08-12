@@ -428,4 +428,28 @@ class GitLabController extends Controller
         $output->title('link information', ['indent' => 0]);
         $output->json($info);
     }
+
+    /**
+     * sync codes from remote main repo
+     *
+     * @options
+     *  -b, --branch  The sync code branch name, default is current branch(<info>{curBranchName}</info>)
+     *  -r, --remote  The main remote name, default: {mainRemote}
+     *      --push    Push to origin remote after update
+     *
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @example
+     *  {binWithCmd}             Sync code from the main repo remote {curBranchName} branch
+     *  {binWithCmd} -b master   Sync code from the main repo remote master branch
+     *
+     */
+    public function syncCommand(Input $input, Output $output): void
+    {
+        $binName = $input->getBinName();
+        $output->info("TIPS:\n $binName gl:pr -o -t BRANCH");
+
+        Console::app()->dispatch('gf:sync');
+    }
 }

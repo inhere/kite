@@ -100,7 +100,7 @@ class AppHelper
             $cmd = 'x-www-browser';
         }
 
-        Show::info("Will open the page on browser: $pageUrl");
+        Show::info("Will open the page on browser:\n  $pageUrl");
         Sys::execute($cmd . " \"{$pageUrl}\"");
     }
 }

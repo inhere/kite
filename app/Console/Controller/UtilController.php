@@ -20,6 +20,28 @@ use function date;
  */
 class UtilController extends Controller
 {
+    public const JB_NAME = 'JetBrains';
+    public const JB_TBOX = 'Toolbox';
+    public const JB_ALL = [
+        'IntelliJIdea',
+        'CLion',
+        'PhpStorm',
+        'GoLand',
+        'PyCharm',
+        'WebStorm',
+        'Rider',
+        'DataGrip',
+        'RubyMine',
+        'AppCode',
+    ];
+
+    public const JB_NORMAL = [
+        'IntelliJIdea',
+        'CLion',
+        'PhpStorm',
+        'GoLand',
+    ];
+
     protected static $name = 'util';
 
     protected static $description = 'Some useful development tool commands';
@@ -58,13 +80,22 @@ class UtilController extends Controller
         foreach ($args as $time) {
             $data[] = [
                 'timestamp' => $time,
-                'datetime' => date('Y-m-d H:i:s', (int)$time),
+                'datetime'  => date('Y-m-d H:i:s', (int)$time),
             ];
         }
 
         $output->colored('- Current Time: ' . date('Y-m-d H:i:s'));
-        $output->table($data, 'Time to date', [
-            // opts
+        $output->table($data, 'Time to date', [// opts
         ]);
+    }
+
+    /**
+     * find IDEA in the machine
+     */
+    public function findJetBrainsCommand(): void
+    {
+        // ~/Library/Preferences/PhpStorm2019.3/
+        // ~/Library/Application\ Support/JetBrains/
+        // ~/Library/Application\ Support/JetBrains/Toolbox/apps/
     }
 }

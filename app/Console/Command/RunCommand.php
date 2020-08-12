@@ -96,6 +96,7 @@ class RunCommand extends Command
             // Sys::execute($commands, false);
             $command = $this->replaceScriptVars($name, $commands, $runArgs);
             CmdRunner::new($command)->do(true);
+            $output->info('DONE: ' . $command);
             return;
         }
 
@@ -114,6 +115,7 @@ class RunCommand extends Command
 
                 $command = $this->replaceScriptVars($name, $command, $runArgs);
                 CmdRunner::new($command)->do(true);
+                $output->info('DONE: ' . $command);
             }
             return;
         }
@@ -138,7 +140,9 @@ class RunCommand extends Command
             throw new PromptException("missing arguments for run script '{$name}'");
         }
 
-        $pairs = [];
+        $pairs = [
+            '$@' => implode(' ', $scriptArgs),
+        ];
 
         // like bash script, first var is '$1'
         foreach ($scriptArgs as $i => $arg) {
