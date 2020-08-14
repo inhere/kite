@@ -355,8 +355,8 @@ class GitLabController extends Controller
         ];
 
         $tipInfo = array_merge([
-            'project' => $pjName,
-            'glPath'  => "$group/$repo",
+            'name'   => $pjName,
+            'glPath' => "$group/$repo",
         ], $prInfo);
         $output->aList($tipInfo, '- project information', ['ucFirst' => false]);
         $query = [
