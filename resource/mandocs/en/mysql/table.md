@@ -12,7 +12,8 @@ CREATE TABLE `my_table` (
   `orderno` varchar(120) NOT NULL DEFAULT '' COMMENT 'order no',
   `create_at` int(10) unsigned NOT NULL COMMENT 'create time',
   PRIMARY KEY (`id`),
-  KEY `idx_orderno` (`orderno`)
+  KEY `idx_orderno` (`orderno`),
+  UNIQUE KEY `uni_orderno` (`orderno`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='table comments';
 ```
 

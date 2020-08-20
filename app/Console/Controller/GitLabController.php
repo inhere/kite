@@ -62,6 +62,7 @@ class GitLabController extends Controller
             'cf'   => 'config',
             'conf' => 'config',
             'pj'   => 'project',
+            'nb'   => 'newBranch',
         ];
     }
 
@@ -185,6 +186,31 @@ class GitLabController extends Controller
         Console::app()->dispatch('git:acp');
 
         $output->info("TIPS:\n $binName gl:pr -o -t BRANCH");
+    }
+
+    /**
+     * checkout an new branch for development
+     *
+     * @options
+     *  --dry-run    Dry-run the workflow
+     *  --not-main   Dont push new branch to the main remote
+     *
+     * @arguments
+     *  branch      The new branch name. eg: fea_6_12
+     *
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @throws ReflectionException
+     */
+    public function newBranchCommand(Input $input, Output $output): void
+    {
+        // $binName = $input->getBinName();
+        $command = 'gitflow:newBranch';
+
+        $output->notice("redirect to $command");
+
+        Console::app()->dispatch($command);
     }
 
     /**

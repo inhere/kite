@@ -96,6 +96,7 @@ class UtilController extends Controller
     {
         // ~/Library/Preferences/PhpStorm2019.3/
         // ~/Library/Application\ Support/JetBrains/
+        // ~/Library/Application\ Support/JetBrains/GoLand2020.1/eval
         // ~/Library/Application\ Support/JetBrains/Toolbox/apps/
     }
 }

@@ -28,3 +28,11 @@ drop column example:
 alter table my_table DROP old_field;
 ```
 
+## add index
+
+key index:
+
+```sql
+ALTER TABLE `my_table` ADD INDEX `idx_orderno`(`orderno`);
+```
+

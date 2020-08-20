@@ -16,6 +16,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\SysCmd;
+use function count;
 use function is_array;
 use function is_string;
 use function strpos;
@@ -42,7 +43,7 @@ class RunCommand extends Command
      * Do execute
      *
      * @options
-     *  -l, --list  List all script names
+     *  -l, --list  List information for all scripts or one script
      *
      * @param Input  $input
      * @param Output $output
@@ -69,7 +70,8 @@ class RunCommand extends Command
                     'command' => $scripts[$name],
                 ], 'script information', $listOpt);
             } else {
-                $output->aList($scripts, 'registered scripts', $listOpt);
+                $count = count($scripts);
+                $output->aList($scripts, "registered scripts(total: $count)", $listOpt);
             }
 
             return;

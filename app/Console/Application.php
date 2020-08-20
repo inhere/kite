@@ -9,6 +9,7 @@
 
 namespace Inhere\Kite\Console;
 
+use Inhere\Kite\Helper\AppHelper;
 use function array_merge;
 use function file_exists;
 use function is_array;
@@ -57,10 +58,10 @@ class Application extends \Inhere\Console\Application
 
         $config['__loaded_file'] = $loaded;
         if ($userConfig && $config) {
-            $this->mergeUserConfig($userConfig, $config);
-        } else {
-            $this->setConfig($config);
+            $config = AppHelper::mergeConfig($userConfig, $config);
         }
+
+        $this->setConfig($config);
     }
 
     /**
