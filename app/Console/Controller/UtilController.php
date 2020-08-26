@@ -14,6 +14,8 @@ use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use function date;
+use function strtotime;
+use function time;
 
 /**
  * Class UtilController
@@ -59,8 +61,19 @@ class UtilController extends Controller
      */
     public function dateCommand(Input $input, Output $output): void
     {
-        $output->println('Time: ' . date('Y-m-d H:i:s'));
-        // $output->success('Complete');
+        $time = time();
+        $oneDayAgo = strtotime('-1 day',  $time);
+        $oneDayLater = strtotime('+1 day',  $time);
+
+        $output->aList([
+            'current time' => $time,
+            'current date' => date('Y-m-d H:i:s', $time),
+            'one day ago' => $oneDayAgo,
+            'one day ago date' => date('Y-m-d H:i:s', $oneDayAgo),
+            'one day later' => $oneDayLater,
+            'one day later date' => date('Y-m-d H:i:s', $oneDayLater),
+            'yesterday start' => date('Y-m-d 00:00:01', $time),
+        ], 'recently date');
     }
 
     /**

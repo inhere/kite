@@ -111,7 +111,7 @@ class GitHubController extends Controller
           https://api.github.com/repos/ingere/kite/releases/42/assets
          */
 
-        $http = Client::factory();
+        $http = Client::factory([]);
 
 
         $output->success('Complete');
@@ -139,6 +139,9 @@ class GitHubController extends Controller
     /**
      * Open an github repository by browser
      *
+     * @options
+     *  -r, --remote         The git remote name. default is 'origin'
+     *
      * @arguments
      *  repo    The remote git repo URL or repository group/name
      *
@@ -152,6 +155,16 @@ class GitHubController extends Controller
     public function openCommand(Input $input, Output $output): void
     {
         $gh = $this->newGithub();
+
+        $remote = $input->getSameStringOpt(['r', 'remote'], 'origin');
+        $info   = $gh->parseRemote($remote)->getRemoteInfo();
+
+        if (!empty($info['url'])) {
+            AppHelper::openBrowser($info['url']);
+
+            $output->success('Complete');
+            return;
+        }
 
         $repo = $input->getRequiredArg('repo');
         $repoUrl = $gh->parseRepoUrl($repo);

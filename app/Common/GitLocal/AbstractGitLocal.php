@@ -47,6 +47,16 @@ abstract class AbstractGitLocal
     protected $remote = 'origin';
 
     /**
+     * @var string
+     */
+    protected $mainRemote = 'main';
+
+    /**
+     * @var string
+     */
+    protected $forkRemote = 'origin';
+
+    /**
      * @var array
      */
     protected $remoteInfo = [];
@@ -54,11 +64,21 @@ abstract class AbstractGitLocal
     /**
      * @var string
      */
+    protected $curMainGroup = '';
+
+    /**
+     * @var string
+     */
+    protected $curForkGroup = '';
+
+    /**
+     * @var string
+     */
     protected $curRepo = '';
 
     /**
-     * @param Output $output
-     * @param array  $config
+     * @param Output|null $output
+     * @param array       $config
      *
      * @return static
      */
@@ -70,8 +90,8 @@ abstract class AbstractGitLocal
     /**
      * Class constructor.
      *
-     * @param Output $output
-     * @param array  $config
+     * @param Output|null $output
+     * @param array       $config
      */
     public function __construct(Output $output = null, array $config = [])
     {
@@ -82,6 +102,9 @@ abstract class AbstractGitLocal
         $this->init($config);
     }
 
+    /**
+     * @param array $config
+     */
     protected function init(array $config): void
     {
         $this->config = $config;
@@ -103,7 +126,7 @@ abstract class AbstractGitLocal
     public function getRepoUrl(bool $toMain = false): string
     {
         $group = $toMain ? $this->getGroupName() : $this->getForkGroupName();
-        $path = "$group/{$this->curRepo}";
+        $path  = "$group/{$this->curRepo}";
 
         return $this->host . '/' . $path . '.git';
     }
@@ -113,6 +136,18 @@ abstract class AbstractGitLocal
      */
     public function getGroupName(): string
     {
+        if ($this->curMainGroup) {
+            return $this->curMainGroup;
+        }
+
+        return $this->getDefaultGroupName();
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultGroupName(): string
+    {
         return $this->getValue('defaultGroup', '');
     }
 
@@ -120,6 +155,18 @@ abstract class AbstractGitLocal
      * @return string
      */
     public function getForkGroupName(): string
+    {
+        if ($this->curForkGroup) {
+            return $this->curForkGroup;
+        }
+
+        return $this->getDefaultForkGroupName();
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultForkGroupName(): string
     {
         return $this->getValue('defaultForkGroup', '');
     }
@@ -158,11 +205,17 @@ abstract class AbstractGitLocal
             }
 
             // $url = gitlab.my.com:group/some-lib
-            [$host, $path]  = explode(':', $url, 2);
+            [$host, $path] = explode(':', $url, 2);
             [$group, $repo] = explode('/', $path, 2);
 
-            $this->curRepo    = $repo;
-            $this->remoteInfo = [
+            $this->curRepo = $repo;
+
+            if ($this->remote === $this->getDefaultGroupName()) {
+                $this->curMainGroup = '';
+            }
+
+            $this->curForkGroup = $group;
+            $this->remoteInfo   = [
                 'host'  => $host,
                 'path'  => $path,
                 'url'   => $url,
@@ -173,6 +226,10 @@ abstract class AbstractGitLocal
             $info = parse_url($url);
             // add
             $info['url'] = $url;
+
+            // TODO
+            // $this->curGroup = $group;
+            // $this->curRepo  = $repo;
 
             $this->remoteInfo = $info;
         }
@@ -305,5 +362,37 @@ abstract class AbstractGitLocal
     public function setCurRepo(string $curRepo): void
     {
         $this->curRepo = $curRepo;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurForkGroup(): string
+    {
+        return $this->curForkGroup;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurMainGroup(): string
+    {
+        return $this->curMainGroup;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMainRemote(): string
+    {
+        return $this->mainRemote;
+    }
+
+    /**
+     * @return string
+     */
+    public function getForkRemote(): string
+    {
+        return $this->forkRemote;
     }
 }

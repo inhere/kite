@@ -260,9 +260,14 @@ class GitLabController extends Controller
     public function openCommand(Input $input, Output $output): void
     {
         $gitlab = $this->gitlab();
-
         $toMain = $input->getSameBoolOpt(['m', 'main']);
-        $remote = $input->getArg('remote', 'origin');
+
+        $defRemote = $gitlab->getForkRemote();
+        if ($toMain) {
+            $defRemote = $gitlab->getMainRemote();
+        }
+
+        $remote = $input->getArg('remote', $defRemote);
 
         $gitlab->parseRemote($remote);
 
