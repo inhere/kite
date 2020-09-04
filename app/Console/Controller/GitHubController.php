@@ -143,7 +143,8 @@ class GitHubController extends Controller
      *  -r, --remote         The git remote name. default is 'origin'
      *
      * @arguments
-     *  repo    The remote git repo URL or repository group/name
+     *  repo    The remote git repo URL or repository group/name.
+     *          If not input, will auto parse from current work directory
      *
      * @param Input  $input
      * @param Output $output

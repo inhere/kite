@@ -14,7 +14,9 @@ use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use function date;
+use function strlen;
 use function strtotime;
+use function substr;
 use function time;
 
 /**
@@ -91,6 +93,10 @@ class UtilController extends Controller
 
         $data = [];
         foreach ($args as $time) {
+            if (strlen($time) > 10) {
+                $time = substr($time, 0, 10);
+            }
+
             $data[] = [
                 'timestamp' => $time,
                 'datetime'  => date('Y-m-d H:i:s', (int)$time),

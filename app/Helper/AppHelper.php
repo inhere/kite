@@ -21,13 +21,13 @@ class AppHelper
     ];
 
     /**
-     * @param string $version eg: 2.0.8, v2.0.8
+     * @param string $version eg: 2.0.8, v2.0.8.1
      *
      * @return bool
      */
     public static function isVersion(string $version): bool
     {
-        return 1 === preg_match('#^v?\d{1,2}.\d{1,2}.\d{1,3}$#', $version);
+        return 1 === preg_match('#^v?\d{1,2}.\d{1,2}.\d{1,3}(.\d{1,3})?$#', $version);
     }
 
     /**
@@ -37,7 +37,7 @@ class AppHelper
      */
     public static function isPhpPkgName(string $pkgName): bool
     {
-
+        return true;
     }
 
     /**
