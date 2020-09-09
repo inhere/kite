@@ -281,6 +281,8 @@ class CmdRunner
     }
 
     /**
+     * Run all added commands
+     *
      * @param bool $printOutput
      *
      * @return $this
@@ -345,7 +347,7 @@ class CmdRunner
         if ($this->dryRun) {
             $ret = [
                 'status' => 0,
-                'output' => 'Command execute success',
+                'output' => 'DRY-RUN: Command execute success',
             ];
         } else {
             $ret = Sys::execute($command, true, $workDir);

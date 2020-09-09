@@ -23,6 +23,7 @@ use function array_merge;
 use function explode;
 use function http_build_query;
 use function in_array;
+use function is_string;
 use function parse_str;
 use function parse_url;
 use function trim;
@@ -63,6 +64,7 @@ class GitLabController extends Controller
             'conf' => 'config',
             'pj'   => 'project',
             'nb'   => 'newBranch',
+            'rc'   => 'resolve',
         ];
     }
 
@@ -277,19 +279,49 @@ class GitLabController extends Controller
         $output->success('Complete');
     }
 
+    /**
+     * Configure for the `resolveCommand`
+     *
+     * @param Input $input
+     */
+    protected function resolveConfigure(Input $input): void
+    {
+        $input->bindArgument('branch', 0);
+    }
 
     /**
-     * Resolve git conflicts
+     * Resolve conflicts preparing for current git branch.
+     *
+     * 1. will checkout to <cyan>branch</cyan>
+     * 2. update the <cyan>branch</cyan> codes from main repository
+     * 3. merge current-branch codes from main repository
+     * 4. please resolve conflicts by tools or manual
+     *
+     * @arguments
+     *    <cyan>branch</cyan>  The conflicts target branch name. eg: testing, qa, pre
+     *
+     * @options
+     *  --dry-run    Dry-run the workflow
      *
      * @param Input  $input
      * @param Output $output
      */
     public function resolveCommand(Input $input, Output $output): void
     {
-        // ...
-        // kite gl:pr
+        $gitlab = $this->gitlab();
+        $branch = $input->getRequiredArg('branch');
+        $dryRun = $input->getBoolOpt('dry-run');
 
-        $output->success('Complete');
+        $curBranch = $gitlab->getCurBranch();
+
+        $runner = CmdRunner::new();
+        $runner->setDryRun($dryRun);
+        $runner->addf('git checkout %s', $branch);
+        $runner->addf('git pull %s %s', $gitlab->getMainRemote(), $branch);
+        $runner->addf('git pull %s %s', $gitlab->getMainRemote(), $curBranch);
+        $runner->run(true);
+
+        $output->success('Complete. please resolve conflicts by tools or manual');
     }
 
     /**
@@ -349,6 +381,8 @@ class GitLabController extends Controller
         $srcPjId = $project->getForkPid();
         $tgtPjId = $project->getMainPid();
 
+        $open = $input->getSameOpt(['o', 'open']);
+
         $output->info('auto fetch current branch name');
         $curBranch = GitUtil::getCurrentBranchName();
         $srcBranch = $input->getSameStringOpt(['s', 'source']);
@@ -366,6 +400,8 @@ class GitLabController extends Controller
             if (!in_array($tgtBranch, $fixedBrs, true)) {
                 $tgtBranch = $brPrefix . $tgtBranch;
             }
+        } elseif (is_string($open) && $open) {
+            $tgtBranch = $open;
         } else {
             $tgtBranch = $curBranch;
         }
@@ -399,7 +435,7 @@ class GitLabController extends Controller
         $link .= "/{$group}/{$repo}/merge_requests/new?";
         $link .= http_build_query($query, '', '&');
 
-        if ($input->getSameBoolOpt(['o', 'open'])) {
+        if ($open) {
             // $output->info('will auto open link on browser');
             AppHelper::openBrowser($link);
             $output->success('Complete');
@@ -471,6 +507,7 @@ class GitLabController extends Controller
      * @param Input  $input
      * @param Output $output
      *
+     * @throws ReflectionException
      * @example
      *  {binWithCmd}             Sync code from the main repo remote {curBranchName} branch
      *  {binWithCmd} -b master   Sync code from the main repo remote master branch

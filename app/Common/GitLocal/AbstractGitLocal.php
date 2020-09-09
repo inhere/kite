@@ -77,6 +77,11 @@ abstract class AbstractGitLocal
     protected $curRepo = '';
 
     /**
+     * @var string
+     */
+    protected $curBranch = '';
+
+    /**
      * @param Output|null $output
      * @param array       $config
      *
@@ -116,6 +121,18 @@ abstract class AbstractGitLocal
     public function clone(): array
     {
         return [];
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurBranch(): string
+    {
+        if (!$this->curBranch) {
+            $this->curBranch = GitUtil::getCurrentBranchName($this->workDir);
+        }
+
+        return $this->curBranch;
     }
 
     /**
@@ -394,5 +411,13 @@ abstract class AbstractGitLocal
     public function getForkRemote(): string
     {
         return $this->forkRemote;
+    }
+
+    /**
+     * @param string $curBranch
+     */
+    public function setCurBranch(string $curBranch): void
+    {
+        $this->curBranch = $curBranch;
     }
 }

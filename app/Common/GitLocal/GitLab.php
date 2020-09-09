@@ -31,11 +31,6 @@ class GitLab extends AbstractGitLocal
     /**
      * @var string
      */
-    private $curBranch = '';
-
-    /**
-     * @var string
-     */
     private $srcBranch = '';
 
     /**

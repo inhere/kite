@@ -52,7 +52,10 @@ class UtilController extends Controller
 
     protected static function commandAliases(): array
     {
-        return ['tc' => 'timeConv'];
+        return [
+            'tc'  => 'timeConv',
+            'fjb' => 'findJetBrains',
+        ];
     }
 
     /**
@@ -110,12 +113,22 @@ class UtilController extends Controller
 
     /**
      * find IDEA in the machine
+     *
+     * @param Input  $input
+     * @param Output $output
      */
-    public function findJetBrainsCommand(): void
+    public function findJetBrainsCommand(Input $input, Output $output): void
     {
-        // ~/Library/Preferences/PhpStorm2019.3/
-        // ~/Library/Application\ Support/JetBrains/
-        // ~/Library/Application\ Support/JetBrains/GoLand2020.1/eval
-        // ~/Library/Application\ Support/JetBrains/Toolbox/apps/
+        $dirs = [
+            // '~/Library/Preferences/PhpStorm2019.3/',
+            '~/Library/Application\ Support/JetBrains/',
+            '~/Library/Application\ Support/JetBrains/GoLand2020.1/eval',
+            '~/Library/Application\ Support/JetBrains/Toolbox/apps/',
+        ];
+
+        $ideName = $input->getStringArg('name', 'all');
+        // rm -rf ~/Library/Application\ Support/${NAME}*/eval
+
+        var_dump($dirs);
     }
 }
