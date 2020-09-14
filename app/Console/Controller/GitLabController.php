@@ -431,7 +431,8 @@ class GitLabController extends Controller
             'merge_request' => $prInfo
         ];
 
-        $link = $this->config['hostUrl'];
+        // $link = $this->config['hostUrl'];
+        $link = $gitlab->getHost();
         $link .= "/{$group}/{$repo}/merge_requests/new?";
         $link .= http_build_query($query, '', '&');
 

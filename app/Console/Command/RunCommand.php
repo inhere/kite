@@ -43,7 +43,8 @@ class RunCommand extends Command
      * Do execute
      *
      * @options
-     *  -l, --list  List information for all scripts or one script
+     *  -l, --list      List information for all scripts or one script
+     *      --dry-run   Mock running an script
      *
      * @param Input  $input
      * @param Output $output

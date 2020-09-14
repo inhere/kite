@@ -3,8 +3,6 @@
 namespace Inhere\Kite\Common\GitLocal;
 
 use Inhere\Kite\Common\GitLocal\GitLab\Project;
-use RuntimeException;
-use function array_merge;
 
 /**
  * Class GitLab
@@ -14,21 +12,6 @@ use function array_merge;
 class GitLab extends AbstractGitLocal
 {
     /**
-     * @var array
-     */
-    private $projects;
-
-    /**
-     * @var string
-     */
-    private $curPjName = '';
-
-    /**
-     * @var array
-     */
-    private $curPjInfo = [];
-
-    /**
      * @var string
      */
     private $srcBranch = '';
@@ -37,53 +20,6 @@ class GitLab extends AbstractGitLocal
      * @var string
      */
     private $dstBranch = '';
-
-    /**
-     * Class constructor.
-     *
-     * @param array $config
-     */
-    protected function init(array $config): void
-    {
-        $this->projects = $config['projects'] ?? [];
-
-        unset($config['projects']);
-        $this->config = $config;
-
-        if (isset($config['hostUrl'])) {
-            $this->setHost($config['hostUrl']);
-        }
-    }
-
-    /**
-     * @param string $pjName
-     *
-     * @return $this
-     */
-    public function loadCurPjInfo(string $pjName = ''): self
-    {
-        if ($pjName) {
-            $this->setCurPjName($pjName);
-        }
-
-        $pjName = $this->curPjName;
-        if (!isset($this->projects[$pjName])) {
-            throw new RuntimeException("project '{$pjName}' is not found in the projects");
-        }
-
-        $defaultInfo = [
-            'name'      => $pjName,
-            'repo'      => $pjName, // default use project nam as repo name.
-            'group'     => $this->getValue('defaultGroup', ''),
-            'forkGroup' => $this->getValue('defaultForkGroup', ''),
-        ];
-
-        $this->curPjInfo = array_merge($defaultInfo, $this->projects[$pjName]);
-        // set current repo
-        $this->curRepo = $this->curPjInfo['repo'];
-
-        return $this;
-    }
 
     /**
      * @return string
@@ -131,59 +67,6 @@ class GitLab extends AbstractGitLocal
     public function createPRLink(string $srcBranch, string $dstBranch, bool $direct = false): string
     {
         return '';
-    }
-
-    /**
-     * @param string $pjName
-     *
-     * @return bool
-     */
-    public function hasProject(string $pjName): bool
-    {
-        return isset($this->projects[$pjName]);
-    }
-
-    /**
-     * @return array
-     */
-    public function getProjects(): array
-    {
-        return $this->projects;
-    }
-
-    /**
-     * @param array $projects
-     */
-    public function setProjects(array $projects): void
-    {
-        $this->projects = $projects;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCurPjName(): string
-    {
-        return $this->curPjName;
-    }
-
-    /**
-     * @param string $curPjName
-     *
-     * @return GitLab
-     */
-    public function setCurPjName(string $curPjName): self
-    {
-        $this->curPjName = $curPjName;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getCurPjInfo(): array
-    {
-        return $this->curPjInfo;
     }
 
     /**

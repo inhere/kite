@@ -16,6 +16,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Helper\AppHelper;
+use Inhere\Kite\Helper\GitUtil;
 use PhpComp\Http\Client\Client;
 
 /**
@@ -40,7 +41,7 @@ class GitHubController extends Controller
         return [
             'wf'  => 'workflow',
             'rls' => 'release',
-            'pr' => 'pullRequest',
+            'pr'  => 'pullRequest',
         ];
     }
 
@@ -83,11 +84,13 @@ class GitHubController extends Controller
      *      --dry-run       Dont real send git tag and push command
      *      --last          Use the latest tag for new release
      *      --next          Auto calc next version for new release
-     * @example
-     *  see github API: https://developer.github.com/v3/repos/releases/#create-a-release
      *
      * @param Input  $input
      * @param Output $output
+     *
+     * @example
+     *  see github API: https://developer.github.com/v3/repos/releases/#create-a-release
+     *
      */
     public function releaseCommand(Input $input, Output $output): void
     {
@@ -167,7 +170,7 @@ class GitHubController extends Controller
             return;
         }
 
-        $repo = $input->getRequiredArg('repo');
+        $repo    = $input->getRequiredArg('repo');
         $repoUrl = $gh->parseRepoUrl($repo);
         if (!$repoUrl) {
             $output->error("invalid github 'repo' address: $repo");
@@ -238,30 +241,70 @@ class GitHubController extends Controller
     {
         $gh = $this->newGithub();
 
-        // https://github.com/swoft-cloud/swoft-component/compare/master...ulue:dev2
         $pjName  = '';
         $dirName = $gh->getDirName();
         // $dirPfx  = $this->config['dirPrefix'];
-        $dirPfx  = $gh->getValue('dirPrefix', '');
+        $dirPfx = $gh->getValue('dirPrefix', '');
 
-        // try auto parse project name for dirname.
-        if ($dirPfx && strpos($dirName, $dirPfx) === 0) {
-            $tmpName = substr($dirName, strlen($dirPfx));
-
-            if (isset($this->projects[$tmpName])) {
-                $pjName = $tmpName;
-                $output->liteNote('auto parse project name for dirname.');
-            }
-        }
-
-        if (!$pjName) {
+        if (!$pjName = $gh->findPjName()) {
             $pjName = $input->getRequiredArg('project');
         }
 
-        if (!isset($this->projects[$pjName])) {
+        if (!$gh->hasProject($pjName)) {
             throw new PromptException("project '{$pjName}' is not found in the config");
         }
 
-        $output->success('Complete');
+        $gh->loadCurPjInfo($pjName);
+
+        $pjInfo = $gh->getCurPjInfo();
+
+        $open = $input->getSameOpt(['o', 'open']);
+
+        $output->info('auto fetch current branch name');
+        $curBranch = GitUtil::getCurrentBranchName();
+        $srcBranch = $input->getSameStringOpt(['s', 'source']);
+        $tgtBranch = $input->getSameStringOpt(['t', 'target']);
+
+        $brPrefix = $gh->getValue('branchPrefix', '');
+        if ($srcBranch) {
+            $srcBranch = $brPrefix . $srcBranch;
+        } else {
+            $srcBranch = $curBranch;
+        }
+
+        if ($tgtBranch) {
+            $tgtBranch = $brPrefix . $tgtBranch;
+        } elseif (is_string($open) && $open) {
+            $tgtBranch = $open;
+        } else {
+            $tgtBranch = $curBranch;
+        }
+
+        $mGroup = $pjInfo['group'];
+        $fGroup = $pjInfo['forkGroup'];
+        $repo  = $gh->getCurRepo();
+
+        $ghPath  = "$mGroup/$repo";
+        $tipInfo = array_merge([
+            'name'   => $pjName,
+            'ghPath' => $ghPath,
+            'srcBranch' =>$srcBranch,
+            'tgtBranch' =>$tgtBranch,
+        ], $pjInfo);
+        $output->aList($tipInfo, '- project information', ['ucFirst' => false]);
+
+        // https://github.com/swoft-cloud/swoft-component/compare/master...ulue:dev2
+        $link = $gh->getHost();
+        $link .= sprintf('/%s/compare/%s...%s:%s', $ghPath, $tgtBranch, $fGroup, $srcBranch);
+
+        if ($open) {
+            // $output->info('will auto open link on browser');
+            AppHelper::openBrowser($link);
+            $output->success('Complete');
+        } else {
+            $output->colored("PR LINK: ");
+            $output->writeln('  ' . $link);
+            $output->colored('Complete, please open the link on browser');
+        }
     }
 }

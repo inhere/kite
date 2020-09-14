@@ -5,9 +5,11 @@ namespace Inhere\Kite\Common\GitLocal;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\GitUtil;
+use RuntimeException;
 use function basename;
 use function count;
 use function explode;
+use function rtrim;
 use function strpos;
 use function substr;
 use function trim;
@@ -59,6 +61,11 @@ abstract class AbstractGitLocal
     /**
      * @var array
      */
+    protected $projects;
+
+    /**
+     * @var array
+     */
     protected $remoteInfo = [];
 
     /**
@@ -80,6 +87,18 @@ abstract class AbstractGitLocal
      * @var string
      */
     protected $curBranch = '';
+
+    /**
+     * current project name
+     *
+     * @var string
+     */
+    protected $curPjName = '';
+
+    /**
+     * @var array
+     */
+    protected $curPjInfo = [];
 
     /**
      * @param Output|null $output
@@ -112,7 +131,16 @@ abstract class AbstractGitLocal
      */
     protected function init(array $config): void
     {
+        if (isset($config['projects'])) {
+            $this->projects = $config['projects'];
+            unset($config['projects']);
+        }
+
         $this->config = $config;
+
+        if (isset($config['hostUrl'])) {
+            $this->setHost($config['hostUrl']);
+        }
     }
 
     /**
@@ -226,7 +254,6 @@ abstract class AbstractGitLocal
             [$group, $repo] = explode('/', $path, 2);
 
             $this->curRepo = $repo;
-
             if ($this->remote === $this->getDefaultGroupName()) {
                 $this->curMainGroup = '';
             }
@@ -239,15 +266,26 @@ abstract class AbstractGitLocal
                 'group' => $group,
                 'repo'  => $repo,
             ];
-        } else {
+        } else { // eg: "https://github.com/ulue/swoft-component.git"
             $info = parse_url($url);
             // add
-            $info['url'] = $url;
+            $info['url']  = $url;
+
+            $uriPath = $info['path'];
+            if (substr($uriPath, -4) === '.git') {
+                $uriPath = substr($uriPath, 0, -4);
+            }
+
+            $info['path'] = trim($uriPath, '/');
+
+            [$group, $repo] = explode('/', $info['path'], 2);
+            $info['group']  = $group;
 
             // TODO
             // $this->curGroup = $group;
-            // $this->curRepo  = $repo;
+            $this->curRepo = $repo;
 
+            $this->curForkGroup = $group;
             $this->remoteInfo = $info;
         }
 
@@ -255,12 +293,37 @@ abstract class AbstractGitLocal
     }
 
     /**
-     * @return array
+     * @param string $pjName
+     *
+     * @return $this
      */
-    public function getRemoteInfo(): array
+    public function loadCurPjInfo(string $pjName = ''): self
     {
-        return $this->remoteInfo;
+        if ($pjName) {
+            $this->setCurPjName($pjName);
+        }
+
+        $pjName = $this->curPjName;
+        if (!isset($this->projects[$pjName])) {
+            throw new RuntimeException("project '{$pjName}' is not found in the projects");
+        }
+
+        $defaultInfo = [
+            'name'      => $pjName,
+            'repo'      => $pjName, // default use project nam as repo name.
+            'group'     => $this->getValue('defaultGroup', ''),
+            'forkGroup' => $this->getValue('defaultForkGroup', ''),
+        ];
+
+        $this->curPjInfo = array_merge($defaultInfo, $this->projects[$pjName]);
+        // set current repo
+        if (!$this->curRepo) {
+            $this->curRepo = $this->curPjInfo['repo'];
+        }
+
+        return $this;
     }
+
 
     /**
      * @param string $repo
@@ -358,6 +421,14 @@ abstract class AbstractGitLocal
     }
 
     /**
+     * @return array
+     */
+    public function getRemoteInfo(): array
+    {
+        return $this->remoteInfo;
+    }
+
+    /**
      * @param Output $output
      */
     public function setOutput(Output $output): void
@@ -419,5 +490,58 @@ abstract class AbstractGitLocal
     public function setCurBranch(string $curBranch): void
     {
         $this->curBranch = $curBranch;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurPjName(): string
+    {
+        return $this->curPjName;
+    }
+
+    /**
+     * @param string $curPjName
+     *
+     * @return self
+     */
+    public function setCurPjName(string $curPjName): self
+    {
+        $this->curPjName = $curPjName;
+        return $this;
+    }
+
+    /**
+     * @param string $pjName
+     *
+     * @return bool
+     */
+    public function hasProject(string $pjName): bool
+    {
+        return isset($this->projects[$pjName]);
+    }
+
+    /**
+     * @return array
+     */
+    public function getProjects(): array
+    {
+        return $this->projects;
+    }
+
+    /**
+     * @param array $projects
+     */
+    public function setProjects(array $projects): void
+    {
+        $this->projects = $projects;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCurPjInfo(): array
+    {
+        return $this->curPjInfo;
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Inhere\Kite\Common\GitLocal;
 
-use Inhere\Kite\Helper\GitUtil;
 use RuntimeException;
 
 /**
@@ -13,28 +12,11 @@ use RuntimeException;
 class GitHub extends AbstractGitLocal
 {
     /**
-     * @var array
-     */
-    private $projects;
-
-    /**
      * current project owner/group name
      *
      * @var string
      */
     private $curOwner = '';
-
-    /**
-     * current project name
-     *
-     * @var string
-     */
-    private $curPName = '';
-
-    /**
-     * @var string
-     */
-    private $curBranch = '';
 
     /**
      * @var string
@@ -48,9 +30,9 @@ class GitHub extends AbstractGitLocal
 
     protected function init(array $config): void
     {
-        parent::init($config);
-
         $this->host = self::GITHUB_HOST;
+
+        parent::init($config);
     }
 
     /**
@@ -59,8 +41,51 @@ class GitHub extends AbstractGitLocal
      */
     public function setCurrent(string $owner, string $pName): void
     {
-        $this->curOwner = $owner;
-        $this->curPName = $pName;
+        $this->curOwner  = $owner;
+        $this->curPjName = $pName;
+    }
+
+    /**
+     * @return string
+     */
+    public function findPjName(): string
+    {
+        $pjName  = '';
+        $dirName = $this->getDirName();
+        $dirPfx  = $this->getValue('dirPrefix', '');
+
+        // try auto parse project name for dirname.
+        if (isset($this->projects[$dirName])) {
+            $pjName = $dirName;
+            $this->output->liteNote('auto parse project name from dirname.');
+        } elseif ($dirPfx && strpos($dirName, $dirPfx) === 0) {
+            $tmpName = substr($dirName, strlen($dirPfx));
+
+            if (isset($this->projects[$tmpName])) {
+                $pjName = $tmpName;
+                $this->output->liteNote('auto parse project name from dirname.');
+            }
+        } else {
+            $info = $this->parseRemote()->getRemoteInfo();
+            $path = $info['path'] ?? '';
+
+            if ($path && isset($this->projects[$path])) {
+                $pjName = $path;
+
+                // try padding some info
+                [$forkGroup, $repo] = explode('/', $path, 2);
+                if (!isset($this->projects[$path]['forkGroup'])) {
+                    $this->projects[$path]['forkGroup'] = $forkGroup;
+                }
+                if (!isset($this->projects[$path]['repo'])) {
+                    $this->projects[$path]['repo'] = $repo;
+                }
+
+                $this->output->liteNote('auto parse project name from git remote url');
+            }
+        }
+
+        return $pjName;
     }
 
     /**
