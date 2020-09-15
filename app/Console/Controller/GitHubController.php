@@ -135,7 +135,7 @@ class GitHubController extends Controller
     protected function openConfigure(Input $input): void
     {
         $input->bindArguments([
-            'repo' => 0,
+            'repoPath' => 0,
         ]);
     }
 
@@ -144,10 +144,11 @@ class GitHubController extends Controller
      *
      * @options
      *  -r, --remote         The git remote name. default is 'origin'
+     *  --main               Use the `mainRemote` name
      *
      * @arguments
-     *  repo    The remote git repo URL or repository group/name.
-     *          If not input, will auto parse from current work directory
+     *  repoPath    The remote git repo URL or repository group/name.
+     *              If not input, will auto parse from current work directory
      *
      * @param Input  $input
      * @param Output $output
@@ -160,9 +161,27 @@ class GitHubController extends Controller
     {
         $gh = $this->newGithub();
 
-        $remote = $input->getSameStringOpt(['r', 'remote'], 'origin');
-        $info   = $gh->parseRemote($remote)->getRemoteInfo();
+        // - input repoPath
+        $repoPath  = $input->getStringArg('repoPath');
+        if ($repoPath) {
+            $repoUrl = $gh->parseRepoUrl($repoPath);
+            if (!$repoUrl) {
+                $output->error("invalid github 'repo' address: $repoPath");
+                return;
+            }
 
+            AppHelper::openBrowser($repoUrl);
+            $output->success('Complete');
+            return;
+        }
+
+        // - auto parse
+        $remote = $input->getSameStringOpt(['r', 'remote'], 'origin');
+        if ($input->getBoolOpt('main')) {
+            $remote = $gh->getMainRemote();
+        }
+
+        $info = $gh->parseRemote($remote)->getRemoteInfo();
         if (!empty($info['url'])) {
             AppHelper::openBrowser($info['url']);
 
@@ -170,16 +189,7 @@ class GitHubController extends Controller
             return;
         }
 
-        $repo    = $input->getRequiredArg('repo');
-        $repoUrl = $gh->parseRepoUrl($repo);
-        if (!$repoUrl) {
-            $output->error("invalid github 'repo' address: $repo");
-            return;
-        }
-
-        AppHelper::openBrowser($repoUrl);
-
-        $output->success('Complete');
+        $output->error('please input an repoPath or go into an git workDir');
     }
 
     /**
@@ -240,12 +250,6 @@ class GitHubController extends Controller
     public function pullRequestCommand(Input $input, Output $output): void
     {
         $gh = $this->newGithub();
-
-        $pjName  = '';
-        $dirName = $gh->getDirName();
-        // $dirPfx  = $this->config['dirPrefix'];
-        $dirPfx = $gh->getValue('dirPrefix', '');
-
         if (!$pjName = $gh->findPjName()) {
             $pjName = $input->getRequiredArg('project');
         }
