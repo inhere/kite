@@ -287,6 +287,9 @@ class GitUseController extends Controller
      * @options
      *  -m, --message The commit message
      *
+     * @arguments
+     *  files...   Only add special files
+     *
      * @param Input  $input
      * @param Output $output
      */
@@ -300,7 +303,12 @@ class GitUseController extends Controller
 
         $output->info('Work Dir: ' . $input->getPwd());
 
-        $run = CmdRunner::new('git add .')->do(true);
+        $added = '.';
+        if ($args = $input->getArguments()) {
+            $added = implode(' ', $args);
+        }
+
+        $run = CmdRunner::new("git add $added")->do(true);
         $run->afterOkDo(sprintf('git commit -m "%s"', $message));
         $run->afterOkDo('git push');
 

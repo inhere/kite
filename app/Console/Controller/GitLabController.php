@@ -176,6 +176,9 @@ class GitLabController extends Controller
      * @options
      *  -m, --message   The commit message
      *
+     * @arguments
+     *  files...   Only add special files
+     *
      * @param Input  $input
      * @param Output $output
      *
@@ -270,10 +273,10 @@ class GitLabController extends Controller
         }
 
         $remote = $input->getArg('remote', $defRemote);
+        $rInfo = $gitlab->parseRemote($remote)->getRemoteInfo();
+        // \var_dump($defRemote, $gitlab);die;
 
-        $gitlab->parseRemote($remote);
-
-        $link = $gitlab->getRepoUrl($toMain);
+        $link = $gitlab->getHost() . '/' . $rInfo['path'];
         AppHelper::openBrowser($link);
 
         $output->success('Complete');
