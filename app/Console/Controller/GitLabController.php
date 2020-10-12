@@ -38,16 +38,6 @@ class GitLabController extends Controller
     protected static $description = 'Some useful tool commands for gitlab development';
 
     /**
-     * @var array
-     */
-    private $config = [];
-
-    /**
-     * @var array
-     */
-    private $projects = [];
-
-    /**
      * @return array|string[]
      */
     public static function aliases(): array
@@ -70,14 +60,9 @@ class GitLabController extends Controller
 
     protected function configure(): void
     {
-        $this->config   = $this->app->getParam('gitlab', []);
-        $this->projects = $this->config['projects'] ?? [];
-
-        unset($this->config['projects']);
-
         parent::configure();
 
-        // binding arguments
+        // simple binding arguments
         switch ($this->getAction()) {
             case 'open':
                 $this->input->bindArgument('remote', 0);
@@ -344,7 +329,7 @@ class GitLabController extends Controller
      *  -s, --source    The source branch
      *  -t, --target    The target branch
      *  -o, --open      Open the generated PR link on browser
-     *      --direct    The PR is from fork to main repository
+     *  -d, --direct    The PR is direct from fork to main repository
      *      --new       Open new pr page on browser http://my.gitlab.com/group/repo/merge_requests/new
      *
      * @argument
@@ -410,7 +395,7 @@ class GitLabController extends Controller
         }
 
         // Is sync to remote
-        $isDirect = $input->getBoolOpt('direct');
+        $isDirect = $input->getSameBoolOpt(['d', 'direct']);
         if ($isDirect || $srcBranch === $tgtBranch) {
             $group = $project->getForkGroup();
         } else {

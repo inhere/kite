@@ -27,6 +27,9 @@ use function str_replace;
 
 /**
  * Class DemoCommand
+ *
+ * @link https://github.com/jaywcjlove/linux-command/tree/master/command  linux commands zh-CN documents
+ *       - raw contents eg: https://raw.githubusercontent.com/jaywcjlove/linux-command/master/command/accept.md
  */
 class DocCommand extends Command
 {

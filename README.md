@@ -94,3 +94,6 @@ rm -rf ~/.kite
 - https://github.com/php-toolkit/cli-utils
 - https://github.com/php-toolkit/stdlib
 
+## Thanks
+
+- linux command docs by https://github.com/jaywcjlove/linux-command
