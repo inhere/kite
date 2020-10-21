@@ -54,6 +54,7 @@ class GitLabController extends Controller
             'conf' => 'config',
             'pj'   => 'project',
             'nb'   => 'newBranch',
+            'db'   => 'deleteBranch',
             'rc'   => 'resolve',
         ];
     }
@@ -204,6 +205,59 @@ class GitLabController extends Controller
     }
 
     /**
+     * delete branches from local, origin, main remote
+     *
+     * @options
+     *  -f, --force      Force execute delete command, ignore error
+     *      --dry-run    Dry-run the workflow
+     *      --not-main   Dont delete branch on the main remote
+     *
+     * @arguments
+     *  branches...   The want deleted branch name(s). eg: fea_6_12
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function deleteBranchCommand(Input $input, Output $output): void
+    {
+        $names = $input->getArgs();
+        if (!$names) {
+            throw new PromptException('please input an branch name');
+        }
+
+        $gitlab  = $this->gitlab();
+        $force   = $input->getSameBoolOpt(['f', 'force']);
+        $notMain = $input->getBoolOpt('not-main');
+        $dryRun  = $input->getBoolOpt('dry-run');
+
+        $mainRemote = $gitlab->getMainRemote();
+        foreach ($names as $name) {
+            $run = CmdRunner::new();
+            $run->setDryRun($dryRun);
+
+            $output->title("delete the branch:{$name}", [
+                'indent' => 0,
+            ]);
+            if ($force) {
+                $run->setIgnoreError(true);
+            }
+
+            $run->addf('git branch --delete %s', $name);
+            // git push origin --delete BRANCH
+            $run->addf('git push origin --delete %s', $name);
+
+            if (false === $notMain) {
+                // git push main --delete BRANCH
+                $run->addf('git push %s --delete %s', $mainRemote, $name);
+            }
+
+            $run->run(true);
+        }
+
+        $output->success('Completed');
+    }
+
+    /**
      * show gitlab project config information
      *
      * @options
@@ -326,11 +380,12 @@ class GitLabController extends Controller
      * generate an PR link for given project information
      *
      * @options
-     *  -s, --source    The source branch
-     *  -t, --target    The target branch
-     *  -o, --open      Open the generated PR link on browser
-     *  -d, --direct    The PR is direct from fork to main repository
-     *      --new       Open new pr page on browser http://my.gitlab.com/group/repo/merge_requests/new
+     *  -s, --source        The source branch name. will auto prepend branchPrefix
+     *      --full-source   The full source branch name
+     *  -t, --target        The target branch name
+     *  -o, --open          Open the generated PR link on browser
+     *  -d, --direct        The PR is direct from fork to main repository
+     *      --new           Open new pr page on browser http://my.gitlab.com/group/repo/merge_requests/new
      *
      * @argument
      *  project   The project key in 'gitlab' config. eg: group-name, name
@@ -376,7 +431,9 @@ class GitLabController extends Controller
         $srcBranch = $input->getSameStringOpt(['s', 'source']);
         $tgtBranch = $input->getSameStringOpt(['t', 'target']);
 
-        if ($srcBranch) {
+        if ($fullSBranch = $input->getStringOpt('full-source')) {
+            $srcBranch = $fullSBranch;
+        } elseif ($srcBranch) {
             if (!in_array($srcBranch, $fixedBrs, true)) {
                 $srcBranch = $brPrefix . $srcBranch;
             }
@@ -509,4 +566,5 @@ class GitLabController extends Controller
 
         Console::app()->dispatch('gf:sync');
     }
+
 }

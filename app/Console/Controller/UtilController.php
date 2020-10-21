@@ -26,7 +26,7 @@ class UtilController extends Controller
 {
     public const JB_NAME = 'JetBrains';
     public const JB_TBOX = 'Toolbox';
-    public const JB_ALL = [
+    public const JB_ALL  = [
         'IntelliJIdea',
         'CLion',
         'PhpStorm',
@@ -67,17 +67,25 @@ class UtilController extends Controller
     public function dateCommand(Input $input, Output $output): void
     {
         $time = time();
-        $oneDayAgo = strtotime('-1 day',  $time);
-        $oneDayLater = strtotime('+1 day',  $time);
+
+        $oneDayAgo   = strtotime('-1 day', $time);
+        $oneDayLater = strtotime('+1 day', $time);
+
+        $curDay = date('Y-m-d', $time);
+        $output->aList([
+            'today'                => $curDay,
+            'current time'         => $time,
+            'current date'         => date('Y-m-d H:i:s', $time),
+            'start time(00:00:01)' => strtotime("$curDay 00:00:01", $time),
+            'end time(23:59:59)'   => strtotime("$curDay 23:59:59", $time),
+        ], 'today');
 
         $output->aList([
-            'current time' => $time,
-            'current date' => date('Y-m-d H:i:s', $time),
-            'one day ago' => $oneDayAgo,
-            'one day ago date' => date('Y-m-d H:i:s', $oneDayAgo),
-            'one day later' => $oneDayLater,
+            'one day ago'        => $oneDayAgo,
+            'one day ago date'   => date('Y-m-d H:i:s', $oneDayAgo),
+            'one day later'      => $oneDayLater,
             'one day later date' => date('Y-m-d H:i:s', $oneDayLater),
-            'yesterday start' => date('Y-m-d 00:00:01', $time),
+            'yesterday start'    => date('Y-m-d 00:00:01', $time),
         ], 'recently date');
     }
 
