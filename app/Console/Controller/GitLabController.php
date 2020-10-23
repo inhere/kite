@@ -420,6 +420,8 @@ class GitLabController extends Controller
 
         $brPrefix = $gitlab->getValue('branchPrefix', '');
         $fixedBrs = $gitlab->getValue('fixedBranch', []);
+        // 这里面的分支禁止作为源分支(source)来发起PR
+        $denyBrs = $gitlab->getValue('denyBranches', []);
 
         $srcPjId = $project->getForkPid();
         $tgtPjId = $project->getMainPid();
@@ -449,6 +451,11 @@ class GitLabController extends Controller
             $tgtBranch = $open;
         } else {
             $tgtBranch = $curBranch;
+        }
+
+        // deny as an source branch
+        if ($denyBrs && $srcBranch !== $tgtBranch && in_array($srcBranch, $denyBrs, true)) {
+            throw new PromptException("the branch '{$srcBranch}' dont allow as source-branch for PR to other branch");
         }
 
         // Is sync to remote

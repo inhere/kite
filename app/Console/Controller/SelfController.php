@@ -10,6 +10,7 @@ use Inhere\Console\Util\PhpDevServe;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Sys;
 use function count;
+use const BASE_PATH;
 
 /**
  * Class SelfController
@@ -97,10 +98,7 @@ class SelfController extends Controller
     }
 
     /**
-     * start a php built-in http server for development
-     *
-     * @arguments
-     *  file=STRING         The entry file for server. e.g web/index.php
+     * start a php built-in http server for kite web application
      *
      * @param Input  $input
      * @param Output $output
@@ -116,10 +114,10 @@ class SelfController extends Controller
             throw new PromptException('please config the "webServe" settings');
         }
 
-        $docRoot = $conf['root'] ?? 'public';
+        $docRoot = $conf['root'] ?? BASE_PATH . '/public';
 
         $serveAddr = $conf['host'] ?? '127.0.0.1:8552';
-        $entryFile = $input->getStringArg('entryFile');
+        $entryFile = $conf['entry'] ?? '';
 
         $pds = PhpDevServe::new($serveAddr, $docRoot, $entryFile);
 
