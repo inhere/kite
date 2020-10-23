@@ -63,6 +63,19 @@ class GitUseController extends Controller
     }
 
     /**
+     * display git information for the project
+     */
+    public function infoCommand(): void
+    {
+        $commands = [
+            'git status',
+            'git remote -v',
+        ];
+
+        CmdRunner::new()->batch($commands)->run(true);
+    }
+
+    /**
      * Clone an remote git repository to local
      *
      * @options

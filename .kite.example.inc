@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'webServe'  => [
+        'host'  => '127.0.0.1:8552',
+        // document root
+        'root' => 'public'
+    ],
+
     'gitlab'  => [
         'projects' => [
 

@@ -19,6 +19,7 @@ use Inhere\Kite\Helper\SysCmd;
 use function count;
 use function is_array;
 use function is_string;
+use function preg_match;
 use function strpos;
 use function strtr;
 
@@ -140,11 +141,19 @@ class RunCommand extends Command
         }
 
         if (!$scriptArgs) {
-            throw new PromptException("missing arguments for run script '{$name}'");
+            // has vars $@ $1 ... $3 ...
+            $matches = [];
+            preg_match('/\$[\d+|@]/', $cmdString, $matches);
+            if ($matches) {
+                // \vdump($cmdString, $matches);
+                throw new PromptException("missing arguments for run script '{$name}', detail: '$cmdString'");
+            }
         }
 
+        $full = implode(' ', $scriptArgs);
         $pairs = [
-            '$@' => implode(' ', $scriptArgs),
+            '$@' => $full,
+            '$?' => $full, // optional all vars
         ];
 
         // like bash script, first var is '$1'

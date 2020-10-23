@@ -10,6 +10,7 @@
 namespace Inhere\Kite\Console;
 
 use Inhere\Kite\Helper\AppHelper;
+use Inhere\Kite\Kite;
 use function array_merge;
 use function file_exists;
 use function is_array;
@@ -32,6 +33,8 @@ class Application extends \Inhere\Console\Application
     protected function init(): void
     {
         parent::init();
+
+        Kite::setCliApp($this);
 
         $this->loadAppConfig();
     }

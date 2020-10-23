@@ -61,4 +61,20 @@ class Kite
     {
         return self::$webApp->getRouter();
     }
+
+    /**
+     * @param Application $cliApp
+     */
+    public static function setCliApp(Application $cliApp): void
+    {
+        self::$cliApp = $cliApp;
+    }
+
+    /**
+     * @param WebApplication $webApp
+     */
+    public static function setWebApp(WebApplication $webApp): void
+    {
+        self::$webApp = $webApp;
+    }
 }

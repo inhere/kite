@@ -7,7 +7,5 @@
  * @license  MIT
  */
 
-$router = new Inhere\Route\Router;
+$router = Inhere\Kite\Kite::webApp()->getRouter();
 
-
-$router->dispatch();

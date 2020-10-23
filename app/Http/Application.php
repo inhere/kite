@@ -9,11 +9,10 @@
 
 namespace Inhere\Kite\Http;
 
+use Inhere\Kite\Kite;
 use Inhere\Route\Router;
+use Throwable;
 use function array_merge;
-use function file_exists;
-use function is_array;
-use const BASE_PATH;
 
 /**
  * Class Application
@@ -32,13 +31,46 @@ class Application
      */
     private $config = [];
 
-    public function run()
+    /**
+     * The root path for project
+     *
+     * @var string
+     */
+    private $basePath;
+
+    /**
+     * Class constructor.
+     *
+     * @param string $basePath
+     */
+    public function __construct(string $basePath)
     {
-        $this->router->dispatch();
+        Kite::setWebApp($this);
+
+        $this->basePath = $basePath;
+        $this->prepare();
+    }
+
+    protected function prepare(): void
+    {
+        $this->router = new Router();
+    }
+
+    /**
+     * run
+     */
+    public function run(): void
+    {
+        try {
+            $this->router->dispatch();
+        } catch (Throwable $e) {
+            (new ErrorHandler())->run($e);
+        }
     }
 
     /**
      * @param array $config
+     * @param bool  $merge
      */
     public function setConfig(array $config, bool $merge = true): void
     {
@@ -61,7 +93,7 @@ class Application
      * Get config param value
      *
      * @param string $name
-     * @param mixed $default
+     * @param mixed  $default
      *
      * @return array|mixed
      */
@@ -84,5 +116,28 @@ class Application
     public function setRouter(Router $router): void
     {
         $this->router = $router;
+    }
+
+    /**
+     * @param string $subPath
+     *
+     * @return string
+     * @example eg: $app->getPath('runtime')
+     */
+    public function getPath(string $subPath): string
+    {
+        if ($subPath) {
+            return $this->basePath . '/' . $subPath;
+        }
+
+        return $this->basePath;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBasePath(): string
+    {
+        return $this->basePath;
     }
 }

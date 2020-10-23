@@ -143,7 +143,7 @@ class PhpController extends Controller
         $composerInfo = Json::decodeFile($composerJson, true);
 
         if (!empty($composerInfo['name'])) {
-            $pkgName = $composerInfo['neme'];
+            $pkgName = $composerInfo['name'];
         }
 
         $homepage = GitHub::GITHUB_HOST . "/$pkgName";
