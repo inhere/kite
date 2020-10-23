@@ -2,10 +2,11 @@
 
 namespace Inhere\Kite\Console\Controller;
 
-use Inhere\Console\Console;
 use Inhere\Console\Controller;
+use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Console\Util\PhpDevServe;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Sys;
 use function count;
@@ -34,7 +35,8 @@ class SelfController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'up' => 'update',
+            'up'  => 'update',
+            'web' => 'serve',
         ];
     }
 
@@ -58,9 +60,9 @@ class SelfController extends Controller
         $conf = $app->getConfig();
 
         $output->aList([
-            'work path' => $this->repoDir,
-            'root path' => $conf['rootPath'],
-            'loaded file' => $conf['__loaded_file'],
+            'repo path'    => $this->repoDir,
+            'root path'    => $conf['rootPath'],
+            'loaded file'  => $conf['__loaded_file'],
             'script count' => count($conf['scripts']),
         ], 'information');
     }
@@ -92,5 +94,37 @@ class SelfController extends Controller
         }
 
         $output->success('Complete');
+    }
+
+    /**
+     * start a php built-in http server for development
+     *
+     * @arguments
+     *  file=STRING         The entry file for server. e.g web/index.php
+     *
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @return int|mixed|void
+     * @example
+     *  {command} -S 127.0.0.1:8552 web/index.php
+     */
+    public function serveCommand(Input $input, Output $output): void
+    {
+        $conf = $this->app->getParam('webServe', []);
+        if (!$conf) {
+            throw new PromptException('please config the "webServe" settings');
+        }
+
+        $docRoot = $conf['root'] ?? 'public';
+
+        $serveAddr = $conf['host'] ?? '127.0.0.1:8552';
+        $entryFile = $input->getStringArg('entryFile');
+
+        $pds = PhpDevServe::new($serveAddr, $docRoot, $entryFile);
+
+        $output->write($pds->getTipsMessage());
+
+        $pds->start();
     }
 }

@@ -14,5 +14,7 @@ use Inhere\Kite\Console\Application;
 $app->registerCommands('Inhere\\Kite\\Console\\Command', __DIR__ . '/Command');
 $app->registerGroups('Inhere\\Kite\\Console\\Controller', __DIR__ . '/Controller');
 
+$app->addCommand(Inhere\Console\BuiltIn\DevServerCommand::class);
+
 // internal group
 $app->addController(PharController::class);
