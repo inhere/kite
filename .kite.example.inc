@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'webServe'  => [
-        'host'  => '127.0.0.1:8552',
+    'webServe' => [
+        'host' => '127.0.0.1:8552',
         // document root
         'root' => 'public'
     ],
@@ -22,10 +22,27 @@ return [
     ],
     // custom scripts
     'scripts' => [
-        'echo' => 'echo hi',
-        'test' => [
+        'echo'          => 'echo hi',
+        'envsearch'     => 'env | grep $1',
+        'test'          => [
             'echo $SHELL',
             'echo hello'
         ],
+        // git quick use
+        'gst'           => 'git status',
+        'co'            => 'git checkout $@',
+        'br'            => 'git branch $?',
+        'pul'           => 'git pul $?',
+        'pull'          => 'git pull $?',
+        // golang usage
+        'gofmt'         => 'go fmt ./...',
+        'gotest'        => 'go test ./...',
+        // php tool usage
+        'csfix'         => 'php-cs-fixer fix $1',
+        'csfix-and-git' => [
+            'php-cs-fixer fix $1',
+            'git add . && git commit -m "run php-cs-fixer for the $1"'
+        ],
+        'phpcs'         => 'php-cs-fixer fix',
     ],
 ];
