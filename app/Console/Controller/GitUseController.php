@@ -275,30 +275,25 @@ class GitUseController extends Controller
      * @options
      *  -m, --message The commit message
      *
+     * @arguments
+     *  files...   Only add special files
+     *
      * @param Input  $input
      * @param Output $output
      */
     public function acCommand(Input $input, Output $output): void
     {
-        $message = $input->getSameStringOpt(['m', 'message']);
-        if (!$message) {
-            $output->liteError('please input an message for git commit');
-            return;
-        }
+        $input->setLOpt('not-push', true);
 
-        $output->info('Work Dir: ' . $input->getPwd());
-
-        $run = CmdRunner::new('git add .')->do(true);
-        $run->afterOkDo(sprintf('git commit -m "%s"', $message));
-
-        $output->success('Complete');
+        $this->acpCommand($input, $output);
     }
 
     /**
      * run git add/commit/push at once command
      *
      * @options
-     *  -m, --message The commit message
+     *  -m, --message   The commit message
+     *      --not-push  Dont execute git push
      *
      * @arguments
      *  files...   Only add special files
@@ -321,15 +316,19 @@ class GitUseController extends Controller
             $added = implode(' ', $args);
         }
 
-        $run = CmdRunner::new("git add $added")->do(true);
+        $run = CmdRunner::new("git status")->do(true);
+        $run->afterOkDo("git add $added");
         $run->afterOkDo(sprintf('git commit -m "%s"', $message));
-        $run->afterOkDo('git push');
+
+        if (false === $input->getBoolOpt('not-push')) {
+            $run->afterOkDo('git push');
+        }
 
         $output->success('Complete');
     }
 
     public function changelogCommand(): void
     {
-
+        // TODO ...
     }
 }
