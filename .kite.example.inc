@@ -30,6 +30,7 @@ return [
         ],
         // git quick use
         'gst'           => 'git status',
+        'st'            => 'git status',
         'co'            => 'git checkout $@',
         'br'            => 'git branch $?',
         'pul'           => 'git pul $?',
@@ -44,5 +45,18 @@ return [
             'git add . && git commit -m "run php-cs-fixer for the $1"'
         ],
         'phpcs'         => 'php-cs-fixer fix',
+        // docker
+        'dcnotag'       => [
+            '_meta' => [
+                'desc' => 'display all no-tags docker images',
+            ],
+            'docker images -f "dangling=true"'
+        ],
+        'dcclrnotag'    => [
+            '_meta' => [
+                'desc' => 'clear all no-tags docker images',
+            ],
+            'docker rmi $(docker images -f "dangling=true" -q)'
+        ],
     ],
 ];

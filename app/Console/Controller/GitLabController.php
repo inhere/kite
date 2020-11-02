@@ -197,6 +197,7 @@ class GitLabController extends Controller
     public function newBranchCommand(Input $input, Output $output): void
     {
         // $binName = $input->getBinName();
+        /** @see GitFlowController::newBranchCommand() */
         $command = 'gitflow:newBranch';
 
         $output->notice("redirect to $command");
