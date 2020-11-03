@@ -109,6 +109,49 @@ class CliMarkdown extends GithubMarkdown
      *
      * @return mixed|string
      */
+    protected function renderTable($block)
+    {
+        $head = '';
+        $body = '';
+        $cols = $block['cols'];
+
+        $first = true;
+        foreach($block['rows'] as $row) {
+            $cellTag = $first ? 'th' : 'td';
+            $tds = '';
+            foreach ($row as $c => $cell) {
+                $align = empty($cols[$c]) ? '' : ' align="' . $cols[$c] . '"';
+                $tds .= "<$cellTag$align>" . trim($this->renderAbsy($cell)) . "</$cellTag>";
+            }
+
+            if ($first) {
+                \vdump($row);
+                $head .= "<tr>$tds</tr>\n";
+            } else {
+                $body .= "<tr>$tds</tr>\n";
+            }
+            $first = false;
+        }
+
+        return $this->composeTable($head, $body);
+    }
+
+    protected function composeTable($head, $body): string
+    {
+        $table = <<<TXT
+$head
+========|==============
+$body
+TXT;
+
+        return $table;
+    }
+
+    /**
+     * @param array $block
+     *
+     * @return mixed|string
+     */
     protected function renderLink($block)
     {
         // \var_dump($block);
@@ -149,5 +192,15 @@ class CliMarkdown extends GithubMarkdown
     protected function renderInlineCode($block): string
     {
         return ColorTag::add($block[1], 'light_red_ex');
+    }
+
+    /**
+     * @param array $block
+     *
+     * @return string
+     */
+    protected function renderText($block): string
+    {
+        return $block[1];
     }
 }

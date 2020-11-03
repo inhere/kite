@@ -59,11 +59,16 @@ class DocCommand extends Command
     {
         $def = $this->createDefinition();
 
+        $lang = Document::DEF_LANG;
+        $conf = $this->app->getParam('manDocs', []);
+        if (!empty($conf['lang'])) {
+            $lang = $conf['lang'];
+        }
+
         $def->addArgument('top', Input::ARG_OPTIONAL, 'The top document topic name');
         $def->addArgument('subs', Input::ARG_IS_ARRAY, 'The more sub document topic name(s)');
 
-        $def->addOption('lang', '', Input::OPT_OPTIONAL, 'use the language for find topic document',
-            Document::DEF_LANG);
+        $def->addOption('lang', '', Input::OPT_OPTIONAL, 'use the language for find topic document', $lang);
         $def->addOption('create', '', Input::OPT_BOOLEAN, 'create an new topic document');
         $def->addOption('cat', '', Input::OPT_BOOLEAN, 'see the document file contents');
         $def->addOption('edit', 'e', Input::OPT_BOOLEAN, 'edit an topic document');

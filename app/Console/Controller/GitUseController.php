@@ -16,6 +16,7 @@ use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use function sprintf;
+use function trim;
 
 /**
  * Class GitUseController
@@ -329,8 +330,37 @@ class GitUseController extends Controller
         $output->success('Complete');
     }
 
-    public function changelogCommand(): void
+    protected function changelogConfigure(Input $input): void
     {
-        // TODO ...
+        $input->bindArguments([
+            'oldVersion' => 0,
+            'newVersion' => 1,
+        ]);
+    }
+
+    /**
+     * collect git change log list
+     *
+     * @arguments
+     *  oldVersion   The old version. eg: v1.0.2
+     *  newVersion   The new version. eg: v1.2.3
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function changelogCommand(Input $input, Output $output): void
+    {
+        // git log v1.0.7...v1.0.7 --pretty=format:'<li> <a href="http://github.com/jerel/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse
+        // git log v1.0.7...HEAD --pretty=format:'<li> <a href="http://github.com/jerel/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse
+
+        // git log --color --graph --pretty=format:'%Cred%h%Creset:%C(ul yellow)%d%Creset %s (%Cgreen%cr%Creset, %C(bold blue)%an%Creset)' --abbrev-commit -10
+        $logCmd = <<<CMD
+git log --color --graph --pretty=format:'%Cred%h%Creset:%C(ul yellow)%d%Creset %s (%Cgreen%cr%Creset, %C(bold blue)%an%Creset)' --abbrev-commit -10
+CMD;
+
+        $runner = CmdRunner::new(trim($logCmd));
+        $runner->do(true);
+
+        $output->success('Complete');
     }
 }

@@ -117,6 +117,10 @@ class RunCommand extends Command
         }
 
         if (is_array($commands)) {
+            if (isset($commands['_meta'])) {
+                unset($commands['_meta']);
+            }
+
             foreach ($commands as $index => $command) {
                 $pos = $name . '.' . $index;
                 if (!$command) {
