@@ -37,18 +37,20 @@ class GitUseController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'tl'      => 'tagList',
-            'cl'      => 'changelog',
-            'tag:del' => 'tagDelete',
-            'taglist' => 'tagList',
-            'tagFind' => ['tagfind', 'tag-find', 'tag:find'],
-            'tagPush' => [
+            'changelog' => ['clog', 'cl'],
+            'tagDelete' => [
+                'tag-del',
+                'tagdel',
+                'tag:del',
+            ],
+            'tagFind'   => ['tagfind', 'tag-find', 'tag:find'],
+            'tagPush'   => [
                 'tagpush',
                 'tp',
                 'tag-push',
                 'tag:push'
             ],
-            'tagList' => ['tag', 'tl', 'taglist']
+            'tagList'   => ['tag', 'tl', 'taglist']
         ];
     }
 

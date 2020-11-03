@@ -56,6 +56,7 @@ class GitLabController extends Controller
             'nb'   => 'newBranch',
             'db'   => 'deleteBranch',
             'rc'   => 'resolve',
+            'up'   => 'update',
         ];
     }
 
@@ -575,4 +576,32 @@ class GitLabController extends Controller
         Console::app()->dispatch('gf:sync');
     }
 
+    /**
+     * update codes from origin and main remote repositories
+     *
+     * @options
+     *  --push      Push to origin remote after update
+     *  --dry-run   Dry run workflow
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function updateCommand(Input $input, Output $output): void
+    {
+        $gitlab = $this->gitlab();
+
+        $curBranch = $gitlab->getCurBranch();
+
+        $runner = CmdRunner::new();
+        $runner->setDryRun($input->getBoolOpt('dry-run'));
+        $runner->addf('git pull %s %s', $gitlab->getMainRemote(), $curBranch);
+        $runner->addf('git pull %s master', $gitlab->getMainRemote());
+
+        if ($input->getBoolOpt('push')) {
+            $runner->add('git push');
+        }
+
+        $runner->run(true);
+        $output->success('Complete');
+    }
 }
