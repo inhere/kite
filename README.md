@@ -18,6 +18,8 @@ My person CLI tool package.
 
 ### Install by script
 
+> file: [install.sh](./install.sh)
+
 ```bash
 curl https://raw.githubusercontent.com/inhere/kite/master/install.sh | bash
 ```
@@ -40,7 +42,7 @@ ln -s $PWD/bin/kite /usr/local/bin/kite
 eg:
 
 ```bash
-wget -c https://github.com/inhere/kite/releases/download/v1.0.4/kite-v1.0.5.phar
+wget -c https://github.com/inhere/kite/releases/download/v1.0.5/kite-v1.0.5.phar
 mv kite-v1.0.5.phar /usr/local/bin/kite
 chmod a+x /usr/local/bin/kite
 ```

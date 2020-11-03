@@ -34,6 +34,6 @@ class FindCommand extends Command
      */
     protected function execute($input, $output)
     {
-        $output->write('hello, this in ' . __METHOD__);
+        $output->info('recommended install fzf for search file');
     }
 }
