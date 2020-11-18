@@ -314,6 +314,7 @@ class GitLabController extends Controller
         if ($toMain) {
             $defRemote = $gitlab->getMainRemote();
         }
+        // \vdump($defRemote);die;
 
         $remote = $input->getArg('remote', $defRemote);
         $rInfo  = $gitlab->parseRemote($remote)->getRemoteInfo();

@@ -6,10 +6,10 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\GitUtil;
 use RuntimeException;
+use Toolkit\Stdlib\Obj;
 use function basename;
 use function count;
 use function explode;
-use function rtrim;
 use function strpos;
 use function substr;
 use function trim;
@@ -27,6 +27,13 @@ abstract class AbstractGitLocal
      * @var string
      */
     protected $host = '';
+
+    /**
+     * eg. git@gitlab.gongzl.com
+     *
+     * @var string
+     */
+    protected $gitUrl = '';
 
     /**
      * @var string
@@ -141,6 +148,8 @@ abstract class AbstractGitLocal
         if (isset($config['hostUrl'])) {
             $this->setHost($config['hostUrl']);
         }
+
+        Obj::init($this, $config);
     }
 
     /**
@@ -239,7 +248,11 @@ abstract class AbstractGitLocal
         }
 
         $str = 'git remote get-url --push ' . $this->remote;
-        $url = CmdRunner::new($str, $this->workDir)->do()->getOutput(true);
+        $run = CmdRunner::new($str, $this->workDir);
+        $url = $run->do()->getOutput(true);
+        if ($run->isFail()) {
+            throw new RuntimeException($run->getError(), 500);
+        }
 
         // git@gitlab.my.com:group/some-lib.git
         if (strpos($url, 'git@') === 0) {
@@ -477,11 +490,29 @@ abstract class AbstractGitLocal
     }
 
     /**
+     * @param string $mainRemote
+     */
+    public function setMainRemote(string $mainRemote): void
+    {
+        if ($mainRemote) {
+            $this->mainRemote = $mainRemote;
+        }
+    }
+
+    /**
      * @return string
      */
     public function getForkRemote(): string
     {
         return $this->forkRemote;
+    }
+
+    /**
+     * @param string $forkRemote
+     */
+    public function setForkRemote(string $forkRemote): void
+    {
+        $this->forkRemote = $forkRemote;
     }
 
     /**
@@ -543,5 +574,21 @@ abstract class AbstractGitLocal
     public function getCurPjInfo(): array
     {
         return $this->curPjInfo;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGitUrl(): string
+    {
+        return $this->gitUrl;
+    }
+
+    /**
+     * @param string $gitUrl
+     */
+    public function setGitUrl(string $gitUrl): void
+    {
+        $this->gitUrl = $gitUrl;
     }
 }

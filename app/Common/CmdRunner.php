@@ -4,7 +4,7 @@ namespace Inhere\Kite\Common;
 
 use RuntimeException;
 use Toolkit\Cli\Color;
-use Toolkit\Sys\Sys;
+use Toolkit\Sys\Exec;
 use function is_array;
 use function sprintf;
 use function trim;
@@ -30,6 +30,11 @@ class CmdRunner
      * @var int
      */
     private $code = 0;
+
+    /**
+     * @var string
+     */
+    private $error = '';
 
     /**
      * @var string
@@ -69,6 +74,7 @@ class CmdRunner
      * @var bool
      */
     private $printOutput = false;
+
 
     /**
      * @param string $cmd
@@ -349,20 +355,27 @@ class CmdRunner
 
         // $ret = SysCmd::exec($this->cmd, $this->workDir);
         if ($this->dryRun) {
-            $ret = [
-                'status' => 0,
-                'output' => 'DRY-RUN: Command execute success',
-            ];
+            $code   = 0;
+            $error  = '';
+            $output = 'DRY-RUN: Command execute success';
+            // $ret = [
+            //     'status' => 0,
+            //     'output' => 'DRY-RUN: Command execute success',
+            // ];
         } else {
-            $ret = Sys::execute($command, true, $workDir);
+            // TIP: Sys::execute can't return error output.
+            // $ret = Sys::execute($command, true, $workDir);
+            [$code, $output, $error] = Exec::run($command, $workDir);
         }
 
-        $this->code   = $ret['status'];
-        $this->output = $ret['output'];
+        // save output
+        $this->code  = $code;
+        $this->error = trim($error);
 
         // print output
-        if ($this->printOutput && $ret['output']) {
-            echo $ret['output'] . "\n";
+        $this->output = $output;
+        if ($this->printOutput && $output) {
+            echo $output . "\n";
         }
     }
 
@@ -515,5 +528,13 @@ class CmdRunner
     public function isDryRun(): bool
     {
         return $this->dryRun;
+    }
+
+    /**
+     * @return string
+     */
+    public function getError(): string
+    {
+        return $this->error;
     }
 }
