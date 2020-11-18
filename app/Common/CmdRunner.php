@@ -225,7 +225,11 @@ class CmdRunner
      */
     public function addf(string $cmdTpl, ...$args): self
     {
-        return $this->add(sprintf($cmdTpl, ...$args));
+        if ($args) {
+            return $this->add(sprintf($cmdTpl, ...$args));
+        }
+
+        return $this->add($cmdTpl);
     }
 
     /**

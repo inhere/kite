@@ -26,6 +26,7 @@ use function in_array;
 use function is_string;
 use function parse_str;
 use function parse_url;
+use function strpos;
 use function trim;
 
 /**
@@ -57,6 +58,7 @@ class GitLabController extends Controller
             'db'   => 'deleteBranch',
             'rc'   => 'resolve',
             'up'   => 'update',
+            'new'  => 'create',
         ];
     }
 
@@ -314,7 +316,7 @@ class GitLabController extends Controller
         }
 
         $remote = $input->getArg('remote', $defRemote);
-        $rInfo = $gitlab->parseRemote($remote)->getRemoteInfo();
+        $rInfo  = $gitlab->parseRemote($remote)->getRemoteInfo();
         // \var_dump($defRemote, $gitlab);die;
 
         $link = $gitlab->getHost() . '/' . $rInfo['path'];
@@ -574,6 +576,87 @@ class GitLabController extends Controller
         $output->info("TIPS:\n $binName gl:pr -o -t BRANCH");
 
         Console::app()->dispatch('gf:sync');
+    }
+
+    /**
+     * Configure for the `createCommand`
+     *
+     * @param Input $input
+     */
+    protected function createConfigure(Input $input): void
+    {
+        $input->bindArgument('name', 0);
+    }
+
+    /**
+     * create an new project from base project repo
+     *
+     * @options
+     *  -g, --group     The new project group in gitlab. if not set, will use base project group
+     *  -r, --remote    The base skeleton project repo name with group.
+     *      --dry-run   Dry run the workflow
+     *
+     * @arguments
+     *   name       The new project name.
+     *
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @example
+     *  {binWithCmd} new-project -r go-common/demo
+     *  {binWithCmd} new-project -r go-common/demo  -g new-group
+     *  {binWithCmd} new-project -r common/yii2-demo
+     */
+    public function createCommand(Input $input, Output $output): void
+    {
+        $name = $input->getRequiredArg('name');
+        $addr = $input->getSameStringOpt(['r', 'remote']);
+        if (!$addr) {
+            throw new PromptException('please input the base project address by "-r|--remote"');
+        }
+
+        $gitlab  = $this->gitlab();
+        $nShorts = $gitlab->getValue('repoShorts');
+        if ($nShorts && isset($nShorts[$addr])) {
+            $old  = $addr;
+            $addr = $nShorts[$addr];
+            $output->info("find repo '$old' short name setting. use real name: $addr");
+        }
+
+        $addr = trim($addr, '/');
+        if (strpos($addr, '/') === false) {
+            throw new PromptException('the input base repo name is invalid. should as "GROUP/NAME"');
+        }
+
+        [$baseGroup,] = explode('/', $addr, 2);
+
+        $group = $input->getSameStringOpt(['g', 'group'], $baseGroup);
+
+        $gitUrl = $gitlab->getValue('gitUrl');
+        if (!$gitUrl) {
+            throw new PromptException('please config the "gitlab.gitUrl" address');
+        }
+
+        $output->aList([
+            'the gitlab git url' => $gitUrl,
+            'base project addr'  => $addr,
+            'new project name'   => $name,
+        ], 'information', [
+            'ucFirst' => false,
+        ]);
+
+        $run = CmdRunner::new();
+        $run->setDryRun($input->getBoolOpt('dry-run'));
+
+        $run->addf('git clone %s:%s.git %s', $gitUrl, $addr, $name);
+        // rename 'origin' => 'main'
+        $run->addf('cd %s && git remote rename origin main', $name);
+        $run->addf('cd %s && git remote add origin %s:%s/%s.git', $name, $gitUrl, $group, $name);
+        $run->addf('cd %s && git remote -v');
+        $run->addf('cd %s && git push origin master', $name, $gitUrl, $group, $name);
+        $run->run(true);
+
+        $output->success("Create the '$name' ok!");
     }
 
     /**
