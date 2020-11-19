@@ -29,6 +29,7 @@ class InitCommand extends Command
      */
     protected function execute($input, $output)
     {
+        // TODO copy config file
         $output->write('hello, this in ' . __METHOD__);
     }
 }
