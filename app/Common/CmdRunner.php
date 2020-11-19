@@ -327,8 +327,7 @@ class CmdRunner
 
             // stop on error
             if (0 !== $this->code && false === $this->ignoreError) {
-                Color::println($this->getError(), 'red');
-                Color::println("\nCommand exit code != 0(code: {$this->code}), stop run.", 'red');
+                Color::println("\nCommand exit code not equal to 0(code: {$this->code}), stop run.", 'red');
                 break;
             }
         }
@@ -376,10 +375,10 @@ class CmdRunner
         // print output
         $this->output = $output;
         if ($this->printOutput) {
-            if ($output) {
-                echo $output . "\n";
-            } elseif ($this->error) {
-                Color::println($this->error, 'red');
+            if ($code !== 0 && $this->error) {
+                Color::println("ERR($code): " . $this->error, 'red');
+            } else {
+                echo ($output ?: $error) . "\n";
             }
         }
     }

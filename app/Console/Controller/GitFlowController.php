@@ -130,12 +130,10 @@ class GitFlowController extends Controller
             ->setDryRun($input->getBoolOpt('dry-run'))
             ->run(true);
 
-        if ($cmd->isFail()) {
-            $output->error($cmd->getOutput() ?: 'Failure');
-            return;
+        if ($cmd->isSuccess()) {
+            // $output->error($cmd->getOutput() ?: 'Failure');
+            $output->success('Complete');
         }
-
-        $output->success('Complete');
     }
 
     /**
@@ -153,8 +151,9 @@ class GitFlowController extends Controller
         // git merge CUR_BRANCH
         // resolve conflicts
         // git add . && git ci
+        $branch = $input->getRequiredArg('branch');
 
-        $output->success('Complete');
+        $output->success('Complete for ' . $branch);
     }
 
     protected function syncConfigure(): void
