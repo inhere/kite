@@ -375,8 +375,12 @@ class CmdRunner
 
         // print output
         $this->output = $output;
-        if ($this->printOutput && $output) {
-            echo $output . "\n";
+        if ($this->printOutput) {
+            if ($output) {
+                echo $output . "\n";
+            } elseif ($this->error) {
+                Color::println($this->error, 'red');
+            }
         }
     }
 
