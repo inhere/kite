@@ -46,6 +46,16 @@ class GitLabController extends Controller
         return ['gl'];
     }
 
+    /**
+     * @return string[]
+     */
+    protected function groupOptions(): array
+    {
+        return [
+            '-y, --yes' => 'Direct execution without confirmation',
+        ];
+    }
+
     protected static function commandAliases(): array
     {
         return [
@@ -100,6 +110,9 @@ class GitLabController extends Controller
     /**
      * Clone an gitlab repository to local
      *
+     * @options
+     *  --git    Use git protocol for git clone.
+     *
      * @arguments
      *  repo    The remote git repo URL or repository name
      *  name    The repository name at local, default is same `repo`
@@ -116,7 +129,8 @@ class GitLabController extends Controller
     {
         $repo = $input->getRequiredArg('repo');
 
-        $repoUrl = $this->gitlab()->parseRepoUrl($repo);
+        $useGit  = $input->getBoolOpt('git');
+        $repoUrl = $this->gitlab()->parseRepoUrl($repo, $useGit);
         if (!$repoUrl) {
             $output->error("invalid github 'repo' address: $repo");
             return;
@@ -653,8 +667,8 @@ class GitLabController extends Controller
         // rename 'origin' => 'main'
         $run->addf('cd %s && git remote rename origin main', $name);
         $run->addf('cd %s && git remote add origin %s:%s/%s.git', $name, $gitUrl, $group, $name);
-        $run->addf('cd %s && git remote -v');
-        $run->addf('cd %s && git push origin master', $name, $gitUrl, $group, $name);
+        $run->addf('cd %s && git remote -v', $name);
+        $run->addf('cd %s && git push -u origin master', $name, $gitUrl, $group, $name);
         $run->run(true);
 
         $output->success("Create the '$name' ok!");

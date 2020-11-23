@@ -41,7 +41,9 @@ class GitLab extends AbstractGitLocal
                 $pjName = $tmpName;
                 $this->output->liteNote('auto parse project name from dirname.');
             }
-        } else {
+        }
+
+        if (!$pjName) {
             $info = $this->parseRemote()->getRemoteInfo();
             $path = $info['path'] ?? '';
 

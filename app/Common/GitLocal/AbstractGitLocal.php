@@ -340,10 +340,11 @@ abstract class AbstractGitLocal
 
     /**
      * @param string $repo
+     * @param bool   $useGitUrl
      *
      * @return string
      */
-    public function parseRepoUrl(string $repo): string
+    public function parseRepoUrl(string $repo, bool $useGitUrl = false): string
     {
         $repoUrl = '';
 
@@ -356,8 +357,13 @@ abstract class AbstractGitLocal
                 return $repoUrl;
             }
 
-            // https://github.com/php-toolkit/toolkit.git
-            $repoUrl = $this->host . '/' . $repo . '.git';
+            if ($useGitUrl) {
+                // eg. git@gitlab.gongzl.com:go-common/gzh.git
+                $repoUrl = $this->gitUrl . ':' . $repo . '.git';
+            } else {
+                // https://github.com/php-toolkit/toolkit.git
+                $repoUrl = $this->host . '/' . $repo . '.git';
+            }
         }
 
         return $repoUrl;
