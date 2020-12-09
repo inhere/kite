@@ -354,9 +354,10 @@ class GitLabController extends Controller
      * Resolve conflicts preparing for current git branch.
      *
      * 1. will checkout to <cyan>branch</cyan>
-     * 2. update the <cyan>branch</cyan> codes from main repository
-     * 3. merge current-branch codes from main repository
-     * 4. please resolve conflicts by tools or manual
+     * 2. will update code by <cyan>git pull</cyan>
+     * 3. update the <cyan>branch</cyan> codes from main repository
+     * 4. merge current-branch codes from main repository
+     * 5. please resolve conflicts by tools or manual
      *
      * @arguments
      *    <cyan>branch</cyan>  The conflicts target branch name. eg: testing, qa, pre
@@ -378,6 +379,7 @@ class GitLabController extends Controller
         $runner = CmdRunner::new();
         $runner->setDryRun($dryRun);
         $runner->addf('git checkout %s', $branch);
+        $runner->addf('git pull');
         $runner->addf('git pull %s %s', $gitlab->getMainRemote(), $branch);
         $runner->addf('git pull %s %s', $gitlab->getMainRemote(), $curBranch);
         $runner->run(true);
@@ -678,8 +680,8 @@ class GitLabController extends Controller
      * update codes from origin and main remote repositories
      *
      * @options
-     *  --push      Push to origin remote after update
-     *  --dry-run   Dry run workflow
+     *  -p, --push      Push to origin remote after update
+     *      --dry-run   Dry run workflow
      *
      * @param Input  $input
      * @param Output $output
@@ -695,7 +697,7 @@ class GitLabController extends Controller
         $runner->addf('git pull %s %s', $gitlab->getMainRemote(), $curBranch);
         $runner->addf('git pull %s master', $gitlab->getMainRemote());
 
-        if ($input->getBoolOpt('push')) {
+        if ($input->getSameBoolOpt(['p', 'push'])) {
             $runner->add('git push');
         }
 
