@@ -68,6 +68,7 @@ class GitLabController extends Controller
             'db'   => 'deleteBranch',
             'rc'   => 'resolve',
             'up'   => 'update',
+            'upp'  => 'updatePush',
             'new'  => 'create',
         ];
     }
@@ -213,11 +214,11 @@ class GitLabController extends Controller
      */
     public function newBranchCommand(Input $input, Output $output): void
     {
-        // $binName = $input->getBinName();
+        $cmdName = $input->getCommand();
         /** @see GitFlowController::newBranchCommand() */
         $command = 'gitflow:newBranch';
 
-        $output->notice("redirect to $command");
+        $output->notice("input $cmdName, will redirect to $command");
 
         Console::app()->dispatch($command);
     }
@@ -674,6 +675,23 @@ class GitLabController extends Controller
         $run->run(true);
 
         $output->success("Create the '$name' ok!");
+    }
+
+    /**
+     * update codes from origin and main remote repositories, then push to remote
+     *
+     * @options
+     *      --dry-run   Dry run workflow
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function updatePushCommand(Input $input, Output $output): void
+    {
+        // do push
+        $input->setSOpt('p', true);
+
+        $this->updateCommand($input, $output);
     }
 
     /**
