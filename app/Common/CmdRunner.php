@@ -379,8 +379,8 @@ class CmdRunner
                 Color::println("ERR($code):\n" . $this->error, 'red');
             }
 
-            if ($output) {
-                echo $output . "\n";
+            if ($outMsg = $output ?: $this->error) {
+                echo $outMsg . "\n";
             }
         }
     }
