@@ -301,6 +301,7 @@ class CmdRunner
     {
         $this->printOutput = $printOutput;
 
+        Color::println('Starting Handle', 'suc');
         $step = 1;
         foreach ($this->commands as $command) {
             // if ($workDir !== null) {

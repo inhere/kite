@@ -712,6 +712,7 @@ class GitLabController extends Controller
 
         $runner = CmdRunner::new();
         $runner->setDryRun($input->getBoolOpt('dry-run'));
+        $runner->add('git pull');
         $runner->addf('git pull %s %s', $gitlab->getMainRemote(), $curBranch);
         $runner->addf('git pull %s master', $gitlab->getMainRemote());
 

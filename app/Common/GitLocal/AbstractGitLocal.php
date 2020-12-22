@@ -6,6 +6,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\GitUtil;
 use RuntimeException;
+use Toolkit\Cli\Color;
 use Toolkit\Stdlib\Obj;
 use function basename;
 use function count;
@@ -166,6 +167,7 @@ abstract class AbstractGitLocal
     public function getCurBranch(): string
     {
         if (!$this->curBranch) {
+            Color::println('auto find branch name ...');
             $this->curBranch = GitUtil::getCurrentBranchName($this->workDir);
         }
 
