@@ -376,16 +376,25 @@ class GitLabController extends Controller
         $dryRun = $input->getBoolOpt('dry-run');
 
         $curBranch = $gitlab->getCurBranch();
+        $orgRemote = $gitlab->getForkRemote();
 
         $runner = CmdRunner::new();
         $runner->setDryRun($dryRun);
+        $runner->add('git fetch');
         $runner->addf('git checkout %s', $branch);
+        // git checkout --track origin/BRANCH
+        // $runner->addf('git checkout --track %s/%s', $orgRemote, $branch);
         $runner->addf('git pull');
         $runner->addf('git pull %s %s', $gitlab->getMainRemote(), $branch);
         $runner->addf('git pull %s %s', $gitlab->getMainRemote(), $curBranch);
         $runner->run(true);
 
         $output->success('Complete. please resolve conflicts by tools or manual');
+        $output->note([
+            'TIPS:',
+            'can exec this command after resolved for quick commit',
+            "> git add . && git commit && git push && kite gl:pr -o && git checkout $curBranch"
+        ]);
     }
 
     /**
