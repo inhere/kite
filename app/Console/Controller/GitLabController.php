@@ -26,6 +26,7 @@ use function in_array;
 use function is_string;
 use function parse_str;
 use function parse_url;
+use function sprintf;
 use function strpos;
 use function trim;
 
@@ -619,9 +620,10 @@ class GitLabController extends Controller
      * create an new project from base project repo
      *
      * @options
-     *  -g, --group     The new project group in gitlab. if not set, will use base project group
-     *  -r, --remote    The base skeleton project repo name with group.
-     *      --dry-run   Dry run the workflow
+     *  -g, --group         The new project main group in gitlab. if not set, will use base project group
+     *  -o, --fork-group    The new project origin group in gitlab. if not set, will dont update
+     *  -r, --remote        The base skeleton project repo name with group.
+     *      --dry-run       Dry run the workflow
      *
      * @arguments
      *   name       The new project name.
@@ -633,6 +635,7 @@ class GitLabController extends Controller
      *  {binWithCmd} new-project -r go-common/demo
      *  {binWithCmd} new-project -r go-common/demo  -g new-group
      *  {binWithCmd} new-project -r common/yii2-demo
+     *  {binWithCmd} new-project -r go-common/demo -o xiajianjun-go
      */
     public function createCommand(Input $input, Output $output): void
     {
@@ -664,23 +667,40 @@ class GitLabController extends Controller
             throw new PromptException('please config the "gitlab.gitUrl" address');
         }
 
+        $workDir = $input->getWorkDir();
+        $fGroup  = $input->getSameStringOpt(['o', 'fork-group'], '');
+
         $output->aList([
             'the gitlab git url' => $gitUrl,
-            'base project addr'  => $addr,
+            'base project path'  => $addr,
             'new project name'   => $name,
+            'main group name'    => $group,
+            'origin group name'  => $fGroup,
         ], 'information', [
             'ucFirst' => false,
         ]);
 
         $run = CmdRunner::new();
         $run->setDryRun($input->getBoolOpt('dry-run'));
+        $run->setWorkDir($workDir . '/' . $name);
 
-        $run->addf('git clone %s:%s.git %s', $gitUrl, $addr, $name);
-        // rename 'origin' => 'main'
-        $run->addf('cd %s && git remote rename origin main', $name);
-        $run->addf('cd %s && git remote add origin %s:%s/%s.git', $name, $gitUrl, $group, $name);
-        $run->addf('cd %s && git remote -v', $name);
-        $run->addf('cd %s && git push -u origin master', $name, $gitUrl, $group, $name);
+        // $run->addf('git clone %s:%s.git %s', $gitUrl, $addr, $name);
+        $run->addByArray([
+            'workDir' => $workDir,
+            'command' => sprintf('git clone %s:%s.git %s', $gitUrl, $addr, $name),
+        ]);
+
+        // add main
+        $run->addf('git remote add main %s:%s/%s.git', $gitUrl, $group, $name);
+
+        // reset origin
+        if ($fGroup) {
+            $run->addf('git remote set-url origin %s:%s/%s.git', $gitUrl, $fGroup, $name);
+        }
+
+        $run->addf('git remote -v', $name);
+        $run->addf('git push main master');
+        $run->addf('git push -u origin master');
         $run->run(true);
 
         $output->success("Create the '$name' ok!");

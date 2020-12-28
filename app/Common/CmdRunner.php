@@ -291,6 +291,30 @@ class CmdRunner
     }
 
     /**
+     * @param array $config
+     *                     - command STRING|ARRAY
+     *                     - workDir STRING
+     *                     - where  callable
+     * @param string $key
+     *
+     * @return $this
+     */
+    public function addByArray(array $config, string $key = ''): self
+    {
+        if (!isset($config['command'])) {
+            throw new RuntimeException('must be setting "command" in the config');
+        }
+
+        if ($key) {
+            $this->commands[$key] = $config;
+        } else {
+            $this->commands[] = $config;
+        }
+
+        return $this;
+    }
+
+    /**
      * Run all added commands
      *
      * @param bool $printOutput
@@ -304,26 +328,31 @@ class CmdRunner
         Color::println('Starting Handle', 'suc');
         $step = 1;
         foreach ($this->commands as $command) {
-            // if ($workDir !== null) {
-            //     $this->workDir = $workDir;
-            // }
+            $workDir = $this->workDir;
 
             // see addWhere()
             if (is_array($command)) {
                 $item = $command;
-                $func = $item['where'];
 
-                if (!$func()) {
+                $func = $item['where'] ?? '';
+                if ($func && false === $func()) {
                     Color::println("Skip {$step} ...", 'cyan');
                     Color::println("- Does not meet the conditions", 'cyan');
                     continue;
                 }
 
+                $workDir = $item['workDir'] ?? $workDir;
                 $command = $item['command'];
             }
 
-            Color::println("Step {$step}:", 'mga0');
-            $this->execute($command, $this->workDir);
+            Color::println("STEP {$step}:", 'mga0');
+
+            // custom work dir
+            if ($workDir) {
+                Color::println('- work dir is ' . $workDir, 'italic');
+            }
+
+            $this->execute($command, $workDir);
             $step++;
 
             // stop on error

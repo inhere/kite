@@ -62,7 +62,7 @@ kite -h
 Use builtin command for update tool to latest
 
 ```bash
-kite upself
+kite self:update
 ```
 
 ### 手动更新
