@@ -700,7 +700,9 @@ class GitLabController extends Controller
 
         $run->addf('git remote -v', $name);
         $run->addf('git push main master');
-        $run->addf('git push -u origin master');
+
+        // $run->addf('git push -u origin master');
+
         $run->run(true);
 
         $output->success("Create the '$name' ok!");
