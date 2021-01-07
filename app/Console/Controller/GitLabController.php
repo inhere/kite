@@ -53,7 +53,8 @@ class GitLabController extends Controller
     protected function groupOptions(): array
     {
         return [
-            '-y, --yes' => 'Direct execution without confirmation',
+            '-y, --yes'         => 'Direct execution without confirmation',
+            '-i, --interactive' => 'Run in an interactive environment[TODO]',
         ];
     }
 
@@ -463,7 +464,8 @@ class GitLabController extends Controller
         $output->info('auto fetch current branch name');
         $curBranch = GitUtil::getCurrentBranchName();
         $srcBranch = $input->getSameStringOpt(['s', 'source']);
-        $tgtBranch = $input->getSameStringOpt(['t', 'target']);
+        $tgtBranch = $input->getSameStringOpt('t,target');
+        $tgtBranch = $gitlab->getRealBranchName($tgtBranch);
 
         if ($fullSBranch = $input->getStringOpt('full-source')) {
             $srcBranch = $fullSBranch;

@@ -249,6 +249,7 @@ abstract class AbstractGitLocal
             $this->setRemote($remote);
         }
 
+        Color::println('find and parse remote info ...', 'normal');
         $str = 'git remote get-url --push ' . $this->remote;
         $run = CmdRunner::new($str, $this->workDir);
         $url = $run->do()->getOutput(true);
@@ -339,7 +340,6 @@ abstract class AbstractGitLocal
         return $this;
     }
 
-
     /**
      * @param string $repo
      * @param bool   $useGitUrl
@@ -369,6 +369,28 @@ abstract class AbstractGitLocal
         }
 
         return $repoUrl;
+    }
+
+    /**
+     * @param string $alias
+     *
+     * @return string
+     */
+    public function getRealBranchName(string $alias): string
+    {
+        if (isset($this->config['branchAliases'])) {
+            return $this->config['branchAliases'][$alias] ?? $alias;
+        }
+
+        return $alias;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBranchAliases(): array
+    {
+        return $this->config['branchAliases'] ?? [];
     }
 
     /**
@@ -402,6 +424,17 @@ abstract class AbstractGitLocal
      * @return mixed
      */
     public function getValue(string $key, $default = null)
+    {
+        return $this->config[$key] ?? $default;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    public function getParam(string $key, $default = null)
     {
         return $this->config[$key] ?? $default;
     }

@@ -46,7 +46,7 @@ class GitLab extends AbstractGitLocal
         if (!$pjName) {
             $info = $this->parseRemote()->getRemoteInfo();
             $path = $info['path'] ?? '';
-
+// \vdump($info);
             if ($path && isset($this->projects[$path])) {
                 $pjName = $path;
 
