@@ -1,4 +1,4 @@
-# Kite [中文说明](README.zh-CN.md)
+# Kite
 
 [![License](https://img.shields.io/packagist/l/inhere/console.svg?style=flat-square)](LICENSE)
 [![Php Version](https://img.shields.io/badge/php-%3E=7.2.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
@@ -9,7 +9,7 @@ My person CLI tool package.
 
 > Github https://github.com/inhere/kite
 
-**Preview:**
+## [中文说明](README.zh-CN.md)
 
 ## Install
 
