@@ -297,6 +297,7 @@ class GitUseController extends Controller
      * @options
      *  -m, --message   The commit message
      *      --not-push  Dont execute git push
+     *      --dry-run   Dont real execute command
      *
      * @arguments
      *  files...   Only add special files
@@ -319,13 +320,19 @@ class GitUseController extends Controller
             $added = implode(' ', $args);
         }
 
-        $run = CmdRunner::new("git status")->do(true);
+        $dryRun = $input->getBoolOpt('dry-run');
+
+        $run = CmdRunner::new("git status");
+        $run->setDryRun($dryRun);
+
+        $run->do(true);
         $run->afterOkDo("git add $added");
         $run->afterOkDo(sprintf('git commit -m "%s"', $message));
 
         if (false === $input->getBoolOpt('not-push')) {
             $run->afterOkDo('git push');
         }
+
 
         $output->success('Complete');
     }

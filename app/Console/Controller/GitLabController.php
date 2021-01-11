@@ -53,6 +53,7 @@ class GitLabController extends Controller
     protected function groupOptions(): array
     {
         return [
+            '--dry-run'         => 'Dry-run the workflow, dont real execute',
             '-y, --yes'         => 'Direct execution without confirmation',
             '-i, --interactive' => 'Run in an interactive environment[TODO]',
         ];
@@ -181,6 +182,7 @@ class GitLabController extends Controller
      *
      * @options
      *  -m, --message   The commit message
+     *      --not-push  Dont execute git push
      *
      * @arguments
      *  files...   Only add special files
@@ -194,6 +196,8 @@ class GitLabController extends Controller
     {
         $binName = $input->getBinName();
 
+        $output->notice("will redirect to command: git:acp");
+
         Console::app()->dispatch('git:acp');
 
         $output->info("TIPS:\n $binName gl:pr -o -t BRANCH");
@@ -203,7 +207,6 @@ class GitLabController extends Controller
      * checkout an new branch for development
      *
      * @options
-     *  --dry-run    Dry-run the workflow
      *  --not-main   Dont push new branch to the main remote
      *
      * @arguments
@@ -230,7 +233,6 @@ class GitLabController extends Controller
      *
      * @options
      *  -f, --force      Force execute delete command, ignore error
-     *      --dry-run    Dry-run the workflow
      *      --not-main   Dont delete branch on the main remote
      *
      * @arguments
@@ -465,7 +467,6 @@ class GitLabController extends Controller
         $curBranch = GitUtil::getCurrentBranchName();
         $srcBranch = $input->getSameStringOpt(['s', 'source']);
         $tgtBranch = $input->getSameStringOpt('t,target');
-        $tgtBranch = $gitlab->getRealBranchName($tgtBranch);
 
         if ($fullSBranch = $input->getStringOpt('full-source')) {
             $srcBranch = $fullSBranch;
@@ -486,6 +487,9 @@ class GitLabController extends Controller
         } else {
             $tgtBranch = $curBranch;
         }
+
+        $srcBranch = $gitlab->getRealBranchName($srcBranch);
+        $tgtBranch = $gitlab->getRealBranchName($tgtBranch);
 
         // deny as an source branch
         if ($denyBrs && $srcBranch !== $tgtBranch && in_array($srcBranch, $denyBrs, true)) {
@@ -625,7 +629,6 @@ class GitLabController extends Controller
      *  -g, --group         The new project main group in gitlab. if not set, will use base project group
      *  -o, --fork-group    The new project origin group in gitlab. if not set, will dont update
      *  -r, --remote        The base skeleton project repo name with group.
-     *      --dry-run       Dry run the workflow
      *
      * @arguments
      *   name       The new project name.
@@ -732,7 +735,6 @@ class GitLabController extends Controller
      *
      * @options
      *  -p, --push      Push to origin remote after update
-     *      --dry-run   Dry run workflow
      *
      * @param Input  $input
      * @param Output $output
