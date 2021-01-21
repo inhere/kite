@@ -395,9 +395,8 @@ class GitLabController extends Controller
 
         $output->success('Complete. please resolve conflicts by tools or manual');
         $output->note([
-            'TIPS:',
-            'can exec this command after resolved for quick commit',
-            "> git add . && git commit && git push && kite gl:pr -o && git checkout $curBranch"
+            'TIPS can exec this command after resolved for quick commit:',
+            "git add . && git commit && git push && kite gl:pr -o && git checkout $curBranch"
         ]);
     }
 
