@@ -20,6 +20,19 @@ require dirname(__DIR__) . '/app/Console/routes.php';
 
 // add event
 $app->on(Application::ON_NOT_FOUND, static function (string $cmd, Application $app) {
+    $aliases = $app->getParam('aliases', []);
+    if ($aliases && isset($aliases[$cmd])) {
+        $realCmd = $aliases[$cmd];
+        $app->notice("input command is alias, will redirect to the real command '$realCmd'");
+
+        // $args = $app->getInput()->getArgs();
+        // $args = array_merge([$cmd], $args);
+
+        // $app->getInput()->setArgs($args, true);
+        $app->dispatch($realCmd);
+        return true;
+    }
+
     $scripts = $app->getParam('scripts', []);
     if (!$scripts || !isset($scripts[$cmd])) {
       return false;
@@ -27,7 +40,7 @@ $app->on(Application::ON_NOT_FOUND, static function (string $cmd, Application $a
 
     // redirect to run script.
     /** @see \Inhere\Kite\Console\Command\RunCommand::execute() */
-    $app->getOutput()->note("command not found, redirect to run script: $cmd");
+    $app->note("command not found, redirect to run script: $cmd");
 
     $args = $app->getInput()->getArgs();
     $args = array_merge([$cmd], $args);

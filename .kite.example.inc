@@ -20,6 +20,9 @@ return [
             'root' => BASE_PATH . '/docs'
         ],
     ],
+    // command aliases. element is: alias command => real command
+    'aliases' => [
+    ],
     // custom scripts
     'scripts' => [
         'echo'          => 'echo hi',
