@@ -5,7 +5,7 @@
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/inhere/kite)](https://github.com/inhere/kite)
 [![Actions Status](https://github.com/inhere/kite/workflows/Unit-Tests/badge.svg)](https://github.com/inhere/kite/actions)
 
-My person CLI tool package.
+PHP编写的个人CLI工具包
 
 > Github https://github.com/inhere/kite
 
@@ -13,13 +13,13 @@ My person CLI tool package.
 
 ## 安装
 
-**Required:**
+**系统环境依赖**
 
 - git
 - php 7.1+
 - composer
 
-### 脚本安装
+**脚本安装**
 
 > file: [install.sh](./install.sh)
 
@@ -27,7 +27,7 @@ My person CLI tool package.
 curl https://raw.githubusercontent.com/inhere/kite/master/install.sh | bash
 ```
 
-### 手动安装
+**手动安装**
 
 ```bash
 cd ~
@@ -38,11 +38,11 @@ ln -s $PWD/bin/kite /usr/local/bin/kite
 chmod a+x bin/kite
 ```
 
-### 下载PHAR
+**下载PHAR**
 
-- release page: https://github.com/inhere/kite/releases
+- Release page: https://github.com/inhere/kite/releases
 
-eg:
+注意替换为最新的版本号:
 
 ```bash
 wget -c https://github.com/inhere/kite/releases/download/v1.0.5/kite-v1.0.5.phar

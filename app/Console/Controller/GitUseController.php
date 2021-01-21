@@ -51,7 +51,7 @@ class GitUseController extends Controller
                 'tag-push',
                 'tag:push'
             ],
-            'tagList'   => ['tag', 'tl', 'taglist']
+            'tagList'   => ['tag', 'tags', 'tl', 'taglist']
         ];
     }
 
