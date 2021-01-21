@@ -8,11 +8,11 @@ define('BASE_PATH', dirname(__DIR__));
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 $app = new Application([
-  'rootPath'     => BASE_PATH,
-  'version'      => '1.0.5',
-  'publishAt'    => '2020.05.24',
-  'updateAt'     => date('Y.m.d'),
-  'description'  => 'Kite is an help commands tool for development',
+    'rootPath'    => BASE_PATH,
+    'version'     => '1.0.5',
+    'publishAt'   => '2020.05.24',
+    'updateAt'    => date('Y.m.d'),
+    'description' => 'Kite is an help commands tool for development',
 ]);
 
 // register routes
@@ -35,7 +35,7 @@ $app->on(Application::ON_NOT_FOUND, static function (string $cmd, Application $a
 
     $scripts = $app->getParam('scripts', []);
     if (!$scripts || !isset($scripts[$cmd])) {
-      return false;
+        return false;
     }
 
     // redirect to run script.
@@ -51,5 +51,5 @@ $app->on(Application::ON_NOT_FOUND, static function (string $cmd, Application $a
     return true;
 });
 
-$app->addAliases('self:update', ['updateself', 'upself']);
+$app->addAliases('self:update', ['selfupdate', 'self-update', 'updateself', 'update-self', 'upself']);
 $app->run();

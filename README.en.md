@@ -9,9 +9,9 @@ My person CLI tool package.
 
 > Github https://github.com/inhere/kite
 
-## [English](README.md)
+## [中文说明](README.zh-CN.md)
 
-## 安装
+## Install
 
 **Required:**
 
@@ -19,7 +19,7 @@ My person CLI tool package.
 - php 7.1+
 - composer
 
-### 脚本安装
+### Install by script
 
 > file: [install.sh](./install.sh)
 
@@ -27,18 +27,18 @@ My person CLI tool package.
 curl https://raw.githubusercontent.com/inhere/kite/master/install.sh | bash
 ```
 
-### 手动安装
+### Manual clone
 
 ```bash
 cd ~
 git clone https://github.com/inhere/kite .kite
 cd .kite
 composer install
-ln -s $PWD/bin/kite /usr/local/bin/kite
 chmod a+x bin/kite
+ln -s $PWD/bin/kite /usr/local/bin/kite
 ```
 
-### 下载PHAR
+### Download phar
 
 - release page: https://github.com/inhere/kite/releases
 
@@ -50,25 +50,27 @@ mv kite-v1.0.5.phar /usr/local/bin/kite
 chmod a+x /usr/local/bin/kite
 ```
 
-## 使用帮助
+## Usage
+
+### All commands
 
 ```bash
-kite -h
+kite
 ```
 
 ![](resource/images/kite-help.png)
 
-## 更新
+## Update
 
-### 内置命令
+### Builtin command
 
 Use builtin command for update tool to latest
 
 ```bash
-kite self:update
+kite upself
 ```
 
-### 手动更新
+### Manual update
 
 ```bash
 cd ~/.kite
@@ -76,10 +78,10 @@ git pull
 chmod a+x bin/kite
 ```
 
-## 构建Phar包
+## Build Phar
 
 ```bash
-php -d phar.readonly=0 bin/kite phar:pack
+php -d phar.readonly=0 bin/kite phar:pack -o kite.phar
 ```
 
 ![](resource/images/build-phar.png)

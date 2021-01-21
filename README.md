@@ -9,9 +9,9 @@ My person CLI tool package.
 
 > Github https://github.com/inhere/kite
 
-## [中文说明](README.zh-CN.md)
+## [English](README.md)
 
-## Install
+## 安装
 
 **Required:**
 
@@ -19,7 +19,7 @@ My person CLI tool package.
 - php 7.1+
 - composer
 
-### Install by script
+### 脚本安装
 
 > file: [install.sh](./install.sh)
 
@@ -27,18 +27,18 @@ My person CLI tool package.
 curl https://raw.githubusercontent.com/inhere/kite/master/install.sh | bash
 ```
 
-### Manual clone
+### 手动安装
 
 ```bash
 cd ~
 git clone https://github.com/inhere/kite .kite
 cd .kite
 composer install
-chmod a+x bin/kite
 ln -s $PWD/bin/kite /usr/local/bin/kite
+chmod a+x bin/kite
 ```
 
-### Download phar
+### 下载PHAR
 
 - release page: https://github.com/inhere/kite/releases
 
@@ -50,27 +50,51 @@ mv kite-v1.0.5.phar /usr/local/bin/kite
 chmod a+x /usr/local/bin/kite
 ```
 
-## Usage
+## 使用说明
 
-### All commands
+## 查看命令帮助
 
 ```bash
-kite
+kite -h
 ```
 
 ![](resource/images/kite-help.png)
 
-## Update
+## git 常用命令
 
-### Builtin command
+## gitlab 常用命令
 
-Use builtin command for update tool to latest
+## 其他工具命令
+
+**env**
+
+显示环境变量信息：
 
 ```bash
-kite upself
+kite env
 ```
 
-### Manual update
+输出 `PATH` 信息：
+
+```bash
+kite env path
+```
+
+## 使用简单脚本
+
+## 命令别名配置
+
+## 更新
+
+### 内置命令
+
+使用内置命令将更新工具更新到最新版本
+
+```bash
+kite selfupdate
+```
+
+### 手动更新
 
 ```bash
 cd ~/.kite
@@ -78,10 +102,10 @@ git pull
 chmod a+x bin/kite
 ```
 
-## Build Phar
+## 构建Phar包
 
 ```bash
-php -d phar.readonly=0 bin/kite phar:pack -o kite.phar
+php -d phar.readonly=0 bin/kite phar:pack
 ```
 
 ![](resource/images/build-phar.png)

@@ -41,29 +41,31 @@ class EnvCommand extends Command
     protected function execute($input, $output)
     {
         $keywords = $input->getFirstArg();
-
         if (!$keywords) {
             // env | grep XXX
             $output->aList($_SERVER, 'ENV Information', ['ucFirst' => false]);
             return;
         }
 
+        $value = null;
         $upKey = strtoupper($keywords);
-
         if (isset($_SERVER[$upKey])) {
             $value = $_SERVER[$upKey];
-            $char  = $input->getStringOpt('split');
+        } elseif (isset($_SERVER[$keywords])) {
+            $value = $_SERVER[$keywords];
+        }
 
+        if ($value !== null) {
+            $sepChar = $input->getStringOpt('split');
             if ($upKey === 'PATH') {
-                $char = ':';
+                $sepChar = ':';
             }
 
-            if ($char) {
-                $output->aList(explode($char, $value), "$upKey value", ['ucFirst' => false]);
+            if ($sepChar) {
+                $output->aList(explode($sepChar, $value), "$upKey value", ['ucFirst' => false]);
             } else {
                 $output->colored($value);
             }
-
             return;
         }
 
@@ -72,12 +74,11 @@ class EnvCommand extends Command
 
         foreach ($_SERVER as $key => $value) {
             $hayStack = $matchVal ? $value : $key;
-            $needle   = $matchVal ? $keywords : $upKey;
             if (!is_scalar($hayStack)) {
                 continue;
             }
 
-            if (strpos((string)$hayStack, $needle) !== false) {
+            if (stripos((string)$hayStack, $keywords) !== false) {
                 $matched[$key] = $value;
             }
         }
@@ -86,6 +87,6 @@ class EnvCommand extends Command
             $matched = ['NOT MATCHED'];
         }
 
-        $output->aList($matched, "Matched Information(kw:{$keywords})", ['ucFirst' => false]);
+        $output->aList($matched, "Matched Results(kw:{$keywords})", ['ucFirst' => false]);
     }
 }
