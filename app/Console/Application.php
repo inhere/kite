@@ -9,7 +9,6 @@
 
 namespace Inhere\Kite\Console;
 
-use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
 use Toolkit\Stdlib\Arr\ArrayHelper;
 use function file_exists;

@@ -403,19 +403,19 @@ class CmdRunner
         $this->error = trim($error);
 
         // print output
-        $this->output = $output;
+        $this->output = trim($output);
         if ($this->printOutput) {
             $hasOutput = false;
             if ($code !== 0 && $this->error) {
                 $hasOutput = true;
-                Color::println("ERR($code):\n" . $this->error, 'red');
+                Color::println("error code $code:\n" . $this->error, 'red');
             }
 
             $outMsg = '';
             if (false === $hasOutput) {
-                $outMsg = $output ?: $this->error;
-            } elseif ($output) {
-                $outMsg = $output;
+                $outMsg = $this->output ?: $this->error;
+            } elseif ($this->output) {
+                $outMsg = $this->output;
             }
 
             if ($outMsg) {
