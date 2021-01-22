@@ -43,15 +43,25 @@ class GitUseController extends Controller
                 'tag-del',
                 'tagdel',
                 'tag:del',
+                'tag-rm',
+                'tagrm',
+                'tr',
+                'rm-tag',
+                'rmtag',
             ],
-            'tagFind'   => ['tagfind', 'tag-find', 'tag:find'],
-            'tagPush'   => [
+            'tagFind'   => ['tagfind', 'tag-find'],
+            'tagNew'    => [
+                'tagnew',
+                'tag-new',
+                'tn',
+                'newtag',
+                'new-tag',
                 'tagpush',
                 'tp',
                 'tag-push',
-                'tag:push'
             ],
-            'tagList'   => ['tag', 'tags', 'tl', 'taglist']
+            'tagList'   => ['tag', 'tags', 'tl', 'taglist'],
+            'tagInfo'   => ['tag-info', 'ti', 'tag-show'],
         ];
     }
 
@@ -151,20 +161,16 @@ class GitUseController extends Controller
     /**
      * list all git tags for the project
      *
-     * @options
-     *  --filter    Filter by input keywords
+     * @arguments
+     *  keywords    Filter by input keywords
      *
      * @param Input  $input
      * @param Output $output
-     *
-     * @example
-     *  {binWithCmd} --filter v2
      */
     public function tagListCommand(Input $input, Output $output): void
     {
-        $cmd = 'git tag -l';
-
-        $kw = $input->getStringOpt('filter');
+        $cmd = 'git tag -l -n2';
+        $kw  = $input->getStringArg(0);
         if ($kw) {
             $cmd .= " | grep $kw";
         }
@@ -172,6 +178,26 @@ class GitUseController extends Controller
         CmdRunner::new($cmd)->do(true);
 
         $output->success('Complete');
+    }
+
+    /**
+     * display git tag information by `git show TAG`
+     *
+     * @arguments
+     *  tag    Tag name for show info
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function tagInfoCommand(Input $input, Output $output): void
+    {
+        $tag = $input->getRequiredArg(0, 'tag');
+
+        $commands = [
+            "git show $tag",
+        ];
+
+        CmdRunner::new()->batch($commands)->run(true);
     }
 
     /**
@@ -186,7 +212,7 @@ class GitUseController extends Controller
      * @param Input  $input
      * @param Output $output
      */
-    public function tagPushCommand(Input $input, Output $output): void
+    public function tagNewCommand(Input $input, Output $output): void
     {
         $lTag = '';
         $dir  = $input->getPwd();
@@ -351,6 +377,10 @@ class GitUseController extends Controller
      * @arguments
      *  oldVersion   The old version. eg: v1.0.2
      *  newVersion   The new version. eg: v1.2.3
+     *
+     * @options
+     *  --file        Export changelog message to file
+     *  --max-commit  Max parse how many commits
      *
      * @param Input  $input
      * @param Output $output

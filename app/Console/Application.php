@@ -11,9 +11,8 @@ namespace Inhere\Kite\Console;
 
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
-use function array_merge;
+use Toolkit\Stdlib\Arr\ArrayHelper;
 use function file_exists;
-use function is_array;
 use const BASE_PATH;
 
 /**
@@ -41,55 +40,35 @@ class Application extends \Inhere\Console\Application
 
     private function loadAppConfig(): void
     {
-        $curDir = $this->getInput()->getPwd();
-        $ucFile = $curDir . '/.kite.inc';
-        $bcFile = BASE_PATH . '/.kite.inc';
-        $config = $userConfig = [];
+        $baseFile = BASE_PATH . '/config/config.php';
+        $loaded = [$baseFile];
 
-        $loaded = [];
-        if (file_exists($ucFile)) {
-            $loaded[] = $ucFile;
+        // 基础配置
+        /** @noinspection PhpIncludeInspection */
+        $config = require $baseFile;
+
+        // 自定义全局配置
+        $globFile = BASE_PATH . '/.kite.inc';
+        if (file_exists($globFile)) {
+            $loaded[] = $globFile;
             /** @noinspection PhpIncludeInspection */
-            $userConfig = require $ucFile;
+            $userConfig = require $globFile;
+            // merge to config
+            $config = ArrayHelper::quickMerge($userConfig, $config);
         }
 
-        if ($ucFile !== $bcFile && file_exists($bcFile)) {
-            $loaded[] = $bcFile;
+        // 当前项目配置
+        $workDir = $this->getInput()->getPwd();
+        $proFile = $workDir . '/.kite.inc';
+        if ($proFile !== $globFile && file_exists($proFile)) {
+            $loaded[] = $proFile;
             /** @noinspection PhpIncludeInspection */
-            $config = require $bcFile;
+            $proConfig = require $proFile;
+            // merge to config
+            $config = ArrayHelper::quickMerge($proConfig, $config);
         }
 
         $config['__loaded_file'] = $loaded;
-        if ($userConfig && $config) {
-            $config = AppHelper::mergeConfig($userConfig, $config);
-        }
-
         $this->setConfig($config);
-    }
-
-    /**
-     * @param array $userConfig
-     * @param array $config
-     *
-     * @return bool
-     */
-    private function mergeUserConfig(array $userConfig, array $config): bool
-    {
-        foreach ($userConfig as $key => $item) {
-            if (isset($config[$key]) && is_array($config[$key])) {
-                if (is_array($item)) {
-                    $config[$key] = array_merge($config[$key], $item);
-                } else {
-                    $this->output->error("Array config error! the '{$key}' must be an array");
-                    return false;
-                }
-            } else {
-                // custom add/set config
-                $config[$key] = $item;
-            }
-        }
-
-        $this->setConfig($config);
-        return true;
     }
 }

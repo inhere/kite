@@ -23,12 +23,8 @@ $app->on(Application::ON_NOT_FOUND, static function (string $cmd, Application $a
     $aliases = $app->getParam('aliases', []);
     if ($aliases && isset($aliases[$cmd])) {
         $realCmd = $aliases[$cmd];
-        $app->notice("input command is alias, will redirect to the real command '$realCmd'");
 
-        // $args = $app->getInput()->getArgs();
-        // $args = array_merge([$cmd], $args);
-
-        // $app->getInput()->setArgs($args, true);
+        $app->notice("input command is alias name, will redirect to the real command '$realCmd'");
         $app->dispatch($realCmd);
         return true;
     }

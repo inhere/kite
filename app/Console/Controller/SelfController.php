@@ -2,6 +2,7 @@
 
 namespace Inhere\Kite\Console\Controller;
 
+use Inhere\Console\Component\Formatter\Title;
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
@@ -9,7 +10,9 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Util\PhpDevServe;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Sys;
+use function array_keys;
 use function count;
+use function is_scalar;
 use const BASE_PATH;
 
 /**
@@ -36,8 +39,11 @@ class SelfController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'up'  => 'update',
-            'web' => 'serve',
+            'up'     => 'update',
+            'web'    => 'serve',
+            'config' => [
+                'conf'
+            ],
         ];
     }
 
@@ -61,11 +67,59 @@ class SelfController extends Controller
         $conf = $app->getConfig();
 
         $output->aList([
-            'repo path'    => $this->repoDir,
+            'work dir'     => $this->repoDir,
             'root path'    => $conf['rootPath'],
             'loaded file'  => $conf['__loaded_file'],
             'script count' => count($conf['scripts']),
         ], 'information');
+    }
+
+    /**
+     * show the application config information
+     *
+     * @options
+     *  --show-keys     Only show all key names of config
+     *
+     * @arguments
+     *  key     The key of config
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function configCommand(Input $input, Output $output): void
+    {
+        $app = $this->getApp();
+        if ($input->getBoolOpt('show-keys')) {
+            $output->aList(array_keys($app->getConfig()), 'Keys of config');
+            return;
+        }
+
+        $key = $input->getStringArg(0);
+
+        if ($key) {
+            $val = $app->getParam($key);
+            if ($val === null) {
+                throw new PromptException("config key '{$key}' is not exists");
+            }
+
+            if (is_scalar($val)) {
+                $output->info("$key Value: $val");
+            } else {
+                $output->title("'$key' Value", [
+                    'indent'   => 0,
+                    'titlePos' => Title::POS_MIDDLE,
+                ]);
+                $output->json($val);
+            }
+            return;
+        }
+
+        $conf = $app->getConfig();
+        $output->title('Application Config', [
+            'indent'   => 0,
+            'titlePos' => Title::POS_MIDDLE,
+        ]);
+        $output->json($conf);
     }
 
     /**

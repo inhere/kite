@@ -21,8 +21,7 @@ return [
         ],
     ],
     // command aliases. element is: alias command => real command
-    'aliases' => [
-    ],
+    'aliases' => [],
     // custom scripts
     'scripts' => [
         'echo'          => 'echo hi',

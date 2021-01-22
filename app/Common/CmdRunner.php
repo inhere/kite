@@ -411,11 +411,15 @@ class CmdRunner
                 Color::println("ERR($code):\n" . $this->error, 'red');
             }
 
+            $outMsg = '';
             if (false === $hasOutput) {
                 $outMsg = $output ?: $this->error;
-                if ($outMsg) {
-                    echo $outMsg . "\n";
-                }
+            } elseif ($output) {
+                $outMsg = $output;
+            }
+
+            if ($outMsg) {
+                echo $outMsg . "\n";
             }
         }
     }

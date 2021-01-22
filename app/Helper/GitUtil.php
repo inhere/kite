@@ -133,7 +133,7 @@ class GitUtil
     public static function findTag(string $workDir = '', bool $showInfo = false): string
     {
         // fix: update tags to latest
-        $ret = SysCmd::exec('git pull --tags', $workDir);
+        $ret = SysCmd::exec('git fetch --tags', $workDir);
         if ($showInfo) {
             echo $ret['output'] . PHP_EOL;
         }
