@@ -78,7 +78,7 @@ class SelfController extends Controller
      * show the application config information
      *
      * @options
-     *  --show-keys     Only show all key names of config
+     *  --keys     Only show all key names of config
      *
      * @arguments
      *  key     The key of config
@@ -89,7 +89,7 @@ class SelfController extends Controller
     public function configCommand(Input $input, Output $output): void
     {
         $app = $this->getApp();
-        if ($input->getBoolOpt('show-keys')) {
+        if ($input->getBoolOpt('keys')) {
             $output->aList(array_keys($app->getConfig()), 'Keys of config');
             return;
         }

@@ -31,6 +31,10 @@
             "app/func.php"
         ]
     },
+    "bin": [
+        "bin/kite",
+        "bin/htu"
+    ],
     "repositories": {
       "packagist": {
         "type": "composer",

@@ -65,6 +65,22 @@ class GitUseController extends Controller
         ];
     }
 
+    /**
+     * @param string $action
+     *
+     * @return bool
+     */
+    protected function onNotFound(string $action): bool
+    {
+        $this->output->info("input sub-command is '$action', will try exec system command `git $action`");
+
+        $run = CmdRunner::new("git $action");
+        $run->do(true);
+
+        // return $run->isSuccess();
+        return true;
+    }
+
     public function statusCommand(): void
     {
         $commands = [
