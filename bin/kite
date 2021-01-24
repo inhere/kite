@@ -30,9 +30,19 @@ $app->on(Application::ON_NOT_FOUND, static function (string $cmd, Application $a
         return true;
     }
 
+    // custom scripts
     $scripts = $app->getParam('scripts', []);
     if (!$scripts || !isset($scripts[$cmd])) {
+        if ($cmd[0] === '\\') {
+            $cmd = substr($cmd, 1);
+        }
+
         $app->notice("input command is not found, will call system command '$cmd'");
+        $args = $app->getInput()->getArgs();
+
+        if ($args) {
+            $cmd .= ' ' . implode(' ', $args);
+        }
 
         // call system command
         CmdRunner::new($cmd)->do(true);
