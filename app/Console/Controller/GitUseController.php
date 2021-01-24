@@ -10,6 +10,7 @@
 namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
+use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
@@ -291,25 +292,37 @@ class GitUseController extends Controller
     }
 
     /**
-     * delete an remote tag by git
+     * delete an local and remote tag by `git tag`
      *
      * @usage
      *  {command} [-S HOST:PORT]
      *  {command} [-H HOST] [-p PORT]
      *
      * @options
-     *  -r, --remote The remote name. default <comment>origin</comment>
-     *  -v, --tag    The tag version. eg: v2.0.3
+     *  -r, --remote        The remote name. default <comment>origin</comment>
+     *  -v, --tag           The tag version. eg: v2.0.3
+     *      --no-remote     Only delete local tag
      *
      * @param Input  $input
      * @param Output $output
      */
     public function tagDeleteCommand(Input $input, Output $output): void
     {
-        $remote = $input->getSameOpt(['r', 'remote'], 'origin');
-        $tag    = $input->getSameOpt(['v', 'tag']);
+        $tag = $input->getSameOpt(['v', 'tag']);
+        if (!$tag) {
+            throw new PromptException('please input tag name');
+        }
 
-        GitUtil::delRemoteTag($remote, $tag);
+        $run = CmdRunner::new();
+        $run->addf('git tag -d %s', $tag);
+
+        if (false === $input->getBoolOpt('no-remote')) {
+            $remote = $input->getSameStringOpt(['r', 'remote'], 'origin');
+
+            $run->addf('git push %s :refs/tags/%s', $remote, $tag);
+        }
+
+        $run->run(true);
 
         $output->success('Complete');
     }

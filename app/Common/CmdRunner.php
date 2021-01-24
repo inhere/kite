@@ -75,7 +75,6 @@ class CmdRunner
      */
     private $printOutput = false;
 
-
     /**
      * @param string $cmd
      * @param string $workDir
