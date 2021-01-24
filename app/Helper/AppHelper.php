@@ -93,15 +93,18 @@ class AppHelper
     public static function openBrowser(string $pageUrl): void
     {
         if (Sys::isMac()) {
-            $cmd = 'open';
+            $cmd = "open \"{$pageUrl}\"";
         } elseif (Sys::isWin()) {
-            $cmd = 'cmd /c start';
+            // $cmd = 'cmd /c start';
+            $cmd = "start {$pageUrl}";
         } else {
-            $cmd = 'x-www-browser';
+            $cmd = "x-www-browser \"{$pageUrl}\"";
         }
 
         Show::info("Will open the page on browser:\n  $pageUrl");
-        Sys::execute($cmd . " \"{$pageUrl}\"");
+
+        Show::writeln("> $cmd");
+        Sys::execute($cmd);
     }
 
     /**
