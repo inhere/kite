@@ -183,8 +183,7 @@ class GitFlowController extends Controller
     public function syncCommand(Input $input, Output $output): void
     {
         $forkRemote = $this->forkRemote;
-
-        if (!$mainRemote = $input->getSameStringOpt(['r', 'remote'], '')) {
+        if (!$mainRemote = $input->getSameStringOpt(['r', 'remote'])) {
             $mainRemote = $this->mainRemote;
         }
 

@@ -6,6 +6,7 @@ use RuntimeException;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Exec;
 use function is_array;
+use function is_string;
 use function sprintf;
 use function trim;
 
@@ -76,12 +77,12 @@ class CmdRunner
     private $printOutput = false;
 
     /**
-     * @param string $cmd
+     * @param string|array  $cmd
      * @param string $workDir
      *
      * @return static
      */
-    public static function new(string $cmd = '', string $workDir = ''): self
+    public static function new($cmd = '', string $workDir = ''): self
     {
         return new self($cmd, $workDir);
     }
@@ -89,12 +90,17 @@ class CmdRunner
     /**
      * Class constructor.
      *
-     * @param string $command
+     * @param string|array $command One or multi commands
      * @param string $workDir
      */
-    public function __construct(string $command = '', string $workDir = '')
+    public function __construct($command = '', string $workDir = '')
     {
-        $this->command = $command;
+        if (is_string($command)) {
+            $this->command = $command;
+        } elseif (is_array($command)) {
+            $this->commands = $command;
+        }
+
         $this->workDir = $workDir;
     }
 
@@ -130,7 +136,7 @@ class CmdRunner
      */
     public function exec(bool $printOutput = false): array
     {
-        $this->do($printOutput);
+        $this->run($printOutput);
 
         return $this->getResult();
     }
@@ -142,10 +148,7 @@ class CmdRunner
      */
     public function do(bool $printOutput = false): self
     {
-        $this->printOutput = $printOutput;
-        $this->execute($this->command, $this->workDir);
-
-        return $this;
+        return $this->run($printOutput);
     }
 
     /**
@@ -190,9 +193,7 @@ class CmdRunner
             $this->workDir = $workDir;
         }
 
-        $this->command = $cmd;
-
-        return $this->do($this->printOutput);
+        return $this->setCommand($cmd)->do($this->printOutput);
     }
 
     /**
@@ -324,9 +325,28 @@ class CmdRunner
     {
         $this->printOutput = $printOutput;
 
+        if ($command = $this->command) {
+            $this->innerExecute($command, $this->workDir);
+
+            // stop on error
+            if (0 !== $this->code && false === $this->ignoreError) {
+                Color::println("\nCommand exit code not equal to 0(code: {$this->code}), stop run.", 'red');
+                return $this;
+            }
+        }
+
+        if ($commands = $this->commands) {
+            $this->runCommands($commands);
+        }
+
+        return $this;
+    }
+
+    private function runCommands(array $commands): void
+    {
         Color::println('Starting Handle', 'suc');
         $step = 1;
-        foreach ($this->commands as $command) {
+        foreach ($commands as $command) {
             $workDir = $this->workDir;
 
             // see addWhere()
@@ -351,7 +371,7 @@ class CmdRunner
                 Color::println('- work dir is ' . $workDir, 'italic');
             }
 
-            $this->execute($command, $workDir);
+            $this->innerExecute($command, $workDir);
             $step++;
 
             // stop on error
@@ -360,8 +380,6 @@ class CmdRunner
                 break;
             }
         }
-
-        return $this;
     }
 
     /**************************************************************************
@@ -372,7 +390,7 @@ class CmdRunner
      * @param string $command
      * @param string $workDir
      */
-    protected function execute(string $command, string $workDir): void
+    protected function innerExecute(string $command, string $workDir): void
     {
         if (!$command) {
             throw new RuntimeException('The execute command cannot be empty');

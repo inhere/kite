@@ -3,8 +3,9 @@
 namespace Inhere\Kite\Common\GitLocal;
 
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\GitUtil;
+use PhpGit\Info\RemoteInfo;
+use PhpGit\Repo;
 use RuntimeException;
 use Toolkit\Cli\Color;
 use Toolkit\Stdlib\Obj;
@@ -23,6 +24,11 @@ use function trim;
 abstract class AbstractGitLocal
 {
     public const GITHUB_HOST = 'https://github.com';
+
+    /**
+     * @var Repo
+     */
+    protected $repo;
 
     /**
      * @var string
@@ -52,6 +58,8 @@ abstract class AbstractGitLocal
     protected $output;
 
     /**
+     * default remote name
+     *
      * @var string
      */
     protected $remote = 'origin';
@@ -135,6 +143,18 @@ abstract class AbstractGitLocal
     }
 
     /**
+     * @return Repo
+     */
+    public function getRepo(): Repo
+    {
+        if (!$this->repo) {
+            $this->repo = Repo::new($this->workDir);
+        }
+
+        return $this->repo;
+    }
+
+    /**
      * @param array $config
      */
     protected function init(array $config): void
@@ -159,6 +179,46 @@ abstract class AbstractGitLocal
     public function clone(): array
     {
         return [];
+    }
+
+    /**
+     * @return string
+     */
+    public function findProjectName(): string
+    {
+        $pjName = '';
+
+        $info = $this->getRemoteInfo();
+        $path = $info->path;
+
+        if ($path) {
+            // TODO check host is: github OR gitlab.
+            $pjName = $path;
+
+            // try padding some info
+            if (isset($this->projects[$path])) {
+                if (!isset($this->projects[$path]['forkGroup'])) {
+                    $this->projects[$path]['forkGroup'] = $info->group;
+                }
+                if (!isset($this->projects[$path]['repo'])) {
+                    $this->projects[$path]['repo'] = $info->repo;
+                }
+            }
+
+            $this->output->liteNote('auto parse project info from git remote url');
+        }
+
+        if (!$pjName) {
+            $dirName = $this->getDirName();
+
+            // try auto parse project name for dirname.
+            if (isset($this->projects[$dirName])) {
+                $pjName = $dirName;
+                $this->output->liteNote('auto parse project name from dirname.');
+            }
+        }
+
+        return $pjName;
     }
 
     /**
@@ -239,90 +299,17 @@ abstract class AbstractGitLocal
     }
 
     /**
-     * @param string $remote
-     *
-     * @return $this
-     */
-    public function parseRemote(string $remote = ''): self
-    {
-        if ($remote) {
-            $this->setRemote($remote);
-        }
-
-        Color::println('find and parse remote info ...', 'normal');
-        $str = 'git remote get-url --push ' . $this->remote;
-        $run = CmdRunner::new($str, $this->workDir);
-        $url = $run->do()->getOutput(true);
-        if ($run->isFail()) {
-            throw new RuntimeException($run->getError(), 500);
-        }
-
-        // git@gitlab.my.com:group/some-lib.git
-        if (strpos($url, 'git@') === 0) {
-            if (substr($url, -4) === '.git') {
-                $url = substr($url, 4, -4);
-            } else {
-                $url = substr($url, 4);
-            }
-
-            // $url = gitlab.my.com:group/some-lib
-            [$host, $path] = explode(':', $url, 2);
-            [$group, $repo] = explode('/', $path, 2);
-
-            $this->curRepo = $repo;
-            if ($this->remote === $this->getDefaultGroupName()) {
-                $this->curMainGroup = '';
-            }
-
-            $this->curForkGroup = $group;
-            $this->remoteInfo   = [
-                'host'  => $host,
-                'path'  => $path,
-                'url'   => $url,
-                'group' => $group,
-                'repo'  => $repo,
-            ];
-        } else { // eg: "https://github.com/ulue/swoft-component.git"
-            $info = parse_url($url);
-            // add
-            $info['url']  = $url;
-
-            $uriPath = $info['path'];
-            if (substr($uriPath, -4) === '.git') {
-                $uriPath = substr($uriPath, 0, -4);
-            }
-
-            $info['path'] = trim($uriPath, '/');
-
-            [$group, $repo] = explode('/', $info['path'], 2);
-            $info['group']  = $group;
-
-            // TODO
-            // $this->curGroup = $group;
-            $this->curRepo = $repo;
-
-            $this->curForkGroup = $group;
-            $this->remoteInfo = $info;
-        }
-
-        return $this;
-    }
-
-    /**
      * @param string $pjName
      *
      * @return $this
      */
-    public function loadCurPjInfo(string $pjName = ''): self
+    public function loadProjectInfo(string $pjName = ''): self
     {
         if ($pjName) {
             $this->setCurPjName($pjName);
         }
 
         $pjName = $this->curPjName;
-        if (!isset($this->projects[$pjName])) {
-            throw new RuntimeException("project '{$pjName}' is not found in the projects");
-        }
 
         $defaultInfo = [
             'name'      => $pjName,
@@ -330,6 +317,21 @@ abstract class AbstractGitLocal
             'group'     => $this->getValue('defaultGroup', ''),
             'forkGroup' => $this->getValue('defaultForkGroup', ''),
         ];
+
+        // not exist. dynamic add
+        if (!isset($this->projects[$pjName])) {
+            // throw new RuntimeException("project '{$pjName}' is not found in the projects");
+            $info = $this->getRemoteInfo();
+            if ($info->isInvalid()) {
+                throw new RuntimeException("dynamic load project '{$pjName}' fail. not found git remote info");
+            }
+
+            $this->projects[$pjName] = [
+                'dynamic'   => true,
+                'forkGroup' => $info->group,
+                'repo'      => $info->repo,
+            ];
+        }
 
         $this->curPjInfo = array_merge($defaultInfo, $this->projects[$pjName]);
         // set current repo
@@ -475,11 +477,13 @@ abstract class AbstractGitLocal
     }
 
     /**
-     * @return array
+     * @param string $remote
+     *
+     * @return RemoteInfo
      */
-    public function getRemoteInfo(): array
+    public function getRemoteInfo(string $remote = ''): RemoteInfo
     {
-        return $this->remoteInfo;
+        return $this->getRepo()->getRemoteInfo($remote);
     }
 
     /**

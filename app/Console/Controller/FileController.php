@@ -129,6 +129,7 @@ class FileController extends Controller
 
         // \var_dump(proc_get_status($process));
         \proc_close($process);
+        $output->success('Complete');
     }
 
     /**

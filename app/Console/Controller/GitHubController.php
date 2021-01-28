@@ -48,11 +48,12 @@ class GitHubController extends Controller
     /**
      * @return GitHub
      */
-    private function newGithub(): GitHub
+    private function getGithub(): GitHub
     {
         $config = $this->app->getParam('github', []);
+        // $github->setWorkDir($this->input->getWorkDir());
 
-        return GitHub::new($this->output, $config)->setWorkDir($this->input->getWorkDir());
+        return GitHub::new($this->output, $config);
     }
 
     protected function configure(): void
@@ -143,8 +144,8 @@ class GitHubController extends Controller
      * Open an github repository by browser
      *
      * @options
-     *  -r, --remote         The git remote name. default is 'origin'
-     *  --main               Use the `mainRemote` name
+     *  -r, --remote         The git remote name. default is `origin`
+     *      --main           Use the config `mainRemote` name
      *
      * @arguments
      *  repoPath    The remote git repo URL or repository group/name.
@@ -159,10 +160,10 @@ class GitHubController extends Controller
      */
     public function openCommand(Input $input, Output $output): void
     {
-        $gh = $this->newGithub();
+        $gh = $this->getGithub();
 
         // - input repoPath
-        $repoPath  = $input->getStringArg('repoPath');
+        $repoPath = $input->getStringArg('repoPath');
         if ($repoPath) {
             $repoUrl = $gh->parseRepoUrl($repoPath);
             if (!$repoUrl) {
@@ -181,15 +182,10 @@ class GitHubController extends Controller
             $remote = $gh->getMainRemote();
         }
 
-        $info = $gh->parseRemote($remote)->getRemoteInfo();
-        if (!empty($info['url'])) {
-            AppHelper::openBrowser($info['url']);
+        $info = $gh->getRemoteInfo($remote);
+        AppHelper::openBrowser($info->getHttpUrl());
 
-            $output->success('Complete');
-            return;
-        }
-
-        $output->error('please input an repoPath or go into an git workDir');
+        $output->success('Complete');
     }
 
     /**
@@ -223,7 +219,7 @@ class GitHubController extends Controller
         $repo = $input->getRequiredArg('repo');
         $name = $input->getStringArg('name');
 
-        $gh = $this->newGithub();
+        $gh = $this->getGithub();
 
         $repoUrl = $gh->parseRepoUrl($repo);
         if (!$repoUrl) {
@@ -249,16 +245,16 @@ class GitHubController extends Controller
      */
     public function pullRequestCommand(Input $input, Output $output): void
     {
-        $gh = $this->newGithub();
-        if (!$pjName = $gh->findPjName()) {
+        $gh = $this->getGithub();
+        if (!$pjName = $gh->findProjectName()) {
             $pjName = $input->getRequiredArg('project');
         }
 
-        if (!$gh->hasProject($pjName)) {
-            throw new PromptException("project '{$pjName}' is not found in the config");
-        }
+        // if (!$gh->hasProject($pjName)) {
+        //     throw new PromptException("project '{$pjName}' is not found in the config");
+        // }
 
-        $gh->loadCurPjInfo($pjName);
+        $gh->loadProjectInfo($pjName);
 
         $pjInfo = $gh->getCurPjInfo();
 

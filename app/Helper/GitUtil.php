@@ -58,10 +58,9 @@ class GitUtil
      */
     public static function getCurrentBranchName(string $workDir = ''): string
     {
-        //  git symbolic-ref --short -q HEAD
-        //
-        //  git rev-parse --abbrev-ref HEA
-        // $str = 'git branch --show-current';
+        // 1. git symbolic-ref --short -q HEAD
+        // 2. git rev-parse --abbrev-ref HEA
+        // 3. git branch --show-current // 老版本不支持
         $str = 'git symbolic-ref --short -q HEAD';
         $cmd = CmdRunner::new($str, $workDir);
 

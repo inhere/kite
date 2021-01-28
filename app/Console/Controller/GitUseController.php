@@ -16,7 +16,9 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
+use PhpGit\Repo;
 use function sprintf;
+use function strtolower;
 use function trim;
 
 /**
@@ -75,14 +77,14 @@ class GitUseController extends Controller
     {
         $this->output->info("input sub-command is '$action', will try exec system command `git $action`");
 
-        $run = CmdRunner::new("git $action");
+        $run = CmdRunner::new($this->input->getFullScript());
         $run->do(true);
 
         // return $run->isSuccess();
         return true;
     }
 
-    public function statusCommand(): void
+    public function statusCommand(Input $input, Output $output): void
     {
         $commands = [
             'echo hi',
@@ -94,8 +96,23 @@ class GitUseController extends Controller
 
     /**
      * display git information for the project
+     *
+     * @param Input  $input
+     * @param Output $output
      */
-    public function infoCommand(): void
+    public function infoCommand(Input $input, Output $output): void
+    {
+        $repo = Repo::new();
+
+        $output->aList($repo->getInfo(), 'Project Info', [
+            'ucFirst' => false,
+        ]);
+    }
+
+    /**
+     * batch update multi dir by git pull
+     */
+    public function batchPullCommand(): void
     {
         $commands = [
             'git status',
@@ -103,6 +120,33 @@ class GitUseController extends Controller
         ];
 
         CmdRunner::new()->batch($commands)->run(true);
+    }
+
+    /**
+     * Open the git repository URL by browser
+     *
+     * @arguments
+     *  remote    The remote name for open. If not input, will use `origin`
+     *
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @example
+     *  {binWithCmd}
+     *  {binWithCmd} other-remote
+     */
+    public function openCommand(Input $input, Output $output): void
+    {
+        $input->bindArgument('remote', 0);
+
+        $remote = $input->getStringArg('remote', 'origin');
+
+        $repo = Repo::new();
+        $info = $repo->getRemoteInfo($remote);
+
+        AppHelper::openBrowser($info->getHttpUrl());
+
+        $output->success('Complete');
     }
 
     /**
@@ -119,9 +163,9 @@ class GitUseController extends Controller
      * @param Output $output
      *
      * @example
-     *  {fullCmd}  php-toolkit/cli-utils --gh
-     *  {fullCmd}  php-toolkit/cli-utils my-repo --gh
-     *  {fullCmd}  https://github.com/php-toolkit/cli-utils
+     *  {binWithCmd} php-toolkit/cli-utils --gh
+     *  {binWithCmd} php-toolkit/cli-utils my-repo --gh
+     *  {binWithCmd} https://github.com/php-toolkit/cli-utils
      */
     public function cloneCommand(Input $input, Output $output): void
     {
@@ -377,7 +421,7 @@ class GitUseController extends Controller
 
         $dryRun = $input->getBoolOpt('dry-run');
 
-        $run = CmdRunner::new("git status");
+        $run = CmdRunner::new("git status $added");
         $run->setDryRun($dryRun);
 
         $run->do(true);
@@ -401,27 +445,63 @@ class GitUseController extends Controller
     }
 
     /**
-     * collect git change log list
+     * collect git change log information by `git log`
      *
      * @arguments
      *  oldVersion   The old version. eg: v1.0.2
+     *                - keywords `latest` will auto use latest tag.
      *  newVersion   The new version. eg: v1.2.3
+     *                - keywords `head` will use `Head` commit.
      *
      * @options
      *  --file        Export changelog message to file
      *  --max-commit  Max parse how many commits
+     *  --format      The git log option `--pretty` value.
+     *                 can be one of oneline, short, medium, full, fuller, reference, email, raw, format:<string> and tformat:<string>.
      *
      * @param Input  $input
      * @param Output $output
      */
     public function changelogCommand(Input $input, Output $output): void
     {
-        // git log v1.0.7...v1.0.7 --pretty=format:'<li> <a href="http://github.com/jerel/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse
-        // git log v1.0.7...HEAD --pretty=format:'<li> <a href="http://github.com/jerel/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse
+        // useful options:
+        // --no-merges
+        // --glob=<glob-pattern>
+        // --exclude=<glob-pattern>
+        // --pretty[=<format>] <format> can be one of oneline, short, medium, full, fuller, reference, email, raw, format:<string> and tformat:<string>.
+
+        // git log v1.0.7...v1.0.8 --pretty=format:'<project>/commit/%H %s' --reverse
+
+        // git log v1.0.7...v1.0.7 --pretty=format:'<li> <a href="http://github.com/inhere/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse
+        // git log v1.0.7...HEAD --pretty=format:'<li> <a href="http://github.com/inhere/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse
+        $oldVersion = $input->getStringArg('oldVersion');
+        if ($oldVersion) {
+            if ($oldVersion === 'latest') {
+                $oldVersion = GitUtil::findTag();
+                $output->info('auto find latest tag ' . $oldVersion);
+            }
+
+            $newVersion = $input->getRequiredArg('newVersion');
+            if (strtolower($newVersion) === 'head') {
+                $newVersion = 'HEAD';
+            }
+
+            $logCmd = <<<CMD
+git log $oldVersion...$newVersion --pretty=format:'<project>/commit/%H %s' --reverse
+CMD;
+
+            $runner = CmdRunner::new(trim($logCmd));
+            $runner->do(true);
+
+            $output->success('Complete');
+            return;
+        }
+
+        $maxCommit = $input->getIntOpt('max-commit', 15);
 
         // git log --color --graph --pretty=format:'%Cred%h%Creset:%C(ul yellow)%d%Creset %s (%Cgreen%cr%Creset, %C(bold blue)%an%Creset)' --abbrev-commit -10
         $logCmd = <<<CMD
-git log --color --graph --pretty=format:'%Cred%h%Creset:%C(ul yellow)%d%Creset %s (%Cgreen%cr%Creset, %C(bold blue)%an%Creset)' --abbrev-commit -10
+git log --color --graph --pretty=format:'%Cred%h%Creset:%C(ul yellow)%d%Creset %s (%Cgreen%cr%Creset, %C(bold blue)%an%Creset)' --abbrev-commit -$maxCommit
 CMD;
 
         $runner = CmdRunner::new(trim($logCmd));

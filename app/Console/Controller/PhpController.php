@@ -126,6 +126,7 @@ class PhpController extends Controller
      * @param Output $output
      * @example
      *  {binWithCmd} inhere/console
+     *  {binWithCmd} vendor/inhere/console
      */
     public function ghPkgCommand(Input $input, Output $output): void
     {

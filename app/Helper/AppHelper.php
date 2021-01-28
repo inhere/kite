@@ -106,28 +106,4 @@ class AppHelper
         Show::writeln("> $cmd");
         Sys::execute($cmd);
     }
-
-    /**
-     * @param array $userConfig
-     * @param array $config
-     *
-     * @return array
-     */
-    public static function mergeConfig(array $userConfig, array $config): array
-    {
-        foreach ($userConfig as $key => $item) {
-            if (isset($config[$key]) && is_array($config[$key])) {
-                if (is_array($item)) {
-                    $config[$key] = array_merge($config[$key], $item);
-                } else {
-                    throw new \RuntimeException("Array config error! the '{$key}' must be an array");
-                }
-            } else {
-                // custom add/set config
-                $config[$key] = $item;
-            }
-        }
-
-        return $config;
-    }
 }

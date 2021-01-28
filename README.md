@@ -62,7 +62,15 @@ kite -h
 
 ## git 常用命令
 
+```bash
+kite git {command} [arguments ...] [--options ...]
+```
+
 ## gitlab 常用命令
+
+```bash
+kite gitlab {command} [arguments ...] [--options ...]
+```
 
 ## 其他工具命令
 

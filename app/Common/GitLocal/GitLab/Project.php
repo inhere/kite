@@ -57,6 +57,13 @@ class Project
     private $forkPid;
 
     /**
+     * 是否是根据当前工作目录信息自动加载的信息
+     *
+     * @var bool
+     */
+    private $dynamic = false;
+
+    /**
      * @param array $data
      *
      * @return static
@@ -78,6 +85,7 @@ class Project
             'mainPid'   => $this->mainPid,
             'forkGroup' => $this->forkGroup,
             'forkPid'   => $this->forkPid,
+            'dynamic'   => $this->dynamic,
         ];
     }
 
@@ -213,5 +221,21 @@ class Project
     {
         $this->forkPid = (string)$forkPid;
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDynamic(): bool
+    {
+        return $this->dynamic;
+    }
+
+    /**
+     * @param bool $dynamic
+     */
+    public function setDynamic(bool $dynamic): void
+    {
+        $this->dynamic = $dynamic;
     }
 }

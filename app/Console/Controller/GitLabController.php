@@ -62,17 +62,17 @@ class GitLabController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'pr'   => 'pullRequest',
-            'li'   => 'linkInfo',
-            'cf'   => 'config',
-            'conf' => 'config',
-            'pj'   => 'project',
-            'nb'   => 'newBranch',
-            'db'   => 'deleteBranch',
-            'rc'   => 'resolve',
-            'up'   => 'update',
-            'upp'  => 'updatePush',
-            'new'  => 'create',
+            'pr'      => 'pullRequest',
+            'li'      => 'linkInfo',
+            'cf'      => 'config',
+            'conf'    => 'config',
+            'nb'      => 'newBranch',
+            'db'      => 'deleteBranch',
+            'rc'      => 'resolve',
+            'up'      => 'update',
+            'upp'     => 'updatePush',
+            'new'     => 'create',
+            'project' => ['pj', 'info'],
         ];
     }
 
@@ -94,10 +94,9 @@ class GitLabController extends Controller
     private function gitlab(): GitLab
     {
         $config = $this->app->getParam('gitlab', []);
-        $gitlab = GitLab::new($this->output, $config);
-        $gitlab->setWorkDir($this->input->getWorkDir());
+        // $gitlab->setWorkDir($this->input->getWorkDir());
 
-        return $gitlab;
+        return GitLab::new($this->output, $config);
     }
 
     /**
@@ -300,17 +299,16 @@ class GitLabController extends Controller
             return;
         }
 
-        if (!$pjName = $gitlab->findPjName()) {
+        if (!$pjName = $gitlab->findProjectName()) {
             $pjName = $input->getArg('name');
         }
 
-        $gitlab->loadCurPjInfo($pjName);
+        $gitlab->loadProjectInfo($pjName);
         $project = $gitlab->getCurProject();
 
         $output->json($project->toArray());
         $output->success('Complete');
     }
-
 
     /**
      * open gitlab project page on browser
@@ -327,19 +325,17 @@ class GitLabController extends Controller
     public function openCommand(Input $input, Output $output): void
     {
         $gitlab = $this->gitlab();
-        $toMain = $input->getSameBoolOpt(['m', 'main']);
 
         $defRemote = $gitlab->getForkRemote();
-        if ($toMain) {
+        if ($input->getSameBoolOpt(['m', 'main'])) {
             $defRemote = $gitlab->getMainRemote();
         }
-        // \vdump($defRemote);die;
 
         $remote = $input->getArg('remote', $defRemote);
-        $rInfo  = $gitlab->parseRemote($remote)->getRemoteInfo();
-        // \var_dump($defRemote, $gitlab);die;
 
-        $link = $gitlab->getHost() . '/' . $rInfo['path'];
+        $info = $gitlab->getRemoteInfo($remote);
+        $link = $info->getHttpUrl();
+
         AppHelper::openBrowser($link);
 
         $output->success('Complete');
@@ -437,15 +433,11 @@ class GitLabController extends Controller
     {
         // http://gitlab.my.com/group/repo/merge_requests/new?utf8=%E2%9C%93&merge_request%5Bsource_project_id%5D=319&merge_request%5Bsource_branch%5D=fea_4_16&merge_request%5Btarget_project_id%5D=319&merge_request%5Btarget_branch%5D=qa
         $gitlab = $this->gitlab();
-        if (!$pjName = $gitlab->findPjName()) {
+        if (!$pjName = $gitlab->findProjectName()) {
             $pjName = $input->getRequiredArg('project');
         }
 
-        if (!$gitlab->hasProject($pjName)) {
-            throw new PromptException("project '{$pjName}' is not found in the config");
-        }
-
-        $gitlab->loadCurPjInfo($pjName);
+        $gitlab->loadProjectInfo($pjName);
 
         $project = $gitlab->getCurProject();
 
