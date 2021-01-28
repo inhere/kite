@@ -7,6 +7,7 @@ return [
         'root' => 'public'
     ],
 
+    /** @see Inhere\Kite\Common\GitLocal\GitLab */
     'gitlab'  => [
         'projects' => [
 

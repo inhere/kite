@@ -439,18 +439,15 @@ class GitLabController extends Controller
 
         $gitlab->loadProjectInfo($pjName);
 
-        $project = $gitlab->getCurProject();
-
-        $repo  = $project->getRepo();
-        $group = $project->getGroup();
+        $p = $gitlab->getCurProject();
 
         $brPrefix = $gitlab->getValue('branchPrefix', '');
         $fixedBrs = $gitlab->getValue('fixedBranch', []);
         // 这里面的分支禁止作为源分支(source)来发起PR
         $denyBrs = $gitlab->getValue('denyBranches', []);
 
-        $srcPjId = $project->getForkPid();
-        $tgtPjId = $project->getMainPid();
+        $srcPjId = $p->getForkPid();
+        $tgtPjId = $p->getMainPid();
 
         $open = $input->getSameOpt(['o', 'open']);
 
@@ -487,10 +484,13 @@ class GitLabController extends Controller
             throw new PromptException("the branch '{$srcBranch}' dont allow as source-branch for PR to other branch");
         }
 
+        $repo  = $p->repo;
+        $group = $p->group;
+
         // Is sync to remote
         $isDirect = $input->getSameBoolOpt(['d', 'direct']);
         if ($isDirect || $srcBranch === $tgtBranch) {
-            $group = $project->getForkGroup();
+            $group = $p->getForkGroup();
         } else {
             $srcPjId = $tgtPjId;
         }

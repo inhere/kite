@@ -16,7 +16,7 @@ class GitHub extends AbstractGitLocal
      *
      * @var string
      */
-    private $curOwner = '';
+    private $curGroup = '';
 
     /**
      * @var string
@@ -36,13 +36,21 @@ class GitHub extends AbstractGitLocal
     }
 
     /**
-     * @param string $owner
+     * @param string $group
      * @param string $pName
      */
-    public function setCurrent(string $owner, string $pName): void
+    public function setCurrent(string $group, string $pName): void
     {
-        $this->curOwner  = $owner;
+        $this->curGroup  = $group;
         $this->curPjName = $pName;
+    }
+
+    /**
+     * @return GitProject
+     */
+    public function getCurProject(): GitProject
+    {
+        return GitProject::new($this->curPjInfo);
     }
 
     /**

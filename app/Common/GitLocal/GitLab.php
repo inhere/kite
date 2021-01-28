@@ -2,7 +2,7 @@
 
 namespace Inhere\Kite\Common\GitLocal;
 
-use Inhere\Kite\Common\GitLocal\GitLab\Project;
+use Inhere\Kite\Common\GitLocal\GitLab\GlProject;
 
 /**
  * Class GitLab
@@ -28,10 +28,10 @@ class GitLab extends AbstractGitLocal
     }
 
     /**
-     * @return Project
+     * @return GlProject
      */
-    public function getCurProject(): Project
+    public function getCurProject(): GlProject
     {
-        return Project::new($this->curPjInfo);
+        return GlProject::new($this->curPjInfo);
     }
 }

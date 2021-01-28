@@ -2,8 +2,10 @@
 
 namespace Inhere\Kite\Common;
 
-use Swoft\Swlib\HttpClient;
-use Toolkit\Stdlib\Str\JsonHelper;
+use PhpComp\Http\Client\AbstractClient;
+use PhpComp\Http\Client\Client;
+use PhpComp\Http\Client\ClientInterface;
+use Toolkit\Stdlib\Helper\JsonHelper;
 use function explode;
 use function sprintf;
 
@@ -109,11 +111,12 @@ class GitHubV3API
     }
 
     /**
-     * @return HttpClient
+     * @return ClientInterface|AbstractClient
      */
-    public function newClient(): HttpClient
+    public function newClient(): AbstractClient
     {
-        $http = new HttpClient();
+        // $http = new HttpClient();
+        $http = Client::factory([]);
         $http->setOptions([
             'headers' => [
                 // 'Authorization' => 'Basic ' . $this->token,
@@ -136,7 +139,7 @@ class GitHubV3API
         // curl -u username:token https://api.github.com/user
         // curl -H "Authorization: token OAUTH-TOKEN" https://api.github.com
         $http = $this->newClient();
-        $resp = $http->json(self::BASE_API_URL . $url, $data);
+        $resp = $http->byJson()->post(self::BASE_API_URL . $url, $data);
 
         if (!$json = $resp->getBody()->getContents()) {
             return [];

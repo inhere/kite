@@ -102,7 +102,7 @@ abstract class AbstractGitLocal
     /**
      * @var string
      */
-    protected $curBranch = '';
+    // protected $curBranch = '';
 
     /**
      * current project name
@@ -226,12 +226,7 @@ abstract class AbstractGitLocal
      */
     public function getCurBranch(): string
     {
-        if (!$this->curBranch) {
-            Color::println('auto find branch name ...');
-            $this->curBranch = GitUtil::getCurrentBranchName($this->workDir);
-        }
-
-        return $this->curBranch;
+        return $this->getRepo()->getCurrentBranch();
     }
 
     /**
@@ -310,20 +305,20 @@ abstract class AbstractGitLocal
         }
 
         $pjName = $this->curPjName;
-
-        $defaultInfo = [
-            'name'      => $pjName,
-            'repo'      => $pjName, // default use project nam as repo name.
-            'group'     => $this->getValue('defaultGroup', ''),
-            'forkGroup' => $this->getValue('defaultForkGroup', ''),
-        ];
+        $dGroup = $this->getValue('defaultGroup', '');
 
         // not exist. dynamic add
         if (!isset($this->projects[$pjName])) {
             // throw new RuntimeException("project '{$pjName}' is not found in the projects");
-            $info = $this->getRemoteInfo();
+            $info = $this->getRemoteInfo($this->forkRemote);
             if ($info->isInvalid()) {
                 throw new RuntimeException("dynamic load project '{$pjName}' fail. not found git remote info");
+            }
+
+            // load main remote info
+            $mInfo = $this->getRemoteInfo($this->mainRemote);
+            if ($mInfo->isValid()) {
+                $dGroup = $mInfo->group;
             }
 
             $this->projects[$pjName] = [
@@ -331,7 +326,16 @@ abstract class AbstractGitLocal
                 'forkGroup' => $info->group,
                 'repo'      => $info->repo,
             ];
+
+            $dGroup = $dGroup ?: $info->group;
         }
+
+        $defaultInfo = [
+            'name'      => $pjName,
+            'repo'      => $pjName, // default use project nam as repo name.
+            'group'     => $dGroup,
+            'forkGroup' => $this->getValue('defaultForkGroup', ''),
+        ];
 
         $this->curPjInfo = array_merge($defaultInfo, $this->projects[$pjName]);
         // set current repo
@@ -558,14 +562,6 @@ abstract class AbstractGitLocal
     public function setForkRemote(string $forkRemote): void
     {
         $this->forkRemote = $forkRemote;
-    }
-
-    /**
-     * @param string $curBranch
-     */
-    public function setCurBranch(string $curBranch): void
-    {
-        $this->curBranch = $curBranch;
     }
 
     /**

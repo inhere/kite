@@ -10,13 +10,11 @@
 namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
-use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Helper\AppHelper;
-use Inhere\Kite\Helper\GitUtil;
 use PhpComp\Http\Client\Client;
 
 /**
@@ -256,12 +254,12 @@ class GitHubController extends Controller
 
         $gh->loadProjectInfo($pjName);
 
-        $pjInfo = $gh->getCurPjInfo();
+        $p = $gh->getCurProject();
 
         $open = $input->getSameOpt(['o', 'open']);
 
         $output->info('auto fetch current branch name');
-        $curBranch = GitUtil::getCurrentBranchName();
+        $curBranch = $gh->getCurBranch();
         $srcBranch = $input->getSameStringOpt(['s', 'source']);
         $tgtBranch = $input->getSameStringOpt(['t', 'target']);
 
@@ -280,17 +278,15 @@ class GitHubController extends Controller
             $tgtBranch = $curBranch;
         }
 
-        $mGroup = $pjInfo['group'];
-        $fGroup = $pjInfo['forkGroup'];
-        $repo  = $gh->getCurRepo();
+        $fGroup = $p->forkGroup;
+        $ghPath = $p->getPath();
 
-        $ghPath  = "$mGroup/$repo";
         $tipInfo = array_merge([
-            'name'   => $pjName,
-            'ghPath' => $ghPath,
-            'srcBranch' =>$srcBranch,
-            'tgtBranch' =>$tgtBranch,
-        ], $pjInfo);
+            'name'      => $pjName,
+            'ghPath'    => $ghPath,
+            'srcBranch' => $srcBranch,
+            'tgtBranch' => $tgtBranch,
+        ], $p->toArray());
         $output->aList($tipInfo, '- project information', ['ucFirst' => false]);
 
         // https://github.com/swoft-cloud/swoft-component/compare/master...ulue:dev2
