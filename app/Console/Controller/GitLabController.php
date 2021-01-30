@@ -16,6 +16,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitLab;
+use Inhere\Kite\Console\Attach\Gitlab\ProjectInit;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use ReflectionException;
@@ -47,18 +48,6 @@ class GitLabController extends Controller
         return ['gl'];
     }
 
-    /**
-     * @return string[]
-     */
-    protected function groupOptions(): array
-    {
-        return [
-            '--dry-run'         => 'Dry-run the workflow, dont real execute',
-            '-y, --yes'         => 'Direct execution without confirmation',
-            '-i, --interactive' => 'Run in an interactive environment[TODO]',
-        ];
-    }
-
     protected static function commandAliases(): array
     {
         return [
@@ -73,6 +62,31 @@ class GitLabController extends Controller
             'upp'     => 'updatePush',
             'new'     => 'create',
             'project' => ['pj', 'info'],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    protected function commands(): array
+    {
+        return [
+            'test' => function() {
+                \printf("hello \n");
+            },
+            ProjectInit::class,
+        ];
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function groupOptions(): array
+    {
+        return [
+            '--dry-run' => 'Dry-run the workflow, dont real execute',
+            '-y, --yes' => 'Direct execution without confirmation',
+            // '-i, --interactive' => 'Run in an interactive environment[TODO]',
         ];
     }
 
@@ -91,12 +105,72 @@ class GitLabController extends Controller
         }
     }
 
-    private function gitlab(): GitLab
+    /**
+     * @return GitLab
+     */
+    private function getGitlab(): GitLab
     {
         $config = $this->app->getParam('gitlab', []);
         // $gitlab->setWorkDir($this->input->getWorkDir());
 
         return GitLab::new($this->output, $config);
+    }
+
+    /**
+     * init an gitlab project
+     *
+     * @options
+     *  -l, --list    List all project information
+     *  -e, --edit    Edit the project remote info
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function initCommand(Input $input, Output $output): void
+    {
+        $gl = $this->getGitlab();
+
+        $mRemote = $gl->getMainRemote();
+        $fRemote = $gl->getForkRemote();
+
+        $output->aList([
+            'main remote(source)'  => $mRemote,
+            'fork remote(for dev)' => $fRemote,
+        ], 'Config:', ['ucFirst' => false]);
+
+        $remotes = $gl->getRepo()->getRemotes();
+        $output->colored('Remotes(by git):', 'ylw0');
+        $output->json($remotes);
+
+        if ($input->getSameBoolOpt('l,list')) {
+            return;
+        }
+
+        if (!$gl->getRepo()->hasRemote($fRemote)) {
+            $output->colored('- the fork(develop) remote not exists, please set it');
+
+            $url = $output->ask('forked remote url');
+            if (!$url) {
+                return;
+            }
+        }
+
+        if (!$gl->getRepo()->hasRemote($fRemote)) {
+            $output->colored('- the fork(develop) remote not exists, please set it');
+
+            $url = $output->ask('forked remote url');
+            if (!$url) {
+                return;
+            }
+        }
+
+        $fi = $gl->getRemoteInfo($gl->getForkRemote());
+        // if ($fi)
+
+        // TODO config remote
+        // $output->ask($question);
+
+        $output->colored('Complete', 'green1');
     }
 
     /**
@@ -133,7 +207,7 @@ class GitLabController extends Controller
         $repo = $input->getRequiredArg('repo');
 
         $useGit  = $input->getBoolOpt('git');
-        $repoUrl = $this->gitlab()->parseRepoUrl($repo, $useGit);
+        $repoUrl = $this->getGitlab()->parseRepoUrl($repo, $useGit);
         if (!$repoUrl) {
             $output->error("invalid github 'repo' address: $repo");
             return;
@@ -149,13 +223,6 @@ class GitLabController extends Controller
         $output->success('Complete');
     }
 
-    // protected function groupOptions(): array
-    // {
-    //     return [
-    //         'name' => [ 'short' => '', 'desc' => '',]
-    //     ];
-    // }
-
     /**
      * show gitlab config information
      *
@@ -168,10 +235,12 @@ class GitLabController extends Controller
     public function configCommand(Input $input, Output $output): void
     {
         if ($input->getSameBoolOpt(['l', 'list'])) {
-            $config = $this->gitlab()->getConfig();
+            $config = $this->getGitlab()->getConfig();
             $output->json($config);
             return;
         }
+
+        // TODO config remote
 
         $output->success('Complete');
     }
@@ -247,7 +316,7 @@ class GitLabController extends Controller
             throw new PromptException('please input an branch name');
         }
 
-        $gitlab  = $this->gitlab();
+        $gitlab  = $this->getGitlab();
         $force   = $input->getSameBoolOpt(['f', 'force']);
         $notMain = $input->getBoolOpt('not-main');
         $dryRun  = $input->getBoolOpt('dry-run');
@@ -293,7 +362,7 @@ class GitLabController extends Controller
      */
     public function projectCommand(Input $input, Output $output): void
     {
-        $gitlab = $this->gitlab();
+        $gitlab = $this->getGitlab();
         if ($input->getSameBoolOpt(['l', 'list'])) {
             $output->json($gitlab->getProjects());
             return;
@@ -324,7 +393,7 @@ class GitLabController extends Controller
      */
     public function openCommand(Input $input, Output $output): void
     {
-        $gitlab = $this->gitlab();
+        $gitlab = $this->getGitlab();
 
         $defRemote = $gitlab->getForkRemote();
         if ($input->getSameBoolOpt(['m', 'main'])) {
@@ -371,7 +440,7 @@ class GitLabController extends Controller
      */
     public function resolveCommand(Input $input, Output $output): void
     {
-        $gitlab = $this->gitlab();
+        $gitlab = $this->getGitlab();
         $branch = $input->getRequiredArg('branch');
         $dryRun = $input->getBoolOpt('dry-run');
 
@@ -432,7 +501,7 @@ class GitLabController extends Controller
     public function pullRequestCommand(Input $input, Output $output): void
     {
         // http://gitlab.my.com/group/repo/merge_requests/new?utf8=%E2%9C%93&merge_request%5Bsource_project_id%5D=319&merge_request%5Bsource_branch%5D=fea_4_16&merge_request%5Btarget_project_id%5D=319&merge_request%5Btarget_branch%5D=qa
-        $gitlab = $this->gitlab();
+        $gitlab = $this->getGitlab();
         if (!$pjName = $gitlab->findProjectName()) {
             $pjName = $input->getRequiredArg('project');
         }
@@ -641,7 +710,7 @@ class GitLabController extends Controller
             throw new PromptException('please input the base project address by "-r|--remote"');
         }
 
-        $gitlab  = $this->gitlab();
+        $gitlab  = $this->getGitlab();
         $nShorts = $gitlab->getValue('repoShorts');
         if ($nShorts && isset($nShorts[$addr])) {
             $old  = $addr;
@@ -732,7 +801,7 @@ class GitLabController extends Controller
      */
     public function updateCommand(Input $input, Output $output): void
     {
-        $gitlab = $this->gitlab();
+        $gitlab = $this->getGitlab();
 
         $curBranch = $gitlab->getCurBranch();
 

@@ -60,17 +60,33 @@ kite -h
 
 ![](resource/images/kite-help.png)
 
-## git 常用命令
+## Git 常用命令
 
 ```bash
 kite git {command} [arguments ...] [--options ...]
 ```
 
-## gitlab 常用命令
+## Gitlab 常用命令
+
+命令：`gitlab` (别名： `gl`)
 
 ```bash
 kite gitlab {command} [arguments ...] [--options ...]
 ```
+
+**查看命令列表**
+
+![](resource/images/kite-gitlab-help.png)
+
+
+**浏览器打开仓库**
+
+在项目所在目录执行如下命令，即可自动使用默认浏览器打开仓库页面
+
+```bash
+kite gl open
+```
+
 
 ## 其他工具命令
 
@@ -129,7 +145,9 @@ rm -rf ~/.kite
 
 - https://github.com/inhere/php-console
 - https://github.com/php-toolkit/cli-utils
+- https://github.com/php-toolkit/sys-utils
 - https://github.com/php-toolkit/stdlib
+- https://github.com/ulue/phpgit
 
 ## Thanks
 
