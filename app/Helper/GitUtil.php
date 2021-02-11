@@ -137,14 +137,16 @@ class GitUtil
             echo $ret['output'] . PHP_EOL;
         }
 
-        $cmd = 'git describe --tags $(git rev-list --tags --max-count=1)';
+        // $cmd = 'git describe --tags $(git rev-list --tags --max-count=1)';
+        $cmd = 'git describe --abbrev=0 --tags';
 
         if ($showInfo) {
             Color::printf("Info:\n  Command <info>%s</info>\n  WorkDir <info>%s</info>\n", $cmd, $workDir);
         }
 
-        [$code, $tagName,] = Sys::run($cmd, $workDir);
+        [$code, $tagName, $error] = Sys::run($cmd, $workDir);
         if ($code !== 0) {
+            echo $error;
             return '';
         }
 

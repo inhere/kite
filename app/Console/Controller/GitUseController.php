@@ -91,7 +91,7 @@ class GitUseController extends Controller
             'git status'
         ];
 
-        CmdRunner::new()->batch($commands)->run();
+        CmdRunner::new()->batch($commands)->run(true);
     }
 
     /**

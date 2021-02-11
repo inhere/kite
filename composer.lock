@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "15136a83334d8724bacfecb3fa2809e1",
+    "content-hash": "6be4adf3088a361941f58b368ff0f3f1",
     "packages": [
         {
             "name": "cebe/markdown",
@@ -70,10 +70,6 @@
                 "markdown",
                 "markdown-extra"
             ],
-            "support": {
-                "issues": "https://github.com/cebe/markdown/issues",
-                "source": "https://github.com/cebe/markdown"
-            },
             "time": "2018-03-26T11:24:36+00:00"
         },
         {
@@ -140,10 +136,6 @@
                 }
             ],
             "description": "Library for accessing git",
-            "support": {
-                "issues": "https://github.com/gitonomy/gitlib/issues",
-                "source": "https://github.com/gitonomy/gitlib/tree/v1.2.3"
-            },
             "funding": [
                 {
                     "url": "https://tidelift.com/funding/github/packagist/gitonomy/gitlib",
@@ -154,16 +146,16 @@
         },
         {
             "name": "inhere/console",
-            "version": "dev-master",
+            "version": "3.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/inhere/php-console.git",
-                "reference": "bd4f38a17d9f086af6135c24c8bb6d7eb035b343"
+                "reference": "5d46a87175d4411fc1d636063af9a6762116b7b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/inhere/php-console/zipball/bd4f38a17d9f086af6135c24c8bb6d7eb035b343",
-                "reference": "bd4f38a17d9f086af6135c24c8bb6d7eb035b343",
+                "url": "https://api.github.com/repos/inhere/php-console/zipball/5d46a87175d4411fc1d636063af9a6762116b7b9",
+                "reference": "5d46a87175d4411fc1d636063af9a6762116b7b9",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -186,7 +178,6 @@
                 "symfony/process": "php process operation",
                 "text/template": "Single-Class string template engine for PHP5/7 supporting if/loops/filters"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -216,11 +207,7 @@
                 "console-color",
                 "phar"
             ],
-            "support": {
-                "issues": "https://github.com/inhere/php-console/issues",
-                "source": "https://github.com/inhere/php-console/tree/master"
-            },
-            "time": "2021-01-25T09:32:09+00:00"
+            "time": "2021-01-28T17:38:57+00:00"
         },
         {
             "name": "inhere/sroute",
@@ -228,12 +215,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/inhere/php-srouter.git",
-                "reference": "52b05f0b8438f8fc1fe6eab589e22306a0b715df"
+                "reference": "b95149dbbcaf96501f47396e2a45c23a7108242d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/inhere/php-srouter/zipball/52b05f0b8438f8fc1fe6eab589e22306a0b715df",
-                "reference": "52b05f0b8438f8fc1fe6eab589e22306a0b715df",
+                "url": "https://api.github.com/repos/inhere/php-srouter/zipball/b95149dbbcaf96501f47396e2a45c23a7108242d",
+                "reference": "b95149dbbcaf96501f47396e2a45c23a7108242d",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -251,7 +238,6 @@
             "suggest": {
                 "inhere/simple-print-tool": "Very lightweight data printing tools"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -280,11 +266,7 @@
                 "route",
                 "router"
             ],
-            "support": {
-                "issues": "https://github.com/inhere/php-srouter/issues",
-                "source": "https://github.com/inhere/php-srouter/tree/v3.0.6"
-            },
-            "time": "2020-10-21T03:26:56+00:00"
+            "time": "2021-01-28T10:05:57+00:00"
         },
         {
             "name": "php-comp/http-client",
@@ -313,7 +295,6 @@
             "suggest": {
                 "php-comp/http-message": "Very lightweight PSR-7 implements http message component"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -339,10 +320,6 @@
                 "library",
                 "tool"
             ],
-            "support": {
-                "issues": "https://github.com/php-comp/http-client/issues",
-                "source": "https://github.com/php-comp/http-client/tree/v2.0.0"
-            },
             "time": "2020-06-10T13:03:55+00:00"
         },
         {
@@ -398,10 +375,6 @@
                 "psr7",
                 "tool"
             ],
-            "support": {
-                "issues": "https://github.com/php-comp/http-message/issues",
-                "source": "https://github.com/php-comp/http-message/tree/master"
-            },
             "time": "2019-02-04T08:21:11+00:00"
         },
         {
@@ -457,9 +430,6 @@
                 "psr",
                 "psr-18"
             ],
-            "support": {
-                "source": "https://github.com/php-fig/http-client/tree/master"
-            },
             "time": "2020-06-29T06:28:15+00:00"
         },
         {
@@ -516,9 +486,6 @@
                 "request",
                 "response"
             ],
-            "support": {
-                "source": "https://github.com/php-fig/http-message/tree/master"
-            },
             "time": "2016-08-06T14:39:51+00:00"
         },
         {
@@ -572,23 +539,20 @@
                 "psr",
                 "psr-3"
             ],
-            "support": {
-                "source": "https://github.com/php-fig/log/tree/1.1.3"
-            },
             "time": "2020-03-23T09:12:05+00:00"
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v4.4.18",
+            "version": "v4.4.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/options-resolver.git",
-                "reference": "157a252222251310fe50c71012b4e72f01325850"
+                "reference": "cd8c6a2778d5f8b5e8fc4b7abdf126790b5d5095"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/157a252222251310fe50c71012b4e72f01325850",
-                "reference": "157a252222251310fe50c71012b4e72f01325850",
+                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/cd8c6a2778d5f8b5e8fc4b7abdf126790b5d5095",
+                "reference": "cd8c6a2778d5f8b5e8fc4b7abdf126790b5d5095",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -623,16 +587,13 @@
                     "homepage": "https://symfony.com/contributors"
                 }
             ],
-            "description": "Symfony OptionsResolver Component",
+            "description": "Provides an improved replacement for the array_replace PHP function",
             "homepage": "https://symfony.com",
             "keywords": [
                 "config",
                 "configuration",
                 "options"
             ],
-            "support": {
-                "source": "https://github.com/symfony/options-resolver/tree/v4.4.18"
-            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -647,7 +608,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-10-24T11:50:19+00:00"
+            "time": "2021-01-27T09:09:26+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -716,9 +677,6 @@
                 "portable",
                 "shim"
             ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.22.0"
-            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -737,16 +695,16 @@
         },
         {
             "name": "symfony/process",
-            "version": "v4.4.18",
+            "version": "v4.4.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "075316ff72233ce3d04a9743414292e834f2cb4a"
+                "reference": "7e950b6366d4da90292c2e7fa820b3c1842b965a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/075316ff72233ce3d04a9743414292e834f2cb4a",
-                "reference": "075316ff72233ce3d04a9743414292e834f2cb4a",
+                "url": "https://api.github.com/repos/symfony/process/zipball/7e950b6366d4da90292c2e7fa820b3c1842b965a",
+                "reference": "7e950b6366d4da90292c2e7fa820b3c1842b965a",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -781,11 +739,8 @@
                     "homepage": "https://symfony.com/contributors"
                 }
             ],
-            "description": "Symfony Process Component",
+            "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
-            "support": {
-                "source": "https://github.com/symfony/process/tree/v4.4.18"
-            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -800,20 +755,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-12-08T16:59:59+00:00"
+            "time": "2021-01-27T09:09:26+00:00"
         },
         {
             "name": "toolkit/cli-utils",
-            "version": "v1.2.2",
+            "version": "v1.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/cli-utils.git",
-                "reference": "5e438e4d999f8d1c21a3da92d787857f91a407b9"
+                "reference": "bc5bc8ed22c613a44ec62afb523ac652309ac49c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/cli-utils/zipball/5e438e4d999f8d1c21a3da92d787857f91a407b9",
-                "reference": "5e438e4d999f8d1c21a3da92d787857f91a407b9",
+                "url": "https://api.github.com/repos/php-toolkit/cli-utils/zipball/bc5bc8ed22c613a44ec62afb523ac652309ac49c",
+                "reference": "bc5bc8ed22c613a44ec62afb523ac652309ac49c",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -855,24 +810,20 @@
                 "php",
                 "tool"
             ],
-            "support": {
-                "issues": "https://github.com/php-toolkit/cli-utils/issues",
-                "source": "https://github.com/php-toolkit/cli-utils/tree/v1.2.2"
-            },
-            "time": "2021-01-23T17:44:39+00:00"
+            "time": "2021-01-27T17:21:13+00:00"
         },
         {
             "name": "toolkit/stdlib",
-            "version": "v1.0.8",
+            "version": "v1.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/stdlib.git",
-                "reference": "90c52028128049c9bced4dabbf72a105bd84bedb"
+                "reference": "6c9bcdde0e62725f5ab2daa9f47baa040e6d2551"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/stdlib/zipball/90c52028128049c9bced4dabbf72a105bd84bedb",
-                "reference": "90c52028128049c9bced4dabbf72a105bd84bedb",
+                "url": "https://api.github.com/repos/php-toolkit/stdlib/zipball/6c9bcdde0e62725f5ab2daa9f47baa040e6d2551",
+                "reference": "6c9bcdde0e62725f5ab2daa9f47baa040e6d2551",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -918,11 +869,7 @@
                 "string",
                 "tool"
             ],
-            "support": {
-                "issues": "https://github.com/php-toolkit/stdlib/issues",
-                "source": "https://github.com/php-toolkit/stdlib/tree/v1.0.8"
-            },
-            "time": "2021-01-23T07:17:46+00:00"
+            "time": "2021-01-27T14:15:06+00:00"
         },
         {
             "name": "toolkit/sys-utils",
@@ -976,10 +923,6 @@
                 "php",
                 "tool"
             ],
-            "support": {
-                "issues": "https://github.com/php-toolkit/sys-utils/issues",
-                "source": "https://github.com/php-toolkit/sys-utils/tree/v1.2.3"
-            },
             "time": "2021-01-23T16:11:58+00:00"
         },
         {
@@ -988,17 +931,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ulue/phpgit.git",
-                "reference": "4a73499d7e6f46b23452f1301f983c5498f1f0a3"
+                "reference": "de87951ec059c7d617a87833fff0affd27a28109"
             },
             "require": {
                 "php": ">7.1.0",
                 "symfony/options-resolver": "~4.0",
-                "symfony/process": "~4.0"
+                "symfony/process": "~4.0",
+                "toolkit/cli-utils": "~1.0",
+                "toolkit/stdlib": "~1.0"
             },
             "require-dev": {
-                "symfony/filesystem": ">=2.3"
+                "symfony/filesystem": "~4.0"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -1025,7 +969,7 @@
             ],
             "description": "A Git wrapper for PHP 7.1+",
             "homepage": "https://github/ulue/phpgit.git",
-            "time": "2021-01-26T13:22:25+00:00"
+            "time": "2021-01-28T14:49:07+00:00"
         }
     ],
     "packages-dev": [],
@@ -1040,10 +984,10 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">7.3.0",
+        "php": ">7.2.0",
         "ext-json": "*",
         "ext-mbstring": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "1.1.0"
 }

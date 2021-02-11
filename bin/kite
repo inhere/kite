@@ -20,7 +20,7 @@ $app = new Application([
 require dirname(__DIR__) . '/app/Console/routes.php';
 
 $app->addAliases('self:update', [
-  'selfupdate', 'self-update', 'updateself', 'update-self', 'upself'
+  'selfupdate', 'self-update', 'updateself', 'update-self', 'upself', 'selfup'
 ]);
 
 // start application
