@@ -320,17 +320,16 @@ class GitUseController extends Controller
             return;
         }
 
+        $dryRun = $input->getBoolOpt('dry-run');
+
         // git tag -a $1 -m "Release $1"
         // git push origin --tags
-        $cmd = sprintf('git tag -a %s -m "%s" && git push origin %s', $tag, $msg, $tag);
-
-        $dryRun = $input->getBoolOpt('dry-run');
-        if ($dryRun) {
-            $output->info('... DRY-RUN ...');
-            $output->colored('> ' . $cmd, 'ylw');
-        } else {
-            CmdRunner::new($cmd)->do(true);
-        }
+        // $cmd = sprintf('git tag -a %s -m "%s" && git push origin %s', $tag, $msg, $tag);
+        $run = CmdRunner::new();
+        $run->setDryRun($dryRun);
+        $run->addf('git tag -a %s -m "%s"', $tag, $msg);
+        $run->addf('git push origin %s', $tag);
+        $run->run(true);
 
         $output->success('Complete');
     }
