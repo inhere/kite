@@ -700,6 +700,7 @@ class GitLabController extends Controller
      *  {binWithCmd} new-project -r go-common/demo
      *  {binWithCmd} new-project -r go-common/demo  -g new-group
      *  {binWithCmd} new-project -r common/yii2-demo
+     *  {binWithCmd} new-project -r common/yii2-demo-wzl -g wzl
      *  {binWithCmd} new-project -r go-common/demo -o xiajianjun-go
      */
     public function createCommand(Input $input, Output $output): void

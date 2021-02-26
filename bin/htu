@@ -31,4 +31,4 @@ $app = new Inhere\Kite\Console\Application($conf, $in, $out);
 $htc->setApp($app);
 
 // alone running
-$htc->run();
+$htc->run([]);

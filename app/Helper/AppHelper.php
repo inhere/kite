@@ -103,7 +103,7 @@ class AppHelper
 
         Show::info("Will open the page on browser:\n  $pageUrl");
 
-        Show::writeln("> $cmd");
+        // Show::writeln("> $cmd");
         Sys::execute($cmd);
     }
 }

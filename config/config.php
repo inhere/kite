@@ -24,6 +24,7 @@ return [
     ],
     // command aliases. element is: alias command => real command
     'aliases' => [
+        'ac'     => 'git:ac',
         'acp'    => 'git:acp',
         'glpr'   => 'gitlab:pr',
         'config' => 'self config',

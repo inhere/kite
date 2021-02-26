@@ -137,6 +137,13 @@ class SelfController extends Controller
 
         $output->writeln($msg);
 
+        Color::println('Run composer update:');
+
+        $cmd = "cd {$this->baseDir} && composer update";
+        [, $msg,] = Sys::run($cmd);
+
+        $output->writeln($msg);
+
         Color::println('Add execute perm:');
 
         $binName = $input->getScriptName();
