@@ -97,7 +97,7 @@ kite acp -m "commit message"
 
 > TIPs: `acp` 是 `git:acp` 命令的别名，你也可以添加自己常用的别名到 `~/.kite/.kite.inc`
 
-![git-acp](resource/images/git-acp.png)
+![git-acp](resource/images/alias-acp.png)
 
 **查看分支列表**
 
@@ -136,7 +136,7 @@ kite git tn -v v1.0.2 -m "release new version"
 kite git tn --next
 ```
 
-![git-changelog](resource/images/git-changelog.png)
+![git-tagnew](resource/images/git-tagnew.png)
 
 **查看最近的变动历史**
 

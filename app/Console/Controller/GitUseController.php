@@ -204,7 +204,7 @@ class GitUseController extends Controller
         } elseif ($onlyName) {
             $output->println(array_keys($matched));
         } else {
-            $output->table($matched);
+            $output->table($matched, 'Git Branches');
         }
     }
 
