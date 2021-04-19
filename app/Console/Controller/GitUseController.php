@@ -90,6 +90,18 @@ class GitUseController extends Controller
         return true;
     }
 
+    /**
+     * run raw git command by call system git
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function runCommand(Input $input, Output $output): void
+    {
+        // TODO
+        $output->colored('TODO');
+    }
+
     public function statusCommand(Input $input, Output $output): void
     {
         $commands = [
