@@ -17,8 +17,13 @@ use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use PhpGit\Repo;
+use function array_keys;
+use function implode;
 use function sprintf;
+use function strlen;
+use function strpos;
 use function strtolower;
+use function substr;
 use function trim;
 
 /**
@@ -52,6 +57,7 @@ class GitUseController extends Controller
                 'rm-tag',
                 'rmtag',
             ],
+            'branch'    => ['br'],
             'tagFind'   => ['tagfind', 'tag-find'],
             'tagNew'    => [
                 'tagnew',
@@ -107,6 +113,87 @@ class GitUseController extends Controller
         $output->aList($repo->getInfo(), 'Project Info', [
             'ucFirst' => false,
         ]);
+    }
+
+    /**
+     * @param Input $input
+     */
+    protected function branchConfigure(Input $input): void
+    {
+        // $input->bindArguments(['keyword' => 0]);
+    }
+
+    /**
+     * list branch by git branch
+     *
+     * @options
+     *  -a, --all                   Display all branches
+     *  -r, --remote <string>       Display given remote branches
+     *      --only-name             Only display branch name
+     *      --inline                Only display branch name and print inline
+     *  -s, --search <string>       The keyword name for search branches
+     *
+     * @arguments
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function branchCommand(Input $input, Output $output): void
+    {
+        $opts = [];
+        $repo = Repo::new();
+
+        $remote = '';
+        $inline = $input->getBoolOpt('inline');
+        if ($input->getSameBoolOpt('a, all')) {
+            $opts['all'] = true;
+        } elseif ($remote = $input->getSameStringOpt('r,remote')) {
+            $opts['remotes'] = true;
+        }
+
+        $list = $repo->getGit()->branch->getList($opts);
+
+        $onlyName = $input->getBoolOpt('only-name');
+        $keyword  = $input->getSameStringOpt('s,search');
+
+        $msg = 'Branch List';
+        if (strlen($remote) > 1) {
+            $msg .= " Of '{$remote}'";
+        }
+
+        if ($keyword) {
+            $msg .= "(keyword: {$keyword})";
+        }
+
+        $output->colored($msg . ':');
+
+        $matched = [];
+        $rmtLen = strlen($remote) + 1;
+        foreach ($list as $name => $item) {
+            if ($remote) {
+                $pos = strpos($name, $remote . '/');
+                if ($pos !== 0) {
+                    continue;
+                }
+
+                $name = substr($name, $rmtLen);
+            }
+
+            if ($keyword && strpos($name, $keyword) === false) {
+                continue;
+            }
+
+            $matched[$name] = $item;
+        }
+
+        // \vdump($keyword, $remote, $list);
+        if ($inline) {
+            $output->println(implode(',', array_keys($matched)));
+        } elseif ($onlyName) {
+            $output->println(array_keys($matched));
+        } else {
+            $output->table($matched);
+        }
     }
 
     /**

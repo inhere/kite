@@ -48,7 +48,7 @@ class CmdRunner
      *  'do something'
      * ]
      *
-     * @var array
+     * @var array|array[]
      */
     private $commands = [];
 

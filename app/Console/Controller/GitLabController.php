@@ -20,6 +20,7 @@ use Inhere\Kite\Console\Attach\Gitlab\ProjectInit;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use ReflectionException;
+use Toolkit\Stdlib\Str;
 use function array_merge;
 use function explode;
 use function http_build_query;
@@ -323,29 +324,49 @@ class GitLabController extends Controller
 
         $mainRemote = $gitlab->getMainRemote();
         foreach ($names as $name) {
-            $run = CmdRunner::new();
-            $run->setDryRun($dryRun);
-
-            $output->title("delete the branch:{$name}", [
-                'indent' => 0,
-            ]);
-            if ($force) {
-                $run->setIgnoreError(true);
+            if (strpos($name, ',') > 0) {
+                $nameList = Str::explode($name, ',');
+            } else {
+                $nameList = [$name];
             }
 
-            $run->addf('git branch --delete %s', $name);
-            // git push origin --delete BRANCH
-            $run->addf('git push origin --delete %s', $name);
+            foreach ($nameList as $brName) {
+                $run = CmdRunner::new();
+                $run->setDryRun($dryRun);
 
-            if (false === $notMain) {
-                // git push main --delete BRANCH
-                $run->addf('git push %s --delete %s', $mainRemote, $name);
+                if ($force) {
+                    $run->setIgnoreError(true);
+                }
+
+                $this->doDeleteBranch($brName, $mainRemote, $run, $notMain);
             }
-
-            $run->run(true);
         }
 
         $output->success('Completed');
+    }
+
+    /**
+     * @param string    $name
+     * @param string    $mainRemote
+     * @param CmdRunner $run
+     * @param bool      $notMain
+     */
+    protected function doDeleteBranch(string $name, string $mainRemote, CmdRunner $run, bool $notMain): void
+    {
+        $this->output->title("delete the branch:{$name}", [
+            'indent' => 0,
+        ]);
+
+        $run->addf('git branch --delete %s', $name);
+        // git push origin --delete BRANCH
+        $run->addf('git push origin --delete %s', $name);
+
+        if (false === $notMain) {
+            // git push main --delete BRANCH
+            $run->addf('git push %s --delete %s', $mainRemote, $name);
+        }
+
+        $run->run(true);
     }
 
     /**
