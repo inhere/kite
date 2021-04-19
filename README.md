@@ -109,6 +109,8 @@ kite git branch
 kite git br
 ```
 
+![git-branch](resource/images/git-branch.png)
+
 更多示例：
 
 ```bash
