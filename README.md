@@ -176,14 +176,14 @@ kite gitlab {command} [arguments ...] [--options ...]
 kite gl nb fix_210423
 ```
 
-**更新本地仓库代码并推送**
+**更新本地仓库代码**
 
-同时会从 `fork remote` 和 `主仓库remote` 的对应分支和 `master` 拉取同步代码，并且最后会推送到远端
+同时会从 `fork remote` 和 `主仓库remote` 的对应分支和 `master` 拉取同步代码
 
 ```bash
-kite gl updatePush
+kite gl update
 # 简写别名
-kite gl upp
+kite gl up
 ```
 
 **更新本地仓库代码并推送**
