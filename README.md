@@ -126,6 +126,18 @@ kite git br --only-name
 kite git br --only-name
 ```
 
+**快速创建tag并推送到远端**
+
+```bash
+kite git tag-push -v v1.0.2 -m "release new version"
+# 简写别名
+kite git tn -v v1.0.2 -m "release new version"
+# 自动计算和创建下一个版本分支
+kite git tn --next
+```
+
+![git-changelog](resource/images/git-changelog.png)
+
 **查看最近的变动历史**
 
 ```bash
