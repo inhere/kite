@@ -52,17 +52,17 @@ class GitLabController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'pr'      => 'pullRequest',
-            'li'      => 'linkInfo',
-            'cf'      => 'config',
-            'conf'    => 'config',
-            'nb'      => 'newBranch',
-            'db'      => 'deleteBranch',
-            'rc'      => 'resolve',
-            'up'      => 'update',
-            'upp'     => 'updatePush',
-            'new'     => 'create',
-            'project' => ['pj', 'info'],
+            'pullRequest'  => ['pr', 'mr'],
+            'deleteBranch' => ['del-br', 'db'],
+            'newBranch'    => ['new-br', 'nb'],
+            'li'           => 'linkInfo',
+            'cf'           => 'config',
+            'conf'         => 'config',
+            'rc'           => 'resolve',
+            'new'          => 'create',
+            'up'           => 'update',
+            'updatePush'   => ['upp', 'up-push'],
+            'project'      => ['pj', 'info'],
         ];
     }
 
@@ -72,8 +72,8 @@ class GitLabController extends Controller
     protected function commands(): array
     {
         return [
-            'test' => function() {
-                \printf("hello \n");
+            'test' => function () {
+                echo "hello \n";
             },
             ProjectInit::class,
         ];

@@ -264,6 +264,40 @@ kite env path
 
 ## 使用简单脚本
 
+除了使用内部提供的命令，`kite` 也提供了快速的 `scripts` 脚本配置。
+
+下面是一份默认的快捷 `scripts` 配置，你同样可以通过用户配置文件 `~/.kite/.kite.inc` 添加自己的脚本命令
+
+```php
+<?php
+
+// custom scripts for quick run an command
+return [
+    'echo' => 'echo hi',
+    'test' => [
+        'echo $SHELL',
+        'echo hello'
+    ],
+    // git quick use
+    'gst'  => 'git status',
+    'st'   => 'git status',
+    'co'   => 'git checkout $@',
+    'br'   => 'git branch $?',
+    'pul'  => 'git pul $?',
+    'pull' => 'git pull $?',
+];
+```
+
+当你执行 `kite gst` 时，会直接调用系统的 `git status` 命令。
+
+**使用示例**
+
+```bash
+kite gst
+```
+
+![scripts-gst](resource/images/scripts-gst.png)
+
 ## 命令别名配置
 
 默认的命令别名请看 [config/config.php](config/config.php) 文件中的 `aliaes` 配置
@@ -279,6 +313,8 @@ kite env path
 ```
 
 你可以添加自己常用的别名到 `~/.kite/.kite.inc` 用户配置文件中
+
+![self-config-aliases](resource/images/self-config-aliases.png)
 
 ## 更新
 
@@ -304,7 +340,7 @@ chmod a+x bin/kite
 php -d phar.readonly=0 bin/kite phar:pack
 ```
 
-![](resource/images/build-phar.png)
+![build-phar](resource/images/build-phar.png)
 
 ## 删除工具
 

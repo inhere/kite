@@ -103,9 +103,9 @@ class SelfController extends Controller
             }
 
             if (is_scalar($val)) {
-                $output->info("$key Value: $val");
+                $output->info("Config '$key' Value: $val");
             } else {
-                $output->title("'$key' Value", [
+                $output->title("Config: '$key'", [
                     'indent'   => 0,
                     'titlePos' => Title::POS_MIDDLE,
                 ]);
