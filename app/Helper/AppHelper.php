@@ -120,7 +120,7 @@ class AppHelper
             return;
         }
 
-        Show::aList($osEnv, 'Put ENV From Config: `osEnv`', ['ucFirst' => false]);
+        Show::aList($osEnv, 'Put ENV From Config: "osEnv"', ['ucFirst' => false]);
         // Sys::setOSEnv() TODO
         foreach ($osEnv as $name => $value) {
             putenv("$name=$value");
