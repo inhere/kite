@@ -342,6 +342,8 @@ class GitLabController extends Controller
             }
         }
 
+        // git fetch main --prune
+
         $output->success('Completed');
     }
 

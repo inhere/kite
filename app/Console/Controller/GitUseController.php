@@ -530,7 +530,6 @@ class GitUseController extends Controller
             $run->afterOkDo('git push');
         }
 
-
         $output->success('Complete');
     }
 

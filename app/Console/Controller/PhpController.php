@@ -9,14 +9,18 @@
 
 namespace Inhere\Kite\Console\Controller;
 
+use Exception;
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Console\Util\PhpDevServe;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
 use Toolkit\Stdlib\Json;
 use Toolkit\Sys\Sys;
+use function array_filter;
+use function array_merge;
 use function is_dir;
 
 /**
@@ -51,6 +55,7 @@ class PhpController extends Controller
      *
      * @param Input  $input
      * @param Output $output
+     *
      * @example
      *  {binWithCmd} src/rpc-client
      */
@@ -81,20 +86,83 @@ class PhpController extends Controller
         }
     }
 
+    public const DEF_SERVE_CONF = [
+        'hce-file' => '',
+        'hce-env'  => '',
+        // document root
+        // 'root'     => 'public',
+        'root'     => '',
+        // 'entry'     => 'public/index.php',
+        'entry'    => '',
+        // 'php-bin'  => 'php'
+        'php-bin'  => '',
+        // 'addr' => '127.0.0.1:8552',
+        'addr'     => '',
+    ];
+
     /**
-     * run a php built-in server for development(is alias of the command 'server:dev')
+     * start a php built-in http server for development
      *
      * @usage
-     *  {command} [-S HOST:PORT]
-     *  {command} [-H HOST] [-p PORT]
+     *  {binWithCmd} [-S HOST]
+     *  {binWithCmd} [-S HOST:PORT]
+     *  {binWithCmd} [-S :PORT] [entry file]
+     *
      * @options
-     *  -S         The server address. e.g 127.0.0.1:5577
-     *  -H,--host  The server host address. e.g 127.0.0.1
-     *  -p,--port  The server host address. e.g 5577
+     *  -s, -S, --addr STRING    The http server address. e.g 127.0.0.1:8552
+     *  -t, --doc-root STRING    The document root dir for server(<comment>public</comment>)
+     *  -b, --php-bin STRING     The php binary file(<comment>php</comment>)
+     *      --hce-file STRING    The IDEA http client env file
+     *      --hce-env STRING     The current http client env name
+     *      --show-info          Only show serve info, not start listen
+     *
+     * @arguments
+     *  file=STRING         The entry file for server. e.g web/index.php
+     *
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @throws Exception
+     * @example
+     *  {binWithCmd} -s 127.0.0.1:8552 web/index.php
+     *  {binWithCmd} --hce-file test/clienttest/http-client.env.json
+     *  {binWithCmd} --hce-file test/clienttest/http-client.env.json --hce-env development
      */
-    public function sync2Command(): void
+    public function serveCommand(Input $input, Output $output): void
     {
-        echo "string\n";
+        $conf = $this->app->getParam('phpServe', []);
+        if ($conf) {
+            $conf = array_merge(self::DEF_SERVE_CONF, $conf);
+
+            // print config
+            if ($appConf = array_filter($conf)) {
+                $output->aList($appConf, 'Config Information', [
+                    'ucFirst' => false,
+                ]);
+            }
+        } else {
+            $conf = self::DEF_SERVE_CONF;
+        }
+
+        $input->bindArgument('file', 0);
+
+        $hceFile = $input->getStringOpt('hce-file', $conf['hce-file']);
+        $hceEnv  = $input->getStringOpt('hce-env', $conf['hce-env']);
+        $phpBin  = $input->getStringOpt('php-bin', $conf['php-bin']);
+        $docRoot = $input->getSameStringOpt('t,doc-root', $conf['root']);
+
+        $entryFile = $input->getStringArg('file');
+        $serveAddr = $input->getSameStringOpt('s,S,addr', $conf['addr']);
+
+        $pds = PhpDevServe::new($serveAddr, $docRoot, $entryFile);
+        $pds->setPhpBin($phpBin);
+
+        if ($hceEnv && $hceFile) {
+            $pds->loadHceFile($hceFile);
+            $pds->useHceEnv($hceEnv);
+        }
+
+        $pds->listen();
     }
 
     /**
@@ -124,6 +192,7 @@ class PhpController extends Controller
      *
      * @param Input  $input
      * @param Output $output
+     *
      * @example
      *  {binWithCmd} inhere/console
      *  {binWithCmd} vendor/inhere/console
@@ -165,7 +234,7 @@ class PhpController extends Controller
         }
 
         CmdRunner::new('rm -rf ' . $pkgPath)
-                 ->do(true)
-                 ->afterOkDo("git clone $homepage $pkgPath");
+            ->do(true)
+            ->afterOkDo("git clone $homepage $pkgPath");
     }
 }

@@ -12,7 +12,9 @@ use function date;
 use function explode;
 use function file_get_contents;
 use function implode;
+use function is_string;
 use function parse_ini_string;
+use function strpos;
 use function strtr;
 use function trim;
 
@@ -77,6 +79,65 @@ class GenerateController extends Controller
         ProcWrapper::runEditor($editor, $filepath);
 
         $output->writeln($filepath);
+    }
+
+    /**
+     * @param Input $input
+     */
+    protected function parseConfigure(Input $input): void
+    {
+        $input->bindArgument('tpl', 0);
+    }
+
+    /**
+     * parse and generate some codes by input template file
+     *
+     * @arguments
+     *  tpl         The template filepath
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function parseCommand(Input $input, Output $output): void
+    {
+        $tplFile = $input->getRequiredArg('tpl');
+        $content = file_get_contents($tplFile);
+
+        [$varDefine, $template] = explode('###', $content);
+
+        $snippets = [''];
+        $template = trim($template);
+
+        $vars = (array)parse_ini_string(trim($varDefine), true);
+        foreach ($vars as $k => $var) {
+            if (is_string($var)) {
+                $str = trim($var);
+                // is array
+                if (strpos($str, '[') === 0) {
+                    $vars[$k] = Str::explode(trim($str, '[]'), ',');
+                }
+            }
+        }
+
+        $this->renderTemplate(trim($template), $vars);
+
+        $output->success('Complete');
+        $output->writeRaw(implode("\n\n", $snippets));
+    }
+
+    /**
+     * @param string $tplCode
+     * @param array  $vars
+     *
+     * @return string
+     */
+    private function renderTemplate(string $tplCode, array $vars): string
+    {
+        \ddump($tplCode);
+        \ob_start();
+        \extract($vars, \EXTR_OVERWRITE);
+        eval("<?php\n" . $tplCode);
+        return \ob_get_clean();
     }
 
     /**

@@ -38,6 +38,8 @@ class Application extends \Inhere\Console\Application
 
         $this->loadAppConfig();
 
+        $this->initAppEnv();
+
         $this->on(ConsoleEvent::ON_NOT_FOUND, $this->onNotFound());
     }
 
@@ -73,6 +75,11 @@ class Application extends \Inhere\Console\Application
 
         $config['__loaded_file'] = $loaded;
         $this->setConfig($config);
+    }
+
+    protected function initAppEnv(): void
+    {
+
     }
 
     protected function onNotFound(): callable

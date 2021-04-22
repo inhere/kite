@@ -1,12 +1,21 @@
 <?php
 
 return [
-    'webServe' => [
-        'host' => '127.0.0.1:8552',
+    // @see app/Console/Controller/PhpController.php
+    'phpServe' => [
+        'hce-file' => 'test/clienttest/http-client.env.json',
+        'hce-env'  => getenv('APP_ENV') ?: 'development',
+        // 'entry'     => 'public/index.php',
         // document root
-        'root' => 'public'
+        'root'     => 'public',
+        'entry'    => 'public/index.php',
+        // 'php-bin'  => 'php'
+        // 'addr' => '127.0.0.1:8552',
     ],
-    'gitlab' => [
+    'git' => [
+
+    ],
+    'gitlab'  => [
         // remote
         'mainRemote'       => 'main',
         'forkRemote'       => 'origin',
@@ -14,13 +23,19 @@ return [
         'defaultGroup'     => 'wzl',
         'defaultForkGroup' => 'inhere',
     ],
-    'github' => [
+    'github'  => [
         // remote
         'mainRemote'       => 'main',
         'forkRemote'       => 'origin',
         // group
         'defaultGroup'     => 'swoft',
         'defaultForkGroup' => 'ulue',
+    ],
+    'osEnv'   => [
+        // proxy settings
+        // export http_proxy=http://127.0.0.1:1081;export https_proxy=http://127.0.0.1:1081;
+        'http_proxy'  => 'http://127.0.0.1:1081',
+        'https_proxy' => 'http://127.0.0.1:1081',
     ],
     // command aliases. element is: alias command => real command
     'aliases' => [

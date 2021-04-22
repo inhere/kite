@@ -13,7 +13,8 @@ use Inhere\Console\Command;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Common\CmdRunner;
+use Toolkit\Cli\Color;
+use Toolkit\Sys\Exec;
 use function count;
 use function is_array;
 use function is_scalar;
@@ -22,6 +23,7 @@ use function json_encode;
 use function preg_match;
 use function strpos;
 use function strtr;
+use function system;
 
 /**
  * Class RunCommand
@@ -108,10 +110,9 @@ class RunCommand extends Command
     private function executeScripts(Output $output, string $name, array $runArgs, $commands): void
     {
         if (is_string($commands)) {
-            // Color::println("run > $commands", 'comment');
-            // Sys::execute($commands, false);
             $command = $this->replaceScriptVars($name, $commands, $runArgs);
-            CmdRunner::new($command)->do(true);
+            // CmdRunner::new($command)->do(true);
+            $this->quickExec($command);
             $output->info('DONE: ' . $command);
             return;
         }
@@ -134,13 +135,50 @@ class RunCommand extends Command
                 }
 
                 $command = $this->replaceScriptVars($name, $command, $runArgs);
-                CmdRunner::new($command)->do(true);
+                // CmdRunner::new($command)->do(true);
+                $this->quickExec($command);
                 $output->info('DONE: ' . $command);
             }
             return;
         }
 
         $output->error("invalid script commands for '{$name}', only allow: string, string[]");
+    }
+
+    /**
+     * @param string $command
+     */
+    protected function quickExec(string $command): void
+    {
+        Color::println("run > $command", 'comment');
+        // TODO use Exec::system($command);
+        $lastLine = system($command, $exitCode);
+        $hasOutput = false;
+        if ($exitCode !== 0) {
+            $hasOutput = true;
+            Color::println("error code {$exitCode}:\n" . $lastLine, 'red');
+        }
+
+        if (false === $hasOutput &&$lastLine) {
+            echo $lastLine . "\n";
+        }
+    }
+
+    /**
+     * @param string $command
+     */
+    protected function quickExec2(string $command): void
+    {
+        [$exitCode, $outMsg] = Exec::exec($command);
+        $hasOutput = false;
+        if ($exitCode !== 0) {
+            $hasOutput = true;
+            Color::println("error code {$exitCode}:\n" . $outMsg, 'red');
+        }
+
+        if (false === $hasOutput && $outMsg) {
+            echo $outMsg . "\n";
+        }
     }
 
     /**

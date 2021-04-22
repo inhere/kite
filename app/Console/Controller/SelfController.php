@@ -7,7 +7,6 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Util\PhpDevServe;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Sys;
 use function array_keys;
@@ -156,34 +155,5 @@ class SelfController extends Controller
         }
 
         $output->success('Complete');
-    }
-
-    /**
-     * start a php built-in http server for kite web application
-     *
-     * @param Input  $input
-     * @param Output $output
-     *
-     * @return int|mixed|void
-     * @example
-     *  {command} -S 127.0.0.1:8552 web/index.php
-     */
-    public function serveCommand(Input $input, Output $output): void
-    {
-        $conf = $this->app->getParam('webServe', []);
-        if (!$conf) {
-            throw new PromptException('please config the "webServe" settings');
-        }
-
-        $docRoot = $conf['root'] ?? BASE_PATH . '/public';
-
-        $serveAddr = $conf['host'] ?? '127.0.0.1:8552';
-        $entryFile = $conf['entry'] ?? '';
-
-        $pds = PhpDevServe::new($serveAddr, $docRoot, $entryFile);
-
-        $output->write($pds->getTipsMessage());
-
-        $pds->start();
     }
 }
