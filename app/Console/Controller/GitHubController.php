@@ -45,7 +45,7 @@ class GitHubController extends Controller
 
     protected function beforeExecute(): bool
     {
-        AppHelper::loadOsEnvInfo($this->app);
+        // AppHelper::loadOsEnvInfo($this->app);
 
         return true;
     }

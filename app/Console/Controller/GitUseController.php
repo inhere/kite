@@ -19,6 +19,7 @@ use Inhere\Kite\Helper\GitUtil;
 use PhpGit\Repo;
 use function array_keys;
 use function implode;
+use function in_array;
 use function sprintf;
 use function strlen;
 use function strpos;
@@ -79,7 +80,15 @@ class GitUseController extends Controller
      */
     protected function beforeExecute(): bool
     {
-        AppHelper::loadOsEnvInfo($this->app);
+        // \ddump($this);
+        if ($this->app) {
+            $groupSettings = $this->app->getParam('git', []);
+            $proxyActions = $groupSettings['loadEnvOn'] ?? [];
+
+            if ($proxyActions && in_array($this->getAction(), $proxyActions, true)) {
+                AppHelper::loadOsEnvInfo($this->app);
+            }
+        }
 
         return true;
     }

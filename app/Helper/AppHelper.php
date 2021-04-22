@@ -2,8 +2,8 @@
 
 namespace Inhere\Kite\Helper;
 
-use Inhere\Console\Util\Show;
 use Inhere\Console\Application;
+use Inhere\Console\Util\Show;
 use Toolkit\Sys\Sys;
 use function explode;
 use function getenv;
@@ -71,7 +71,7 @@ class AppHelper
 
         // zh_CN.UTF-8
         if (strpos($value, '.') > 0) {
-            [$value, ] = explode('.', $value);
+            [$value,] = explode('.', $value);
 
             return self::LANG_MAP[$value] ?? $value;
         }
@@ -120,7 +120,10 @@ class AppHelper
             return;
         }
 
-        Show::aList($osEnv, 'Put ENV From Config: "osEnv"', ['ucFirst' => false]);
+        Show::aList($osEnv, 'Put ENV From Config: "osEnv"', [
+            'ucFirst'      => false,
+            'ucTitleWords' => false,
+        ]);
         // Sys::setOSEnv() TODO
         foreach ($osEnv as $name => $value) {
             putenv("$name=$value");
