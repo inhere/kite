@@ -75,6 +75,16 @@ class GitUseController extends Controller
     }
 
     /**
+     * @return bool
+     */
+    protected function beforeExecute(): bool
+    {
+        AppHelper::loadOsEnvInfo($this->app);
+
+        return true;
+    }
+
+    /**
      * @param string $action
      *
      * @return bool

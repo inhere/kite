@@ -33,9 +33,8 @@ return [
     ],
     'osEnv'   => [
         // proxy settings
-        // export http_proxy=http://127.0.0.1:1081;export https_proxy=http://127.0.0.1:1081;
-        'http_proxy'  => 'http://127.0.0.1:1081',
-        'https_proxy' => 'http://127.0.0.1:1081',
+        // 'http_proxy'  => 'http://127.0.0.1:1081',
+        // 'https_proxy' => 'http://127.0.0.1:1081',
     ],
     // command aliases. element is: alias command => real command
     'aliases' => [

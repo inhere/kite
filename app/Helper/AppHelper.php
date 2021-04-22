@@ -3,9 +3,12 @@
 namespace Inhere\Kite\Helper;
 
 use Inhere\Console\Util\Show;
+use Inhere\Console\Application;
 use Toolkit\Sys\Sys;
 use function explode;
 use function getenv;
+use function is_array;
+use function putenv;
 use function strpos;
 use function trim;
 
@@ -105,5 +108,22 @@ class AppHelper
 
         // Show::writeln("> $cmd");
         Sys::execute($cmd);
+    }
+
+    /**
+     * @param Application $app
+     */
+    public static function loadOsEnvInfo(Application $app): void
+    {
+        $osEnv = $app->getParam('osEnv', []);
+        if (!$osEnv || !is_array($osEnv)) {
+            return;
+        }
+
+        Show::aList($osEnv, 'Put ENV From Config', ['ucFirst' => false]);
+        // Sys::setOSEnv() TODO
+        foreach ($osEnv as $name => $value) {
+            putenv("$name=$value");
+        }
     }
 }
