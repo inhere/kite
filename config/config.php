@@ -53,4 +53,8 @@ return [
     ],
     // custom scripts for quick run an command
     'scripts' => require 'scripts.php',
+
+    'pluginDirs' => [
+        // BASE_PATH . '/plugin/'
+    ],
 ];

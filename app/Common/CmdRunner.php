@@ -5,9 +5,11 @@ namespace Inhere\Kite\Common;
 use RuntimeException;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Exec;
+use function chdir;
 use function is_array;
 use function is_string;
 use function sprintf;
+use function system;
 use function trim;
 
 /**
@@ -44,11 +46,14 @@ class CmdRunner
 
     /**
      * [
-     *  'echo hi',
-     *  'do something'
+     *  'name' => 'command line',
+     *  'test' => [
+     *      'echo hi',
+     *      'do something',
+     *  ]
      * ]
      *
-     * @var array|array[]
+     * @var array[]|array
      */
     private $commands = [];
 
@@ -77,8 +82,8 @@ class CmdRunner
     private $printOutput = false;
 
     /**
-     * @param string|array  $cmd
-     * @param string $workDir
+     * @param string|array $cmd
+     * @param string       $workDir
      *
      * @return static
      */
@@ -91,14 +96,14 @@ class CmdRunner
      * Class constructor.
      *
      * @param string|array $command One or multi commands
-     * @param string $workDir
+     * @param string       $workDir
      */
-    public function __construct($command = '', string $workDir = '')
+    public function __construct($command = null, string $workDir = '')
     {
         if (is_string($command)) {
             $this->command = $command;
         } elseif (is_array($command)) {
-            $this->commands = $command;
+            $this->commands = (array)$command;
         }
 
         $this->workDir = $workDir;
@@ -291,7 +296,7 @@ class CmdRunner
     }
 
     /**
-     * @param array $config
+     * @param array  $config
      *                     - command STRING|ARRAY
      *                     - workDir STRING
      *                     - where  callable
@@ -400,45 +405,81 @@ class CmdRunner
             Color::println("> {$command}", 'yellow');
         }
 
-        // $ret = SysCmd::exec($this->cmd, $this->workDir);
         if ($this->dryRun) {
-            $code   = 0;
-            $error  = '';
             $output = 'DRY-RUN: Command execute success';
-            // $ret = [
-            //     'status' => 0,
-            //     'output' => 'DRY-RUN: Command execute success',
-            // ];
-        } else {
-            // TIP: Sys::execute can't return error output.
-            // $ret = Sys::execute($command, true, $workDir);
-            [$code, $output, $error] = Exec::run($command, $workDir);
+            Color::println($output, 'cyan');
+            return;
         }
+
+        if ($this->printOutput) {
+            $this->execAndPrint($command, $workDir);
+        } else {
+            $this->execLogReturn($command, $workDir);
+        }
+    }
+
+    /**
+     * exec and log outputs.
+     *
+     * @param string $command
+     * @param string $workDir
+     */
+    protected function execLogReturn(string $command, string $workDir): void
+    {
+        [$code, $output, $error] = Exec::run($command, $workDir);
 
         // save output
-        $this->code  = $code;
-        $this->error = trim($error);
-
-        // print output
+        $this->code   = $code;
+        $this->error  = trim($error);
         $this->output = trim($output);
-        if ($this->printOutput) {
-            $hasOutput = false;
-            if ($code !== 0 && $this->error) {
-                $hasOutput = true;
-                Color::println("error code $code:\n" . $this->error, 'red');
-            }
+        // if ($this->printOutput) {
+        //     $hasOutput = false;
+        //     if ($code !== 0 && $this->error) {
+        //         $hasOutput = true;
+        //         Color::println("error code $code:\n" . $this->error, 'red');
+        //     }
+        //
+        //     $outMsg = '';
+        //     if (false === $hasOutput) {
+        //         $outMsg = $this->output ?: $this->error;
+        //     } elseif ($this->output) {
+        //         $outMsg = $this->output;
+        //     }
+        //
+        //     if ($outMsg) {
+        //         echo $outMsg . "\n";
+        //     }
+        // }
+    }
 
-            $outMsg = '';
-            if (false === $hasOutput) {
-                $outMsg = $this->output ?: $this->error;
-            } elseif ($this->output) {
-                $outMsg = $this->output;
-            }
-
-            if ($outMsg) {
-                echo $outMsg . "\n";
-            }
+    /**
+     * direct print to stdout, not return outputs.
+     *
+     * @param string $command
+     * @param string $workDir
+     */
+    protected function execAndPrint(string $command, string $workDir): void
+    {
+        // TODO use Exec::system($command);
+        if ($workDir) {
+            chdir($workDir);
         }
+
+        // $hasOutput = false;
+        $lastLine = system($command, $exitCode);
+
+        $this->code   = $exitCode;
+        $this->output = trim($lastLine);
+
+        if ($exitCode !== 0) {
+            $this->error = $this->output;
+            // $hasOutput = true;
+            Color::println("error code {$exitCode}:\n" . $lastLine, 'red');
+        }
+
+        // if (false === $hasOutput &&$lastLine) {
+        //     echo $lastLine . "\n";
+        // }
     }
 
     /**

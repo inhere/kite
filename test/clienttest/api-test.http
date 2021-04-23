@@ -2,5 +2,14 @@
 GET http://{{host}}/api/item?id=99
 Accept: application/json
 
+### post example
+POST http://{{host}}/posts/add
+Content-Type: application/json
+
+{
+  "title": "post title",
+  "content": "post content"
+}
+
 ###
 

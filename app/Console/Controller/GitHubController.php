@@ -52,15 +52,20 @@ class GitHubController extends Controller
         ];
     }
 
+    protected function beforeExecute(): bool
+    {
+        $this->loadSettings();
+        return true;
+    }
+
     protected function beforeAction(): bool
     {
         if ($this->app) {
             $action = $this->getAction();
-            $this->loadSettings();
 
             $loadEnvActions = $this->settings['loadEnvOn'] ?? [];
             if ($loadEnvActions && in_array($action, $loadEnvActions, true)) {
-                $this->output->info(self::getName() . ' - will loadEnvOn setting for command: ' . $action);
+                $this->output->info(self::getName() . ' - will load osEnv setting for command: ' . $action);
                 AppHelper::loadOsEnvInfo($this->app);
             }
         }
@@ -102,13 +107,12 @@ class GitHubController extends Controller
         $gitCtrl = $this->app->getController(GitUseController::getName());
         $command = $gitCtrl->getRealCommandName($action);
 
-        $this->loadSettings();
         $redirectGitGroup = $this->settings['redirectGit'] ?? [];
 
         if (in_array($command, $redirectGitGroup, true)) {
             $loadEnvActions = $this->settings['loadEnvOn'] ?? [];
             if ($loadEnvActions && in_array($command, $loadEnvActions, true)) {
-                $this->output->info(self::getName() . ' - will loadEnvOn setting for command: ' . $command);
+                $this->output->info(self::getName() . ' - load osEnv setting for command: ' . $command);
                 AppHelper::loadOsEnvInfo($this->app);
             }
 
