@@ -59,6 +59,7 @@ class GitUseController extends Controller
                 'rmtag',
             ],
             'branch'    => ['br'],
+            'update'    => ['up', 'pul', 'pull'],
             'tagFind'   => ['tagfind', 'tag-find'],
             'tagNew'    => [
                 'tagnew',
@@ -76,14 +77,25 @@ class GitUseController extends Controller
     }
 
     /**
+     * @return string[]
+     */
+    protected function groupOptions(): array
+    {
+        return [
+            '--dry-run' => 'Dry-run the workflow, dont real execute',
+            // '-y, --yes' => 'Direct execution without confirmation',
+            // '-i, --interactive' => 'Run in an interactive environment[TODO]',
+        ];
+    }
+
+    /**
      * @return bool
      */
     protected function beforeExecute(): bool
     {
-        // \ddump($this);
         if ($this->app) {
             $groupSettings = $this->app->getParam('git', []);
-            $proxyActions = $groupSettings['loadEnvOn'] ?? [];
+            $proxyActions  = $groupSettings['loadEnvOn'] ?? [];
 
             if ($proxyActions && in_array($this->getAction(), $proxyActions, true)) {
                 AppHelper::loadOsEnvInfo($this->app);
@@ -100,11 +112,10 @@ class GitUseController extends Controller
      */
     protected function onNotFound(string $action): bool
     {
-        $this->output->info("input sub-command is '$action', will try exec system command `git $action`");
+        $this->output->info("input command '$action' is not found, will try exec system command `git $action`");
 
         $run = CmdRunner::new($this->input->getFullScript());
         $run->do(true);
-
         // return $run->isSuccess();
         return true;
     }
@@ -121,6 +132,26 @@ class GitUseController extends Controller
         $output->colored('TODO');
     }
 
+    /**
+     * update codes from origin by git pull
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function updateCommand(Input $input, Output $output): void
+    {
+        $runner = CmdRunner::new();
+        $runner->setDryRun($input->getBoolOpt('dry-run'));
+        $runner->add('git pull');
+        $runner->run(true);
+
+        $output->success('Complete');
+    }
+
+    /**
+     * @param Input  $input
+     * @param Output $output
+     */
     public function statusCommand(Input $input, Output $output): void
     {
         $commands = [
@@ -199,7 +230,7 @@ class GitUseController extends Controller
         $output->colored($msg . ':');
 
         $matched = [];
-        $rmtLen = strlen($remote) + 1;
+        $rmtLen  = strlen($remote) + 1;
         foreach ($list as $name => $item) {
             if ($remote) {
                 $pos = strpos($name, $remote . '/');

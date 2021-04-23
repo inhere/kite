@@ -12,6 +12,7 @@ namespace Inhere\Kite\Console;
 use Inhere\Console\ConsoleEvent;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Kite;
+use Inhere\Kite\Plugin\AbstractPlugin;
 use Toolkit\Stdlib\Arr\ArrayHelper;
 use function file_exists;
 use const BASE_PATH;
@@ -23,6 +24,28 @@ use const BASE_PATH;
  */
 class Application extends \Inhere\Console\Application
 {
+    /**
+     * loaded plugin objects
+     *
+     * @var AbstractPlugin[]
+     */
+    private $plugins = [];
+
+    /**
+     * @var array
+     */
+    private $pluginDirs = [];
+
+    /**
+     * @var array
+     */
+    private $pluginFiles = [];
+
+    /**
+     * @var array
+     */
+    private $pluginClasses = [];
+
     protected function prepareRun(): void
     {
         parent::prepareRun();
@@ -79,7 +102,7 @@ class Application extends \Inhere\Console\Application
 
     protected function initAppEnv(): void
     {
-
+        $this->pluginDirs = $this->getParam('pluginDirs', []);
     }
 
     protected function onNotFound(): callable
@@ -87,7 +110,7 @@ class Application extends \Inhere\Console\Application
         return static function (string $cmd, Application $app) {
             $aliases = $app->getParam('aliases', []);
 
-            // is an command alias.
+            // - is an command alias.
             if ($aliases && isset($aliases[$cmd])) {
                 $realCmd = $aliases[$cmd];
 
@@ -96,10 +119,15 @@ class Application extends \Inhere\Console\Application
                 return true;
             }
 
-            // custom scripts
+            // check custom scripts
             $scripts = $app->getParam('scripts', []);
             if (!$scripts || !isset($scripts[$cmd])) {
-                // want call system command.
+                // - run plugin
+                if ($app->isPlugin($cmd)) {
+
+                }
+
+                // - call system command.
                 if ($cmd[0] === '\\') {
                     $cmd = substr($cmd, 1);
                 }
@@ -112,7 +140,7 @@ class Application extends \Inhere\Console\Application
                 return true;
             }
 
-            // redirect to run custom scripts.
+            // - run custom scripts.
             /** @see \Inhere\Kite\Console\Command\RunCommand::execute() */
             $app->note("command not found, redirect to run script: $cmd");
 
@@ -124,5 +152,34 @@ class Application extends \Inhere\Console\Application
 
             return true;
         };
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function isPlugin(string $name): bool
+    {
+        if (\strpos($name, ' ') !== false) {
+            return false;
+        }
+
+        foreach ($this->pluginDirs as $dir) {
+            $filename = $dir . '/' . $name . '.php';
+            if (\is_file($filename)) {
+
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function runPlugin(string $name): bool
+    {
+        return true;
     }
 }

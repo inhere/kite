@@ -9,6 +9,7 @@
 
 namespace Inhere\Kite\Console\Controller;
 
+use Inhere\Console\Console;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
@@ -16,6 +17,8 @@ use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Helper\AppHelper;
 use PhpComp\Http\Client\Client;
+use ReflectionException;
+use function in_array;
 
 /**
  * Class GitHubGroup
@@ -25,6 +28,11 @@ class GitHubController extends Controller
     protected static $name = 'github';
 
     protected static $description = 'Some useful development tool commands';
+
+    /**
+     * @var array
+     */
+    private $settings = [];
 
     /**
      * @return array
@@ -37,17 +45,34 @@ class GitHubController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'wf'  => 'workflow',
-            'rls' => 'release',
-            'pr'  => 'pullRequest',
+            'wf'           => 'workflow',
+            'rls'          => 'release',
+            'pr'           => 'pullRequest',
+            'redirectList' => ['rl'],
         ];
     }
 
     protected function beforeExecute(): bool
     {
-        // AppHelper::loadOsEnvInfo($this->app);
+        if ($this->app) {
+            $action = $this->getAction();
+            $this->loadSettings();
+
+            $loadEnvActions = $this->settings['loadEnvOn'] ?? [];
+            if ($loadEnvActions && in_array($action, $loadEnvActions, true)) {
+                $this->output->info(self::getName() . ' - will loadEnvOn setting for command: ' . $action);
+                AppHelper::loadOsEnvInfo($this->app);
+            }
+        }
 
         return true;
+    }
+
+    protected function loadSettings(): void
+    {
+        if ($this->app && !$this->settings) {
+            $this->settings = $this->app->getParam('github', []);
+        }
     }
 
     /**
@@ -59,6 +84,38 @@ class GitHubController extends Controller
         // $github->setWorkDir($this->input->getWorkDir());
 
         return GitHub::new($this->output, $config);
+    }
+
+    /**
+     * @param string $action
+     *
+     * @return bool
+     * @throws ReflectionException
+     */
+    protected function onNotFound(string $action): bool
+    {
+        if (!$this->app) {
+            return false;
+        }
+
+        // resolve alias
+        $gitCtrl = $this->app->getController(GitUseController::getName());
+        $command = $gitCtrl->getRealCommandName($action);
+
+        $redirectGitGroup = $this->settings['redirectGit'] ?? [];
+        if (in_array($command, $redirectGitGroup, true)) {
+            $loadEnvActions = $this->settings['loadEnvOn'] ?? [];
+            if ($loadEnvActions && in_array($command, $loadEnvActions, true)) {
+                $this->output->info(self::getName() . ' - will loadEnvOn setting for command: ' . $command);
+                AppHelper::loadOsEnvInfo($this->app);
+            }
+
+            $this->output->notice("will redirect to git group: `git $command`");
+            Console::app()->dispatch("git:{$command}");
+            return true;
+        }
+
+        return false;
     }
 
     protected function configure(): void
@@ -78,6 +135,16 @@ class GitHubController extends Controller
                 $this->input->bindArgument('project', 0);
                 break;
         }
+    }
+
+    /**
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function redirectListCommand(Input $input, Output $output): void
+    {
+        $this->loadSettings();
+        $output->aList($this->settings);
     }
 
     /**

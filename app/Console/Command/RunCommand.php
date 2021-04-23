@@ -14,7 +14,6 @@ use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Toolkit\Cli\Color;
-use Toolkit\Sys\Exec;
 use function count;
 use function is_array;
 use function is_scalar;
@@ -161,23 +160,6 @@ class RunCommand extends Command
 
         if (false === $hasOutput &&$lastLine) {
             echo $lastLine . "\n";
-        }
-    }
-
-    /**
-     * @param string $command
-     */
-    protected function quickExec2(string $command): void
-    {
-        [$exitCode, $outMsg] = Exec::exec($command);
-        $hasOutput = false;
-        if ($exitCode !== 0) {
-            $hasOutput = true;
-            Color::println("error code {$exitCode}:\n" . $outMsg, 'red');
-        }
-
-        if (false === $hasOutput && $outMsg) {
-            echo $outMsg . "\n";
         }
     }
 
