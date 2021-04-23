@@ -144,6 +144,10 @@ class PluginManager
             throw new RuntimeException('plugin class must extends: ' . AbstractPlugin::class);
         }
 
+        $pluginObj->setName($name);
+        $pluginObj->setFilepath($filename);
+        $pluginObj->setClassname($className);
+
         $this->plugins[$name] = $pluginObj;
         return $pluginObj;
     }

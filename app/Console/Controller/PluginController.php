@@ -32,6 +32,30 @@ class PluginController extends Controller
     }
 
     /**
+     * display information for an plugin
+     *
+     * @arguments
+     *  name    The plugin name for display
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function infoCommand(Input $input, Output $output): void
+    {
+        $input->bindArgument('name', 0);
+        $name = $input->getRequiredArg('name');
+
+        $kpm = Kite::plugManager();
+        if (!$plg= $kpm->getPlugin($name)) {
+            $output->error("the plugin '{$name}' is not exists");
+            return;
+        }
+
+        $opts = ['ucFirst' => false];
+        $output->aList($plg->getInfo(), 'Plugin Info', $opts);
+    }
+
+    /**
      * run an plugin by input name
      *
      * @arguments
