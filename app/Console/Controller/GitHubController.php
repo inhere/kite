@@ -39,7 +39,7 @@ class GitHubController extends Controller
      */
     public static function aliases(): array
     {
-        return ['gh'];
+        return ['gh', 'hub'];
     }
 
     protected static function commandAliases(): array
@@ -52,7 +52,7 @@ class GitHubController extends Controller
         ];
     }
 
-    protected function beforeExecute(): bool
+    protected function beforeAction(): bool
     {
         if ($this->app) {
             $action = $this->getAction();
@@ -102,7 +102,9 @@ class GitHubController extends Controller
         $gitCtrl = $this->app->getController(GitUseController::getName());
         $command = $gitCtrl->getRealCommandName($action);
 
+        $this->loadSettings();
         $redirectGitGroup = $this->settings['redirectGit'] ?? [];
+
         if (in_array($command, $redirectGitGroup, true)) {
             $loadEnvActions = $this->settings['loadEnvOn'] ?? [];
             if ($loadEnvActions && in_array($command, $loadEnvActions, true)) {
@@ -144,7 +146,9 @@ class GitHubController extends Controller
     public function redirectListCommand(Input $input, Output $output): void
     {
         $this->loadSettings();
-        $output->aList($this->settings);
+        $output->aList([
+            'redirectGit' => $this->settings['redirectGit'],
+        ]);
     }
 
     /**
