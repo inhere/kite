@@ -10,9 +10,9 @@
 namespace Inhere\Kite\Console;
 
 use Inhere\Console\ConsoleEvent;
-use Inhere\Kite\Common\CmdRunner;
+use Inhere\Kite\Console\Listener\NotFoundListener;
+use Inhere\Kite\Console\Plugin\PluginManager;
 use Inhere\Kite\Kite;
-use Inhere\Kite\Plugin\AbstractPlugin;
 use Toolkit\Stdlib\Arr\ArrayHelper;
 use function file_exists;
 use const BASE_PATH;
@@ -25,26 +25,9 @@ use const BASE_PATH;
 class Application extends \Inhere\Console\Application
 {
     /**
-     * loaded plugin objects
-     *
-     * @var AbstractPlugin[]
+     * @var PluginManager
      */
-    private $plugins = [];
-
-    /**
-     * @var array
-     */
-    private $pluginDirs = [];
-
-    /**
-     * @var array
-     */
-    private $pluginFiles = [];
-
-    /**
-     * @var array
-     */
-    private $pluginClasses = [];
+    private $plugManager;
 
     protected function prepareRun(): void
     {
@@ -61,9 +44,7 @@ class Application extends \Inhere\Console\Application
 
         $this->loadAppConfig();
 
-        $this->initAppEnv();
-
-        $this->on(ConsoleEvent::ON_NOT_FOUND, $this->onNotFound());
+        $this->initAppRun();
     }
 
     private function loadAppConfig(): void
@@ -100,86 +81,20 @@ class Application extends \Inhere\Console\Application
         $this->setConfig($config);
     }
 
-    protected function initAppEnv(): void
+    protected function initAppRun(): void
     {
-        $this->pluginDirs = $this->getParam('pluginDirs', []);
-    }
+        $plugDirs = $this->getParam('pluginDirs', []);
 
-    protected function onNotFound(): callable
-    {
-        return static function (string $cmd, Application $app) {
-            $aliases = $app->getParam('aliases', []);
+        $this->plugManager = new PluginManager($plugDirs);
 
-            // - is an command alias.
-            if ($aliases && isset($aliases[$cmd])) {
-                $realCmd = $aliases[$cmd];
-
-                $app->notice("input command is alias name, will redirect to the real command '$realCmd'");
-                $app->dispatch($realCmd);
-                return true;
-            }
-
-            // check custom scripts
-            $scripts = $app->getParam('scripts', []);
-            if (!$scripts || !isset($scripts[$cmd])) {
-                // - run plugin
-                if ($app->isPlugin($cmd)) {
-
-                }
-
-                // - call system command.
-                if ($cmd[0] === '\\') {
-                    $cmd = substr($cmd, 1);
-                }
-
-                $cmdLine = $app->getInput()->getFullScript();
-                $app->notice("input command is not found, will call system command: $cmdLine");
-
-                // call system command
-                CmdRunner::new($cmdLine)->do(true);
-                return true;
-            }
-
-            // - run custom scripts.
-            /** @see \Inhere\Kite\Console\Command\RunCommand::execute() */
-            $app->note("command not found, redirect to run script: $cmd");
-
-            $args = $app->getInput()->getArgs();
-            $args = array_merge([$cmd], $args);
-
-            $app->getInput()->setArgs($args, true);
-            $app->dispatch('run');
-
-            return true;
-        };
+        $this->on(ConsoleEvent::ON_NOT_FOUND, new NotFoundListener());
     }
 
     /**
-     * @param string $name
-     *
-     * @return bool
+     * @return PluginManager
      */
-    public function isPlugin(string $name): bool
+    public function getPlugManager(): PluginManager
     {
-        if (\strpos($name, ' ') !== false) {
-            return false;
-        }
-
-        foreach ($this->pluginDirs as $dir) {
-            $filename = $dir . '/' . $name . '.php';
-            if (\is_file($filename)) {
-
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param string $name
-     */
-    public function runPlugin(string $name): bool
-    {
-        return true;
+        return $this->plugManager;
     }
 }

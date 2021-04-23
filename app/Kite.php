@@ -10,6 +10,7 @@
 namespace Inhere\Kite;
 
 use Inhere\Kite\Console\Application;
+use Inhere\Kite\Console\Plugin\PluginManager;
 use Inhere\Kite\Http\Application as WebApplication;
 use Inhere\Route\Router;
 
@@ -60,6 +61,14 @@ class Kite
     public static function webRouter(): Router
     {
         return self::$webApp->getRouter();
+    }
+
+    /**
+     * @return PluginManager
+     */
+    public static function plugManager(): PluginManager
+    {
+        return self::$cliApp->getPlugManager();
     }
 
     /**

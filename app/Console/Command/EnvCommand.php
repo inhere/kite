@@ -13,7 +13,6 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use function is_scalar;
-use function strpos;
 
 /**
  * Class DemoCommand
