@@ -151,15 +151,22 @@ class PhpController extends Controller
         $phpBin  = $input->getStringOpt('php-bin', $conf['php-bin']);
         $docRoot = $input->getSameStringOpt('t,doc-root', $conf['root']);
 
-        $entryFile = $input->getStringArg('file');
+        $entryFile = $input->getStringArg('file', $conf['entry']);
         $serveAddr = $input->getSameStringOpt('s,S,addr', $conf['addr']);
 
         $pds = PhpDevServe::new($serveAddr, $docRoot, $entryFile);
         $pds->setPhpBin($phpBin);
 
         if ($hceEnv && $hceFile) {
-            $pds->loadHceFile($hceFile);
-            $pds->useHceEnv($hceEnv);
+            $loaded = $pds->loadHceFile($hceFile);
+            if ($loaded) {
+                $pds->useHceEnv($hceEnv);
+            }
+        }
+
+        if ($input->getBoolOpt('show-info')) {
+            $output->aList($pds->getInfo(), 'Listen Information', ['ucFirst' => false]);
+            return;
         }
 
         $pds->listen();
