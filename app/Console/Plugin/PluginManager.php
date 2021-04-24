@@ -9,6 +9,7 @@ use SplFileInfo;
 use Toolkit\Stdlib\Str;
 use function basename;
 use function class_exists;
+use function is_dir;
 use function is_file;
 use function strlen;
 use function strpos;
@@ -37,7 +38,7 @@ class PluginManager
     /**
      * @var array
      */
-    private $pluginDirs = [];
+    private $pluginDirs;
 
     /**
      * @var array
@@ -154,6 +155,8 @@ class PluginManager
 
     /**
      * @param string $name
+     *
+     * @return bool
      */
     protected function loadPluginFile(string $name): bool
     {
@@ -197,6 +200,10 @@ class PluginManager
 
         $fileFilter = $this->getFileFilter();
         foreach ($this->pluginDirs as $pluginDir) {
+            if (!is_dir($pluginDir)) {
+                throw new RuntimeException("plugin dir: $pluginDir - is not exists");
+            }
+
             $strLen   = strlen($pluginDir);
             $iterator = Helper::directoryIterator($pluginDir, $fileFilter);
 

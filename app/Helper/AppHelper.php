@@ -5,6 +5,7 @@ namespace Inhere\Kite\Helper;
 use Inhere\Console\Application;
 use Inhere\Console\Util\Show;
 use Toolkit\Sys\Sys;
+use function defined;
 use function explode;
 use function getenv;
 use function is_array;
@@ -41,6 +42,17 @@ class AppHelper
     public static function isPhpPkgName(string $pkgName): bool
     {
         return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isInPhar(): bool
+    {
+        if (defined('IN_PHAR')) {
+            return IN_PHAR;
+        }
+        return false;
     }
 
     /**

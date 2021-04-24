@@ -13,7 +13,7 @@ use Inhere\Console\Command;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Toolkit\Cli\Color;
+use Inhere\Kite\Helper\SysCmd;
 use function count;
 use function is_array;
 use function is_scalar;
@@ -22,7 +22,6 @@ use function json_encode;
 use function preg_match;
 use function strpos;
 use function strtr;
-use function system;
 
 /**
  * Class RunCommand
@@ -104,14 +103,14 @@ class RunCommand extends Command
      * @param Output $output
      * @param string $name
      * @param array  $runArgs
-     * @param mixed $commands
+     * @param mixed  $commands
      */
     private function executeScripts(Output $output, string $name, array $runArgs, $commands): void
     {
         if (is_string($commands)) {
             $command = $this->replaceScriptVars($name, $commands, $runArgs);
             // CmdRunner::new($command)->do(true);
-            $this->quickExec($command);
+            SysCmd::quickExec($command);
             $output->info('DONE: ' . $command);
             return;
         }
@@ -135,32 +134,13 @@ class RunCommand extends Command
 
                 $command = $this->replaceScriptVars($name, $command, $runArgs);
                 // CmdRunner::new($command)->do(true);
-                $this->quickExec($command);
+                SysCmd::quickExec($command);
                 $output->info('DONE: ' . $command);
             }
             return;
         }
 
         $output->error("invalid script commands for '{$name}', only allow: string, string[]");
-    }
-
-    /**
-     * @param string $command
-     */
-    protected function quickExec(string $command): void
-    {
-        Color::println("run > $command", 'comment');
-        // TODO use Exec::system($command);
-        $lastLine = system($command, $exitCode);
-        $hasOutput = false;
-        if ($exitCode !== 0) {
-            $hasOutput = true;
-            Color::println("error code {$exitCode}:\n" . $lastLine, 'red');
-        }
-
-        if (false === $hasOutput &&$lastLine) {
-            echo $lastLine . "\n";
-        }
     }
 
     /**

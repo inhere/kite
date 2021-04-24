@@ -118,9 +118,7 @@ class GitUtil
      */
     public static function commit(string $message): void
     {
-        $ret = SysCmd::exec(sprintf('git add . && git commit -m "%s"', $message));
-
-        echo $ret['output'] . PHP_EOL;
+        SysCmd::quickExec(sprintf('git add . && git commit -m "%s"', $message));
     }
 
     /**
@@ -178,8 +176,7 @@ class GitUtil
     public static function delRemoteTag(string $remote, string $tag, string $workDir = ''): void
     {
         $cmd = "git push $remote :refs/tags/$tag";
-        $ret = SysCmd::exec($cmd, $workDir);
 
-        echo $ret['output'] . PHP_EOL;
+        SysCmd::quickExec($cmd, $workDir);
     }
 }

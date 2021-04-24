@@ -7,6 +7,9 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Helper\AppHelper;
+use Inhere\Kite\Helper\SysCmd;
+use Inhere\Kite\Kite;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Sys;
 use function array_keys;
@@ -66,10 +69,11 @@ class SelfController extends Controller
         $conf = $app->getConfig();
 
         $output->aList([
-            'work dir'     => $this->repoDir,
+            'work dir'     => $input->getWorkDir(),
             'root path'    => $conf['rootPath'],
-            'loaded file'  => $conf['__loaded_file'],
             'script count' => count($conf['scripts']),
+            'plugin dirs'  => Kite::plugManager()->getPluginDirs(),
+            'config files'  => $conf['__loaded_file'],
         ], 'information');
     }
 
@@ -124,31 +128,39 @@ class SelfController extends Controller
     /**
      * update {binName} to latest from github repository(by git pull)
      *
+     * @options
+     *  --no-deps     Not update deps by composer update
+     *
      * @param Input  $input
      * @param Output $output
      */
     public function updateCommand(Input $input, Output $output): void
     {
+        $dir = $this->baseDir;
+        $output->info('Will change to kite directory: ' . $dir);
+
+        if (AppHelper::isInPhar()) {
+            throw new PromptException('kite is phar package, does not support upgrade via command yet');
+        }
+
         Color::println('Update to latest:');
+        $cmd = "git checkout . && git pull";
+        // [, $msg,] = Sys::run($cmd);
+        SysCmd::quickExec($cmd, $dir);
 
-        $cmd = "cd {$this->baseDir} && git checkout . && git pull";
-        [, $msg,] = Sys::run($cmd);
-
-        $output->writeln($msg);
-
-        Color::println('Run composer update:');
-
-        $cmd = "cd {$this->baseDir} && composer update";
-        [, $msg,] = Sys::run($cmd);
-
-        $output->writeln($msg);
+        if (!$input->getBoolOpt('no-deps')) {
+            Color::println('Run composer update:');
+            $cmd = 'composer update';
+            // [, $msg,] = Sys::run($cmd);
+            // $output->writeln($msg);
+            SysCmd::quickExec($cmd, $dir);
+        }
 
         Color::println('Add execute perm:');
-
         $binName = $input->getScriptName();
 
         // normal run
-        [$code, $msg,] = Sys::run("cd {$this->baseDir} && chmod a+x bin/$binName");
+        [$code, $msg,] = Sys::run("chmod a+x bin/$binName", $dir);
         if ($code !== 0) {
             $output->error($msg);
             return;

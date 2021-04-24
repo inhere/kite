@@ -21,7 +21,7 @@
     "php-comp/http-client": "dev-master",
     "php-comp/http-message": "^1.4",
     "gitonomy/gitlib": "^1.2",
-    "ulue/phpgit": "dev-master"
+    "phpcom-lab/phpgit": "dev-master"
   },
   "require-dev": {
   },
@@ -44,7 +44,7 @@
     },
     "phpgit": {
       "type": "git",
-      "url": "https://github.com/ulue/phpgit.git"
+      "url": "https://github.com/phpcom-lab/phpgit.git"
     }
   },
   "scripts": {
