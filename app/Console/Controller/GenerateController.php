@@ -8,7 +8,6 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use RuntimeException;
 use Toolkit\FsUtil\Dir;
-use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Proc\ProcWrapper;
 use Toolkit\Sys\Sys;
@@ -148,8 +147,8 @@ class GenerateController extends Controller
         $fileHash = md5($tplCode);
         $tempFile = $tempDir . '/' . date('ymd') . "-{$fileHash}.php";
 
-        \vdump($tempFile);
         if (!file_exists($tempFile)) {
+            // \vdump($tempFile);
             Dir::create($tempDir);
 
             // write contents
