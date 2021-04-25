@@ -6,17 +6,28 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use RuntimeException;
+use Toolkit\FsUtil\Dir;
+use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Proc\ProcWrapper;
+use Toolkit\Sys\Sys;
 use function date;
 use function explode;
+use function extract;
+use function file_exists;
 use function file_get_contents;
+use function file_put_contents;
 use function implode;
 use function is_string;
+use function md5;
+use function ob_get_clean;
+use function ob_start;
 use function parse_ini_string;
 use function strpos;
 use function strtr;
 use function trim;
+use const PHP_EOL;
 
 /**
  * Class GenerateGroup
@@ -105,9 +116,6 @@ class GenerateController extends Controller
 
         [$varDefine, $template] = explode('###', $content);
 
-        $snippets = [''];
-        $template = trim($template);
-
         $vars = (array)parse_ini_string(trim($varDefine), true);
         foreach ($vars as $k => $var) {
             if (is_string($var)) {
@@ -119,10 +127,13 @@ class GenerateController extends Controller
             }
         }
 
-        $this->renderTemplate(trim($template), $vars);
+        $output->aList($vars, 'template vars', ['ucFirst' => false]);
 
-        $output->success('Complete');
-        $output->writeRaw(implode("\n\n", $snippets));
+        // $result = $this->renderTemplate(trim($template), $vars);
+        $result = $this->renderByRequire(trim($template), $vars);
+
+        $output->success('Render Result:');
+        $output->writeRaw($result);
     }
 
     /**
@@ -131,13 +142,57 @@ class GenerateController extends Controller
      *
      * @return string
      */
-    private function renderTemplate(string $tplCode, array $vars): string
+    private function renderByRequire(string $tplCode, array $vars): string
     {
-        \ddump($tplCode);
-        \ob_start();
-        \extract($vars, \EXTR_OVERWRITE);
-        eval("<?php\n" . $tplCode);
-        return \ob_get_clean();
+        $tempDir  = Sys::getTempDir() . '/kitegen';
+        $fileHash = md5($tplCode);
+        $tempFile = $tempDir . '/' . date('ymd') . "-{$fileHash}.php";
+
+        \vdump($tempFile);
+        if (!file_exists($tempFile)) {
+            Dir::create($tempDir);
+
+            // write contents
+            $num = file_put_contents($tempFile, $tplCode . PHP_EOL);
+            if ($num < 1) {
+                throw new RuntimeException('write template contents to temp file error');
+            }
+        }
+
+        return $this->renderTempFile($tempFile, $vars);
+    }
+
+    /**
+     * @param string $tempFile
+     * @param array  $vars
+     *
+     * @return string
+     */
+    private function renderTempFile(string $tempFile, array $vars): string
+    {
+        ob_start();
+        extract($vars, \EXTR_OVERWRITE);
+        // eval($tplCode . "\n");
+        // require \BASE_PATH . '/runtime/go-snippets-0709.tpl.php';
+        /** @noinspection PhpIncludeInspection */
+        require $tempFile;
+        return ob_get_clean();
+    }
+
+    /**
+     * @param string $tplCode
+     * @param array  $vars
+     *
+     * @return string
+     */
+    private function renderByEval(string $tplCode, array $vars): string
+    {
+        \vdump($tplCode);
+        ob_start();
+        extract($vars, \EXTR_OVERWRITE);
+        // eval($tplCode . "\n");
+        // require \BASE_PATH . '/runtime/go-snippets-0709.tpl.php';
+        return ob_get_clean();
     }
 
     /**

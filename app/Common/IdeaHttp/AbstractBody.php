@@ -2,7 +2,7 @@
 
 namespace Inhere\Kite\Common\IdeaHttp;
 
-use ArrayObject;
+use Inhere\Kite\Common\MapObject;
 use Toolkit\Stdlib\Type;
 use function gettype;
 
@@ -11,18 +11,8 @@ use function gettype;
  *
  * @package Inhere\Kite\Common\IdeaHttp
  */
-abstract class AbstractBody extends ArrayObject
+abstract class AbstractBody extends MapObject
 {
-    /**
-     * @param array $data
-     *
-     * @return static
-     */
-    public static function new(array $data)
-    {
-        return new static($data);
-    }
-
     /**
      * @param string $key
      *
@@ -35,7 +25,35 @@ abstract class AbstractBody extends ArrayObject
         }
 
         $val = $this->offsetGet($key);
-
         return gettype($val);
     }
+
+    /**
+     * @param array $data
+     */
+    public function override(array $data): void
+    {
+        $this->exchangeArray($data);
+    }
+
+    /**
+     * @param array $data
+     * @param bool  $override
+     */
+    public function load(array $data, bool $override = false): void
+    {
+        if ($override) {
+            $this->override($data);
+            return;
+        }
+
+        foreach ($data as $key => $val) {
+            $this->offsetSet($key, $val);
+        }
+    }
+
+    /**
+     * @return string
+     */
+    abstract public function __toString(): string;
 }

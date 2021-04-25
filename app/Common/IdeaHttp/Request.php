@@ -2,6 +2,8 @@
 
 namespace Inhere\Kite\Common\IdeaHttp;
 
+use Inhere\Kite\Http\ContentType;
+use InvalidArgumentException;
 use RuntimeException;
 use Toolkit\Stdlib\Str;
 use function array_merge;
@@ -39,6 +41,12 @@ class Request
 
     // public const NO_INIT = '-';
 
+    // matchType allow: both, uri, path, title
+    public const MATCH_BOTH  = 'both';
+    public const MATCH_URL   = 'url';
+    public const MATCH_PATH  = 'path';
+    public const MATCH_TITLE = 'title';
+
     /**
      * @var string
      */
@@ -55,10 +63,10 @@ class Request
     private $url = '';
 
     /**
-     * @var array
+     * @var UrlInfo
      * @see \parse_url()
      */
-    private $urlInfo = [];
+    private $urlInfo;
 
     /**
      * @var string
@@ -76,9 +84,9 @@ class Request
     private $bodyRaw = '';
 
     /**
-     * @var array
+     * @var AbstractBody
      */
-    private $bodyData = [];
+    private $bodyData;
 
     /**
      * @param array $data
@@ -193,10 +201,11 @@ class Request
 
     /**
      * @param string $keywords use keyword find request, will match on title and url
+     * @param string $matchTpye
      *
      * @return bool
      */
-    public function match(string $keywords): bool
+    public function match(string $keywords, string $matchTpye = self::MATCH_BOTH): bool
     {
         if ($this->title && strpos($this->title, $keywords) !== false) {
             return true;
@@ -207,6 +216,16 @@ class Request
         }
 
         return false;
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return bool
+     */
+    public function pathIsEqual(string $path): bool
+    {
+        return $this->getUrlInfo()->getString('path') === $path;
     }
 
     /**
@@ -269,12 +288,20 @@ class Request
     }
 
     /**
-     * @return array
+     * @return UrlInfo
      */
-    public function getUrlInfo(): array
+    public function getUrlInfo(): UrlInfo
     {
         if ($this->url && !$this->urlInfo) {
-            $this->urlInfo = parse_url($this->url);
+            $urlInfoData = parse_url($this->url);
+            if (!$urlInfoData) {
+                throw new InvalidArgumentException('invalid http url string: ' . $this->url);
+            }
+
+            $urlInfoData['url'] = $this->url;
+
+            // set
+            $this->urlInfo = UrlInfo::new($urlInfoData);
         }
 
         return $this->urlInfo;
@@ -373,33 +400,38 @@ class Request
     }
 
     /**
-     * @return array
+     * @return AbstractBody
      */
-    public function getBodyData(): array
+    public function getBodyData(): AbstractBody
     {
         if (!$this->bodyData && $this->bodyRaw) {
-
             $this->bodyData = $this->parseBodyRaw($this->bodyRaw);
         }
 
         return $this->bodyData;
     }
 
-    protected function parseBodyRaw(string $bodyRaw): array
+    /**
+     * @param string $bodyRaw
+     *
+     * @return BodyData
+     */
+    protected function parseBodyRaw(string $bodyRaw): BodyData
     {
         $cType = $this->getContentType();
         if (!$cType) {
             throw new RuntimeException('content type is not found, cannot parse body data');
         }
 
-        if ($cType === 'application/json') {
-            return json_decode($bodyRaw, true);
+        if ($cType === ContentType::JSON) {
+            $arr = json_decode($bodyRaw, true);
+            return JsonBody::new($arr);
         }
 
-        if ($cType === 'application/x-www-form-urlencoded') {
+        if ($cType === ContentType::FORM) {
             $result = [];
             parse_str($bodyRaw, $result);
-            return $result;
+            return FormBody::new($result);
         }
 
         throw new RuntimeException("content type '{$cType}' is not supported for parse body");
@@ -407,11 +439,16 @@ class Request
 
     /**
      * @param array $bodyData
-     * @param bool  $mergeOld
+     * @param bool  $override
      */
-    public function setBodyData(array $bodyData, bool $mergeOld = true): void
+    public function setBodyData(array $bodyData, bool $override = false): void
     {
-        $this->bodyData = $mergeOld ? array_merge($this->bodyData, $bodyData) : $bodyData;
+        if ($this->bodyData) {
+            $this->bodyData->load($bodyData, $override);
+        } else {
+            $this->bodyData = JsonBody::new($bodyData);
+        }
+
         // reset raw string.
         $this->bodyRaw = '';
     }

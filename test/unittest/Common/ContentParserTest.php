@@ -2,7 +2,7 @@
 
 namespace Inhere\KiteTest\Common;
 
-use Inhere\Kite\Common\IdeaHttp\ContentParser;
+use Inhere\Kite\Common\IdeaHttp\RequestSet;
 use Inhere\KiteTest\BaseTestCase;
 
 /**
@@ -26,7 +26,7 @@ HTTP;
 
     public function testParseOne(): void
     {
-        $p = ContentParser::new();
+        $p = RequestSet::new();
 
         $req = $p->parseOne(self::oneRequest);
         // \vdump($req);

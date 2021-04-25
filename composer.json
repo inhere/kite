@@ -21,9 +21,8 @@
     "php-comp/http-client": "dev-master",
     "php-comp/http-message": "^1.4",
     "gitonomy/gitlib": "^1.2",
-    "phpcom-lab/phpgit": "dev-master"
-  },
-  "require-dev": {
+    "phpcom-lab/phpgit": "dev-master",
+    "toolkit/fsutil": "^1.0"
   },
   "autoload": {
     "psr-4": {

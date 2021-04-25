@@ -28,6 +28,8 @@ abstract class AbstractPlugin
     protected $classname = '';
 
     /**
+     * Metadata for the plugin
+     *
      * @return array
      */
     public function metadata(): array
@@ -39,6 +41,11 @@ abstract class AbstractPlugin
         ];
     }
 
+    /**
+     * options for the plugin
+     *
+     * @return array
+     */
     public function options(): array
     {
         return [

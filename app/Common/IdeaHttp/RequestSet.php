@@ -2,6 +2,8 @@
 
 namespace Inhere\Kite\Common\IdeaHttp;
 
+use Countable;
+use Generator;
 use RuntimeException;
 use Toolkit\Stdlib\Str;
 use function count;
@@ -11,11 +13,11 @@ use function implode;
 use function trim;
 
 /**
- * Class ContentParser
+ * Class RequestSet
  *
  * @package Inhere\Kite\Common\IdeaHttp
  */
-class ContentParser
+class RequestSet implements Countable
 {
     /**
      * @var string
@@ -53,21 +55,20 @@ class ContentParser
     /**
      * @param string $filepath
      */
-    public function parseFile(string $filepath): void
+    public function loadFromFile(string $filepath): void
     {
         if (!file_exists($filepath)) {
             throw new RuntimeException('the http-client file not exists. file: ' . $filepath);
         }
 
-        $fileCode = file_get_contents($filepath);
-
-        $this->parse($fileCode);
+        $contents = file_get_contents($filepath);
+        $this->loadFromString($contents);
     }
 
     /**
      * @param string $fileCode
      */
-    public function parse(string $fileCode): void
+    public function loadFromString(string $fileCode): void
     {
         $fileCode = "\n" . trim($fileCode);
         $codeList = Str::explode($fileCode, Request::REQUEST_SPLIT);
@@ -93,9 +94,27 @@ class ContentParser
      *
      * @return Request|null
      */
-    public function getRequest(int $index): ?Request
+    public function getByIndex(int $index): ?Request
     {
         return $this->requests[$index] ?? null;
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return Request|null
+     */
+    public function getByPath(string $path): ?Request
+    {
+        $request = null;
+        foreach ($this->requests as $item) {
+            if ($item->pathIsEqual($path)) {
+                $request = $item;
+                break;
+            }
+        }
+
+        return $request;
     }
 
     /**
@@ -103,7 +122,7 @@ class ContentParser
      *
      * @return Request|null
      */
-    public function findRequest(string $keywords): ?Request
+    public function findOne(string $keywords): ?Request
     {
         $requests = $this->search($keywords, 1);
 
@@ -113,14 +132,18 @@ class ContentParser
     /**
      * @param string $keywords use keyword find request, will match on title and url
      * @param int    $limit
+     * @param array  $opts
+     *                    - matchType allow: matchBoth, matchUri, matchTitle
      *
      * @return Request[]
      */
-    public function search(string $keywords, int $limit = 5): array
+    public function search(string $keywords, int $limit = 5, array $opts = []): array
     {
         $matched = [];
+        $matchTpy = $opts['matchType'] ?? Request::MATCH_BOTH;
+
         foreach ($this->requests as $request) {
-            if ($request->match($keywords)) {
+            if ($request->match($keywords, $matchTpy)) {
                 $matched[] = $request;
 
                 if (count($matched) >= $limit) {
@@ -130,6 +153,34 @@ class ContentParser
         }
 
         return $matched;
+    }
+
+    /**
+     * @param string $keywords
+     * @param array  $opts
+     *
+     * @return Request[]|Generator|null
+     */
+    public function yieldSearch(string $keywords, array $opts = []): ?Generator
+    {
+        $matchTpy = $opts['matchType'] ?? Request::MATCH_BOTH;
+        foreach ($this->requests as $request) {
+            if ($request->match($keywords, $matchTpy)) {
+                yield $request;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return Request[]|Generator|null
+     */
+    public function yieldEach(): ?Generator
+    {
+        foreach ($this->requests as $request) {
+            yield $request;
+        }
+        return null;
     }
 
     /**
@@ -187,5 +238,16 @@ class ContentParser
     public function getRawContents(): string
     {
         return $this->rawContents;
+    }
+
+    /**
+     * Count elements of an object
+     *
+     * @link https://php.net/manual/en/countable.count.php
+     * @return int The custom count as an integer.
+     */
+    public function count(): int
+    {
+        return count($this->requests);
     }
 }
