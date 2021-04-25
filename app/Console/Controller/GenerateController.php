@@ -6,27 +6,18 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use RuntimeException;
-use Toolkit\FsUtil\Dir;
+use Inhere\Kite\Model\Logic\TextTemplateRender;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Proc\ProcWrapper;
-use Toolkit\Sys\Sys;
 use function date;
 use function explode;
-use function extract;
-use function file_exists;
 use function file_get_contents;
-use function file_put_contents;
 use function implode;
 use function is_string;
-use function md5;
-use function ob_get_clean;
-use function ob_start;
 use function parse_ini_string;
 use function strpos;
 use function strtr;
 use function trim;
-use const PHP_EOL;
 
 /**
  * Class GenerateGroup
@@ -128,70 +119,11 @@ class GenerateController extends Controller
 
         $output->aList($vars, 'template vars', ['ucFirst' => false]);
 
-        // $result = $this->renderTemplate(trim($template), $vars);
-        $result = $this->renderByRequire(trim($template), $vars);
+        $logic  = new TextTemplateRender();
+        $result = $logic->renderString(trim($template), $vars);
 
         $output->success('Render Result:');
         $output->writeRaw($result);
-    }
-
-    /**
-     * @param string $tplCode
-     * @param array  $vars
-     *
-     * @return string
-     */
-    private function renderByRequire(string $tplCode, array $vars): string
-    {
-        $tempDir  = Sys::getTempDir() . '/kitegen';
-        $fileHash = md5($tplCode);
-        $tempFile = $tempDir . '/' . date('ymd') . "-{$fileHash}.php";
-
-        if (!file_exists($tempFile)) {
-            // \vdump($tempFile);
-            Dir::create($tempDir);
-
-            // write contents
-            $num = file_put_contents($tempFile, $tplCode . PHP_EOL);
-            if ($num < 1) {
-                throw new RuntimeException('write template contents to temp file error');
-            }
-        }
-
-        return $this->renderTempFile($tempFile, $vars);
-    }
-
-    /**
-     * @param string $tempFile
-     * @param array  $vars
-     *
-     * @return string
-     */
-    private function renderTempFile(string $tempFile, array $vars): string
-    {
-        ob_start();
-        extract($vars, \EXTR_OVERWRITE);
-        // eval($tplCode . "\n");
-        // require \BASE_PATH . '/runtime/go-snippets-0709.tpl.php';
-        /** @noinspection PhpIncludeInspection */
-        require $tempFile;
-        return ob_get_clean();
-    }
-
-    /**
-     * @param string $tplCode
-     * @param array  $vars
-     *
-     * @return string
-     */
-    private function renderByEval(string $tplCode, array $vars): string
-    {
-        \vdump($tplCode);
-        ob_start();
-        extract($vars, \EXTR_OVERWRITE);
-        // eval($tplCode . "\n");
-        // require \BASE_PATH . '/runtime/go-snippets-0709.tpl.php';
-        return ob_get_clean();
     }
 
     /**

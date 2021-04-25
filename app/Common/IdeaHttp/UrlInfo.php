@@ -12,5 +12,11 @@ use Inhere\Kite\Common\MapObject;
  */
 class UrlInfo extends MapObject
 {
-
+    /**
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return $this->getString('path');
+    }
 }
