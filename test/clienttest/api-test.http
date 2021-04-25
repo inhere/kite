@@ -2,14 +2,22 @@
 GET http://{{host}}/api/item?id=99
 Accept: application/json
 
-### post example
+### post json example
 POST http://{{host}}/posts/add
+custom-key: value
 Content-Type: application/json
 
 {
   "title": "post title",
   "content": "post content"
 }
+
+### post form example
+POST http://{{host}}/posts/add
+custom-key: value
+Content-Type: application/x-www-form-urlencoded
+
+title=post title&content=post content
 
 ###
 

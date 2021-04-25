@@ -2,6 +2,7 @@
 
 namespace Inhere\Kite\Console\Plugin;
 
+use Inhere\Console\IO\Input;
 use Inhere\Kite\Console\Application;
 
 /**
@@ -38,6 +39,13 @@ abstract class AbstractPlugin
         ];
     }
 
+    public function options(): array
+    {
+        return [
+            // 'file' => 'the Idea Http Request file',
+        ];
+    }
+
     /**
      * @return array[]
      */
@@ -53,16 +61,19 @@ abstract class AbstractPlugin
 
     /**
      * @param Application $app
+     * @param Input       $input
      */
-    public function run(Application $app): void
+    public function run(Application $app, Input $input): void
     {
-        $this->exec($app);
+        // TODO before run
+        $this->exec($app, $input);
     }
 
     /**
      * @param Application $app
+     * @param Input       $input
      */
-    abstract public function exec(Application $app): void;
+    abstract public function exec(Application $app, Input $input): void;
 
     /**
      * @return string

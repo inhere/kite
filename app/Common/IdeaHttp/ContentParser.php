@@ -18,6 +18,11 @@ use function trim;
 class ContentParser
 {
     /**
+     * @var string
+     */
+    private $rawContents = '';
+
+    /**
      * @var Request[]
      */
     private $requests = [];
@@ -30,11 +35,30 @@ class ContentParser
         return new self();
     }
 
+    public function setEnvArray(): void
+    {
+
+    }
+
+    public function setEnvData(): void
+    {
+
+    }
+
+    public function setVars(): void
+    {
+
+    }
+
     /**
      * @param string $filepath
      */
     public function parseFile(string $filepath): void
     {
+        if (!file_exists($filepath)) {
+            throw new RuntimeException('the http-client file not exists. file: ' . $filepath);
+        }
+
         $fileCode = file_get_contents($filepath);
 
         $this->parse($fileCode);
@@ -48,6 +72,7 @@ class ContentParser
         $fileCode = "\n" . trim($fileCode);
         $codeList = Str::explode($fileCode, Request::REQUEST_SPLIT);
 
+        $this->rawContents = $fileCode;
         foreach ($codeList as $code) {
             $this->requests[] = Request::fromHTTPString(Request::START_PREFIX . $code);
         }
@@ -137,7 +162,7 @@ class ContentParser
             $strings[] = $request->toHTTPString();
         }
 
-        return implode("\n", $strings);
+        return implode("\n\n", $strings);
     }
 
     /**
@@ -154,5 +179,13 @@ class ContentParser
     public function setRequests(array $requests): void
     {
         $this->requests = $requests;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRawContents(): string
+    {
+        return $this->rawContents;
     }
 }

@@ -4,6 +4,7 @@ namespace Inhere\Kite\Console\Listener;
 
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Console\Application;
+use Toolkit\Sys\Sys;
 
 /**
  * Class NotFoundListener
@@ -59,6 +60,11 @@ final class NotFoundListener
     {
         if ($cmd[0] === '\\') {
             $cmd = substr($cmd, 1);
+        }
+
+        if (!Sys::isExecutable($cmd)) {
+            $app->error("the command '$cmd' is not exists in the kite or system");
+            return;
         }
 
         $cmdLine = $app->getInput()->getFullScript();

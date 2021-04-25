@@ -24,6 +24,21 @@ final class ClientEnvData extends ArrayObject
 
     /**
      * @param string $key
+     * @param int    $default
+     *
+     * @return int
+     */
+    public function getInteger(string $key, int $default = 0): int
+    {
+        if ($this->offsetExists($key)) {
+            return (int)$this->offsetGet($key);
+        }
+
+        return $default;
+    }
+
+    /**
+     * @param string $key
      * @param string  $default
      *
      * @return string

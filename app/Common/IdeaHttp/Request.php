@@ -2,14 +2,23 @@
 
 namespace Inhere\Kite\Common\IdeaHttp;
 
+use RuntimeException;
 use Toolkit\Stdlib\Str;
 use function array_merge;
+use function count;
+use function explode;
 use function implode;
 use function in_array;
 use function is_array;
+use function json_decode;
+use function method_exists;
+use function parse_str;
+use function parse_url;
 use function strpos;
+use function strtolower;
 use function strtoupper;
 use function trim;
+use function ucfirst;
 
 /**
  * Class Request
@@ -44,6 +53,12 @@ class Request
      * @var string
      */
     private $url = '';
+
+    /**
+     * @var array
+     * @see \parse_url()
+     */
+    private $urlInfo = [];
 
     /**
      * @var string
@@ -82,34 +97,58 @@ class Request
      */
     public static function fromHTTPString(string $codeString): self
     {
-        $codeString = \trim($codeString);
+        $codeString = trim($codeString);
+        if (!$codeString) {
+            throw new RuntimeException('empty http code string for parse');
+        }
 
-        [$meta, $body] = Str::explode(Request::BODY_SPLIT, $codeString);
+        $mbNodes = Str::explode($codeString, self::BODY_SPLIT, 2);
+        $meta    = $mbNodes[0];
+        $body    = $mbNodes[1] ?? '';
 
         // parse meta
-        $meta = \trim($meta);
+        $meta = trim($meta);
+        $head = $title = '';
 
-        $header = $title = '';
+        // - parse title
         if (strpos($meta, '###') === 0) {
-            $nodes = \explode("\n", $meta, 2);
-            $title = \trim($nodes[0]);
+            $nodes = explode("\n", $meta, 2);
+            $title = trim($nodes[0], " \t\n\r\0\x0B#");
             $meta  = $nodes[1] ?? '';
         }
 
         if (!$meta) {
-            throw new \RuntimeException('invalid http code string, not found url line');
+            throw new RuntimeException('invalid request string, not found url line');
         }
 
-        // parse body
-        $body = \trim($body);
+        // - parse method and url
+        $nodes = explode("\n", $meta, 2);
+        $murl  = trim($nodes[0]);
+
+        $muNodes = Str::explode($murl, ' ', 2);
+        if (count($muNodes) !== 2) {
+            throw new RuntimeException("invalid request string, error url line: '{$murl}'");
+        }
+
+        [$method, $url] = $muNodes;
+
+        // \vdump(parse_url($url));
+        // \vdump(\parse_str($body));
+
+        // - parse headers
+        if (isset($nodes[1])) {
+            $head = $nodes[1];
+        }
 
         $data = [
             'title'     => $title,
-            'headerRaw' => $header,
+            'method'    => $method,
+            'url'       => $url,
+            'headerRaw' => $head,
             'bodyRaw'   => $body,
         ];
 
-        return Request::new($data);
+        return new self($data);
     }
 
     /**
@@ -130,8 +169,8 @@ class Request
     public function loadData(array $data): void
     {
         foreach ($data as $key => $val) {
-            $setter = 'set' . \ucfirst($key);
-            if (\method_exists($this, $setter)) {
+            $setter = 'set' . ucfirst($key);
+            if (method_exists($this, $setter)) {
                 if ($key === 'method') {
                     $val = strtoupper($val);
                 }
@@ -147,7 +186,9 @@ class Request
     public function getContentType(): string
     {
         $headers = $this->getHeaders();
+        $cTypes  = $headers['content-type'] ?? [];
 
+        return $cTypes ? strtolower($cTypes[0]) : '';
     }
 
     /**
@@ -199,13 +240,12 @@ class Request
      */
     public function toHTTPString(): string
     {
-        $str = <<<HTTP
-{$this->method} {$this->url}
-HTTP;
-
+        $str = '';
         if ($this->title) {
-            $str = "### " . $this->title;
+            $str = "### {$this->title}\n";
         }
+
+        $str .= "{$this->method} {$this->url}\n";
 
         // append header data
         if ($headerRaw = $this->getHeaderRaw()) {
@@ -226,6 +266,18 @@ HTTP;
     public function __toString(): string
     {
         return $this->toHTTPString();
+    }
+
+    /**
+     * @return array
+     */
+    public function getUrlInfo(): array
+    {
+        if ($this->url && !$this->urlInfo) {
+            $this->urlInfo = parse_url($this->url);
+        }
+
+        return $this->urlInfo;
     }
 
     /**
@@ -250,27 +302,7 @@ HTTP;
      */
     public function setHeaderRaw(string $headerRaw): void
     {
-        $this->headerRaw = $headerRaw;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBodyRaw(): string
-    {
-        if (!$this->bodyRaw && $this->bodyData) {
-
-        }
-
-        return $this->bodyRaw;
-    }
-
-    /**
-     * @param string $bodyRaw
-     */
-    public function setBodyRaw(string $bodyRaw): void
-    {
-        $this->bodyRaw = $bodyRaw;
+        $this->headerRaw = trim($headerRaw);
     }
 
     /**
@@ -279,23 +311,28 @@ HTTP;
     public function getHeaders(): array
     {
         if (!$this->headers && $this->headerRaw) {
-
+            $this->headers = $this->parseHeaderRaw($this->headerRaw);
         }
 
         return $this->headers;
     }
 
+    /**
+     * @param string $headerRaw
+     *
+     * @return array
+     */
     public function parseHeaderRaw(string $headerRaw): array
     {
         $headerMap = [];
         $headerRaw = trim($headerRaw);
 
-        foreach (\explode("\n", $headerRaw) as $line) {
+        foreach (explode("\n", $headerRaw) as $line) {
             $nodes = Str::explode($line, ':', 2);
-            $name  = \strtolower($nodes[0]);
+            $name  = strtolower($nodes[0]);
             $value = $nodes[1] ?? '';
             if ($value && strpos(';', $value) !== false) {
-
+                $headerMap[$name] = Str::explode($value, ';');
             } else {
                 $headerMap[$name] = [$value];
             }
@@ -316,12 +353,56 @@ HTTP;
     }
 
     /**
+     * @return string
+     */
+    public function getBodyRaw(): string
+    {
+        if (!$this->bodyRaw && $this->bodyData) {
+
+        }
+
+        return $this->bodyRaw;
+    }
+
+    /**
+     * @param string $bodyRaw
+     */
+    public function setBodyRaw(string $bodyRaw): void
+    {
+        $this->bodyRaw = trim($bodyRaw);
+    }
+
+    /**
      * @return array
      */
     public function getBodyData(): array
     {
-        // TODO parse body raw
+        if (!$this->bodyData && $this->bodyRaw) {
+
+            $this->bodyData = $this->parseBodyRaw($this->bodyRaw);
+        }
+
         return $this->bodyData;
+    }
+
+    protected function parseBodyRaw(string $bodyRaw): array
+    {
+        $cType = $this->getContentType();
+        if (!$cType) {
+            throw new RuntimeException('content type is not found, cannot parse body data');
+        }
+
+        if ($cType === 'application/json') {
+            return json_decode($bodyRaw, true);
+        }
+
+        if ($cType === 'application/x-www-form-urlencoded') {
+            $result = [];
+            parse_str($bodyRaw, $result);
+            return $result;
+        }
+
+        throw new RuntimeException("content type '{$cType}' is not supported for parse body");
     }
 
     /**

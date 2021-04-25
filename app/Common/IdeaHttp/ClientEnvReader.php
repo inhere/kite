@@ -19,11 +19,6 @@ class ClientEnvReader
     private $envFile;
 
     /**
-     * @var string
-     */
-    private $curEnv = '';
-
-    /**
      * @var array
      */
     private $envs = [];

@@ -81,7 +81,7 @@ class PluginManager
             throw new RuntimeException('the plugin is not exists. plugin: ' . $name);
         }
 
-        $plugin->run($app);
+        $plugin->run($app, $app->getInput());
     }
 
     /**

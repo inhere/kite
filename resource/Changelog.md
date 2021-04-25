@@ -1,10 +1,14 @@
 # Changelog
 
+## TODO
+
+- [ ] log all exec commands info
+
 ## v1.1.4
 
 **feat**
 
-- [ ] support register and run plugins
+- [x] support register and run plugins
 
 **update**
 

@@ -4,7 +4,7 @@ Create links to files and directories.
 
 ## examples
 
-There are some examples for use `ls`
+There are some examples for use `ln`
 
 Create a symbolic link to a file or directory:
 
