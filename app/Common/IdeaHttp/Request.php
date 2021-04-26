@@ -3,6 +3,7 @@
 namespace Inhere\Kite\Common\IdeaHttp;
 
 use Inhere\Kite\Http\ContentType;
+use Inhere\Route\Router;
 use InvalidArgumentException;
 use RuntimeException;
 use Toolkit\Stdlib\Str;
@@ -21,6 +22,7 @@ use function strtolower;
 use function strtoupper;
 use function trim;
 use function ucfirst;
+use const PHP_EOL;
 
 /**
  * Class Request
@@ -84,7 +86,7 @@ class Request
     private $bodyRaw = '';
 
     /**
-     * @var AbstractBody
+     * @var BodyData
      */
     private $bodyData;
 
@@ -99,55 +101,64 @@ class Request
     }
 
     /**
-     * @param string $codeString
+     * @param string $str
      *
      * @return static
      */
-    public static function fromHTTPString(string $codeString): self
+    public static function fromHTTPString(string $str): ?self
     {
-        $codeString = trim($codeString);
-        if (!$codeString) {
+        $str = trim($str);
+        if (!$str) {
             throw new RuntimeException('empty http code string for parse');
         }
 
-        $mbNodes = Str::explode($codeString, self::BODY_SPLIT, 2);
-        $meta    = $mbNodes[0];
-        $body    = $mbNodes[1] ?? '';
-
         // parse meta
-        $meta = trim($meta);
-        $head = $title = '';
+        $title = '';
 
         // - parse title
-        if (strpos($meta, '###') === 0) {
-            $nodes = explode("\n", $meta, 2);
+        if (strpos($str, '###') === 0) {
+            $nodes = explode("\n", $str, 2);
             $title = trim($nodes[0], " \t\n\r\0\x0B#");
-            $meta  = $nodes[1] ?? '';
+            $str   = $nodes[1] ? trim($nodes[1]) : '';
         }
 
-        if (!$meta) {
+        if (!$str) {
             throw new RuntimeException('invalid request string, not found url line');
         }
 
-        // - parse method and url
-        $nodes = explode("\n", $meta, 2);
-        $murl  = trim($nodes[0]);
+        // \vdump($str);
+        // split meta and body
+        $mbNodes = Str::explode($str, self::BODY_SPLIT, 2);
+        // assign
+        $meta = $mbNodes[0];
+        $body = $mbNodes[1] ?? '';
+        // \vdump(\parse_str($body));
+        // \vdump($meta);
 
+        // split murl and headers
+        // $nodes = explode("\n", $meta, 2);
+        // - will filter comments line
+        if (!$nodes = self::explodeMeta($meta)) {
+            return null;
+        }
+
+        $murl = trim($nodes[0]);
+
+        // - parse method and url
         $muNodes = Str::explode($murl, ' ', 2);
         if (count($muNodes) !== 2) {
             throw new RuntimeException("invalid request string, error url line: '{$murl}'");
         }
 
         [$method, $url] = $muNodes;
-
         // \vdump(parse_url($url));
-        // \vdump(\parse_str($body));
 
-        // - parse headers
-        if (isset($nodes[1])) {
-            $head = $nodes[1];
+        $method = strtoupper($method);
+        if (!in_array($method, Router::METHODS_ARRAY, true)) {
+            throw new InvalidArgumentException("the request method:{$method} is invalid or not suppprted");
         }
 
+        $head = $nodes[1] ?? '';
         $data = [
             'title'     => $title,
             'method'    => $method,
@@ -157,6 +168,36 @@ class Request
         ];
 
         return new self($data);
+    }
+
+    /**
+     * will filter comments line
+     *
+     * @param string $meta
+     *
+     * @return array
+     */
+    private static function explodeMeta(string $meta): array
+    {
+        $murl = '';
+        $headers = [];
+        foreach (explode("\n", $meta) as $line) {
+            // is comments line
+            if (strpos($line, '#') === 0) {
+                continue;
+            }
+
+            if ($murl) {
+                $headers[] = $line;
+            } else {
+                $murl = $line;
+            }
+        }
+
+        if ($murl) {
+            return [$murl, implode("\n", $headers)];
+        }
+        return [];
     }
 
     /**
@@ -249,7 +290,7 @@ class Request
      */
     public function toCURLString(): string
     {
-
+        return 'TODO';
     }
 
     /**
@@ -384,8 +425,8 @@ class Request
      */
     public function getBodyRaw(): string
     {
-        if (!$this->bodyRaw && $this->bodyData) {
-
+        if ($this->bodyData) {
+            return $this->bodyData->toString();
         }
 
         return $this->bodyRaw;
@@ -400,12 +441,14 @@ class Request
     }
 
     /**
-     * @return AbstractBody
+     * @return BodyData
      */
-    public function getBodyData(): AbstractBody
+    public function getBodyData(): BodyData
     {
         if (!$this->bodyData && $this->bodyRaw) {
             $this->bodyData = $this->parseBodyRaw($this->bodyRaw);
+        } elseif (!$this->bodyData) {
+            $this->bodyData = BodyData::new();
         }
 
         return $this->bodyData;
@@ -425,13 +468,13 @@ class Request
 
         if ($cType === ContentType::JSON) {
             $arr = json_decode($bodyRaw, true);
-            return JsonBody::new($arr);
+            return BodyData::new($arr)->withContentType($cType);
         }
 
         if ($cType === ContentType::FORM) {
             $result = [];
             parse_str($bodyRaw, $result);
-            return FormBody::new($result);
+            return BodyData::new($result)->withContentType($cType);
         }
 
         throw new RuntimeException("content type '{$cType}' is not supported for parse body");
@@ -490,11 +533,13 @@ class Request
     }
 
     /**
+     * @param bool $newline
+     *
      * @return string
      */
-    public function getTitle(): string
+    public function getTitle(bool $newline = false): string
     {
-        return $this->title;
+        return $newline ? $this->title . PHP_EOL : $this->title;
     }
 
     /**

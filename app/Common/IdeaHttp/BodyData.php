@@ -2,9 +2,14 @@
 
 namespace Inhere\Kite\Common\IdeaHttp;
 
+use Inhere\Kite\Common\MapObject;
 use Inhere\Kite\Http\ContentType;
 use RuntimeException;
 use Toolkit\Stdlib\Str\UrlHelper;
+use Toolkit\Stdlib\Type;
+use function count;
+use function gettype;
+use function implode;
 use function strtolower;
 
 /**
@@ -12,12 +17,127 @@ use function strtolower;
  *
  * @package Inhere\Kite\Common\IdeaHttp
  */
-class BodyData extends AbstractBody
+class BodyData extends MapObject
 {
     /**
      * @var string
      */
-    protected $contentType = ContentType::FORM;
+    protected $contentType = '';
+
+    /**
+     * @param string $key
+     *
+     * @return string
+     */
+    public function getType(string $key): string
+    {
+        if (!$this->offsetExists($key)) {
+            // return Type::UNKNOWN;
+            return Type::UNKNOWN;
+        }
+
+        $val = $this->offsetGet($key);
+        return Type::get($val);
+    }
+
+    /**
+     * @param mixed $val
+     *
+     * @return string
+     */
+    public function getValType($val): string
+    {
+        return Type::get($val);
+    }
+
+    /**
+     * @param array $data
+     */
+    public function override(array $data): void
+    {
+        $this->exchangeArray($data);
+    }
+
+    /**
+     * @param array $data
+     * @param bool  $override
+     */
+    public function load(array $data, bool $override = false): void
+    {
+        if ($override) {
+            $this->override($data);
+            return;
+        }
+
+        foreach ($data as $key => $val) {
+            $this->offsetSet($key, $val);
+        }
+    }
+
+    /**
+     * @param int $limit
+     *
+     * @return array
+     */
+    public function getFirstFewData(int $limit = 3): array
+    {
+        if ($this->isEmpty()) {
+            return [];
+        }
+
+        $fewData = [];
+        foreach ($this as $key => $val) {
+            $fewData[$key] = [
+                'type'    => Type::get($val),
+                'example' => $val,
+            ];
+            if (count($fewData) === $limit) {
+                break;
+            }
+        }
+
+        return $fewData;
+    }
+
+    /**
+     * @param int $limitParam
+     *
+     * @return string
+     */
+    public function genMethodParams(int $limitParam = 3): string
+    {
+        if ($this->isEmpty()) {
+            return 'array $params = []';
+        }
+
+        $params = [];
+        foreach ($this as $key => $val) {
+            $typeName  = Type::get($val);
+            $params[] = "$typeName \${$key}";
+            if (count($params) === $limitParam) {
+                break;
+            }
+        }
+
+        $params[] = 'array $params = []';
+        return implode(', ', $params);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return $this->count() === 0;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->toString();
+    }
 
     /**
      * @param string $cType
@@ -26,6 +146,10 @@ class BodyData extends AbstractBody
      */
     public function getStringByContentType(string $cType): string
     {
+        // if ($cType === '') {
+        //  return '';
+        // }
+
         if ($cType === ContentType::JSON) {
             return json_encode($this->getArrayCopy());
         }
@@ -40,7 +164,7 @@ class BodyData extends AbstractBody
     /**
      * @return string
      */
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->getStringByContentType($this->contentType);
     }
@@ -51,6 +175,17 @@ class BodyData extends AbstractBody
     public function getContentType(): string
     {
         return $this->contentType;
+    }
+
+    /**
+     * @param string $cType
+     *
+     * @return $this
+     */
+    public function withContentType(string $cType): self
+    {
+        $this->setContentType($cType);
+        return $this;
     }
 
     /**

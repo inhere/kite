@@ -75,7 +75,10 @@ class RequestSet implements Countable
 
         $this->rawContents = $fileCode;
         foreach ($codeList as $code) {
-            $this->requests[] = Request::fromHTTPString(Request::START_PREFIX . $code);
+            $req = Request::fromHTTPString(Request::START_PREFIX . $code);
+            if ($req) {
+                $this->requests[] = $req;
+            }
         }
     }
 
@@ -84,7 +87,7 @@ class RequestSet implements Countable
      *
      * @return Request
      */
-    public function parseOne(string $codeString): Request
+    public function parseOne(string $codeString): ?Request
     {
         return Request::fromHTTPString($codeString);
     }

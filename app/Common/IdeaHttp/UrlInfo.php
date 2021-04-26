@@ -3,6 +3,10 @@
 namespace Inhere\Kite\Common\IdeaHttp;
 
 use Inhere\Kite\Common\MapObject;
+use Toolkit\Stdlib\Str;
+use function basename;
+use function strpos;
+use const PHP_EOL;
 
 /**
  * Class UrlInfo
@@ -13,10 +17,43 @@ use Inhere\Kite\Common\MapObject;
 class UrlInfo extends MapObject
 {
     /**
+     * @param bool $newline
+     *
      * @return string
      */
-    public function getPath(): string
+    public function getPath(bool $newline = false): string
     {
-        return $this->getString('path');
+        $path = $this->getString('path');
+
+        return $newline ? $path . PHP_EOL : $path;
+    }
+
+    /**
+     * @param bool $upFirst
+     *
+     * @return string
+     */
+    public function getShortName(bool $upFirst = false): string
+    {
+        $path = $this->getString('path');
+
+        $sName = basename($path);
+        return Str::camelCase($sName, $upFirst);
+    }
+
+    /**
+     * @param bool $upFirst
+     *
+     * @return string
+     */
+    public function pathToName(bool $upFirst = false): string
+    {
+        $path = $this->getString('path');
+        $name = Str::camelCase($path, $upFirst, '/');
+
+        if (strpos($name, '-') !== false) {
+            $name = Str::camelCase($name, $upFirst);
+        }
+        return    $name;
     }
 }

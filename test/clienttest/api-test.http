@@ -3,8 +3,10 @@ GET http://{{host}}/api/item?id=99
 Accept: application/json
 
 ### post json example
+# comment line
 POST http://{{host}}/posts/add
 custom-key: value
+#custom-key1: value1
 Content-Type: application/json
 
 {
@@ -13,6 +15,7 @@ Content-Type: application/json
 }
 
 ### post form example
+
 POST http://{{host}}/posts/add
 custom-key: value
 Content-Type: application/x-www-form-urlencoded

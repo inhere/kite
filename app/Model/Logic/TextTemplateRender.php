@@ -2,6 +2,7 @@
 
 namespace Inhere\Kite\Model\Logic;
 
+use InvalidArgumentException;
 use RuntimeException;
 use Toolkit\FsUtil\Dir;
 use Toolkit\Sys\Sys;
@@ -29,6 +30,10 @@ class TextTemplateRender
      */
     public function renderFile(string $tempFile, array $vars): string
     {
+        if (!file_exists($tempFile)) {
+            throw new InvalidArgumentException('the template file is not exist. file:' . $tempFile);
+        }
+
         ob_start();
         extract($vars, \EXTR_OVERWRITE);
         // eval($tplCode . "\n");
