@@ -2,7 +2,7 @@
 
 return [
     // @see app/Console/Controller/PhpController.php
-    'phpServe' => [
+    'php:serve' => [
         'hce-file' => 'test/clienttest/http-client.env.json',
         'hce-env'  => getenv('APP_ENV') ?: 'development',
         // 'entry'     => 'public/index.php',

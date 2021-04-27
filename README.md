@@ -246,11 +246,62 @@ kite gl db 'fix_210423,fix_210321'
 kite gl db 'fix_210423,fix_210321' -f
 ```
 
-## 其他工具命令
+## 其他常用命令
 
-**env**
+### php开发服务器
 
-显示环境变量信息：
+`kite php serve` 可以快速启动一个php开发服务器。
+
+![](resource/images/kite-php-serve.png)
+
+**命令配置**
+
+可用通过配置来设置默认的信息，这样就不用每次启动时设置参数了
+
+```php
+    'php:serve'     => [
+        'hce-file' => 'test/clienttest/http-client.env.json',
+        'hce-env'  => getenv('APP_ENV') ?: 'dev',
+        // document root
+        'root'     => 'public',
+        'entry'    => 'public/index.php',
+        'php-bin'  => 'php7'
+        // 'addr' => '127.0.0.1:8552',
+    ],
+```
+
+**IDEA http-client环境**
+
+内置支持IDEA的http-client环境文件。
+
+如果你需要同时开发多个项目，都需要启动serve，此时一份通用的配置显然不行了。
+
+这时 `hce-file`, `hce-env` 就可以排上用场，可以在每个项目里添加一份http-client环境文件，并且规划好每个服务的端口
+
+示例 [http-client.env.json](test/clienttest/http-client.env.json)
+
+```json
+{
+  "dev": {
+    "host": "127.0.0.1:10106"
+  },
+  "test": {
+    "host": "127.0.0.1:10106"
+  }
+}
+```
+
+这样通过 `kite php serve` 运行时，会自动读取当前环境的 `host` 设置作为启动服务的server地址。
+
+```bash
+kite php serve
+```
+
+![](resource/images/kite-php-serve-start.png)
+
+### env环境信息
+
+显示全部环境变量信息：
 
 ```bash
 kite env
@@ -259,8 +310,28 @@ kite env
 输出 `PATH` 信息：
 
 ```bash
-kite env path
+$ kite env path
+Path Value
+  /usr/local/sbin
+  /usr/local/bin
+  /usr/bin
+  /bin
+  /usr/sbin
+
 ```
+
+搜索环境变量或指定显示某个环境变量:
+
+```bash
+$ kite env ter
+Matched Results(Kw:ter)
+  TERMINAL_EMULATOR JetBrains-JediTerm
+  TERM              xterm-256color
+  ZSH_TMUX_TERM     screen-256color
+
+```
+
+> Tips: 当 `kite env` 后面跟的是一个存在的环境变量名时，直接显示这个环境变量信息；否则进行模糊匹配，显示所有匹配的变量信息
 
 ## 扩展使用
 

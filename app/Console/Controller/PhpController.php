@@ -130,7 +130,7 @@ class PhpController extends Controller
      */
     public function serveCommand(Input $input, Output $output): void
     {
-        $conf = $this->app->getParam('phpServe', []);
+        $conf = $this->app->getParam('php:serve', []);
         if ($conf) {
             $conf = array_merge(self::DEF_SERVE_CONF, $conf);
 
@@ -157,10 +157,14 @@ class PhpController extends Controller
         $pds = PhpDevServe::new($serveAddr, $docRoot, $entryFile);
         $pds->setPhpBin($phpBin);
 
+        // \vdump($hceEnv , $hceFile);
         if ($hceEnv && $hceFile) {
             $loaded = $pds->loadHceFile($hceFile);
             if ($loaded) {
+                $output->info('the http client env file is loaded');
                 $pds->useHceEnv($hceEnv);
+            } else {
+                $output->liteWarning('the http client env file is not exists');
             }
         }
 
