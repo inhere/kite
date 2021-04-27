@@ -67,6 +67,21 @@ abstract class AbstractPlugin
     }
 
     /**
+     * @return array
+     */
+    public function getHelpInfo(): array
+    {
+        // $meta = $this->metadata();
+
+        return [
+            'name'     => $this->name,
+            // 'desc'     => $meta['desc'] ?? '',
+            'class'    => $this->classname,
+            'path'     => $this->filepath,
+        ];
+    }
+
+    /**
      * @param Application $app
      * @param Input       $input
      */
@@ -88,6 +103,14 @@ abstract class AbstractPlugin
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDesc(): string
+    {
+        return $this->metadata()['desc'] ?? 'no description';
     }
 
     /**

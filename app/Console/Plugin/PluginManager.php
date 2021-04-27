@@ -3,9 +3,11 @@
 namespace Inhere\Kite\Console\Plugin;
 
 use Inhere\Console\Util\Helper;
+use Inhere\Console\Util\Show;
 use Inhere\Kite\Console\Application;
 use RuntimeException;
 use SplFileInfo;
+use Toolkit\Cli\Color;
 use Toolkit\Stdlib\Str;
 use function basename;
 use function class_exists;
@@ -81,7 +83,25 @@ class PluginManager
             throw new RuntimeException('the plugin is not exists. plugin: ' . $name);
         }
 
-        $plugin->run($app, $app->getInput());
+        $input = $app->getInput();
+        if ($input->getSameBoolOpt('h,help')) {
+            $this->showInfo($plugin);
+            return;
+        }
+
+        $plugin->run($app, $input);
+    }
+
+    /**
+     * @param AbstractPlugin $plugin
+     */
+    public function showInfo(AbstractPlugin $plugin): void
+    {
+        Color::println($plugin->getName() . ':', 'comment');
+        Color::println('  ' . $plugin->getDesc());
+
+        Show::aList($plugin->getHelpInfo(), 'Information');
+
     }
 
     /**
@@ -161,11 +181,18 @@ class PluginManager
     protected function loadPluginFile(string $name): bool
     {
         // is an exists php file
-        if (Str::has($name, '.php') && is_file($name)) {
+        $hasPhpSuffix = Str::has($name, '.php');
+        if ($hasPhpSuffix && is_file($name)) {
             // $path = $name;
             // $name = substr($name, 0, -4);
 
             $this->pluginFiles[$name] = $name;
+            return true;
+        }
+
+        // `$name . '.php'` is an exists php file
+        if (!$hasPhpSuffix && is_file($name . '.php')) {
+            $this->pluginFiles[$name] = $name . '.php';
             return true;
         }
 

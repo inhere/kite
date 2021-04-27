@@ -262,7 +262,9 @@ kite env
 kite env path
 ```
 
-## 使用简单脚本
+## 扩展使用
+
+### 使用简单脚本
 
 除了使用内部提供的命令，`kite` 也提供了快速的 `scripts` 脚本配置。
 
@@ -298,7 +300,7 @@ kite gst
 
 ![scripts-gst](resource/images/scripts-gst.png)
 
-## 命令别名配置
+### 命令别名配置
 
 默认的命令别名请看 [config/config.php](config/config.php) 文件中的 `aliaes` 配置
 
@@ -316,7 +318,82 @@ kite gst
 
 ![self-config-aliases](resource/images/self-config-aliases.png)
 
-## 更新
+### 命令插件
+
+kite 里除了提供 `scripts` 访问执行外部命令，还可以编写自定义插件命令实现一些自定义功能
+
+**配置**
+
+首先配置插件目录，支持配置多个目录。
+
+```php
+    'pluginDirs' => [
+        '~/.kite/plugin/'
+    ],
+```
+
+**编写插件命令**
+
+每个插件命令文件都是一个 php 类文件，需要继承 `Inhere\Kite\Console\Plugin\AbstractPlugin`
+
+这是 [demo-pulgin](plugin/demo-plugin.php) 文件示例：
+
+```php
+<?php
+
+use Inhere\Console\IO\Input;
+use Inhere\Kite\Console\Application;
+use Inhere\Kite\Console\Plugin\AbstractPlugin;
+
+/**
+ * Class DemoPlugin
+ */
+class DemoPlugin extends AbstractPlugin
+{
+    public function metadata(): array
+    {
+        return [
+            'desc' => 'this is am demo plugin',
+        ];
+    }
+
+    public function exec(Application $app, Input $input): void
+    {
+        vdump(__METHOD__);
+    }
+}
+```
+
+> 注意：插件文件名必须跟里面的插件类保持一致。kite会自动将插件名进行驼峰格式转换当做类名称使用，因此可以在文件名使用连字符 `-`。
+
+**运行插件命令**
+
+kite 通过内部的 `plugin run` 命令紧跟插件名或者插件路径来运行一个插件。
+
+```bash
+kite plugin run PLUGIN_NAME
+```
+
+kite将会在插件目录里找到对应插件文件并执行它的 `exec` 方法。如下面的命令就会找到 `demo-plugin` 并运行它。
+
+```bash
+kite plugin run demo-plugin
+```
+
+可以省略 `plugin run` 直接跟插件名称来快速执行插件。
+
+> TIPS: 其原理跟运行script类似，kite找不到命令，就会自动尝试检查是否是一个插件命令，能找到插件文件，就会当做插件执行。
+
+```bash
+# 后缀 .php 可以忽略
+kite demo-plugin
+kite demo-plugin.php
+# 直接写完整路径也是可以的
+kite plugin/demo-plugin
+kite plugin/demo-plugin.php
+```
+
+## 更新kite
 
 **内置命令**
 

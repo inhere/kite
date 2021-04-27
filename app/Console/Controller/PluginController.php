@@ -51,8 +51,9 @@ class PluginController extends Controller
             return;
         }
 
-        $opts = ['ucFirst' => false];
-        $output->aList($plg->getInfo(), 'Plugin Info', $opts);
+        // $opts = ['ucFirst' => false];
+        // $output->aList($plg->getInfo(), 'Plugin Info', $opts);
+        $kpm->showInfo($plg);
     }
 
     /**

@@ -55,6 +55,6 @@ return [
     'scripts' => require 'scripts.php',
 
     'pluginDirs' => [
-        // BASE_PATH . '/plugin/'
+        // '/plugin/'
     ],
 ];
