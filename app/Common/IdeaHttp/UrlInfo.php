@@ -29,6 +29,24 @@ class UrlInfo extends MapObject
     }
 
     /**
+     * @return bool
+     */
+    public function isChangeDataUri(): bool
+    {
+        $path = $this->getString('path');
+
+        $changeKeys = ['save', 'add', 'create', 'insert', 'update', 'edit'];
+
+        foreach ($changeKeys as $key) {
+            if (strpos($path, $key) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @param bool $upFirst
      *
      * @return string

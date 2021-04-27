@@ -272,13 +272,11 @@ kite gl db 'fix_210423,fix_210321' -f
 
 **IDEA http-client环境**
 
-内置支持IDEA的http-client环境文件。
-
-如果你需要同时开发多个项目，都需要启动serve，此时一份通用的配置显然不行了。
+内置支持IDEA的http-client环境文件。如果你需要同时开发多个项目，都需要启动serve，此时一份通用的配置显然不行了(_同时启动会端口冲突_)。
 
 这时 `hce-file`, `hce-env` 就可以排上用场，可以在每个项目里添加一份http-client环境文件，并且规划好每个服务的端口
 
-示例 [http-client.env.json](test/clienttest/http-client.env.json)
+示例文件 [test/clienttest/http-client.env.json](test/clienttest/http-client.env.json)
 
 ```json
 {
@@ -291,11 +289,13 @@ kite gl db 'fix_210423,fix_210321' -f
 }
 ```
 
-这样通过 `kite php serve` 运行时，会自动读取当前环境的 `host` 设置作为启动服务的server地址。
+这样在不同项目下，通过 `kite php serve` 运行服务时，会自动读取当前环境的 `host` 设置作为启动服务的server地址。
 
 ```bash
 kite php serve
 ```
+
+输出示例：
 
 ![](resource/images/kite-php-serve-start.png)
 

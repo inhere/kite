@@ -10,8 +10,12 @@ custom-key: value
 Content-Type: application/json
 
 {
+  "status": "draft",
   "title": "post title",
-  "content": "post content"
+  "content": "post content",
+  "type": "blog",
+  "author_id": 123,
+  "author": "inhere"
 }
 
 ### post form example

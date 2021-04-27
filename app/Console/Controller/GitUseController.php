@@ -149,6 +149,22 @@ class GitUseController extends Controller
     }
 
     /**
+     * push codes to origin by `git push`
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function pushCommand(Input $input, Output $output): void
+    {
+        $runner = CmdRunner::new();
+        $runner->setDryRun($input->getBoolOpt('dry-run'));
+        $runner->add('git push');
+        $runner->run(true);
+
+        $output->success('Complete');
+    }
+
+    /**
      * @param Input  $input
      * @param Output $output
      */
@@ -156,7 +172,7 @@ class GitUseController extends Controller
     {
         $commands = [
             'echo hi',
-            'git status'
+            'git status' // git status -s
         ];
 
         CmdRunner::new()->batch($commands)->run(true);

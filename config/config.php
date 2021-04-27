@@ -30,6 +30,13 @@ return [
         // group
         'defaultGroup'     => 'swoft',
         'defaultForkGroup' => 'ulue',
+        'redirectGit' => [
+            'acp',
+            'info',
+            'push',
+            'update',
+            'tagNew',
+        ],
     ],
     'osEnv'   => [
         // proxy settings

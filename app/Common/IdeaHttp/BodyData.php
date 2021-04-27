@@ -88,7 +88,7 @@ class BodyData extends MapObject
         $fewData = [];
         foreach ($this as $key => $val) {
             $fewData[$key] = [
-                'type'    => Type::get($val),
+                'type'    => Type::get($val, true),
                 'example' => $val,
             ];
             if (count($fewData) === $limit) {
@@ -97,6 +97,34 @@ class BodyData extends MapObject
         }
 
         return $fewData;
+    }
+
+    /**
+     * @param int $skip
+     *
+     * @return array
+     */
+    public function getRemainingData(int $skip = 3): array
+    {
+        if ($this->isEmpty()) {
+            return [];
+        }
+
+        $indexNum = 0;
+        $othData = [];
+        foreach ($this as $key => $val) {
+            $indexNum++;
+            if ($indexNum <= $skip) {
+                continue;
+            }
+
+            $othData[$key] = [
+                'type'    => Type::get($val, true),
+                'example' => $val,
+            ];
+        }
+
+        return $othData;
     }
 
     /**
@@ -112,7 +140,7 @@ class BodyData extends MapObject
 
         $params = [];
         foreach ($this as $key => $val) {
-            $typeName  = Type::get($val);
+            $typeName  = Type::get($val, true);
             $params[] = "$typeName \${$key}";
             if (count($params) === $limitParam) {
                 break;
