@@ -320,6 +320,14 @@ class CmdRunner
     }
 
     /**
+     * run and print all output
+     */
+    public function runAndPrint(): void
+    {
+        $this->run(true);
+    }
+
+    /**
      * Run all added commands
      *
      * @param bool $printOutput
@@ -329,7 +337,6 @@ class CmdRunner
     public function run(bool $printOutput = false): self
     {
         $this->printOutput = $printOutput;
-
         if ($command = $this->command) {
             $this->innerExecute($command, $this->workDir);
 
@@ -347,6 +354,9 @@ class CmdRunner
         return $this;
     }
 
+    /**
+     * @param array $commands
+     */
     private function runCommands(array $commands): void
     {
         Color::println('Starting Handle', 'suc');

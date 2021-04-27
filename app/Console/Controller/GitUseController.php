@@ -143,7 +143,7 @@ class GitUseController extends Controller
         $runner = CmdRunner::new();
         $runner->setDryRun($input->getBoolOpt('dry-run'));
         $runner->add('git pull');
-        $runner->run(true);
+        $runner->runAndPrint();
 
         $output->success('Complete');
     }
@@ -159,7 +159,7 @@ class GitUseController extends Controller
         $runner = CmdRunner::new();
         $runner->setDryRun($input->getBoolOpt('dry-run'));
         $runner->add('git push');
-        $runner->run(true);
+        $runner->runAndPrint();
 
         $output->success('Complete');
     }
@@ -175,7 +175,7 @@ class GitUseController extends Controller
             'git status' // git status -s
         ];
 
-        CmdRunner::new()->batch($commands)->run(true);
+        CmdRunner::new()->batch($commands)->runAndPrint();
     }
 
     /**
@@ -284,7 +284,7 @@ class GitUseController extends Controller
             'git remote -v',
         ];
 
-        CmdRunner::new()->batch($commands)->run(true);
+        CmdRunner::new()->batch($commands)->runAndPrint();
     }
 
     /**
@@ -423,7 +423,7 @@ class GitUseController extends Controller
             "git show $tag",
         ];
 
-        CmdRunner::new()->batch($commands)->run(true);
+        CmdRunner::new()->batch($commands)->runAndPrint();
     }
 
     /**
@@ -494,7 +494,7 @@ class GitUseController extends Controller
         $run->setDryRun($dryRun);
         $run->addf('git tag -a %s -m "%s"', $tag, $msg);
         $run->addf('git push origin %s', $tag);
-        $run->run(true);
+        $run->runAndPrint();
 
         $output->success('Complete');
     }
@@ -530,7 +530,7 @@ class GitUseController extends Controller
             $run->addf('git push %s :refs/tags/%s', $remote, $tag);
         }
 
-        $run->run(true);
+        $run->runAndPrint();
 
         $output->success('Complete');
     }
@@ -654,7 +654,7 @@ git log $oldVersion...$newVersion --pretty=format:'<project>/commit/%H %s' --rev
 CMD;
 
             $runner = CmdRunner::new(trim($logCmd));
-            $runner->do(true);
+            $runner->runAndPrint();
 
             $output->success('Complete');
             return;
@@ -668,7 +668,7 @@ git log --color --graph --pretty=format:'%Cred%h%Creset:%C(ul yellow)%d%Creset %
 CMD;
 
         $runner = CmdRunner::new(trim($logCmd));
-        $runner->do(true);
+        $runner->runAndPrint();
 
         $output->success('Complete');
     }
