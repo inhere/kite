@@ -35,7 +35,7 @@ class UrlInfo extends MapObject
     {
         $path = $this->getString('path');
 
-        $changeKeys = ['save', 'add', 'create', 'insert', 'update', 'edit'];
+        $changeKeys = ['save', 'add', 'create', 'insert', 'update', 'edit', 'del', 'remove'];
 
         foreach ($changeKeys as $key) {
             if (strpos($path, $key) !== false) {
