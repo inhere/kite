@@ -618,9 +618,10 @@ class GitUseController extends Controller
      *
      * @options
      *  --file        Export changelog message to file
-     *  --max-commit  Max parse how many commits
      *  --format      The git log option `--pretty` value.
      *                 can be one of oneline, short, medium, full, fuller, reference, email, raw, format:<string> and tformat:<string>.
+     *  --max-commit  Max parse how many commits
+     *  --no-merges   No contains merge request logs
      *
      * @param Input  $input
      * @param Output $output
@@ -650,7 +651,7 @@ class GitUseController extends Controller
             }
 
             $logCmd = <<<CMD
-git log $oldVersion...$newVersion --pretty=format:'<project>/commit/%H %s' --reverse
+git log $oldVersion...$newVersion "--pretty=format:'<project>/commit/%H %s'" --reverse
 CMD;
 
             $runner = CmdRunner::new(trim($logCmd));
@@ -664,7 +665,7 @@ CMD;
 
         // git log --color --graph --pretty=format:'%Cred%h%Creset:%C(ul yellow)%d%Creset %s (%Cgreen%cr%Creset, %C(bold blue)%an%Creset)' --abbrev-commit -10
         $logCmd = <<<CMD
-git log --color --graph --pretty=format:'%Cred%h%Creset:%C(ul yellow)%d%Creset %s (%Cgreen%cr%Creset, %C(bold blue)%an%Creset)' --abbrev-commit -$maxCommit
+git log --color --graph "--pretty=format:'%Cred%h%Creset:%C(ul yellow)%d%Creset %s (%Cgreen%cr%Creset, %C(bold blue)%an%Creset)'" --abbrev-commit -$maxCommit
 CMD;
 
         $runner = CmdRunner::new(trim($logCmd));

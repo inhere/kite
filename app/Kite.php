@@ -21,6 +21,8 @@ use Inhere\Route\Router;
  */
 class Kite
 {
+    public const VERSION = '1.0.11';
+
     /**
      * @var Application
      */
