@@ -288,16 +288,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "1.6.0",
+            "version": "1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "19a9673b833cc37770439097b381d86cd125bfe8"
+                "reference": "2651c497f005de305c7ba3f232cbd87b8c00ee8c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/19a9673b833cc37770439097b381d86cd125bfe8",
-                "reference": "19a9673b833cc37770439097b381d86cd125bfe8",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/2651c497f005de305c7ba3f232cbd87b8c00ee8c",
+                "reference": "2651c497f005de305c7ba3f232cbd87b8c00ee8c",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -391,7 +391,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-05-01T19:00:49+00:00"
+            "time": "2021-05-08T16:08:00+00:00"
         },
         {
             "name": "php-comp/http-client",
@@ -517,7 +517,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpcom-lab/phpgit.git",
-                "reference": "1110de8b5ef0406c837bcd65f607b6f9483c9154"
+                "reference": "127697e6ea5d4c563b1cf4ae2ed3cc58d456ef99"
             },
             "require": {
                 "php": ">7.1.0",
@@ -556,7 +556,7 @@
             ],
             "description": "A Git wrapper for PHP 7.1+",
             "homepage": "https://github/phpcom-lab/phpgit.git",
-            "time": "2021-04-24T04:01:14+00:00"
+            "time": "2021-05-09T16:05:58+00:00"
         },
         {
             "name": "psr/http-client",
@@ -958,16 +958,16 @@
         },
         {
             "name": "toolkit/cli-utils",
-            "version": "v1.2.4",
+            "version": "v1.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/cli-utils.git",
-                "reference": "b7b94b43e9e3af10e0203c6abb115309b6cb73ce"
+                "reference": "481c31b86187a57d3b7b60a834be386be6cdddff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/cli-utils/zipball/b7b94b43e9e3af10e0203c6abb115309b6cb73ce",
-                "reference": "b7b94b43e9e3af10e0203c6abb115309b6cb73ce",
+                "url": "https://api.github.com/repos/php-toolkit/cli-utils/zipball/481c31b86187a57d3b7b60a834be386be6cdddff",
+                "reference": "481c31b86187a57d3b7b60a834be386be6cdddff",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1002,18 +1002,20 @@
                     "homepage": "http://www.yzone.net/"
                 }
             ],
-            "description": "some cli tool library of the php",
+            "description": "useful cli tool library of the php",
             "homepage": "https://github.com/php-toolkit/cli-utils",
             "keywords": [
+                "cli",
+                "command-line",
                 "library",
                 "php",
                 "tool"
             ],
             "support": {
                 "issues": "https://github.com/php-toolkit/cli-utils/issues",
-                "source": "https://github.com/php-toolkit/cli-utils/tree/v1.2.4"
+                "source": "https://github.com/php-toolkit/cli-utils/tree/v1.2.5"
             },
-            "time": "2021-03-12T12:16:20+00:00"
+            "time": "2021-05-09T03:17:57+00:00"
         },
         {
             "name": "toolkit/fsutil",
@@ -1075,16 +1077,16 @@
         },
         {
             "name": "toolkit/stdlib",
-            "version": "v1.0.11",
+            "version": "v1.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/stdlib.git",
-                "reference": "896cf8c99c32be25492f8c195f38c28577ef3fca"
+                "reference": "e4f5fec8a1510c80651aec7ceda85b8c9b5aecdb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/stdlib/zipball/896cf8c99c32be25492f8c195f38c28577ef3fca",
-                "reference": "896cf8c99c32be25492f8c195f38c28577ef3fca",
+                "url": "https://api.github.com/repos/php-toolkit/stdlib/zipball/e4f5fec8a1510c80651aec7ceda85b8c9b5aecdb",
+                "reference": "e4f5fec8a1510c80651aec7ceda85b8c9b5aecdb",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1132,9 +1134,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-toolkit/stdlib/issues",
-                "source": "https://github.com/php-toolkit/stdlib/tree/v1.0.11"
+                "source": "https://github.com/php-toolkit/stdlib/tree/v1.0.12"
             },
-            "time": "2021-04-26T07:08:55+00:00"
+            "time": "2021-05-09T10:52:47+00:00"
         },
         {
             "name": "toolkit/sys-utils",
