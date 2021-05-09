@@ -57,7 +57,7 @@ class Application extends \Inhere\Console\Application
         $config = require $baseFile;
 
         // 自定义全局配置
-        $globFile = BASE_PATH . '/.kite.inc';
+        $globFile = BASE_PATH . '/.kite.php';
         if (file_exists($globFile)) {
             $loaded[] = $globFile;
             /** @noinspection PhpIncludeInspection */
@@ -68,7 +68,7 @@ class Application extends \Inhere\Console\Application
 
         // 当前项目配置
         $workDir = $this->getInput()->getPwd();
-        $proFile = $workDir . '/.kite.inc';
+        $proFile = $workDir . '/.kite.php';
         if ($proFile !== $globFile && file_exists($proFile)) {
             $loaded[] = $proFile;
             /** @noinspection PhpIncludeInspection */
