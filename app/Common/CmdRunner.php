@@ -485,6 +485,8 @@ class CmdRunner
             $this->error = $this->output;
             // $hasOutput = true;
             Color::println("error code {$exitCode}:\n" . $lastLine, 'red');
+        } else {
+            echo "\n";
         }
 
         // if (false === $hasOutput &&$lastLine) {

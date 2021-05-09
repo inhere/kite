@@ -320,6 +320,15 @@ class GitHubController extends Controller
     /**
      * generate an PR link for given project information
      *
+     * @options
+     *  -s, --source        The source branch name. will auto prepend branchPrefix
+     *      --full-source   The full source branch name
+     *  -t, --target        The target branch name
+     *  -o, --open          Open the generated PR link on browser
+     *  -d, --direct        The PR is direct from fork to main repository
+     *      --new           Open new PR page on browser
+     *
+     *
      * @param Input  $input
      * @param Output $output
      */

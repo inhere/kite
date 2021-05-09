@@ -1,7 +1,10 @@
 <?php
+/**
+ * you can copy the file as `.kite.php` for custom config kite.
+ */
 
 return [
-    'webServe' => [
+    'php:serve' => [
         'host' => '127.0.0.1:8552',
         // document root
         'root' => 'public'

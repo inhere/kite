@@ -30,7 +30,8 @@ return [
         // group
         'defaultGroup'     => 'swoft',
         'defaultForkGroup' => 'ulue',
-        'redirectGit' => [
+        'loadEnvOn'     => [],
+        'redirectGit'   => [
             'acp',
             'info',
             'push',
