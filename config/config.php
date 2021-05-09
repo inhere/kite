@@ -33,10 +33,12 @@ return [
         'loadEnvOn'     => [],
         'redirectGit'   => [
             'acp',
+            'log',
             'info',
             'push',
             'update',
             'tagNew',
+            'changelog',
         ],
     ],
     'osEnv'   => [

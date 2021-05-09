@@ -16,7 +16,13 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
+use PhpGit\Changelog\Filter\KeywordsFilter;
+use PhpGit\Changelog\Formatter\GithubReleaseFormatter;
+use PhpGit\Changelog\Formatter\SimpleFormatter;
+use PhpGit\Changelog\GitChangeLog;
+use PhpGit\Git;
 use PhpGit\Repo;
+use Toolkit\Stdlib\Str;
 use function array_keys;
 use function implode;
 use function in_array;
@@ -25,7 +31,6 @@ use function strlen;
 use function strpos;
 use function strtolower;
 use function substr;
-use function trim;
 
 /**
  * Class GitUseController
@@ -47,7 +52,8 @@ class GitUseController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'changelog' => ['clog', 'cl'],
+            'changelog' => ['chlog', 'clog', 'cl'],
+            'log'       => ['l', 'lg'],
             'tagDelete' => [
                 'tag-del',
                 'tagdel',
@@ -599,6 +605,60 @@ class GitUseController extends Controller
         $output->success('Complete');
     }
 
+    /**
+     * @param Input $input
+     */
+    protected function logConfigure(Input $input): void
+    {
+        $input->bindArguments([
+            'maxCommit' => 0,
+        ]);
+    }
+
+    /**
+     * display recently git commits information by `git log`
+     *
+     * @arguments
+     *  maxCommit       Max display how many commits
+     *
+     * @options
+     *  --abbrev-commit     Only display the abbrev commit ID
+     *  --exclude           Exclude contains given sub-string. multi by comma split.
+     *  --file              Export changelog message to file
+     *  --format            The git log option `--pretty` value.
+     *                      can be one of oneline, short, medium, full, fuller, reference, email, raw, format:<string> and tformat:<string>.
+     *  --max-commit        Max display how many commits
+     *  --no-color          Dont use color render git output
+     *  --no-merges         No contains merge request logs
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function logCommand(Input $input, Output $output): void
+    {
+        $b = Git::new()->newCmd('log');
+
+        $noColor = $input->getBoolOpt('no-color');
+        $exclude = $input->getStringOpt('exclude');
+
+        $noMerges  = $input->getBoolOpt('no-merges');
+        $abbrevID  = $input->getBoolOpt('abbrev-commit');
+        $maxCommit = $input->getIntOpt('max-commit', $input->getIntArg('maxCommit', 15));
+
+        // git log --color --graph --pretty=format:'%Cred%h%Creset:%C(ul yellow)%d%Creset %s (%Cgreen%cr%Creset, %C(bold blue)%an%Creset)' --abbrev-commit -10
+        $b->add('--graph');
+        $b->addIf('--color', !$noColor);
+        $b->add('--pretty=format:"%Cred%h%Creset:%C(ul yellow)%d%Creset %s (%Cgreen%cr%Creset, %C(bold blue)%an%Creset)"');
+        $b->addIf("--exclude=$exclude", $exclude);
+        $b->addIf('--abbrev-commit', $abbrevID);
+        $b->addIf('--no-merges', $noMerges);
+        $b->add("-{$maxCommit}");
+
+        $b->runAndPrint();
+
+        $output->success('Complete');
+    }
+
     protected function changelogConfigure(Input $input): void
     {
         $input->bindArguments([
@@ -617,60 +677,111 @@ class GitUseController extends Controller
      *                - keywords `head` will use `Head` commit.
      *
      * @options
-     *  --file        Export changelog message to file
-     *  --format      The git log option `--pretty` value.
-     *                 can be one of oneline, short, medium, full, fuller, reference, email, raw, format:<string> and tformat:<string>.
-     *  --max-commit  Max parse how many commits
-     *  --no-merges   No contains merge request logs
+     *  --exclude           Exclude contains given sub-string. multi by comma split.
+     *  --file              Export changelog message to file
+     *  --filters           Apply built in log filters. multi by `|` split
+     *                      allow:
+     *                       kw     keyword filter. eg: `kw:tom`
+     *                       kws    keywords filter.
+     *                       ml     msg length filter.
+     *                       wl     word length filter.
+     *  --format            The git log option `--pretty` value.
+     *                      can be one of oneline, short, medium, full, fuller, reference, email, raw, format:<string> and tformat:<string>.
+     *  --style             The style for generate for changelog.
+     *                      allow: markdown(<cyan>default</cyan>), simple, gh-release
+     *  --repo-url          The git repo URL address. eg: https://github.com/inhere/kite
+     *                      default will auto use current git origin remote url
+     *  --no-merges         No contains merge request logs
+     *  --with-author       Display commit author name
      *
      * @param Input  $input
      * @param Output $output
+     *
+     * @example
+     *     {binWithCmd} last head
+     *     {binWithCmd} last head --style gh-release --no-merges
+     *     {binWithCmd} v2.0.9 v2.0.10 --no-merges --style gh-release --exclude "cs-fixer,format codes"
      */
     public function changelogCommand(Input $input, Output $output): void
     {
+        $builder = Git::new()->newCmd('log');
+        // see https://devhints.io/git-log-format
         // useful options:
         // --no-merges
         // --glob=<glob-pattern>
         // --exclude=<glob-pattern>
-        // --pretty[=<format>] <format> can be one of oneline, short, medium, full, fuller, reference, email, raw, format:<string> and tformat:<string>.
+        $noMerges = $input->getBoolOpt('no-merges');
 
         // git log v1.0.7...v1.0.8 --pretty=format:'<project>/commit/%H %s' --reverse
-
-        // git log v1.0.7...v1.0.7 --pretty=format:'<li> <a href="http://github.com/inhere/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse
-        // git log v1.0.7...HEAD --pretty=format:'<li> <a href="http://github.com/inhere/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse
-        $oldVersion = $input->getStringArg('oldVersion');
-        if ($oldVersion) {
-            if ($oldVersion === 'latest') {
-                $oldVersion = GitUtil::findTag();
-                $output->info('auto find latest tag ' . $oldVersion);
-            }
-
-            $newVersion = $input->getRequiredArg('newVersion');
-            if (strtolower($newVersion) === 'head') {
-                $newVersion = 'HEAD';
-            }
-
-            $logCmd = <<<CMD
-git log $oldVersion...$newVersion "--pretty=format:'<project>/commit/%H %s'" --reverse
-CMD;
-
-            $runner = CmdRunner::new(trim($logCmd));
-            $runner->runAndPrint();
-
-            $output->success('Complete');
-            return;
+        // git log v1.0.7...v1.0.7 --pretty=format:'<li> <a href="https://github.com/inhere/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse
+        // git log v1.0.7...HEAD --pretty=format:'<li> <a href="https://github.com/inhere/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse
+        $oldVersion = $input->getRequiredArg('oldVersion');
+        if ($oldVersion === 'latest' || $oldVersion === 'last') {
+            $oldVersion = GitUtil::findTag();
+            $output->info('auto find latest tag: ' . $oldVersion);
         }
 
-        $maxCommit = $input->getIntOpt('max-commit', 15);
+        $newVersion = $input->getRequiredArg('newVersion');
+        if (strtolower($newVersion) === 'head') {
+            $newVersion = 'HEAD';
+        }
 
-        // git log --color --graph --pretty=format:'%Cred%h%Creset:%C(ul yellow)%d%Creset %s (%Cgreen%cr%Creset, %C(bold blue)%an%Creset)' --abbrev-commit -10
-        $logCmd = <<<CMD
-git log --color --graph "--pretty=format:'%Cred%h%Creset:%C(ul yellow)%d%Creset %s (%Cgreen%cr%Creset, %C(bold blue)%an%Creset)'" --abbrev-commit -$maxCommit
-CMD;
+        $logFmt = GitChangeLog::LOG_FMT_HS;
+        if ($input->getBoolOpt('with-author')) {
+            // $logFmt = GitChangeLog::LOG_FMT_HSC;
+            $logFmt = GitChangeLog::LOG_FMT_HSA;
+        }
 
-        $runner = CmdRunner::new(trim($logCmd));
-        $runner->runAndPrint();
+        $output->info('collect git log output');
 
-        $output->success('Complete');
+        $builder->add("$oldVersion...$newVersion");
+        $builder->addf('--pretty=format:"%s"', $logFmt);
+
+        // $b->addIf("--exclude $exclude", $exclude);
+        // $b->addIf('--abbrev-commit', $abbrevID);
+        $builder->addIf('--no-merges', $noMerges);
+        $builder->add('--reverse');
+        $builder->run();
+
+        $repoUrl = $input->getStringOpt('repo-url');
+        if (!$repoUrl) {
+            $info = Repo::new()->getRemoteInfo();
+
+            $repoUrl = $info->getHttpUrl();
+        }
+
+        $output->info('repo URL: ' . $repoUrl);
+
+        $gcl = GitChangeLog::new($builder->getOutput());
+        $gcl->setLogFormat($logFmt);
+        $gcl->setRepoUrl($repoUrl);
+
+        if ($exclude = $input->getStringOpt('exclude')) {
+            $keywords = Str::explode($exclude, ',');
+            $gcl->addItemFilter(new KeywordsFilter($keywords));
+        }
+
+        $style = $input->getStringOpt('style');
+        if ($style === 'gh-release') {
+            $gcl->setItemFormatter(new GithubReleaseFormatter());
+        } elseif ($style === 'simple') {
+            $gcl->setItemFormatter(new SimpleFormatter());
+        }
+
+        $output->info('parse logs and generate changelog');
+
+        // parse and generate.
+        $gcl->generate();
+
+        $outFile = $input->getStringOpt('file');
+        $output->info('total collected changelog number: ' . $gcl->getLogCount());
+
+        if ($outFile) {
+            $output->info('export changelog to file: ' . $outFile);
+            $gcl->export($outFile);
+            $output->success('Completed');
+        } else {
+            $output->println($gcl->getChangelog());
+        }
     }
 }

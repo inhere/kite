@@ -2,6 +2,7 @@
 
 namespace Inhere\Kite\Common;
 
+use Toolkit\Sys\Cmd\AbstractCmdBuilder;
 use RuntimeException;
 use Toolkit\Cli\Color;
 use function is_array;
@@ -54,6 +55,15 @@ class CmdRunner extends AbstractCmdBuilder
         } elseif (is_array($command)) {
             $this->commands = (array)$command;
         }
+    }
+
+    /**
+     * @param string $msg
+     * @param string $scene
+     */
+    protected function printMessage(string $msg, string $scene): void
+    {
+        Cmd::printByScene($msg, $scene);
     }
 
     /**************************************************************************
