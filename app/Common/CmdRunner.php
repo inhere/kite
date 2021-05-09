@@ -4,46 +4,17 @@ namespace Inhere\Kite\Common;
 
 use RuntimeException;
 use Toolkit\Cli\Color;
-use Toolkit\Sys\Exec;
-use function chdir;
 use function is_array;
 use function is_string;
 use function sprintf;
-use function system;
-use function trim;
 
 /**
  * Class SysCmdExec
  *
  * @package Inhere\Kite\Common
  */
-class CmdRunner
+class CmdRunner extends AbstractCmdBuilder
 {
-    /**
-     * @var string
-     */
-    private $command;
-
-    /**
-     * @var string
-     */
-    private $workDir;
-
-    /**
-     * @var int
-     */
-    private $code = 0;
-
-    /**
-     * @var string
-     */
-    private $error = '';
-
-    /**
-     * @var string
-     */
-    private $output = '';
-
     /**
      * [
      *  'name' => 'command line',
@@ -56,30 +27,6 @@ class CmdRunner
      * @var array[]|array
      */
     private $commands = [];
-
-    /**
-     * Dry run all commands
-     *
-     * @var bool
-     */
-    private $dryRun = false;
-
-    /**
-     * @var bool
-     */
-    private $printCmd = true;
-
-    /**
-     * Ignore check prevision return code
-     *
-     * @var bool
-     */
-    private $ignoreError = false;
-
-    /**
-     * @var bool
-     */
-    private $printOutput = false;
 
     /**
      * @param string|array $cmd
@@ -100,34 +47,13 @@ class CmdRunner
      */
     public function __construct($command = null, string $workDir = '')
     {
+        parent::__construct('', $workDir);
+
         if (is_string($command)) {
             $this->command = $command;
         } elseif (is_array($command)) {
             $this->commands = (array)$command;
         }
-
-        $this->workDir = $workDir;
-    }
-
-    /**
-     * @param string $workDir
-     *
-     * @return $this
-     */
-    public function chDir(string $workDir): self
-    {
-        return $this->changeDir($workDir);
-    }
-
-    /**
-     * @param string $workDir
-     *
-     * @return $this
-     */
-    public function changeDir(string $workDir): self
-    {
-        $this->workDir = $workDir;
-        return $this;
     }
 
     /**************************************************************************
@@ -199,17 +125,6 @@ class CmdRunner
         }
 
         return $this->setCommand($cmd)->do($this->printOutput);
-    }
-
-    /**
-     * @param string $command
-     *
-     * @return CmdRunner
-     */
-    public function setCommand(string $command): self
-    {
-        $this->command = $command;
-        return $this;
     }
 
     /**************************************************************************
@@ -320,21 +235,13 @@ class CmdRunner
     }
 
     /**
-     * run and print all output
-     */
-    public function runAndPrint(): void
-    {
-        $this->run(true);
-    }
-
-    /**
      * Run all added commands
      *
      * @param bool $printOutput
      *
      * @return $this
      */
-    public function run(bool $printOutput = false): self
+    public function run(bool $printOutput = false): AbstractCmdBuilder
     {
         $this->printOutput = $printOutput;
         if ($command = $this->command) {
@@ -397,197 +304,6 @@ class CmdRunner
         }
     }
 
-    /**************************************************************************
-     * helper methods
-     *************************************************************************/
-
-    /**
-     * @param string $command
-     * @param string $workDir
-     */
-    protected function innerExecute(string $command, string $workDir): void
-    {
-        if (!$command) {
-            throw new RuntimeException('The execute command cannot be empty');
-        }
-
-        if ($this->printCmd) {
-            Color::println("> {$command}", 'yellow');
-        }
-
-        if ($this->dryRun) {
-            $output = 'DRY-RUN: Command execute success';
-            Color::println($output, 'cyan');
-            return;
-        }
-
-        if ($this->printOutput) {
-            $this->execAndPrint($command, $workDir);
-        } else {
-            $this->execLogReturn($command, $workDir);
-        }
-    }
-
-    /**
-     * exec and log outputs.
-     *
-     * @param string $command
-     * @param string $workDir
-     */
-    protected function execLogReturn(string $command, string $workDir): void
-    {
-        [$code, $output, $error] = Exec::run($command, $workDir);
-
-        // save output
-        $this->code   = $code;
-        $this->error  = trim($error);
-        $this->output = trim($output);
-        // if ($this->printOutput) {
-        //     $hasOutput = false;
-        //     if ($code !== 0 && $this->error) {
-        //         $hasOutput = true;
-        //         Color::println("error code $code:\n" . $this->error, 'red');
-        //     }
-        //
-        //     $outMsg = '';
-        //     if (false === $hasOutput) {
-        //         $outMsg = $this->output ?: $this->error;
-        //     } elseif ($this->output) {
-        //         $outMsg = $this->output;
-        //     }
-        //
-        //     if ($outMsg) {
-        //         echo $outMsg . "\n";
-        //     }
-        // }
-    }
-
-    /**
-     * direct print to stdout, not return outputs.
-     *
-     * @param string $command
-     * @param string $workDir
-     */
-    protected function execAndPrint(string $command, string $workDir): void
-    {
-        // TODO use Exec::system($command);
-        if ($workDir) {
-            chdir($workDir);
-        }
-
-        // $hasOutput = false;
-        $lastLine = system($command, $exitCode);
-
-        $this->code   = $exitCode;
-        $this->output = trim($lastLine);
-
-        if ($exitCode !== 0) {
-            $this->error = $this->output;
-            // $hasOutput = true;
-            Color::println("error code {$exitCode}:\n" . $lastLine, 'red');
-        } else {
-            echo "\n";
-        }
-
-        // if (false === $hasOutput &&$lastLine) {
-        //     echo $lastLine . "\n";
-        // }
-    }
-
-    /**
-     * @return string
-     */
-    public function getCommand(): string
-    {
-        return $this->command;
-    }
-
-    /**
-     * @return string
-     */
-    public function getWorkDir(): string
-    {
-        return $this->workDir;
-    }
-
-    /**
-     * @param string $workDir
-     *
-     * @return CmdRunner
-     */
-    public function setWorkDir(string $workDir): self
-    {
-        $this->workDir = $workDir;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCode(): int
-    {
-        return $this->code;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isFail(): bool
-    {
-        return $this->code !== 0;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isSuccess(): bool
-    {
-        return $this->code === 0;
-    }
-
-    /**
-     * @param bool $trim
-     *
-     * @return string
-     */
-    public function getOutput(bool $trim = false): string
-    {
-        return $trim ? trim($this->output) : $this->output;
-    }
-
-    /**
-     * @return array
-     */
-    public function getResult(): array
-    {
-        return [
-            'code'   => $this->code,
-            'output' => $this->output,
-        ];
-    }
-
-    /**
-     * @param bool $printCmd
-     *
-     * @return CmdRunner
-     */
-    public function setPrintCmd(bool $printCmd): self
-    {
-        $this->printCmd = $printCmd;
-        return $this;
-    }
-
-    /**
-     * @param bool $printOutput
-     *
-     * @return CmdRunner
-     */
-    public function setPrintOutput(bool $printOutput): self
-    {
-        $this->printOutput = $printOutput;
-        return $this;
-    }
-
     /**
      * @return array
      */
@@ -605,51 +321,5 @@ class CmdRunner
     {
         $this->commands = $commands;
         return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isIgnoreError(): bool
-    {
-        return $this->ignoreError;
-    }
-
-    /**
-     * @param bool $ignoreError
-     *
-     * @return CmdRunner
-     */
-    public function setIgnoreError(bool $ignoreError): self
-    {
-        $this->ignoreError = $ignoreError;
-        return $this;
-    }
-
-    /**
-     * @param bool $dryRun
-     *
-     * @return $this
-     */
-    public function setDryRun(bool $dryRun): self
-    {
-        $this->dryRun = $dryRun;
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isDryRun(): bool
-    {
-        return $this->dryRun;
-    }
-
-    /**
-     * @return string
-     */
-    public function getError(): string
-    {
-        return $this->error;
     }
 }
