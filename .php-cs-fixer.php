@@ -8,7 +8,7 @@ This file is part of Kite.
 @license  MIT
 EOF;
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config())
     ->setRiskyAllowed(true)
     ->setRules([
         '@PSR2' => true,
