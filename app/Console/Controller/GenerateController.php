@@ -75,7 +75,7 @@ class GenerateController extends Controller
     public function templateCommand(Input $input, Output $output): void
     {
         $editor   = $input->getStringOpt('editor', 'vim');
-        $filepath = 'runtime/' . date('Ymd_Hi') . '.tpl';
+        $filepath = 'tmp/' . date('Ymd_Hi') . '.tpl';
 
         ProcWrapper::runEditor($editor, $filepath);
 

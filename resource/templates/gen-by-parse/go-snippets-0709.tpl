@@ -1,4 +1,4 @@
-# usage: kite gen parse runtime/go-snippets-0709.tpl
+# usage: kite gen parse tmp/go-snippets-0709.tpl
 vars=[Info, Error, Warn]
 
 ###

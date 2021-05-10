@@ -10,6 +10,8 @@ use Toolkit\Stdlib\Type;
 use function count;
 use function gettype;
 use function implode;
+use function is_array;
+use function json_encode;
 use function strtolower;
 
 /**
@@ -89,7 +91,7 @@ class BodyData extends MapObject
         foreach ($this as $key => $val) {
             $fewData[$key] = [
                 'type'    => Type::get($val, true),
-                'example' => $val,
+                'example' => is_array($val) ? json_encode($val) : $val,
             ];
             if (count($fewData) === $limit) {
                 break;
@@ -120,11 +122,34 @@ class BodyData extends MapObject
 
             $othData[$key] = [
                 'type'    => Type::get($val, true),
-                'example' => $val,
+                'example' => is_array($val) ? json_encode($val) : $val,
             ];
         }
 
         return $othData;
+    }
+
+    /**
+     * @param int $limitParam
+     *
+     * @return string
+     */
+    public function genCallParams(int $limitParam = 3): string
+    {
+        if ($this->isEmpty()) {
+            return '$params';
+        }
+
+        $params = [];
+        foreach ($this as $key => $val) {
+            $params[] = '$' . $key;
+            if (count($params) === $limitParam) {
+                break;
+            }
+        }
+
+        $params[] = '$params';
+        return implode(', ', $params);
     }
 
     /**
