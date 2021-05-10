@@ -158,12 +158,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/inhere/php-console.git",
-                "reference": "26870f2de20585578ba55f3a6affdc23aa9a735a"
+                "reference": "f278bcf65a7ad4e66c6fb8eaf5198520f93e4a2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/inhere/php-console/zipball/26870f2de20585578ba55f3a6affdc23aa9a735a",
-                "reference": "26870f2de20585578ba55f3a6affdc23aa9a735a",
+                "url": "https://api.github.com/repos/inhere/php-console/zipball/f278bcf65a7ad4e66c6fb8eaf5198520f93e4a2c",
+                "reference": "f278bcf65a7ad4e66c6fb8eaf5198520f93e4a2c",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -220,7 +220,7 @@
                 "issues": "https://github.com/inhere/php-console/issues",
                 "source": "https://github.com/inhere/php-console/tree/3.x"
             },
-            "time": "2021-04-27T02:00:12+00:00"
+            "time": "2021-05-10T02:20:49+00:00"
         },
         {
             "name": "inhere/sroute",
@@ -1140,16 +1140,16 @@
         },
         {
             "name": "toolkit/sys-utils",
-            "version": "v1.2.5",
+            "version": "v1.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/sys-utils.git",
-                "reference": "d173e24ad4dc544c63b30e70d70982488869cf71"
+                "reference": "1e44c1389f3862915207429fc4c8f56cb32ab18f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/sys-utils/zipball/d173e24ad4dc544c63b30e70d70982488869cf71",
-                "reference": "d173e24ad4dc544c63b30e70d70982488869cf71",
+                "url": "https://api.github.com/repos/php-toolkit/sys-utils/zipball/1e44c1389f3862915207429fc4c8f56cb32ab18f",
+                "reference": "1e44c1389f3862915207429fc4c8f56cb32ab18f",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1192,9 +1192,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-toolkit/sys-utils/issues",
-                "source": "https://github.com/php-toolkit/sys-utils/tree/v1.2.5"
+                "source": "https://github.com/php-toolkit/sys-utils/tree/v1.2.6"
             },
-            "time": "2021-04-25T05:23:47+00:00"
+            "time": "2021-05-09T14:06:00+00:00"
         }
     ],
     "packages-dev": [],
