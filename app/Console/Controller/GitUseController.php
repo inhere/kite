@@ -118,7 +118,7 @@ class GitUseController extends Controller
      */
     protected function onNotFound(string $action): bool
     {
-        $this->output->info("input command '$action' is not found, will try exec system command `git $action`");
+        $this->output->info("input command '$action' is not found, will exec git command: `git $action`");
 
         $run = CmdRunner::new($this->input->getFullScript());
         $run->do(true);
@@ -698,9 +698,9 @@ class GitUseController extends Controller
      * @param Output $output
      *
      * @example
-     *     {binWithCmd} last head
-     *     {binWithCmd} last head --style gh-release --no-merges
-     *     {binWithCmd} v2.0.9 v2.0.10 --no-merges --style gh-release --exclude "cs-fixer,format codes"
+     *  {binWithCmd} last head
+     *  {binWithCmd} last head --style gh-release --no-merges
+     *  {binWithCmd} v2.0.9 v2.0.10 --no-merges --style gh-release --exclude "cs-fixer,format codes"
      */
     public function changelogCommand(Input $input, Output $output): void
     {

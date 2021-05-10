@@ -17,7 +17,6 @@ use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Helper\AppHelper;
 use PhpComp\Http\Client\Client;
-use ReflectionException;
 use function in_array;
 
 /**
@@ -52,34 +51,6 @@ class GitHubController extends Controller
         ];
     }
 
-    protected function beforeExecute(): bool
-    {
-        $this->loadSettings();
-        return true;
-    }
-
-    protected function beforeAction(): bool
-    {
-        if ($this->app) {
-            $action = $this->getAction();
-
-            $loadEnvActions = $this->settings['loadEnvOn'] ?? [];
-            if ($loadEnvActions && in_array($action, $loadEnvActions, true)) {
-                $this->output->info(self::getName() . ' - will load osEnv setting for command: ' . $action);
-                AppHelper::loadOsEnvInfo($this->app);
-            }
-        }
-
-        return true;
-    }
-
-    protected function loadSettings(): void
-    {
-        if ($this->app && !$this->settings) {
-            $this->settings = $this->app->getParam('github', []);
-        }
-    }
-
     /**
      * @return GitHub
      */
@@ -91,11 +62,17 @@ class GitHubController extends Controller
         return GitHub::new($this->output, $config);
     }
 
+    protected function beforeRun(): void
+    {
+        if ($this->app && !$this->settings) {
+            $this->settings = $this->app->getParam('github', []);
+        }
+    }
+
     /**
      * @param string $action
      *
      * @return bool
-     * @throws ReflectionException
      */
     protected function onNotFound(string $action): bool
     {
@@ -143,15 +120,33 @@ class GitHubController extends Controller
         }
     }
 
+    protected function beforeAction(): bool
+    {
+        if ($this->app) {
+            $action = $this->getAction();
+
+            $loadEnvActions = $this->settings['loadEnvOn'] ?? [];
+            if ($loadEnvActions && in_array($action, $loadEnvActions, true)) {
+                $this->output->info(self::getName() . ' - will load osEnv setting for command: ' . $action);
+                AppHelper::loadOsEnvInfo($this->app);
+            }
+        }
+
+        return true;
+    }
+
     /**
+     * Show a list of commands that will be redirected to git
+     *
      * @param Input  $input
      * @param Output $output
      */
     public function redirectListCommand(Input $input, Output $output): void
     {
-        $this->loadSettings();
         $output->aList([
-            'redirectGit' => $this->settings['redirectGit'],
+            'current group' => self::getName(),
+            'current dir'   => $input->getWorkDir(),
+            'redirect cmd'  => $this->settings['redirectGit'],
         ]);
     }
 
