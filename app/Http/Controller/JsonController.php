@@ -13,6 +13,6 @@ class JsonController extends Controller
 {
     public function json5(): void
     {
-        $this->render('home');
+        $this->render('json5');
     }
 }

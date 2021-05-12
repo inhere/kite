@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e0dccbda9c7d90996706e44834c497f5",
+    "content-hash": "972cdf9dbb350191384d452c975d5538",
     "packages": [
         {
             "name": "cebe/markdown",
@@ -75,6 +75,103 @@
                 "source": "https://github.com/cebe/markdown"
             },
             "time": "2018-03-26T11:24:36+00:00"
+        },
+        {
+            "name": "colinodell/json5",
+            "version": "v2.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/colinodell/json5.git",
+                "reference": "dd7f788c5de3837d1483a216dc9b30e5d9c8c00a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/colinodell/json5/zipball/dd7f788c5de3837d1483a216dc9b30e5d9c8c00a",
+                "reference": "dd7f788c5de3837d1483a216dc9b30e5d9c8c00a",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": "^7.1.3|^8.0"
+            },
+            "conflict": {
+                "scrutinizer/ocular": "1.7.*"
+            },
+            "require-dev": {
+                "mikehaertl/php-shellcommand": "^1.2.5",
+                "phpstan/phpstan": "^0.12.58",
+                "scrutinizer/ocular": "^1.6",
+                "squizlabs/php_codesniffer": "^2.3",
+                "symfony/finder": "^4.4|^5.2",
+                "symfony/phpunit-bridge": "^5.1"
+            },
+            "bin": [
+                "bin/json5"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ColinODell\\Json5\\": "src"
+                },
+                "files": [
+                    "src/global.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Colin O'Dell",
+                    "email": "colinodell@gmail.com",
+                    "homepage": "https://www.colinodell.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "UTF-8 compatible JSON5 parser for PHP",
+            "homepage": "https://github.com/colinodell/json5",
+            "keywords": [
+                "JSON5",
+                "json",
+                "json5_decode",
+                "json_decode"
+            ],
+            "support": {
+                "issues": "https://github.com/colinodell/json5/issues",
+                "source": "https://github.com/colinodell/json5/tree/v2.2.0"
+            },
+            "funding": [
+                {
+                    "url": "https://www.colinodell.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.paypal.me/colinpodell/10.00",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/colinodell",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/colinodell",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2020-11-29T14:52:27+00:00"
         },
         {
             "name": "gitonomy/gitlib",
@@ -158,12 +255,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/inhere/php-console.git",
-                "reference": "f278bcf65a7ad4e66c6fb8eaf5198520f93e4a2c"
+                "reference": "5fa11f0722d9da989e1e3f64fcdf15e1aefb9ce4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/inhere/php-console/zipball/f278bcf65a7ad4e66c6fb8eaf5198520f93e4a2c",
-                "reference": "f278bcf65a7ad4e66c6fb8eaf5198520f93e4a2c",
+                "url": "https://api.github.com/repos/inhere/php-console/zipball/5fa11f0722d9da989e1e3f64fcdf15e1aefb9ce4",
+                "reference": "5fa11f0722d9da989e1e3f64fcdf15e1aefb9ce4",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -179,7 +276,7 @@
                 "toolkit/sys-utils": "~1.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~9.1"
+                "phpunit/phpunit": "^8.5 || ^9.1"
             },
             "suggest": {
                 "padraic/phar-updater": "A thing to make PHAR self-updating easy and secure.",
@@ -220,7 +317,7 @@
                 "issues": "https://github.com/inhere/php-console/issues",
                 "source": "https://github.com/inhere/php-console/tree/3.x"
             },
-            "time": "2021-05-10T02:20:49+00:00"
+            "time": "2021-05-11T05:15:38+00:00"
         },
         {
             "name": "inhere/sroute",
@@ -285,6 +382,68 @@
                 "source": "https://github.com/inhere/php-srouter/tree/master"
             },
             "time": "2021-01-28T10:05:57+00:00"
+        },
+        {
+            "name": "laktak/hjson",
+            "version": "v2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hjson/hjson-php.git",
+                "reference": "8b25640f707c1797860dd21b2c5cc82a45024e04"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hjson/hjson-php/zipball/8b25640f707c1797860dd21b2c5cc82a45024e04",
+                "reference": "8b25640f707c1797860dd21b2c5cc82a45024e04",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.7 || ^6.5",
+                "squizlabs/php_codesniffer": "^3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "HJSON\\": "src/HJSON"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Issam Zoli",
+                    "email": "jawbfl@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "JSON for Humans. A configuration file format with relaxed syntax, fewer mistakes and more comments.",
+            "homepage": "https://github.com/hjson/hjson-php",
+            "keywords": [
+                "comments",
+                "config",
+                "hjson",
+                "human",
+                "json",
+                "parser",
+                "serializer"
+            ],
+            "support": {
+                "issues": "https://github.com/hjson/hjson-php/issues",
+                "source": "https://github.com/hjson/hjson-php/tree/v2.1.0"
+            },
+            "time": "2019-02-18T23:01:03+00:00"
         },
         {
             "name": "league/commonmark",
@@ -517,7 +676,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpcom-lab/phpgit.git",
-                "reference": "127697e6ea5d4c563b1cf4ae2ed3cc58d456ef99"
+                "reference": "de653b2d25c94669017fe99f811760090719a555"
             },
             "require": {
                 "php": ">7.1.0",
@@ -556,7 +715,7 @@
             ],
             "description": "A Git wrapper for PHP 7.1+",
             "homepage": "https://github/phpcom-lab/phpgit.git",
-            "time": "2021-05-09T16:05:58+00:00"
+            "time": "2021-05-10T17:11:50+00:00"
         },
         {
             "name": "psr/http-client",

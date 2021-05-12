@@ -94,7 +94,8 @@ class WebCommand extends Command
         $phpBin  = $input->getStringOpt('php-bin', $conf['php-bin']);
         // $docRoot = $input->getSameStringOpt('t,doc-root', $conf['root']);
 
-        $pds = PhpDevServe::new($svrAddr, 'public', 'public/index.php');
+        // $pds = PhpDevServe::new($svrAddr, 'public', 'public/index.php');
+        $pds = PhpDevServe::new($svrAddr, 'public');
         $pds->setPhpBin($phpBin);
 
         if ($input->getBoolOpt('show-info')) {

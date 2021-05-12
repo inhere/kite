@@ -1,6 +1,22 @@
 <?php
 
 return [
+    'app'  => [
+        'staticDir' => '/static',
+    ],
+    'staticDir' => [
+        '/static' => BASE_PATH . '/pub'
+    ],
+    // view renderer
+    'renderer'  => [
+        'viewsDir' => BASE_PATH . '/resource/views',
+        'globalVars' => [
+            '_staticPath' => '/static'
+        ],
+    ],
+    'webui' => [
+        'addr' => '127.0.0.1:8090',
+    ],
     // @see app/Console/Controller/PhpController.php
     'php:serve' => [
         'hce-file' => 'test/clienttest/http-client.env.json',

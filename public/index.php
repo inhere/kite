@@ -11,4 +11,3 @@ require dirname(__DIR__) . '/app/Http/routes.php';
 
 $app->run();
 
-
