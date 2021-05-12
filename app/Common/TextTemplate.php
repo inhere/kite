@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Model\Logic;
+namespace Inhere\Kite\Common;
 
 use InvalidArgumentException;
 use RuntimeException;
@@ -20,7 +20,7 @@ use const PHP_EOL;
  *
  * @package Inhere\Kite\Model\Logic
  */
-class TextTemplateRender
+class TextTemplate
 {
     /**
      * @param string $tempFile

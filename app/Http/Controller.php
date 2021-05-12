@@ -2,6 +2,8 @@
 
 namespace Inhere\Kite\Http;
 
+use Inhere\Kite\Kite;
+
 /**
  * Class Controller
  *
@@ -9,8 +11,12 @@ namespace Inhere\Kite\Http;
  */
 abstract class Controller
 {
-    protected function render(): void
+    /**
+     * @param string $viewPath
+     * @param array  $vars
+     */
+    protected function render(string $viewPath, array $vars = []): void
     {
-
+        Kite::webApp()->getRenderer()->renderOutput($viewPath, $vars);
     }
 }

@@ -6,7 +6,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Model\Logic\TextTemplateRender;
+use Inhere\Kite\Common\TextTemplate;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Proc\ProcWrapper;
 use function date;
@@ -119,7 +119,7 @@ class GenerateController extends Controller
 
         $output->aList($vars, 'template vars', ['ucFirst' => false]);
 
-        $logic  = new TextTemplateRender();
+        $logic  = new TextTemplate();
         $result = $logic->renderString(trim($template), $vars);
 
         $output->success('Render Result:');

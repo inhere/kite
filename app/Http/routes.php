@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 /**
  * This file is part of Kite.
  *
@@ -7,5 +8,13 @@
  * @license  MIT
  */
 
-$router = Inhere\Kite\Kite::webApp()->getRouter();
+use Inhere\Kite\Http\Controller\HomeController;
+use Inhere\Kite\Http\Controller\JsonController;
+use Inhere\Kite\Kite;
 
+$router = Kite::webApp()->getRouter();
+
+$router->get('/', HomeController::class . '@index');
+$router->get('/json5', JsonController::class . '@json5');
+
+// vdump($router->match('/'));exit;

@@ -9,7 +9,10 @@
 
 namespace Inhere\Kite\Http;
 
+use Inhere\Kite\Common\HtmlTemplate;
+use Inhere\Kite\Common\InitApplicationTrait;
 use Inhere\Kite\Kite;
+use Inhere\Route\Dispatcher\Dispatcher;
 use Inhere\Route\Router;
 use Throwable;
 use function array_merge;
@@ -21,10 +24,17 @@ use function array_merge;
  */
 class Application
 {
+    use InitApplicationTrait;
+
     /**
      * @var Router
      */
     private $router;
+
+    /**
+     * @var HtmlTemplate
+     */
+    private $renderer;
 
     /**
      * @var array
@@ -53,7 +63,11 @@ class Application
 
     protected function prepare(): void
     {
+        $this->loadAppConfig();
+
         $this->router = new Router();
+
+        $this->renderer = new HtmlTemplate($this->getParam('renderer', []));
     }
 
     /**
@@ -62,7 +76,11 @@ class Application
     public function run(): void
     {
         try {
-            $this->router->dispatch();
+            $dispatcher = new Dispatcher([
+                'actionSuffix' => '',
+            ]);
+
+            $this->router->dispatch($dispatcher);
         } catch (Throwable $e) {
             (new ErrorHandler())->run($e);
         }
@@ -139,5 +157,21 @@ class Application
     public function getBasePath(): string
     {
         return $this->basePath;
+    }
+
+    /**
+     * @return HtmlTemplate
+     */
+    public function getRenderer(): HtmlTemplate
+    {
+        return $this->renderer;
+    }
+
+    /**
+     * @param HtmlTemplate $renderer
+     */
+    public function setRenderer(HtmlTemplate $renderer): void
+    {
+        $this->renderer = $renderer;
     }
 }

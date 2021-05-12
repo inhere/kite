@@ -21,6 +21,7 @@ use PhpGit\Changelog\Formatter\GithubReleaseFormatter;
 use PhpGit\Changelog\Formatter\SimpleFormatter;
 use PhpGit\Changelog\GitChangeLog;
 use PhpGit\Git;
+use PhpGit\Info\TagsInfo;
 use PhpGit\Repo;
 use Toolkit\Stdlib\Str;
 use function array_keys;
@@ -401,6 +402,7 @@ class GitUseController extends Controller
      */
     public function tagListCommand(Input $input, Output $output): void
     {
+        // git tag --sort=-creatordate 倒序排列
         $cmd = 'git tag -l -n2';
         $kw  = $input->getStringArg(0);
         if ($kw) {
@@ -716,15 +718,10 @@ class GitUseController extends Controller
         // git log v1.0.7...v1.0.7 --pretty=format:'<li> <a href="https://github.com/inhere/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse
         // git log v1.0.7...HEAD --pretty=format:'<li> <a href="https://github.com/inhere/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse
         $oldVersion = $input->getRequiredArg('oldVersion');
-        if ($oldVersion === 'latest' || $oldVersion === 'last') {
-            $oldVersion = GitUtil::findTag();
-            $output->info('auto find latest tag: ' . $oldVersion);
-        }
+        $oldVersion = $this->getLogVersion($oldVersion);
 
         $newVersion = $input->getRequiredArg('newVersion');
-        if (strtolower($newVersion) === 'head') {
-            $newVersion = 'HEAD';
-        }
+        $newVersion = $this->getLogVersion($newVersion);
 
         $logFmt = GitChangeLog::LOG_FMT_HS;
         if ($input->getBoolOpt('with-author')) {
@@ -783,5 +780,45 @@ class GitUseController extends Controller
         } else {
             $output->println($gcl->getChangelog());
         }
+    }
+
+    /**
+     * @param string $version
+     *
+     * @return string
+     */
+    protected function getLogVersion(string $version): string
+    {
+        $toLower = strtolower($version);
+        if ($toLower === 'head') {
+            return 'HEAD';
+        }
+
+        if ($toLower === 'latest' || $toLower === 'last') {
+            $version = $this->getDescSortedTags()->first();
+            $this->output->info('auto find latest tag: ' . $version);
+        } elseif ($toLower === 'prev') {
+            $version = $this->getDescSortedTags()->second();
+            $this->output->info('auto find previous tag: ' . $version);
+        }
+
+        return $version;
+    }
+
+    /**
+     * @var TagsInfo
+     */
+    private $tagsInfo;
+
+    /**
+     * @return TagsInfo
+     */
+    protected function getDescSortedTags(): TagsInfo
+    {
+        if (!$this->tagsInfo) {
+            $this->tagsInfo = Git::new()->tag->tagsInfo('-version:refname');
+        }
+
+        return $this->tagsInfo;
     }
 }

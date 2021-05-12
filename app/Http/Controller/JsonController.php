@@ -9,9 +9,9 @@ use Inhere\Kite\Http\Controller;
  *
  * @package Inhere\Kite\Http\Controller
  */
-class HomeController extends Controller
+class JsonController extends Controller
 {
-    public function index(): void
+    public function json5(): void
     {
         $this->render('home');
     }

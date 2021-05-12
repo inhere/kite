@@ -10,6 +10,7 @@
 namespace Inhere\Kite\Console;
 
 use Inhere\Console\ConsoleEvent;
+use Inhere\Kite\Common\InitApplicationTrait;
 use Inhere\Kite\Console\Listener\NotFoundListener;
 use Inhere\Kite\Console\Plugin\PluginManager;
 use Inhere\Kite\Kite;
@@ -24,6 +25,8 @@ use const BASE_PATH;
  */
 class Application extends \Inhere\Console\Application
 {
+    use InitApplicationTrait;
+
     /**
      * @var PluginManager
      */
@@ -42,43 +45,11 @@ class Application extends \Inhere\Console\Application
 
         Kite::setCliApp($this);
 
-        $this->loadAppConfig();
+        $workDir = $this->getInput()->getPwd();
+
+        $this->loadAppConfig($workDir);
 
         $this->initAppRun();
-    }
-
-    private function loadAppConfig(): void
-    {
-        $baseFile = BASE_PATH . '/config/config.php';
-        $loaded   = [$baseFile];
-
-        // 基础配置
-        /** @noinspection PhpIncludeInspection */
-        $config = require $baseFile;
-
-        // 自定义全局配置
-        $globFile = BASE_PATH . '/.kite.php';
-        if (file_exists($globFile)) {
-            $loaded[] = $globFile;
-            /** @noinspection PhpIncludeInspection */
-            $userConfig = require $globFile;
-            // merge to config
-            $config = ArrayHelper::quickMerge($userConfig, $config);
-        }
-
-        // 当前项目配置
-        $workDir = $this->getInput()->getPwd();
-        $proFile = $workDir . '/.kite.php';
-        if ($proFile !== $globFile && file_exists($proFile)) {
-            $loaded[] = $proFile;
-            /** @noinspection PhpIncludeInspection */
-            $proConfig = require $proFile;
-            // merge to config
-            $config = ArrayHelper::quickMerge($proConfig, $config);
-        }
-
-        $config['__loaded_file'] = $loaded;
-        $this->setConfig($config);
     }
 
     protected function initAppRun(): void

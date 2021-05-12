@@ -13,6 +13,9 @@ use Inhere\Kite\Console\Application;
 use Inhere\Kite\Console\Plugin\PluginManager;
 use Inhere\Kite\Http\Application as WebApplication;
 use Inhere\Route\Router;
+use Toolkit\Stdlib\Obj\Traits\CreateSingletonTrait;
+use Toolkit\Stdlib\Obj\Traits\ObjectPoolTrait;
+use Toolkit\Stdlib\Obj\Traits\SingletonTrait;
 
 /**
  * Class Kite
