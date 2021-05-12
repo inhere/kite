@@ -5,7 +5,9 @@ namespace Inhere\Kite\Common;
 use InvalidArgumentException;
 use RuntimeException;
 use Toolkit\FsUtil\Dir;
+use Toolkit\Stdlib\Obj;
 use Toolkit\Sys\Sys;
+use function array_merge;
 use function date;
 use function extract;
 use function file_exists;
@@ -23,6 +25,26 @@ use const PHP_EOL;
 class TextTemplate
 {
     /**
+     * @var array
+     */
+    protected $globalVars = [];
+
+    /**
+     * @var string[]
+     */
+    protected $allowExt = ['.php'];
+
+    /**
+     * Class constructor.
+     *
+     * @param array $config
+     */
+    public function __construct(array $config = [])
+    {
+        Obj::init($this, $config);
+    }
+
+    /**
      * @param string $tempFile
      * @param array  $vars
      *
@@ -32,6 +54,10 @@ class TextTemplate
     {
         if (!file_exists($tempFile)) {
             throw new InvalidArgumentException('the template file is not exist. file:' . $tempFile);
+        }
+
+        if ($this->globalVars) {
+            $vars = array_merge($this->globalVars, $vars);
         }
 
         ob_start();
@@ -56,7 +82,6 @@ class TextTemplate
         $tempFile = $tempDir . '/' . date('ymd') . "-{$fileHash}.php";
 
         if (!file_exists($tempFile)) {
-            // \vdump($tempFile);
             Dir::create($tempDir);
 
             // write contents
@@ -67,6 +92,22 @@ class TextTemplate
         }
 
         return $this->renderFile($tempFile, $vars);
+    }
+
+    /**
+     * @return array
+     */
+    public function getGlobalVars(): array
+    {
+        return $this->globalVars;
+    }
+
+    /**
+     * @param array $globalVars
+     */
+    public function setGlobalVars(array $globalVars): void
+    {
+        $this->globalVars = $globalVars;
     }
 
     /**
@@ -83,6 +124,22 @@ class TextTemplate
         // eval($tplCode . "\n");
         // require \BASE_PATH . '/runtime/go-snippets-0709.tpl.php';
         return ob_get_clean();
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAllowExt(): array
+    {
+        return $this->allowExt;
+    }
+
+    /**
+     * @param string[] $allowExt
+     */
+    public function setAllowExt(array $allowExt): void
+    {
+        $this->allowExt = $allowExt;
     }
 
 }

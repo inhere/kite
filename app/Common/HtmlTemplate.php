@@ -33,21 +33,6 @@ class HtmlTemplate extends TextTemplate
     protected $viewsFiles = [];
 
     /**
-     * @var array
-     */
-    protected $globalVars = [];
-
-    /**
-     * Class constructor.
-     *
-     * @param array $config
-     */
-    public function __construct(array $config = [])
-    {
-        Obj::init($this, $config);
-    }
-
-    /**
      * @param string $viewPath
      * @param array  $vars
      *
@@ -149,35 +134,4 @@ class HtmlTemplate extends TextTemplate
         $this->viewsDir = $viewsDir;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getAllowExt(): array
-    {
-        return $this->allowExt;
-    }
-
-    /**
-     * @param string[] $allowExt
-     */
-    public function setAllowExt(array $allowExt): void
-    {
-        $this->allowExt = $allowExt;
-    }
-
-    /**
-     * @return array
-     */
-    public function getGlobalVars(): array
-    {
-        return $this->globalVars;
-    }
-
-    /**
-     * @param array $globalVars
-     */
-    public function setGlobalVars(array $globalVars): void
-    {
-        $this->globalVars = $globalVars;
-    }
 }
