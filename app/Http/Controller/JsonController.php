@@ -11,8 +11,13 @@ use Inhere\Kite\Http\Controller;
  */
 class JsonController extends Controller
 {
+    public function format(): void
+    {
+        $this->render('json/format');
+    }
+
     public function json5(): void
     {
-        $this->render('json5');
+        $this->render('json/json5');
     }
 }

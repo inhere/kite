@@ -16,5 +16,6 @@ $router = Kite::webApp()->getRouter();
 
 $router->get('/', HomeController::class . '@index');
 $router->get('/json5', JsonController::class . '@json5');
+$router->get('/json', JsonController::class . '@format');
 
 // vdump($router->match('/'));exit;

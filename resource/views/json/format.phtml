@@ -1,0 +1,64 @@
+<?php
+/**
+ * @var string $_staticPath
+ */
+?>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="<?= $_staticPath ?>/css/bulma.min.css">
+</head>
+<body>
+<nav class="level">
+  <p class="level-item has-text-centered">
+    <a class="link is-info">Home</a>
+  </p>
+  <p class="level-item has-text-centered">
+    <a class="link is-info">Menu</a>
+  </p>
+  <p class="level-item has-text-centered">
+    <span class="is-size-2">Kite</span>
+  </p>
+  <p class="level-item has-text-centered">
+    <a class="link is-info">Reservations</a>
+  </p>
+  <p class="level-item has-text-centered">
+    <a class="link is-info">Contact</a>
+  </p>
+</nav>
+
+<div class="columns">
+  <div class="column is-half is-offset-one-quarter">
+    <h1 class="is-size-2">
+      JSON Format
+    </h1>
+  </div>
+</div>
+
+<div class="container is-fullhd">
+  <div class="notification is-primary">
+    This container is <strong>fullwidth</strong> <em>until</em> the <code>$fullhd</code> breakpoint.
+  </div>
+
+  <div class="columns is-mobile">
+    <div class="column">
+      <label for="json5-data">Input Data</label>
+      <textarea name="json5-data" id="json5-data" class="textarea is-primary is-large" rows="12" placeholder="JSON5 data contents"></textarea>
+    </div>
+    <div class="column">
+      <label for="json-data">Format Data</label>
+      <textarea name="json-data" id="json-data" class="textarea is-link is-large" rows="12" readonly placeholder="JSON data contents"></textarea>
+
+    </div>
+  </div>
+</div>
+
+</body>
+<script>
+  // JSON5.parse()
+</script>
+</html>
