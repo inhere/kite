@@ -19,3 +19,4 @@ vendor/
 .kite.php
 bin/php-cs-fixer
 /plugin/local/
+node_modules/

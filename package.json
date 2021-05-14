@@ -1,0 +1,18 @@
+{
+  "name": "kite-webui",
+  "version": "1.0.0",
+  "description": "kite webui",
+  "main": "public/src/index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "kite"
+  ],
+  "author": "inhere",
+  "license": "MIT",
+  "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "bulmaswatch": "^0.8.1"
+  }
+}

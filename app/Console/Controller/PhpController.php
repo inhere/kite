@@ -98,6 +98,7 @@ class PhpController extends Controller
         'php-bin'  => '',
         // 'addr' => '127.0.0.1:8552',
         'addr'     => '',
+        'envVars'  => [],
     ];
 
     /**
@@ -156,6 +157,7 @@ class PhpController extends Controller
 
         $pds = PhpDevServe::new($serveAddr, $docRoot, $entryFile);
         $pds->setPhpBin($phpBin);
+        $pds->setEnvVars($conf['envVars'] ?? []);
 
         // \vdump($hceEnv , $hceFile);
         if ($hceEnv && $hceFile) {

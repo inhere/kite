@@ -12,6 +12,7 @@ use function gettype;
 use function implode;
 use function is_array;
 use function json_encode;
+use function strlen;
 use function strtolower;
 
 /**
@@ -89,9 +90,16 @@ class BodyData extends MapObject
 
         $fewData = [];
         foreach ($this as $key => $val) {
+            $exampleString = is_array($val) ? json_encode($val) : (string)$val;
+            if (strlen($exampleString) > 64) {
+                $exampleString = '';
+            } else {
+                $exampleString = ' eg: ' . $exampleString;
+            }
+
             $fewData[$key] = [
                 'type'    => Type::get($val, true),
-                'example' => is_array($val) ? json_encode($val) : $val,
+                'example' => $exampleString,
             ];
             if (count($fewData) === $limit) {
                 break;
@@ -120,9 +128,16 @@ class BodyData extends MapObject
                 continue;
             }
 
+            $exampleString = is_array($val) ? json_encode($val) : (string)$val;
+            if (strlen($exampleString) > 64) {
+                $exampleString = '';
+            } else {
+                $exampleString = ' eg: ' . $exampleString;
+            }
+
             $othData[$key] = [
                 'type'    => Type::get($val, true),
-                'example' => is_array($val) ? json_encode($val) : $val,
+                'example' => $exampleString,
             ];
         }
 
@@ -166,7 +181,7 @@ class BodyData extends MapObject
         $params = [];
         foreach ($this as $key => $val) {
             $typeName  = Type::get($val, true);
-            $params[] = "$typeName \${$key}";
+            $params[] = "$typeName \$$key";
             if (count($params) === $limitParam) {
                 break;
             }
