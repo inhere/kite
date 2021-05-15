@@ -247,7 +247,7 @@ class GitUseController extends Controller
         }
 
         if ($keyword) {
-            $msg .= "(keyword: {$keyword})";
+            $msg .= "(keyword: $keyword)";
         }
 
         $output->colored($msg . ':');
@@ -581,6 +581,11 @@ class GitUseController extends Controller
         $message = $input->getSameStringOpt(['m', 'message']);
         if (!$message) {
             $output->liteError('please input an message for git commit');
+            return;
+        }
+
+        if (strlen($message) < 3) {
+            $output->liteError('the input commit message is too short');
             return;
         }
 
