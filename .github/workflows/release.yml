@@ -62,6 +62,7 @@ jobs:
 
       # https://github.com/actions/create-release
       # https://github.com/meeDamian/github-release
+      # https://github.com/softprops/action-gh-release
       - name: Create relase and upload assets
         uses: meeDamian/github-release@2.0
         with:
@@ -69,5 +70,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.RELEASE_TAG }}
           name: ${{ env.RELEASE_TAG }}
-          body: ${{ steps.changelog.output.CHLOGBODY }}
+          body: ${{ steps.changelog.outputs.CHLOGBODY }}
           files: kite-${{ env.RELEASE_TAG }}.phar
