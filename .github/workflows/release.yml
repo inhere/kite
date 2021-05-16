@@ -52,11 +52,13 @@ jobs:
           php -d phar.readonly=0 bin/kite phar:pack -o kite-${RELEASE_TAG}.phar --no-progress
           php kite-${RELEASE_TAG}.phar -V
 
+      # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#steps-context
       - name: Generate changelog file
+        id: changelog
         run: |
           php bin/kite gh cl prev $RELEASE_TAG --style gh-release --no-merges --fetch-tags --file tmp/changelog-${RELEASE_TAG}.md
           changlog=$(cat tmp/changelog-${RELEASE_TAG}.md)
-          echo "RELEASE_BODY=$changlog" >> $GITHUB_ENV
+          echo "::set-output name=CHLOGBODY::$changlog"
 
       # https://github.com/actions/create-release
       # https://github.com/meeDamian/github-release
@@ -67,5 +69,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.RELEASE_TAG }}
           name: ${{ env.RELEASE_TAG }}
-          body: ${{ env.RELEASE_BODY }}
+          body: ${{ steps.changelog.output.CHLOGBODY }}
           files: kite-${{ env.RELEASE_TAG }}.phar
