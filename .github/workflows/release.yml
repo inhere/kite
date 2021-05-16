@@ -24,6 +24,8 @@ jobs:
         run: |
           echo "RELEASE_TAG=${GITHUB_REF:10}" >> $GITHUB_ENV
           echo "RELEASE_NAME=$GITHUB_WORKFLOW" >> $GITHUB_ENV
+          echo $RELEASE_TAG
+          echo $RELEASE_NAME
 
       # usage refer https://github.com/shivammathur/setup-php
       - name: Setup PHP
@@ -45,15 +47,19 @@ jobs:
       # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
       # Docs: https://getcomposer.org/doc/articles/scripts.md
 
-      - name: Build phar and send to github assets
+      - name: Build phar package
         run: |
-          echo $RELEASE_TAG
-          echo $RELEASE_NAME
           php -d phar.readonly=0 bin/kite phar:pack -o kite-${RELEASE_TAG}.phar --no-progress
           php kite-${RELEASE_TAG}.phar -V
 
+      - name: Generate changelog file
+        run: |
+          php bin/kite gh cl prev $RELEASE_TAG --style gh-release --no-merges --file tmp/changelog-${RELEASE_TAG}.md
+
       # https://github.com/actions/create-release
-      - uses: meeDamian/github-release@2.0
+      # https://github.com/meeDamian/github-release
+      - name: Create relase and upload assets
+        uses: meeDamian/github-release@2.0
         with:
           gzip: false
           token: ${{ secrets.GITHUB_TOKEN }}

@@ -8,3 +8,8 @@ curl \
   https://api.github.com/repos/octocat/hello-world/releases/tags/TAG
 ```
 
+
+## release 
+
+https://docs.github.com/en/rest/reference/repos#update-a-release-asset
+

@@ -52,6 +52,7 @@ return [
             'log',
             'info',
             'push',
+            'fetch',
             'update',
             'tagNew',
             'changelog',

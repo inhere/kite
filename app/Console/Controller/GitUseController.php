@@ -123,7 +123,6 @@ class GitUseController extends Controller
 
         $run = CmdRunner::new($this->input->getFullScript());
         $run->do(true);
-        // return $run->isSuccess();
         return true;
     }
 
@@ -679,7 +678,8 @@ class GitUseController extends Controller
      *
      * @arguments
      *  oldVersion   The old version. eg: v1.0.2
-     *                - keywords `latest` will auto use latest tag.
+     *                - keywords `last/latest` will auto use latest tag.
+     *                - keywords `prev/previous` will auto use previous tag.
      *  newVersion   The new version. eg: v1.2.3
      *                - keywords `head` will use `Head` commit.
      *
@@ -802,7 +802,7 @@ class GitUseController extends Controller
         if ($toLower === 'latest' || $toLower === 'last') {
             $version = $this->getDescSortedTags()->first();
             $this->output->info('auto find latest tag: ' . $version);
-        } elseif ($toLower === 'prev') {
+        } elseif ($toLower === 'prev' || $toLower === 'previous') {
             $version = $this->getDescSortedTags()->second();
             $this->output->info('auto find previous tag: ' . $version);
         }

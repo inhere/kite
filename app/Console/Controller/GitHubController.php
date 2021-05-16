@@ -94,7 +94,7 @@ class GitHubController extends Controller
             }
 
             $this->output->notice("will redirect to git group: `git $command`");
-            Console::app()->dispatch("git:{$command}");
+            Console::app()->dispatch("git:$command");
             return true;
         }
 
