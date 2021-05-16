@@ -54,7 +54,9 @@ jobs:
 
       - name: Generate changelog file
         run: |
-          php bin/kite gh cl prev $RELEASE_TAG --style gh-release --no-merges --file tmp/changelog-${RELEASE_TAG}.md
+          php bin/kite gh cl prev $RELEASE_TAG --style gh-release --no-merges --fetch-tags --file tmp/changelog-${RELEASE_TAG}.md
+          changlog=$(cat tmp/changelog-${RELEASE_TAG}.md)
+          echo "RELEASE_BODY=$changlog" >> $GITHUB_ENV
 
       # https://github.com/actions/create-release
       # https://github.com/meeDamian/github-release
@@ -65,4 +67,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.RELEASE_TAG }}
           name: ${{ env.RELEASE_TAG }}
+          body: ${{ env.RELEASE_BODY }}
           files: kite-${{ env.RELEASE_TAG }}.phar

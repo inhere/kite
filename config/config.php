@@ -55,6 +55,8 @@ return [
             'fetch',
             'update',
             'tagNew',
+            'tagList',
+            'tagDelete',
             'changelog',
         ],
     ],

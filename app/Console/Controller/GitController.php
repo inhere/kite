@@ -34,12 +34,11 @@ use function strtolower;
 use function substr;
 
 /**
- * Class GitUseController
+ * Class GitController
  * - git:tag:push   add tag and push to remote
  * - git:tag:delete delete the tag on remote
- *
  */
-class GitUseController extends Controller
+class GitController extends Controller
 {
     protected static $name = 'git';
 
@@ -509,10 +508,6 @@ class GitUseController extends Controller
     /**
      * delete an local and remote tag by `git tag`
      *
-     * @usage
-     *  {command} [-S HOST:PORT]
-     *  {command} [-H HOST] [-p PORT]
-     *
      * @options
      *  -r, --remote        The remote name. default <comment>origin</comment>
      *  -v, --tag           The tag version. eg: v2.0.3
@@ -685,6 +680,7 @@ class GitUseController extends Controller
      *
      * @options
      *  --exclude           Exclude contains given sub-string. multi by comma split.
+     *  --fetch-tags        Update repo tags list by `git fetch --tags`
      *  --file              Export changelog message to file
      *  --filters           Apply built in log filters. multi by `|` split
      *                      allow:
@@ -717,7 +713,11 @@ class GitUseController extends Controller
         // --no-merges
         // --glob=<glob-pattern>
         // --exclude=<glob-pattern>
-        $noMerges = $input->getBoolOpt('no-merges');
+
+        $repo = Repo::new();
+        if ($input->getBoolOpt('fetch-tags')) {
+            $repo->newCmd('fetch', '--tags')->runAndPrint();
+        }
 
         // git log v1.0.7...v1.0.8 --pretty=format:'<project>/commit/%H %s' --reverse
         // git log v1.0.7...v1.0.7 --pretty=format:'<li> <a href="https://github.com/inhere/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse
@@ -741,13 +741,14 @@ class GitUseController extends Controller
 
         // $b->addIf("--exclude $exclude", $exclude);
         // $b->addIf('--abbrev-commit', $abbrevID);
+        $noMerges = $input->getBoolOpt('no-merges');
         $builder->addIf('--no-merges', $noMerges);
         $builder->add('--reverse');
         $builder->run();
 
         $repoUrl = $input->getStringOpt('repo-url');
         if (!$repoUrl) {
-            $info = Repo::new()->getRemoteInfo();
+            $info = $repo->getRemoteInfo();
 
             $repoUrl = $info->getHttpUrl();
         }

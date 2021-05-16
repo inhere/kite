@@ -18,6 +18,7 @@ use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Helper\AppHelper;
 use PhpComp\Http\Client\Client;
 use function in_array;
+use function vdump;
 
 /**
  * Class GitHubGroup
@@ -81,7 +82,7 @@ class GitHubController extends Controller
         }
 
         // resolve alias
-        $gitCtrl = $this->app->getController(GitUseController::getName());
+        $gitCtrl = $this->app->getController(GitController::getName());
         $command = $gitCtrl->getRealCommandName($action);
 
         $redirectGitGroup = $this->settings['redirectGit'] ?? [];
