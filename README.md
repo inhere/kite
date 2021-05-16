@@ -5,14 +5,17 @@
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/inhere/kite)](https://github.com/inhere/kite)
 [![Actions Status](https://github.com/inhere/kite/workflows/Unit-Tests/badge.svg)](https://github.com/inhere/kite/actions)
 
-PHP编写的个人CLI工具包
+PHP编写的个人CLI工具包，方便本地开发和使用的一些工具。
 
-> Github https://github.com/inhere/kite
+> [kite](https://github.com/inhere/kite) 是基于 [inhere/php-console](https://github.com/inhere/php-console) 命令行包编写的CLI应用
 
-主要封装了：
+主要封装常用操作命令：
 
-- git 常用命令操作
-- gitlab 常用命令操作
+- `git`
+- `gitlab`
+- `github`
+- `php`
+- `env`
 
 ## [English](README.md)
 
@@ -143,9 +146,34 @@ kite git tn --next
 **查看最近的变动历史**
 
 ```bash
-kite git changelog
+kite git log
 # 别名
-kite git cl
+kite git lg
+```
+
+![git-recently-log](resource/images/git-log.png)
+
+**查看两个版本直接的变动历史**
+
+命令：`kite git changelog` (别名: `cl` `chlog`)
+
+> 详细的选项和参数请使用 `kite git cl -h` 查看
+
+查看两个版本直接的变动历史，自动根据commit logs生成变动历史记录。
+默认生成markdown格式的，可以直接复制粘贴使用，也支持生成并输出到指定文件中。
+
+```bash
+kite git cl v1.1.2 v1.1.3
+# 可以使用关键字
+kite git cl last head
+kite git cl prev last
+```
+
+带额外选项示例：
+
+```bash
+kite git changelog last head --style gh-release --no-merges
+kite git changelog v2.0.9 v2.0.10 --no-merges --style gh-release --exclude "cs-fixer,format codes"
 ```
 
 ![git-changelog](resource/images/git-changelog.png)
@@ -169,8 +197,8 @@ kite gitlab {command} [arguments ...] [--options ...]
 ```php
 'gitlab' => [
     // remote
-    'mainRemote'       => 'main',
-    'forkRemote'       => 'origin',
+    'mainRemote' => 'main',
+    'forkRemote' => 'origin',
 ],
 ```
 
@@ -246,7 +274,64 @@ kite gl db 'fix_210423,fix_210321'
 kite gl db 'fix_210423,fix_210321' -f
 ```
 
+## Github 使用
+
+主要用于GitHub git快速使用提供的一些常用命令封装
+
+### 命令格式
+
+命令：`github` (别名：`gh, hub`)
+
+```bash
+kite github {command} [arguments ...] [--options ...]
+```
+
+配置:
+
+```php
+'github' => [
+    // remote
+    'mainRemote' => 'main', // 'source'
+    'forkRemote' => 'origin',
+    'redirectGit'   => [
+        'acp',
+        'log',
+        'info',
+        'push',
+        'fetch',
+        'update',
+        'tagNew',
+        'changelog',
+    ],
+],
+```
+
+> **提示** 如配置所示，允许你直接重定向命令到 `git` 命令组执行。
+> 即 `gh log` 实际上执行的是 `git log`，因此在 `git` 下面能用的，`gh` 下也都可用。
+
+**向主仓库发PR**
+
+操作不会直接创建PR，只会打开浏览器并跳转到PR页面，并自会动选择好对应分支
+
+```bash
+# -o 不跟分支，默认会从当前分支 发起到主仓库 对应的当前分支的PR
+kite gl pr -o
+# -o 跟分支，则会从当前分支 发起到主仓库 里给定分支的PR
+kite gl pr -o main
+kite gl pr -o master
+```
+
+**浏览器打开仓库**
+
+```bash
+kite gh open
+```
+
 ## 其他常用命令
+
+**kite json5**
+
+json5 文件格式读取，转换为 json
 
 ### php开发服务器
 
