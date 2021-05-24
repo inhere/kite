@@ -42,6 +42,11 @@ class GitLabController extends Controller
     protected static $description = 'Some useful tool commands for gitlab development';
 
     /**
+     * @var array
+     */
+    private $settings = [];
+
+    /**
      * @return array|string[]
      */
     public static function aliases(): array
@@ -53,8 +58,8 @@ class GitLabController extends Controller
     {
         return [
             'pullRequest'  => ['pr', 'mr'],
-            'deleteBranch' => ['del-br', 'db'],
-            'newBranch'    => ['new-br', 'nb'],
+            'deleteBranch' => ['del-br', 'delbr', 'dbr', 'db'],
+            'newBranch'    => ['new-br', 'newbr', 'nbr', 'nb'],
             'li'           => 'linkInfo',
             'cf'           => 'config',
             'conf'         => 'config',
@@ -111,10 +116,64 @@ class GitLabController extends Controller
      */
     private function getGitlab(): GitLab
     {
-        $config = $this->app->getParam('gitlab', []);
+        // $config = $this->app->getParam('gitlab', []);
         // $gitlab->setWorkDir($this->input->getWorkDir());
 
-        return GitLab::new($this->output, $config);
+        return GitLab::new($this->output, $this->settings);
+    }
+
+    protected function beforeRun(): void
+    {
+        if ($this->app && !$this->settings) {
+            $this->settings = $this->app->getParam('gitlab', []);
+        }
+    }
+
+    /**
+     * @param string $action
+     *
+     * @return bool
+     */
+    protected function onNotFound(string $action): bool
+    {
+        if (!$this->app) {
+            return false;
+        }
+
+        // resolve alias
+        $gitCtrl = $this->app->getController(GitController::getName());
+        $command = $gitCtrl->getRealCommandName($action);
+
+        $redirectGitGroup = $this->settings['redirectGit'] ?? [];
+
+        if (in_array($command, $redirectGitGroup, true)) {
+            // $loadEnvActions = $this->settings['loadEnvOn'] ?? [];
+            // if ($loadEnvActions && in_array($command, $loadEnvActions, true)) {
+            //     $this->output->info(self::getName() . ' - load osEnv setting for command: ' . $command);
+            //     AppHelper::loadOsEnvInfo($this->app);
+            // }
+
+            $this->output->notice("will redirect to git group for run `git $command`");
+            Console::app()->dispatch("git:$command");
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Show a list of commands that will be redirected to git
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function redirectListCommand(Input $input, Output $output): void
+    {
+        $output->aList([
+            'current group' => self::getName(),
+            'current dir'   => $input->getWorkDir(),
+            'redirect cmd'  => $this->settings['redirectGit'],
+        ]);
     }
 
     /**
@@ -244,32 +303,6 @@ class GitLabController extends Controller
         // TODO config remote
 
         $output->success('Complete');
-    }
-
-    /**
-     * run git add/commit/push at once command
-     *
-     * @options
-     *  -m, --message   The commit message
-     *      --not-push  Dont execute git push
-     *
-     * @arguments
-     *  files...   Only add special files
-     *
-     * @param Input  $input
-     * @param Output $output
-     *
-     * @throws ReflectionException
-     */
-    public function acpCommand(Input $input, Output $output): void
-    {
-        $binName = $input->getBinName();
-
-        $output->notice("will redirect to command: git:acp");
-
-        Console::app()->dispatch('git:acp');
-
-        $output->info("TIPS:\n $binName gl:pr -o -t BRANCH");
     }
 
     /**

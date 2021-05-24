@@ -38,6 +38,19 @@ return [
         // group
         'defaultGroup'     => 'wzl',
         'defaultForkGroup' => 'inhere',
+        'redirectGit'   => [
+            'ac',
+            'acp',
+            'log',
+            'info',
+            'push',
+            'fetch',
+            'update',
+            'tagNew',
+            'tagList',
+            'tagDelete',
+            'changelog',
+        ],
     ],
     'github'  => [
         // remote

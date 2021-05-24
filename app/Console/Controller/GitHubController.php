@@ -57,10 +57,10 @@ class GitHubController extends Controller
      */
     private function getGithub(): GitHub
     {
-        $config = $this->app->getParam('github', []);
+        // $config = $this->app->getParam('github', []);
         // $github->setWorkDir($this->input->getWorkDir());
 
-        return GitHub::new($this->output, $config);
+        return GitHub::new($this->output, $this->settings);
     }
 
     protected function beforeRun(): void
@@ -94,7 +94,7 @@ class GitHubController extends Controller
                 AppHelper::loadOsEnvInfo($this->app);
             }
 
-            $this->output->notice("will redirect to git group: `git $command`");
+            $this->output->notice("will redirect to git group for run `git $command`");
             Console::app()->dispatch("git:$command");
             return true;
         }
