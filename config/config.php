@@ -29,14 +29,16 @@ return [
         // 'addr' => '127.0.0.1:8552',
     ],
     'git' => [
-
+        // remote
+        'mainRemote'       => 'main',
+        'forkRemote'       => 'origin',
     ],
     'gitlab'  => [
         // remote
         'mainRemote'       => 'main',
         'forkRemote'       => 'origin',
         // group
-        'defaultGroup'     => 'wzl',
+        'defaultGroup'     => 'group',
         'defaultForkGroup' => 'inhere',
         'redirectGit'   => [
             'ac',

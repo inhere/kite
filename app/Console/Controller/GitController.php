@@ -16,6 +16,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
+use Inhere\Kite\Console\Manage\GitBranchManage;
 use PhpGit\Changelog\Filter\KeywordsFilter;
 use PhpGit\Changelog\Formatter\GithubReleaseFormatter;
 use PhpGit\Changelog\Formatter\SimpleFormatter;
@@ -42,7 +43,7 @@ class GitController extends Controller
 {
     protected static $name = 'git';
 
-    protected static $description = 'Some useful tool commands for quick use git';
+    protected static $description = 'Provide useful tool commands for quick use git';
 
     public static function aliases(): array
     {
@@ -65,6 +66,7 @@ class GitController extends Controller
                 'rmtag',
             ],
             'branch'    => ['br'],
+            'branchUpdate' => ['brup', 'br-up', 'br-update', 'branch-up'],
             'update'    => ['up', 'pul', 'pull'],
             'tagFind'   => ['tagfind', 'tag-find'],
             'tagNew'    => [
@@ -277,6 +279,27 @@ class GitController extends Controller
         } else {
             $output->table($matched, 'Git Branches');
         }
+    }
+
+    /**
+     * Update branch list from remotes
+     *
+     * @arguments
+     *  remote    The remote name for fetch. If not input, will use `origin`
+     *
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @example
+     *  {binWithCmd}
+     *  {binWithCmd} other-remote
+     */
+    public function branchUpdateCommand(Input $input, Output $output): void
+    {
+        $gbm = new GitBranchManage();
+        $gbm->update();
+
+        $output->success('Complete');
     }
 
     /**
