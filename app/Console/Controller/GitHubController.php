@@ -278,6 +278,9 @@ class GitHubController extends Controller
     /**
      * Clone an github repository to local
      *
+     * @options
+     * -w, --workdir    The clone work dir, defualt is current dir.
+     *
      * @arguments
      *  repo    The remote git repo URL or repository name
      *  name    The repository name at local, default is same `repo`
@@ -297,6 +300,7 @@ class GitHubController extends Controller
 
         $gh = $this->getGithub();
 
+        $workDir = $input->getSameStringOpt('w,workdir');
         $repoUrl = $gh->parseRepoUrl($repo);
         if (!$repoUrl) {
             $output->error("invalid github 'repo' address: $repo");
@@ -308,7 +312,13 @@ class GitHubController extends Controller
             $cmd .= " $name";
         }
 
-        CmdRunner::new($cmd)->do(true);
+        $run = CmdRunner::new($cmd);
+
+        if ($workDir) {
+            $run->setWorkDir($workDir);
+        }
+
+        $run->run(true);
 
         $output->success('Complete');
     }

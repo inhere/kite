@@ -296,8 +296,10 @@ class GitController extends Controller
      */
     public function branchUpdateCommand(Input $input, Output $output): void
     {
+        $remote = $input->getStringArg(0, 'origin');
+
         $gbm = new GitBranchManage();
-        $gbm->update();
+        $gbm->update([$remote]);
 
         $output->success('Complete');
     }
@@ -461,7 +463,6 @@ class GitController extends Controller
      * @options
      *  -v, --version       The new tag version. e.g: v2.0.4
      *  -m, --message       The message for add new tag.
-     *      --dry-run       Dont real send git tag and push command
      *      --next          Auto calc next version for add new tag.
      *
      * @param Input  $input

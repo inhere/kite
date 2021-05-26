@@ -17,15 +17,16 @@ class GitBranchManage extends BaseGitManage
      * @param array $remotes
      * @return void
      */
-    public function update(array $remotes = []): void
+    public function update(array $remotes = [], bool $usePull = false): void
     {
         if (!$remotes) {
             $remotes = [self::DEFAULT_REMOTE];
         }
 
         $run = CmdRunner::new();
+        $cmd = $usePull ? 'pull' : 'fetch';
         foreach ($remotes as $remote) {
-            $run->addf('git pull --prune %s', $remote);
+            $run->addf('git %s --prune %s', $cmd, $remote);
         }
 
         $run->runAndPrint();

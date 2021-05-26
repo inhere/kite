@@ -57,6 +57,7 @@ jobs:
         id: changelog
         run: |
           php bin/kite gh cl prev $RELEASE_TAG --style gh-release --no-merges --fetch-tags --file tmp/changelog-${RELEASE_TAG}.md
+          cat tmp/changelog-${RELEASE_TAG}.md
 
       # https://github.com/meeDamian/github-release
 #      - name: Create release and upload assets
