@@ -13,6 +13,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Show;
+use Toolkit\Cli\Util\Download;
 use function basename;
 use function glob;
 use function preg_match;
@@ -144,5 +145,29 @@ class FileController extends Controller
     public function renameCommand(Input $input, Output $output): void
     {
         $output->success('hello');
+    }
+
+    /**
+     * @arguments
+     *   fileUrl   The remote file url address.
+     *
+     * @options
+     *  -v                  Open debug mode.
+     *      --pt   STRING   The progress bar type. allow: txt,bar
+     *  -s, --save STRING   The local file for downloaded.
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function downCommand(Input $input, Output $output): void
+    {
+        $url = $input->getRequiredArg(0);
+
+        $d = Download::create($url);
+        $d->setShowType($input->getStringOpt('pt'));
+        $d->setDebug($input->getBoolOpt('v'));
+        $d->start();
+
+        $output->success("Complete Download: $url");
     }
 }
