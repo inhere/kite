@@ -498,6 +498,7 @@ class GitLabController extends Controller
     {
         $gitlab = $this->getGitlab();
         $branch = $input->getRequiredArg('branch');
+        $branch = $gitlab->getRealBranchName($branch);
         $dryRun = $input->getBoolOpt('dry-run');
 
         $curBranch = $gitlab->getCurBranch();
@@ -515,10 +516,8 @@ class GitLabController extends Controller
         $runner->run(true);
 
         $output->success('Complete. please resolve conflicts by tools or manual');
-        $output->note([
-            'TIPS can exec this command after resolved for quick commit:',
-            "git add . && git commit && git push && kite gl:pr -o && git checkout $curBranch"
-        ]);
+        $output->note('TIPS can exec this command after resolved for quick commit:');
+        $output->colored("git add . && git commit && git push && kite gl pr -o && git checkout $curBranch", 'mga');
     }
 
     /**

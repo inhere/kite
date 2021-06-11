@@ -3,6 +3,8 @@
 namespace Inhere\Kite\Common;
 
 use Toolkit\Stdlib\Arr\ArrayHelper;
+use Toolkit\Stdlib\Util\PhpDotEnv;
+use Toolkit\Sys\Sys;
 
 /**
  * Trait InitApplicationTrait
@@ -11,6 +13,12 @@ use Toolkit\Stdlib\Arr\ArrayHelper;
  */
 trait InitApplicationTrait
 {
+    protected function loadEnvSettings(): void
+    {
+        // TODO get user homedir
+        PhpDotEnv::load('');
+    }
+
     protected function loadAppConfig(string $workDir = ''): void
     {
         $baseFile = BASE_PATH . '/config/config.php';
@@ -45,5 +53,4 @@ trait InitApplicationTrait
         $config['__loaded_file'] = $loaded;
         $this->setConfig($config);
     }
-
 }

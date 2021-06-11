@@ -188,12 +188,16 @@ class GitController extends Controller
     /**
      * display git information for the project
      *
+     * @options
+     * --show-commands  Show exec git commands
+     *
      * @param Input  $input
      * @param Output $output
      */
     public function infoCommand(Input $input, Output $output): void
     {
         $repo = Repo::new();
+        $repo->setPrintCmd($input->getBoolOpt('show-commands'));
 
         $output->aList($repo->getInfo(), 'Project Info', [
             'ucFirst' => false,

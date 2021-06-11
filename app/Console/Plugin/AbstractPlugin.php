@@ -4,13 +4,14 @@ namespace Inhere\Kite\Console\Plugin;
 
 use Inhere\Console\IO\Input;
 use Inhere\Kite\Console\Application;
+use function array_merge;
 
 /**
  * Class AbstractPlugin
  *
  * @package Inhere\Kite\Plugin
  */
-abstract class AbstractPlugin
+abstract class AbstractPlugin implements PluginInterface
 {
     /**
      * @var string
@@ -28,6 +29,21 @@ abstract class AbstractPlugin
     protected $classname = '';
 
     /**
+     * @var array
+     */
+    protected $metadata = [];
+
+    public function init(): void
+    {
+        $this->metadata = array_merge([
+            'author'  => 'inhere',
+            'version' => 'v0.0.1',
+            'desc'    => '',
+            'example' => '',
+        ], $this->metadata());
+    }
+
+    /**
      * Metadata for the plugin
      *
      * @return array
@@ -38,6 +54,7 @@ abstract class AbstractPlugin
             // 'author' => 'inhere',
             // 'version' => '',
             // 'desc' => '',
+            // 'example' => '',
         ];
     }
 
@@ -74,10 +91,10 @@ abstract class AbstractPlugin
         // $meta = $this->metadata();
 
         return [
-            'name'     => $this->name,
+            'name'  => $this->name,
             // 'desc'     => $meta['desc'] ?? '',
-            'class'    => $this->classname,
-            'path'     => $this->filepath,
+            'class' => $this->classname,
+            'path'  => $this->filepath,
         ];
     }
 
@@ -135,5 +152,13 @@ abstract class AbstractPlugin
     public function setClassname(string $classname): void
     {
         $this->classname = $classname;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMetadata(): array
+    {
+        return $this->metadata;
     }
 }

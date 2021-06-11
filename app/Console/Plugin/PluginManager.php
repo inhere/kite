@@ -13,6 +13,7 @@ use function basename;
 use function class_exists;
 use function is_dir;
 use function is_file;
+use function rtrim;
 use function strlen;
 use function strpos;
 use function substr;
@@ -98,10 +99,18 @@ class PluginManager
     public function showInfo(AbstractPlugin $plugin): void
     {
         Color::println($plugin->getName() . ':', 'comment');
-        Color::println('  ' . $plugin->getDesc());
+        Color::println('  ' . $plugin->getDesc(), 'normal');
 
-        Show::aList($plugin->getHelpInfo(), 'Information');
+        // Show::aList($plugin->getHelpInfo(), 'Information');
+        $panel = [
+            'Information' => $plugin->getHelpInfo(),
+        ];
+        $meta = $plugin->getMetadata();
+        if ($meta['example']) {
+            $panel['example'] = $meta['example'];
+        }
 
+        Show::mList($panel);
     }
 
     /**
@@ -130,7 +139,7 @@ class PluginManager
             return false;
         }
 
-        return $this->loadPlugin($name) ? true : false;
+        return $this->loadPlugin($name) !== null;
     }
 
     /**
@@ -138,7 +147,7 @@ class PluginManager
      *
      * @param string $name plugin name or file path
      *
-     * @return bool
+     * @return AbstractPlugin|null
      */
     protected function loadPlugin(string $name): ?AbstractPlugin
     {
@@ -168,6 +177,7 @@ class PluginManager
         $pluginObj->setName($name);
         $pluginObj->setFilepath($filename);
         $pluginObj->setClassname($className);
+        $pluginObj->init();
 
         $this->plugins[$name] = $pluginObj;
         return $pluginObj;
@@ -185,7 +195,6 @@ class PluginManager
         if ($hasPhpSuffix && is_file($name)) {
             // $path = $name;
             // $name = substr($name, 0, -4);
-
             $this->pluginFiles[$name] = $name;
             return true;
         }
@@ -199,7 +208,7 @@ class PluginManager
         // find in all plugin dirs
         $founded = false;
         foreach ($this->pluginDirs as $dir) {
-            $filename = $dir . '/' . $name . '.php';
+            $filename = rtrim($dir, '/') . '/' . $name . '.php';
             if (is_file($filename)) {
                 $founded = true;
 
@@ -246,7 +255,7 @@ class PluginManager
     }
 
     /**
-     * @return Closure
+     * @return callable
      */
     protected function getFileFilter(): callable
     {

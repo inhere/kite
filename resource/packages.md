@@ -26,7 +26,12 @@ composer require knplabs/github-api:^3.0 guzzlehttp/guzzle:^7.0.1 http-interop/h
 > https://github.com/json-next/awesome-json-next
 
 - `colinodell/json5` json5 parse
-- `laktak/hjson` 
+- `laktak/hjson`
+
+**crontab**
+
+- `dragonmantank/cron-expression` https://github.com/dragonmantank/cron-expression
+- `phpcom-lab/hucron` https://github.com/phpcom-lab/hucron
 
 ## Frontend Packages
 

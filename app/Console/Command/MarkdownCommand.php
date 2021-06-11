@@ -27,7 +27,7 @@ class MarkdownCommand extends Command
 
     public static function aliases(): array
     {
-        return ['md', 'md:read'];
+        return ['md', 'mkdown'];
     }
 
     /**

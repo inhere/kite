@@ -19,6 +19,10 @@ class DemoPlugin extends AbstractPlugin
         ];
     }
 
+    /**
+     * @param Application $app
+     * @param Input       $input
+     */
     public function exec(Application $app, Input $input): void
     {
         vdump(__METHOD__);
