@@ -12,5 +12,5 @@ vendor/
 .env
 .phpstorm.meta.php
 .DS_Store
-.kite.inc
+.kite.php
 bin/php-cs-fixer

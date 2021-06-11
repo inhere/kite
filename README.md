@@ -98,7 +98,7 @@ kite git acp -m "commit message"
 kite acp -m "commit message"
 ```
 
-> TIPs: `acp` 是 `git:acp` 命令的别名，你也可以添加自己常用的别名到 `~/.kite/.kite.inc`
+> TIPs: `acp` 是 `git:acp` 命令的别名，你也可以添加自己常用的别名到 `~/.kite/.kite.php`
 
 ![git-acp](resource/images/alias-acp.png)
 
@@ -192,7 +192,7 @@ kite gitlab {command} [arguments ...] [--options ...]
 
 ### 相关配置
 
-这是默认配置，如果你的使用习惯不同，请通过用户配置文件(`~/.kite/.kite.inc`)调整覆盖 
+这是默认配置，如果你的使用习惯不同，请通过用户配置文件(`~/.kite/.kite.php`)调整覆盖 
 
 ```php
 'gitlab' => [
@@ -321,7 +321,7 @@ kite gl pr -o main
 kite gl pr -o master
 ```
 
-**浏览器打开仓库**
+**在浏览器打开仓库**
 
 ```bash
 kite gh open
@@ -331,7 +331,7 @@ kite gh open
 
 **kite json5**
 
-json5 文件格式读取，转换为 json
+`json5` 文件格式读取，转换为 `json`
 
 ### php开发服务器
 
@@ -384,7 +384,7 @@ kite php serve
 
 ![](resource/images/kite-php-serve-start.png)
 
-### env环境信息
+### ENV环境信息
 
 显示全部环境变量信息：
 
@@ -424,7 +424,7 @@ Matched Results(Kw:ter)
 
 除了使用内部提供的命令，`kite` 也提供了快速的 `scripts` 脚本配置。
 
-下面是一份默认的快捷 `scripts` 配置，你同样可以通过用户配置文件 `~/.kite/.kite.inc` 添加自己的脚本命令
+下面是一份默认的快捷 `scripts` 配置，你同样可以通过用户配置文件 `~/.kite/.kite.php` 添加自己的脚本命令
 
 ```php
 <?php
@@ -470,7 +470,7 @@ kite gst
     ],
 ```
 
-你可以添加自己常用的别名到 `~/.kite/.kite.inc` 用户配置文件中
+你可以添加自己常用的别名到 `~/.kite/.kite.php` 用户配置文件中
 
 ![self-config-aliases](resource/images/self-config-aliases.png)
 
@@ -590,6 +590,6 @@ rm -rf ~/.kite
 - https://github.com/php-toolkit/stdlib
 - https://github.com/ulue/phpgit
 
-## Thanks
+## Refer
 
 - linux command docs by https://github.com/jaywcjlove/linux-command
