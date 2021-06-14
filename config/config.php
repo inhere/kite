@@ -4,6 +4,10 @@ return [
     'app'  => [
         'staticDir' => '/static',
     ],
+    'webui' => [
+        'addr' => '127.0.0.1:8090',
+        'root' => BASE_PATH . '/public',
+    ],
     'staticDir' => [
         '/static' => BASE_PATH . '/pub'
     ],
@@ -13,9 +17,6 @@ return [
         'globalVars' => [
             '_staticPath' => '/static'
         ],
-    ],
-    'webui' => [
-        'addr' => '127.0.0.1:8090',
     ],
     // @see app/Console/Controller/PhpController.php
     'php:serve' => [
@@ -86,6 +87,7 @@ return [
         'acp'    => 'git:acp',
         'glpr'   => 'gitlab:pr',
         'config' => 'self config',
+        'webui'  => 'self webui',
     ],
     // tool command usage docs
     'manDocs' => [

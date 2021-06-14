@@ -7,14 +7,18 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Console\Util\PhpDevServe;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\SysCmd;
 use Inhere\Kite\Kite;
+use Throwable;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Sys;
 use function array_keys;
+use function array_merge;
 use function count;
 use function is_scalar;
+use function vdump;
 use const BASE_PATH;
 
 /**
@@ -42,7 +46,9 @@ class SelfController extends Controller
     {
         return [
             'up'     => 'update',
-            'web'    => 'serve',
+            'webui'    => [
+                'web', 'webUI', 'web-ui'
+            ],
             'config' => [
                 'conf'
             ],
@@ -73,7 +79,7 @@ class SelfController extends Controller
             'root path'    => $conf['rootPath'],
             'script count' => count($conf['scripts']),
             'plugin dirs'  => Kite::plugManager()->getPluginDirs(),
-            'config files'  => $conf['__loaded_file'],
+            'config files' => $conf['__loaded_file'],
         ], 'information');
     }
 
@@ -167,5 +173,64 @@ class SelfController extends Controller
         }
 
         $output->success('Complete');
+    }
+
+    /**
+     * [
+     *  'addr' => '127.0.0.1:8090',
+     * ]
+     *
+     * @var array
+     */
+    protected $webUi = [
+        // document root
+        // 'root'     => 'public',
+        'root'     => '',
+        // 'entry'     => 'public/index.php',
+        'entry'    => '',
+        // 'php-bin'  => 'php'
+        'php-bin'  => '',
+        // address
+        'addr' => '127.0.0.1:8552',
+    ];
+
+    /**
+     * start the kite web UI server
+     *
+     * @usage
+     *  {binWithCmd} [-S HOST]
+     *  {binWithCmd} [-S :PORT]
+     *  {binWithCmd} [-S HOST:PORT]
+     *
+     * @options
+     *  -s, -S, --addr STRING    The http server address. e.g 127.0.0.1:8552
+     *  -b, --php-bin STRING     The php binary file(<comment>php</comment>)
+     *      --show-info          Only show serve info, not start listen
+     *
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @throws Throwable
+     */
+    public function webuiCommand(Input $input, Output $output): void
+    {
+        $this->webUi = array_merge($this->webUi, $this->app->getParam('webui', []));
+        vdump(BASE_PATH, $this->webUi);
+
+        $svrAddr = $input->getSameStringOpt('s,S,addr', $this->webUi['addr']);
+        $phpBin  = $input->getStringOpt('php-bin', $this->webUi['php-bin']);
+        // $docRoot = $input->getSameStringOpt('t,doc-root', $conf['root']);
+
+        $docRoot = $this->webUi['root'];
+        // $pds = PhpDevServe::new($svrAddr, 'public', 'public/index.php');
+        $pds = PhpDevServe::new($svrAddr, $docRoot);
+        $pds->setPhpBin($phpBin);
+
+        if ($input->getBoolOpt('show-info')) {
+            $output->aList($pds->getInfo(), 'Listen Information', ['ucFirst' => false]);
+            return;
+        }
+
+        $pds->listen();
     }
 }

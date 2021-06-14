@@ -11,7 +11,7 @@ use Inhere\Console\IO\Output;
  *
  * @package Inhere\Kite\Console\Group
  */
-class NewProjectGroup extends Controller
+class ProjectController extends Controller
 {
     protected static $name = 'new';
 
