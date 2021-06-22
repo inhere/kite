@@ -14,9 +14,9 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 
 /**
- * Class DemoGroup
+ * Class DemoController
  */
-class DemoGroup extends Controller
+class JsonController extends Controller
 {
     protected static $name = 'demo';
 

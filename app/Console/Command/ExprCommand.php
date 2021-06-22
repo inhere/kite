@@ -18,23 +18,22 @@ use InvalidArgumentException;
 use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use Symfony\Component\VarExporter\Exception\ExceptionInterface;
 use Symfony\Component\VarExporter\VarExporter;
 use Throwable;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\Color;
+use Toolkit\Stdlib\Helper\DataHelper;
 use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Str\StrBuffer;
 use function array_shift;
 use function count;
 use function is_numeric;
-use function is_scalar;
 use function strpos;
 use function substr;
 use function trim;
 
 /**
- * Class DemoPlugin
+ * Class ExprCommand
  */
 class ExprCommand extends Command
 {
@@ -141,7 +140,7 @@ class ExprCommand extends Command
 
             // save last result.
             $this->vars['ret'] = $value;
-            echo is_scalar($value) ? $value : VarExporter::export($value);
+            echo DataHelper::toString($value);
         }, [
             'prefix'      => 'EXPR',
             'validator'   => function (string $line) {
@@ -175,7 +174,7 @@ class ExprCommand extends Command
         $buf->writeln('reset        Reset all defined vars. eg: reset');
         $buf->writeln('history      Display histories');
 
-        return static function (array $keys) use ($buf) {
+        return static function () use ($buf) {
             Cli::write($buf->toString(), false);
         };
     }
@@ -184,7 +183,6 @@ class ExprCommand extends Command
      * @param string $expr
      *
      * @return bool
-     * @throws ExceptionInterface
      */
     public function filterExpr(string $expr): bool
     {
@@ -267,13 +265,11 @@ class ExprCommand extends Command
      * @param string $var
      *
      * @return bool
-     * @throws ExceptionInterface
      */
     protected function showVarValue(string $var): bool
     {
         if (isset($this->vars[$var])) {
-            $val = $this->vars[$var];
-            echo is_scalar($val) ? $val : VarExporter::export($val);
+            echo DataHelper::toString($this->vars[$var]);
             return true;
         }
 

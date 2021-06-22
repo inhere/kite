@@ -14,10 +14,13 @@ use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use function date;
+use function explode;
+use function implode;
 use function strlen;
 use function strtotime;
 use function substr;
 use function time;
+use function trim;
 
 /**
  * Class UtilController
@@ -53,10 +56,34 @@ class UtilController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'tc'  => 'timeConv',
-            'fjb' => 'findJetBrains',
-            'random' => ['rdm', 'rand']
+            'tc'     => 'timeConv',
+            'fjb'    => 'findJetBrains',
+            'random' => ['rdm', 'rand'],
+            'join'   => ['implode'],
         ];
+    }
+
+    /**
+     * join multi line text
+     *
+     * @options
+     *  --sep    The separator char. Defaults to an empty string.
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function joinCommand(Input $input, Output $output): void
+    {
+        $text = trim($input->getStringArg(0));
+        if (!$text) {
+            $output->colored('empty text');
+            return;
+        }
+
+        $lines = explode("\n", $text);
+
+        $sep = $input->getStringOpt('sep');
+        echo implode($sep, $lines), "\n";
     }
 
     /**
@@ -102,7 +129,7 @@ class UtilController extends Controller
      */
     public function randomCommand(Input $input, Output $output): void
     {
-        $length = $input->getSameIntOpt('l,length', 12);
+        $length  = $input->getSameIntOpt('l,length', 12);
         $samples = [
             'alpha'       => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
             'alpha_num'   => '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
