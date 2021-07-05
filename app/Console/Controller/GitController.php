@@ -33,6 +33,7 @@ use function strlen;
 use function strpos;
 use function strtolower;
 use function substr;
+use function trim;
 
 /**
  * Class GitController
@@ -606,6 +607,7 @@ class GitController extends Controller
             return;
         }
 
+        $message = trim($message);
         if (strlen($message) < 3) {
             $output->liteError('the input commit message is too short');
             return;
