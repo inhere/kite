@@ -27,6 +27,7 @@ use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Str\StrBuffer;
 use function array_shift;
 use function count;
+use function in_array;
 use function is_numeric;
 use function strpos;
 use function substr;
@@ -82,12 +83,11 @@ class ExprCommand extends Command
             public function getFunctions(): array
             {
                 return [
-                    /** @see time() */
-                    ExpressionFunction::fromPhp('time'),
-                    /** @see date() */
-                    ExpressionFunction::fromPhp('date'),
-                    /** @see round() */
-                    ExpressionFunction::fromPhp('round'),
+                    ExpressionFunction::fromPhp('time'), /** @see time() */
+                    ExpressionFunction::fromPhp('date'), /** @see date() */
+                    ExpressionFunction::fromPhp('round'), /** @see round() */
+                    ExpressionFunction::fromPhp('ceil'), /** @see ceil() */
+                    ExpressionFunction::fromPhp('floor'), /** @see floor() */
                 ];
             }
         };
@@ -130,9 +130,14 @@ class ExprCommand extends Command
 
     private function runByShell(): void
     {
-        IShell::run(function ($expr) {
+        IShell::run(function (string $expr) {
             if ($this->filterExpr($expr)) {
                 return;
+            }
+
+            $firstChar = $expr[0];
+            if (in_array($firstChar, ['+', '-', '*', '/'], true)) {
+                $expr = 'ret ' . $expr;
             }
 
             // evaluate

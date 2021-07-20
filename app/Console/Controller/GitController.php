@@ -590,8 +590,9 @@ class GitController extends Controller
      *
      * @options
      *  -m, --message   The commit message
-     *      --not-push  Dont execute git push
-     *      --dry-run   Dont real execute command
+     *      --not-push   Dont execute git push
+     *      --auto-sign  Auto add sign string after message.
+     *      --sign-text  Dont real execute command
      *
      * @arguments
      *  files...   Only add special files
@@ -621,6 +622,11 @@ class GitController extends Controller
         }
 
         $dryRun = $input->getBoolOpt('dry-run');
+
+        if ($input->getBoolOpt('auto-sign')) {
+            // eg "Signed-off-by: inhere <in.798@qq.com>"
+
+        }
 
         $run = CmdRunner::new("git status $added");
         $run->setDryRun($dryRun);
