@@ -14,9 +14,10 @@ use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
+use Inhere\Kite\Common\MapObject;
+use Inhere\Kite\Console\Manage\GitBranchManage;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
-use Inhere\Kite\Console\Manage\GitBranchManage;
 use PhpGit\Changelog\Filter\KeywordsFilter;
 use PhpGit\Changelog\Formatter\GithubReleaseFormatter;
 use PhpGit\Changelog\Formatter\SimpleFormatter;
@@ -26,6 +27,7 @@ use PhpGit\Info\TagsInfo;
 use PhpGit\Repo;
 use Toolkit\Stdlib\Str;
 use function array_keys;
+use function edump;
 use function implode;
 use function in_array;
 use function sprintf;
@@ -46,6 +48,11 @@ class GitController extends Controller
 
     protected static $description = 'Provide useful tool commands for quick use git';
 
+    /**
+     * @var MapObject
+     */
+    private $settings;
+
     public static function aliases(): array
     {
         return ['g'];
@@ -54,9 +61,9 @@ class GitController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'changelog' => ['chlog', 'clog', 'cl'],
-            'log'       => ['l', 'lg'],
-            'tagDelete' => [
+            'changelog'    => ['chlog', 'clog', 'cl'],
+            'log'          => ['l', 'lg'],
+            'tagDelete'    => [
                 'tag-del',
                 'tagdel',
                 'tag:del',
@@ -66,11 +73,11 @@ class GitController extends Controller
                 'rm-tag',
                 'rmtag',
             ],
-            'branch'    => ['br'],
+            'branch'       => ['br'],
             'branchUpdate' => ['brup', 'br-up', 'br-update', 'branch-up'],
-            'update'    => ['up', 'pul', 'pull'],
-            'tagFind'   => ['tagfind', 'tag-find'],
-            'tagNew'    => [
+            'update'       => ['up', 'pul', 'pull'],
+            'tagFind'      => ['tagfind', 'tag-find'],
+            'tagNew'       => [
                 'tagnew',
                 'tag-new',
                 'tn',
@@ -80,8 +87,8 @@ class GitController extends Controller
                 'tp',
                 'tag-push',
             ],
-            'tagList'   => ['tag', 'tags', 'tl', 'taglist'],
-            'tagInfo'   => ['tag-info', 'ti', 'tag-show'],
+            'tagList'      => ['tag', 'tags', 'tl', 'taglist'],
+            'tagInfo'      => ['tag-info', 'ti', 'tag-show'],
         ];
     }
 
@@ -97,15 +104,20 @@ class GitController extends Controller
         ];
     }
 
+    protected function beforeRun(): void
+    {
+        if ($this->app && !$this->settings) {
+            $this->settings = MapObject::new($this->app->getParam('git', []));
+        }
+    }
+
     /**
      * @return bool
      */
-    protected function beforeExecute(): bool
+    protected function beforeAction(): bool
     {
         if ($this->app) {
-            $groupSettings = $this->app->getParam('git', []);
-            $proxyActions  = $groupSettings['loadEnvOn'] ?? [];
-
+            $proxyActions = $this->settings['loadEnvOn'] ?? [];
             if ($proxyActions && in_array($this->getAction(), $proxyActions, true)) {
                 AppHelper::loadOsEnvInfo($this->app);
             }
@@ -248,7 +260,7 @@ class GitController extends Controller
 
         $msg = 'Branch List';
         if (strlen($remote) > 1) {
-            $msg .= " Of '{$remote}'";
+            $msg .= " Of '$remote'";
         }
 
         if ($keyword) {
@@ -407,7 +419,7 @@ class GitController extends Controller
         $title = '<info>The latest tag version</info>: <b>%s</b>';
 
         if ($nextTag) {
-            $title   = "<info>The next tag version</info>: <b>%s</b> (current: {$tagName})";
+            $title   = "<info>The next tag version</info>: <b>%s</b> (current: $tagName)";
             $tagName = GitUtil::buildNextTag($tagName);
         }
 
@@ -621,15 +633,26 @@ class GitController extends Controller
             $added = implode(' ', $args);
         }
 
-        $dryRun = $input->getBoolOpt('dry-run');
+        $signText = $input->getStringOpt('sign-text', $this->settings->getString('sign-text'));
+        $autoSign = $input->getBoolOpt('auto-sign', $this->settings->getBool('auto-sign'));
 
-        if ($input->getBoolOpt('auto-sign')) {
+        // will auto fetch user info by git
+        if ($autoSign && !$signText) {
+            $git = Git::new();
+            $username = $git->config->get('user.name');
+            $userEmail = $git->config->get('user.email');
             // eg "Signed-off-by: inhere <in.798@qq.com>"
+            if ($username && $userEmail) {
+                $signText = "$username <$userEmail>";
+            }
+        }
 
+        if ($signText) {
+            $message .= "\nSigned-off-by: $signText";
         }
 
         $run = CmdRunner::new("git status $added");
-        $run->setDryRun($dryRun);
+        $run->setDryRun($input->getBoolOpt('dry-run'));
 
         $run->do(true);
         $run->afterOkDo("git add $added");
@@ -689,7 +712,7 @@ class GitController extends Controller
         $b->addIf("--exclude=$exclude", $exclude);
         $b->addIf('--abbrev-commit', $abbrevID);
         $b->addIf('--no-merges', $noMerges);
-        $b->add("-{$maxCommit}");
+        $b->add("-$maxCommit");
 
         $b->runAndPrint();
 

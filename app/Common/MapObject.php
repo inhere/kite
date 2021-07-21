@@ -34,6 +34,32 @@ class MapObject extends ArrayObject
 
     /**
      * @param string $key
+     * @param bool   $default
+     *
+     * @return bool
+     */
+    public function getBool(string $key, bool $default = false): bool
+    {
+        if ($this->offsetExists($key)) {
+            return (bool)$this->offsetGet($key);
+        }
+
+        return $default;
+    }
+
+    /**
+     * @param string $key
+     * @param int    $default
+     *
+     * @return int
+     */
+    public function getInt(string $key, int $default = 0): int
+    {
+        return $this->getInteger($key, $default);
+    }
+
+    /**
+     * @param string $key
      * @param int    $default
      *
      * @return int

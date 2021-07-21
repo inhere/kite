@@ -10,13 +10,10 @@
 namespace Inhere\Kite\Console;
 
 use Inhere\Console\ConsoleEvent;
-use Inhere\Kite\Common\InitApplicationTrait;
+use Inhere\Kite\Common\Traits\InitApplicationTrait;
 use Inhere\Kite\Console\Listener\NotFoundListener;
 use Inhere\Kite\Console\Plugin\PluginManager;
 use Inhere\Kite\Kite;
-use Toolkit\Stdlib\Arr\ArrayHelper;
-use function file_exists;
-use const BASE_PATH;
 
 /**
  * Class Application

@@ -1,10 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Common;
+namespace Inhere\Kite\Common\Traits;
 
 use Toolkit\Stdlib\Arr\ArrayHelper;
 use Toolkit\Stdlib\Util\PhpDotEnv;
-use Toolkit\Sys\Sys;
 
 /**
  * Trait InitApplicationTrait
