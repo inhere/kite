@@ -1,10 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Common;
+namespace Inhere\Kite\Common\Template;
 
 use InvalidArgumentException;
 use Toolkit\FsUtil\File;
-use Toolkit\Stdlib\Obj;
 use function is_file;
 use function strpos;
 

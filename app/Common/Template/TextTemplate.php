@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Common;
+namespace Inhere\Kite\Common\Template;
 
 use InvalidArgumentException;
 use RuntimeException;
@@ -22,13 +22,8 @@ use const PHP_EOL;
  *
  * @package Inhere\Kite\Model\Logic
  */
-class TextTemplate
+class TextTemplate extends AbstractTemplate
 {
-    /**
-     * @var array
-     */
-    protected $globalVars = [];
-
     /**
      * @var string[]
      */
@@ -92,22 +87,6 @@ class TextTemplate
         }
 
         return $this->renderFile($tempFile, $vars);
-    }
-
-    /**
-     * @return array
-     */
-    public function getGlobalVars(): array
-    {
-        return $this->globalVars;
-    }
-
-    /**
-     * @param array $globalVars
-     */
-    public function setGlobalVars(array $globalVars): void
-    {
-        $this->globalVars = $globalVars;
     }
 
     /**
