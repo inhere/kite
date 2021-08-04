@@ -8,12 +8,14 @@ use JsonSerializable;
 use RuntimeException;
 use Toolkit\FsUtil\Dir;
 use Toolkit\Stdlib\Json;
+use Toolkit\Stdlib\OS;
 use function array_values;
 use function date;
 use function dirname;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
+use function getcwd;
 use function is_dir;
 use function md5;
 use function stripos;
@@ -220,6 +222,12 @@ class JumpStorage implements JsonSerializable
      */
     public function matchOne(string $keywords): string
     {
+        if (!$keywords || '.' === $keywords) {
+            return OS::getWorkDir();
+        }
+
+        // TODO = '.'
+
         if (is_dir($keywords)) {
             return $keywords;
         }

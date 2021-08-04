@@ -385,7 +385,6 @@ INTO: /Users/inhere/Workspace/godev
 
 ![](resource/images/kite-jump-use.png)
 
-
 ## 其他常用命令
 
 **kite json5**

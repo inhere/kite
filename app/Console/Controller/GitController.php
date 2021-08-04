@@ -775,7 +775,7 @@ class GitController extends Controller
 
         $repo = Repo::new();
         if ($input->getBoolOpt('fetch-tags')) {
-            $repo->newCmd('fetch', '--tags')->runAndPrint();
+            $repo->newCmd('fetch', '--tags', '--force')->runAndPrint();
         }
 
         // git log v1.0.7...v1.0.8 --pretty=format:'<project>/commit/%H %s' --reverse
