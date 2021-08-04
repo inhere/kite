@@ -31,7 +31,8 @@
     "guzzlehttp/guzzle": "^7.0.1",
     "http-interop/http-factory-guzzle": "^1.0",
     "dragonmantank/cron-expression": "^3.1",
-    "symfony/expression-language": "^5.3"
+    "symfony/expression-language": "^5.3",
+    "monolog/monolog": "^2.3"
   },
   "autoload": {
     "psr-4": {

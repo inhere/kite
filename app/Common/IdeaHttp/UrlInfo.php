@@ -2,7 +2,7 @@
 
 namespace Inhere\Kite\Common\IdeaHttp;
 
-use Inhere\Kite\Common\MapObject;
+use Toolkit\Stdlib\Obj\ConfigObject;
 use Toolkit\Stdlib\Str;
 use function basename;
 use function strpos;
@@ -14,7 +14,7 @@ use const PHP_EOL;
  * @see \parse_url()
  * @package Inhere\Kite\Common\IdeaHttp
  */
-class UrlInfo extends MapObject
+class UrlInfo extends ConfigObject
 {
     /**
      * @param bool $newline

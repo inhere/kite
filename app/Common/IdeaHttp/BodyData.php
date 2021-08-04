@@ -2,13 +2,12 @@
 
 namespace Inhere\Kite\Common\IdeaHttp;
 
-use Inhere\Kite\Common\MapObject;
 use Inhere\Kite\Http\ContentType;
 use RuntimeException;
+use Toolkit\Stdlib\Obj\ConfigObject;
 use Toolkit\Stdlib\Str\UrlHelper;
 use Toolkit\Stdlib\Type;
 use function count;
-use function gettype;
 use function implode;
 use function is_array;
 use function json_encode;
@@ -20,7 +19,7 @@ use function strtolower;
  *
  * @package Inhere\Kite\Common\IdeaHttp
  */
-class BodyData extends MapObject
+class BodyData extends ConfigObject
 {
     /**
      * @var string
@@ -121,7 +120,7 @@ class BodyData extends MapObject
         }
 
         $indexNum = 0;
-        $othData = [];
+        $othData  = [];
         foreach ($this as $key => $val) {
             $indexNum++;
             if ($indexNum <= $skip) {
@@ -180,7 +179,7 @@ class BodyData extends MapObject
 
         $params = [];
         foreach ($this as $key => $val) {
-            $typeName  = Type::get($val, true);
+            $typeName = Type::get($val, true);
             $params[] = "$typeName \$$key";
             if (count($params) === $limitParam) {
                 break;

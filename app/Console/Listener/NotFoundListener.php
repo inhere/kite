@@ -4,6 +4,7 @@ namespace Inhere\Kite\Console\Listener;
 
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Console\Application;
+use Inhere\Kite\Kite;
 use Toolkit\Sys\Sys;
 
 /**
@@ -36,9 +37,9 @@ final class NotFoundListener
         $scripts = $app->getParam('scripts', []);
         if (!$scripts || !isset($scripts[$cmd])) {
             // - run plugin
-            if ($app->getPlugManager()->isPlugin($cmd)) {
+            if (Kite::plugManager()->isPlugin($cmd)) {
                 $app->notice("input is an plugin name, will run plugin: $cmd");
-                $app->getPlugManager()->run($cmd, $app);
+                Kite::plugManager()->run($cmd, $app);
                 return true;
             }
 

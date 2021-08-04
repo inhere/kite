@@ -13,6 +13,7 @@ use Inhere\Kite\Console\Application;
 use Inhere\Kite\Console\Plugin\PluginManager;
 use Inhere\Kite\Http\Application as WebApplication;
 use Inhere\Route\Router;
+use Monolog\Logger;
 use Toolkit\Stdlib\Obj\ObjectBox;
 
 /**
@@ -33,14 +34,6 @@ class Kite
      * @var WebApplication
      */
     private static $webApp;
-
-    /**
-     * @return ObjectBox
-     */
-    public static function objs(): ObjectBox
-    {
-        return ObjectBox::global();
-    }
 
     /**
      * @return WebApplication
@@ -67,11 +60,19 @@ class Kite
     }
 
     /**
+     * @return ObjectBox
+     */
+    public static function objs(): ObjectBox
+    {
+        return ObjectBox::global();
+    }
+
+    /**
      * @return Router
      */
     public static function webRouter(): Router
     {
-        return self::$webApp->getRouter();
+        return self::objs()->get('router');
     }
 
     /**
@@ -79,7 +80,15 @@ class Kite
      */
     public static function plugManager(): PluginManager
     {
-        return self::$cliApp->getPlugManager();
+        return self::objs()->get('plugManager');
+    }
+
+    /**
+     * @return Logger
+     */
+    public static function logger(): Logger
+    {
+        return self::objs()->get('logger');
     }
 
     /**

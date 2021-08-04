@@ -2,7 +2,11 @@
 
 namespace Inhere\Kite\Common\Traits;
 
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Logger;
 use Toolkit\Stdlib\Arr\ArrayHelper;
+use Toolkit\Stdlib\Obj\ObjectBox;
+use Toolkit\Stdlib\OS;
 use Toolkit\Stdlib\Util\PhpDotEnv;
 
 /**
@@ -14,10 +18,14 @@ trait InitApplicationTrait
 {
     protected function loadEnvSettings(): void
     {
-        // TODO get user homedir
-        PhpDotEnv::load('');
+        // get user homedir
+        $homeDir = OS::getUserHomeDir();
+        PhpDotEnv::load($homeDir . '/.config/.kite.env');
     }
 
+    /**
+     * @param string $workDir
+     */
     protected function loadAppConfig(string $workDir = ''): void
     {
         $baseFile = BASE_PATH . '/config/config.php';
@@ -51,5 +59,19 @@ trait InitApplicationTrait
 
         $config['__loaded_file'] = $loaded;
         $this->setConfig($config);
+    }
+
+    /**
+     * @param ObjectBox $box
+     */
+    protected function registerComServices(ObjectBox $box): void
+    {
+        $box->set('logger', function () {
+            $logger = new Logger('kite');
+            $handler = new RotatingFileHandler(BASE_PATH . '/tmp/kite.log');
+            $logger->pushHandler($handler);
+
+            return $logger;
+        });
     }
 }

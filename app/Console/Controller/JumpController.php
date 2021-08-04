@@ -15,8 +15,9 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\Jump\JumpShell;
 use Inhere\Kite\Common\Jump\QuickJumpDir;
-use Inhere\Kite\Common\MapObject;
 use Inhere\Kite\Common\Template\SimpleTemplate;
+use Inhere\Kite\Kite;
+use Toolkit\Stdlib\Obj\ConfigObject;
 use Toolkit\Sys\Util\ShellUtil;
 use function implode;
 use function is_dir;
@@ -31,11 +32,6 @@ class JumpController extends Controller
     protected static $name = 'jump';
 
     protected static $description = 'Jump helps you navigate faster by learning your habits.';
-
-    /**
-     * @var MapObject
-     */
-    private $settings;
 
     public static function aliases(): array
     {
@@ -52,8 +48,8 @@ class JumpController extends Controller
 
     protected function beforeRun(): void
     {
-        if ($this->app && !$this->settings) {
-            $this->settings = MapObject::new($this->app->getParam('jump', []));
+        if ($this->app && !$this->params) {
+            $this->params = ConfigObject::new($this->app->getParam('jump', []));
         }
     }
 
@@ -62,7 +58,7 @@ class JumpController extends Controller
      */
     private function getQJDir(): QuickJumpDir
     {
-        $jd = new QuickJumpDir($this->settings->toArray());
+        $jd = new QuickJumpDir($this->params->toArray());
         // vdump($jd, $this->settings->toArray());
         $jd->run();
 
@@ -192,18 +188,20 @@ class JumpController extends Controller
         $jd = $this->getQJDir();
 
         $name = $input->getStringArg('keywords');
-        $flag = $input->getStringOpt('flag', 'both');
-        $dirs = $jd->matchAll($name);
+        // $flag = $input->getStringOpt('flag', 'both');
+        Kite::logger()->info('jump hint keywords is: ' . $name);
 
         $tipsStr = '';
-        if ($dirs) {
+        $results = $jd->matchAll($name);
+
+        if ($results) {
             // $tips = sprintf("'%s'", implode( "' '", $dirs));
             // $tips = implode('', $dirs);
             # commands for use `_describe`
             # commands+=('test1:/path/to/dir1' 'test2:/path/to/dir2')
             // $tips = "'" . implode("'\n'", $dirs) . "'";
             $tipsArr = [];
-            foreach ($dirs as $name => $path) {
+            foreach ($results as $name => $path) {
                 if (is_string($name)) {
                     $tipsArr[] = sprintf("%s:%s", $name, $path);
                 } else {

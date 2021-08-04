@@ -15,7 +15,9 @@ use Inhere\Kite\Kite;
 use Inhere\Route\Dispatcher\Dispatcher;
 use Inhere\Route\Router;
 use Throwable;
+use Toolkit\Stdlib\Obj\ObjectBox;
 use function array_merge;
+use function date_default_timezone_set;
 
 /**
  * Class Application
@@ -63,11 +65,37 @@ class Application
 
     protected function prepare(): void
     {
+        $this->loadEnvSettings();
+
         $this->loadAppConfig();
 
-        $this->router = new Router();
+        $this->registerServices(Kite::objs());
 
-        $this->renderer = new HtmlTemplate($this->getParam('renderer', []));
+        $this->initAppRun();
+    }
+
+    /**
+     * @param ObjectBox $box
+     */
+    protected function registerServices(ObjectBox $box): void
+    {
+        $this->registerComServices($box);
+
+        $box->set('router', function () {
+            return new Router();
+        });
+        $box->set('renderer', function () {
+            $config = $this->getParam('renderer', []);
+
+            return new HtmlTemplate($config);
+        });
+    }
+
+    protected function initAppRun(): void
+    {
+        date_default_timezone_set('PRC');
+
+        Kite::logger()->info('web app init completed');
     }
 
     /**
@@ -125,15 +153,7 @@ class Application
      */
     public function getRouter(): Router
     {
-        return $this->router;
-    }
-
-    /**
-     * @param Router $router
-     */
-    public function setRouter(Router $router): void
-    {
-        $this->router = $router;
+        return Kite::objs()->get('router');
     }
 
     /**
@@ -164,14 +184,6 @@ class Application
      */
     public function getRenderer(): HtmlTemplate
     {
-        return $this->renderer;
-    }
-
-    /**
-     * @param HtmlTemplate $renderer
-     */
-    public function setRenderer(HtmlTemplate $renderer): void
-    {
-        $this->renderer = $renderer;
+        return Kite::objs()->get('renderer');
     }
 }

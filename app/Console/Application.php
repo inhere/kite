@@ -14,6 +14,8 @@ use Inhere\Kite\Common\Traits\InitApplicationTrait;
 use Inhere\Kite\Console\Listener\NotFoundListener;
 use Inhere\Kite\Console\Plugin\PluginManager;
 use Inhere\Kite\Kite;
+use Toolkit\Stdlib\Obj\ObjectBox;
+use function date_default_timezone_set;
 
 /**
  * Class Application
@@ -32,8 +34,6 @@ class Application extends \Inhere\Console\Application
     protected function prepareRun(): void
     {
         parent::prepareRun();
-
-        date_default_timezone_set('PRC');
     }
 
     protected function init(): void
@@ -42,27 +42,32 @@ class Application extends \Inhere\Console\Application
 
         Kite::setCliApp($this);
 
-        $workDir = $this->getInput()->getPwd();
+        $this->loadEnvSettings();
 
+        $workDir = $this->getInput()->getPwd();
         $this->loadAppConfig($workDir);
+
+        $this->registerServices(Kite::objs());
 
         $this->initAppRun();
     }
 
-    protected function initAppRun(): void
+    protected function registerServices(ObjectBox $box): void
     {
-        $plugDirs = $this->getParam('pluginDirs', []);
+        $this->registerComServices($box);
 
-        $this->plugManager = new PluginManager($plugDirs);
-
-        $this->on(ConsoleEvent::ON_NOT_FOUND, new NotFoundListener());
+        $box->set('plugManager', function () {
+            $plugDirs = $this->getParam('pluginDirs', []);
+            return new PluginManager($plugDirs);
+        });
     }
 
-    /**
-     * @return PluginManager
-     */
-    public function getPlugManager(): PluginManager
+    protected function initAppRun(): void
     {
-        return $this->plugManager;
+        date_default_timezone_set('PRC');
+
+        $this->on(ConsoleEvent::ON_NOT_FOUND, new NotFoundListener());
+
+        Kite::logger()->info('console app init completed');
     }
 }
