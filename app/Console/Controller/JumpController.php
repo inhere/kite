@@ -108,15 +108,16 @@ class JumpController extends Controller
     public function listCommand(Input $input, Output $output): void
     {
         $jd = $this->getQJDir();
-        $output->colored('Datafile: ' . $jd->getDatafile());
+        $output->colored('Datafile: ' . $jd->getDatafile(), 'cyan');
 
         $key  = $input->getFirstArg();
         $data = $jd->getEngine()->toArray(true);
-        if ($key && isset($data[$key])) {
-            $data = $data[$key];
-        }
 
-        $output->mList($data);
+        if ($key && isset($data[$key])) {
+            $output->aList($data[$key], $key);
+        } else {
+            $output->mList($data);
+        }
     }
 
     /**

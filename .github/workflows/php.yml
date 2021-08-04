@@ -17,10 +17,10 @@ jobs:
       matrix:
         php: [7.3, 7.4, 8.0] # 7.2,
         os: [ubuntu-latest, macOS-latest] # windows-latest,
-        include:
-          - os: 'ubuntu-latest'
-            php: '7.2'
-            phpunit: '8.5.13'
+#        include: # will not testing on php 7.2
+#          - os: 'ubuntu-latest'
+#            php: '7.2'
+#            phpunit: '8.5.13'
 
     steps:
       - name: Checkout
@@ -53,4 +53,8 @@ jobs:
       # Docs: https://getcomposer.org/doc/articles/scripts.md
 
       - name: Run test suite
-        run: php bin/kite -V
+        run: |
+          php bin/kite -V
+          php bin/kite -h
+          php bin/kite git info
+

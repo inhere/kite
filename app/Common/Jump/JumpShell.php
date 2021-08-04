@@ -37,7 +37,8 @@ __jump_hint() {
   echo \'$(kite jump hint "\$term")\'
 }
 {{bindFunc}}() {
-  local dir="$(kite jump cd "$@")"
+  local dir
+  dir="$(kite jump get "$@")"
   test -d "\$dir" && cd "\$dir"
 }
 
@@ -45,6 +46,9 @@ __jump_hint() {
   PROMPT_COMMAND="__jump_prompt_command;\$PROMPT_COMMAND"
 }
 complete -o dirnames -C '__jump_hint' {{bindFunc}}
+
+# add alias for: kite jump
+alias kj="kite jump"
 BASH;
 
     /**
@@ -91,8 +95,16 @@ _jump_completion() {
 # compctl -U -K _jump_completion {{bindFunc}}
 # for use `_describe`
 compdef _jump_completion '{{bindFunc}}'
+
+# add alias for: kite jump
+alias kj="kite jump"
 ZSH;
 
+    /**
+     * @param string $shell
+     *
+     * @return string
+     */
     public static function getShellScript(string $shell): string
     {
         if ($shell === self::NAME_BASH) {
