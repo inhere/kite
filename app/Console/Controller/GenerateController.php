@@ -2,6 +2,7 @@
 
 namespace Inhere\Kite\Console\Controller;
 
+use Exception;
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
@@ -15,6 +16,8 @@ use function file_get_contents;
 use function implode;
 use function is_string;
 use function parse_ini_string;
+use function random_int;
+use function strlen;
 use function strpos;
 use function strtr;
 use function trim;
@@ -38,8 +41,9 @@ class GenerateController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'rpt' => 'repeat',
-            'tpl' => 'template',
+            'rpt'    => 'repeat',
+            'tpl'    => 'template',
+            'random' => ['rdm', 'rand'],
         ];
     }
 
@@ -179,4 +183,65 @@ class GenerateController extends Controller
         $output->success('Complete');
         $output->writeRaw(implode("\n\n", $snippets));
     }
+
+
+    /**
+     * generate an unique ID string.
+     *
+     * @options
+     *  -t, --type  The type. allow: number, string
+     *
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @throws Exception
+     */
+    public function idCommand(Input $input, Output $output): void
+    {
+        $type = $input->getSameStringOpt('t,type', 'number');
+
+        if ($type === 'number') {
+            $id = Str::genNOV1();
+        } else {
+            $id = Str::genNOV2();
+        }
+
+        $output->info('Generated: ' . $id);
+    }
+
+    /**
+     * generate an random string.
+     *
+     * @options
+     *  -l, --length    The string length
+     *  -t, --template  The sample template name. allow: alpha, alpha_num, alpha_num_c
+     *
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @throws Exception
+     */
+    public function randomCommand(Input $input, Output $output): void
+    {
+        $length  = $input->getSameIntOpt('l,length', 12);
+        $samples = [
+            'alpha'        => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+            'alpha_num'    => '0123456789abcdefghijklmnopqrstuvwxyz',
+            'alpha_num_up' => '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+            'alpha_num_c'  => '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-+!@#$%&*',
+        ];
+
+        $sname = $input->getSameStringOpt('t,template', 'alpha_num');
+        $chars = $samples[$sname] ?? $samples['alpha_num'];
+
+        $str = '';
+        $max = strlen($chars) - 1;   //strlen($chars) 计算字符串的长度
+
+        for ($i = 0; $i < $length; $i++) {
+            $str .= $chars[random_int(0, $max)];
+        }
+
+        $output->info('Generated: ' . $str);
+    }
+
 }

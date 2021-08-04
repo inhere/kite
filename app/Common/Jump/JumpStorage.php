@@ -2,19 +2,24 @@
 
 namespace Inhere\Kite\Common\Jump;
 
+use Inhere\Kite\Helper\AppHelper;
 use InvalidArgumentException;
 use JsonSerializable;
 use RuntimeException;
+use Toolkit\FsUtil\Dir;
 use Toolkit\Stdlib\Json;
-use function array_merge;
 use function array_values;
+use function date;
+use function dirname;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
-use function json_encode;
+use function is_dir;
 use function md5;
 use function stripos;
 use function strpos;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
 
 /**
  * Class JumpStorage
@@ -24,9 +29,14 @@ use function strpos;
 class JumpStorage implements JsonSerializable
 {
     /**
+     * @var string
+     */
+    private $datafile;
+
+    /**
      * @var bool
      */
-    private $changed = false;
+    private $dataChanged = false;
 
     /**
      * Named jump paths.
@@ -59,6 +69,25 @@ class JumpStorage implements JsonSerializable
     private $histories = [];
 
     /**
+     * Class constructor.
+     *
+     * @param string $datafile
+     */
+    public function __construct(string $datafile = '')
+    {
+        $this->datafile = $datafile;
+    }
+
+    public function init(): void
+    {
+        if ($this->datafile) {
+            $this->loadFile($this->datafile, true);
+            // init load not update mark.
+            $this->dataChanged = false;
+        }
+    }
+
+    /**
      * @param string $datafile
      * @param bool   $ignoreNotExist
      */
@@ -75,33 +104,113 @@ class JumpStorage implements JsonSerializable
         $json = file_get_contents($datafile);
         $data = Json::decode($json, true);
 
-        // TODO use merge load data
-        $this->namedPaths = $data['named'] ?? [];
-        $this->histories  = $data['histories'] ?? [];
+        $this->loadData($data);
     }
 
     /**
-     * @param array $named
+     * @param array $data [namedPaths: [], histories: []]
      */
-    public function loadData(array $named): void
+    public function loadData(array $data): void
     {
-        $this->changed    = true;
-        $this->namedPaths = array_merge($this->namedPaths, $named);
+        $this->loadNamedPaths($data['namedPaths'] ?? []);
+        $this->loadHistories($data['histories'] ?? []);
+    }
+
+    /**
+     * @param array $namedPaths
+     */
+    public function loadNamedPaths(array $namedPaths): void
+    {
+        foreach ($namedPaths as $name => $path) {
+            if (!$name) {
+                continue;
+            }
+
+            $this->addNamed($name, $path);
+        }
+    }
+
+    /**
+     * @param string $id
+     * @param string $path
+     * @param bool   $override
+     *
+     * @return bool
+     */
+    public function addNamed(string $id, string $path, bool $override = false): bool
+    {
+        if ($override || !isset($this->namedPaths[$id])) {
+            $path = AppHelper::realpath($path);
+
+            if (is_dir($path)) {
+                $this->dataChanged     = true;
+                $this->namedPaths[$id] = $path;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param array $histories
+     */
+    public function loadHistories(array $histories): void
+    {
+        foreach ($histories as $path) {
+            $this->addHistory($path);
+        }
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return bool
+     */
+    public function addHistory(string $path): bool
+    {
+        $id = $this->genID($path);
+
+        if (!isset($this->histories[$id])) {
+            $path = AppHelper::realpath($path);
+
+            if (is_dir($path)) {
+                $this->dataChanged    = true;
+                $this->histories[$id] = $path;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public function dump(): void
+    {
+        $this->dumpTo($this->datafile);
     }
 
     /**
      * @param string $datafile
+     * @param bool   $force
      */
-    public function dumpTo(string $datafile): void
+    public function dumpTo(string $datafile = '', bool $force = false): void
     {
-        if (!$this->changed) {
+        if (false === $force && false === $this->dataChanged) {
             return;
         }
+
+        $datafile = $datafile ?: $this->datafile;
+
+        // ensure dir is created.
+        Dir::mkdir(dirname($datafile));
 
         $num = (int)file_put_contents($datafile, $this->toString());
         if ($num < 1) {
             throw new RuntimeException('save data to file failure');
         }
+
+        $this->dataChanged = false;
     }
 
     /**
@@ -111,6 +220,10 @@ class JumpStorage implements JsonSerializable
      */
     public function matchOne(string $keywords): string
     {
+        if (is_dir($keywords)) {
+            return $keywords;
+        }
+
         if (isset($this->namedPaths[$keywords])) {
             return $this->namedPaths[$keywords];
         }
@@ -119,13 +232,6 @@ class JumpStorage implements JsonSerializable
             if (strpos($path, $keywords) !== false) {
                 return $path;
             }
-        }
-
-        $id = $this->genID($keywords);
-        if (!isset($this->histories[$id]) && file_exists($keywords)) {
-            $this->changed        = true;
-            $this->histories[$id] = $keywords;
-            return $keywords;
         }
 
         return '';
@@ -141,9 +247,9 @@ class JumpStorage implements JsonSerializable
         $result = [];
         foreach ($this->namedPaths as $name => $path) {
             if (stripos($name, $keywords) !== false) {
-                $result[] = $path;
+                $result[$name] = $path;
             } elseif (stripos($path, $keywords) !== false) {
-                $result[] = $path;
+                $result[$name] = $path;
             }
         }
 
@@ -161,7 +267,7 @@ class JumpStorage implements JsonSerializable
      */
     public function reset(int $flag = 0): void
     {
-        $this->changed = true;
+        $this->dataChanged = true;
 
         if ($flag > 1) {
             $this->histories = [];
@@ -186,7 +292,7 @@ class JumpStorage implements JsonSerializable
      */
     public function toString(): string
     {
-        return json_encode($this->toArray());
+        return Json::encode($this->toArray(), JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     }
 
     /**
@@ -199,6 +305,7 @@ class JumpStorage implements JsonSerializable
         $hs = $clearId ? array_values($this->histories) : $this->histories;
 
         return [
+            'datetime'   => date('Y-m-d H:i:s'),
             'namedPaths' => $this->namedPaths,
             'histories'  => $hs,
         ];
@@ -212,15 +319,6 @@ class JumpStorage implements JsonSerializable
     public function genID(string $path): string
     {
         return md5($path);
-    }
-
-    /**
-     * @param string $name
-     * @param string $path
-     */
-    public function setNamed(string $name, string $path): void
-    {
-        $this->namedPaths[$name] = $path;
     }
 
     /**
@@ -250,5 +348,21 @@ class JumpStorage implements JsonSerializable
     public function getHistories(): array
     {
         return $this->histories;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDatafile(): string
+    {
+        return $this->datafile;
+    }
+
+    /**
+     * @param string $datafile
+     */
+    public function setDatafile(string $datafile): void
+    {
+        $this->datafile = $datafile;
     }
 }

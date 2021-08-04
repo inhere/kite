@@ -648,7 +648,7 @@ class GitController extends Controller
         }
 
         if ($signText) {
-            $message .= "\nSigned-off-by: $signText";
+            $message .= "\n\nSigned-off-by: $signText";
         }
 
         $run = CmdRunner::new("git status $added");

@@ -56,10 +56,9 @@ class UtilController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'tc'     => 'timeConv',
-            'fjb'    => 'findJetBrains',
-            'random' => ['rdm', 'rand'],
-            'join'   => ['implode'],
+            'tc'   => 'timeConv',
+            'fjb'  => 'findJetBrains',
+            'join' => ['implode'],
         ];
     }
 
@@ -115,38 +114,6 @@ class UtilController extends Controller
             'one day later date' => date('Y-m-d H:i:s', $oneDayLater),
             'yesterday start'    => date('Y-m-d 00:00:01', $time),
         ], 'recently date');
-    }
-
-    /**
-     * generate an random string.
-     *
-     * @options
-     *  -l, --length    The string length
-     *  -t, --template  The sample template name. allow: alpha, alpha_num, alpha_num_c
-     *
-     * @param Input  $input
-     * @param Output $output
-     */
-    public function randomCommand(Input $input, Output $output): void
-    {
-        $length  = $input->getSameIntOpt('l,length', 12);
-        $samples = [
-            'alpha'       => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
-            'alpha_num'   => '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
-            'alpha_num_c' => '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-+!@#$%&*',
-        ];
-
-        $sname = $input->getSameStringOpt('t,template', 'alpha_num');
-        $chars = $samples[$sname] ?? $samples['alpha_num'];
-
-        $str = '';
-        $max = strlen($chars) - 1;   //strlen($chars) 计算字符串的长度
-
-        for ($i = 0; $i < $length; $i++) {
-            $str .= $chars[random_int(0, $max)];
-        }
-
-        $output->info('Generated: ' . $str);
     }
 
     /**

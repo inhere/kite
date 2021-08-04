@@ -327,6 +327,65 @@ kite gl pr -o master
 kite gh open
 ```
 
+## 快速跳转目录
+
+快速跳转: `kite jump`
+
+> 基本逻辑参考现有的 `autojump(python)` `jump(go)` 等开源工具实现
+
+可以自定义配置目录别名，方便快速跳转；
+使用配置到shell的函数进行跳转目录，会自动记录跳转历史，下次可以使用关键字进行模糊匹配跳转
+
+### 配置命令脚本
+
+bash 环境配置(添加到 `~/.bashrc`):
+
+```bash
+# default shell func is: jump
+eval "$(kite jump shell bash)"
+# set the bind func name is: j
+eval "$(kite jump shell bash --bind j)"
+```
+
+zsh 环境配置(添加到 `~/.zshrc`):
+
+```bash
+# default shell func is: jump
+eval "$(kite jump shell zsh)"
+# set the bind func name is: j
+eval "$(kite jump shell zsh --bind j)"
+```
+
+> TIP: 添加好之后，需要重新载入shell才会生效
+
+### 开始使用
+
+可以设置一些常用目录的别名，方便快速跳转（我配置的shell方法名是 `j`）
+
+```bash
+# TIP: 内部会自动转换 ~ 为绝对路径
+$ kite jump set home ~
+$ kite jump set wp ~/Workspace
+```
+
+使用 `j` 代替 `cd` 跳转目录，会自动记录跳转历史，下次可以使用关键字进行模糊匹配跳转
+
+```bash
+$ j /Users/inhere/Workspace/java
+INTO: /Users/inhere/Workspace/java
+$ j /Users/inhere/Workspace/godev
+INTO: /Users/inhere/Workspace/godev
+```
+
+查看已经记录的目录数据：
+
+![](resource/images/kite-jump-list.png)
+
+使用自动补齐(tab自动补齐)：
+
+![](resource/images/kite-jump-use.png)
+
+
 ## 其他常用命令
 
 **kite json5**

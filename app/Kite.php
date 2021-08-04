@@ -13,9 +13,7 @@ use Inhere\Kite\Console\Application;
 use Inhere\Kite\Console\Plugin\PluginManager;
 use Inhere\Kite\Http\Application as WebApplication;
 use Inhere\Route\Router;
-use Toolkit\Stdlib\Obj\Traits\CreateSingletonTrait;
-use Toolkit\Stdlib\Obj\Traits\ObjectPoolTrait;
-use Toolkit\Stdlib\Obj\Traits\SingletonTrait;
+use Toolkit\Stdlib\Obj\ObjectBox;
 
 /**
  * Class Kite
@@ -35,6 +33,14 @@ class Kite
      * @var WebApplication
      */
     private static $webApp;
+
+    /**
+     * @return ObjectBox
+     */
+    public static function objs(): ObjectBox
+    {
+        return ObjectBox::global();
+    }
 
     /**
      * @return WebApplication

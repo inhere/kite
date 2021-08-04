@@ -19,7 +19,9 @@ use Inhere\Kite\Common\MapObject;
 use Inhere\Kite\Common\Template\SimpleTemplate;
 use Toolkit\Sys\Util\ShellUtil;
 use function implode;
-use function vdump;
+use function is_dir;
+use function is_string;
+use function sprintf;
 
 /**
  * Class JumpController
@@ -40,11 +42,31 @@ class JumpController extends Controller
         return ['goto'];
     }
 
+    protected static function commandAliases(): array
+    {
+        return [
+            'hint'  => ['match', 'search'],
+            'chdir' => ['into'],
+        ];
+    }
+
     protected function beforeRun(): void
     {
         if ($this->app && !$this->settings) {
             $this->settings = MapObject::new($this->app->getParam('jump', []));
         }
+    }
+
+    /**
+     * @return QuickJumpDir
+     */
+    private function getQJDir(): QuickJumpDir
+    {
+        $jd = new QuickJumpDir($this->settings->toArray());
+        // vdump($jd, $this->settings->toArray());
+        $jd->run();
+
+        return $jd;
     }
 
     protected function configure(): void
@@ -56,38 +78,45 @@ class JumpController extends Controller
             case 'shell':
                 $this->input->bindArgument('shellName', 0);
                 break;
-            case 'cd':
+            case 'hint':
+                $this->input->bindArgument('keywords', 0);
+                break;
+            case 'get':
                 $this->input->bindArgument('name', 0);
+                break;
+            case 'set':
+                $this->input->bindArgument('name', 0);
+                $this->input->bindArgument('path', 1);
                 break;
         }
     }
 
     /**
-     * manage the jump config or storage data
+     * list the jump storage data
      *
      * @usage
-     *  {binWithCmd} -l
+     *  {binWithCmd}
+     *  {binWithCmd} namedPaths
+     *  {binWithCmd} histories
      *
-     * @options
-     *  -l, --list      list all config
-     *      --get       Get an config
-     *      --set       Set the named path to data.
+     * @arguments
+     *  key         The data key name.
      *
      * @param Input  $input
      * @param Output $output
      */
-    public function configCommand(Input $input, Output $output): void
+    public function listCommand(Input $input, Output $output): void
     {
-        $jd = new QuickJumpDir($this->settings->toArray());
-        $jd->run();
-        vdump($jd->getDatafile());
-        if ($input->getSameBoolOpt('l,list')) {
-            $data = $jd->getEngine()->toArray(true);
-            $output->mList($data);
-            return;
+        $jd = $this->getQJDir();
+        $output->colored('Datafile: ' . $jd->getDatafile());
+
+        $key  = $input->getFirstArg();
+        $data = $jd->getEngine()->toArray(true);
+        if ($key && isset($data[$key])) {
+            $data = $data[$key];
         }
 
-        $output->writeln("TODO");
+        $output->mList($data);
     }
 
     /**
@@ -105,6 +134,18 @@ class JumpController extends Controller
      *
      * @param Input  $input
      * @param Output $output
+     *
+     * @help
+     *  auto jump for bash(add to ~/.bashrc):
+     *      # shell func is: jump
+     *      eval "$(kite jump shell bash)"
+     *
+     *  auto jump for zsh(add to ~/.zshrc):
+     *      # shell func is: jump
+     *      eval "$(kite jump shell zsh)"
+     *      # set the bind func name is: j
+     *      eval "$(kite jump shell zsh --bind j)"
+     *
      */
     public function shellCommand(Input $input, Output $output): void
     {
@@ -130,6 +171,52 @@ class JumpController extends Controller
     }
 
     /**
+     * Match directory paths by given keywords
+     *
+     * @arguments
+     *  keywords   The jump target directory keywords for match.
+     *
+     * @options
+     *  --flag         The flag set for match
+     *          both      match all directory list
+     *          mark      Only match marks directory list
+     *          history   Only match history directory list
+     *  --limit         Limit the match result rows
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function hintCommand(Input $input, Output $output): void
+    {
+        $jd = $this->getQJDir();
+
+        $name = $input->getStringArg('keywords');
+        $flag = $input->getStringOpt('flag', 'both');
+        $dirs = $jd->matchAll($name);
+
+        $tipsStr = '';
+        if ($dirs) {
+            // $tips = sprintf("'%s'", implode( "' '", $dirs));
+            // $tips = implode('', $dirs);
+            # commands for use `_describe`
+            # commands+=('test1:/path/to/dir1' 'test2:/path/to/dir2')
+            // $tips = "'" . implode("'\n'", $dirs) . "'";
+            $tipsArr = [];
+            foreach ($dirs as $name => $path) {
+                if (is_string($name)) {
+                    $tipsArr[] = sprintf("%s:%s", $name, $path);
+                } else {
+                    $tipsArr[] = sprintf("%s", $path);
+                }
+            }
+
+            $tipsStr = implode("\n", $tipsArr);
+        }
+
+        $output->writeRaw($tipsStr);
+    }
+
+    /**
      * Get the real directory path by given name.
      *
      * @arguments
@@ -138,10 +225,9 @@ class JumpController extends Controller
      * @param Input  $input
      * @param Output $output
      */
-    public function cdCommand(Input $input, Output $output): void
+    public function getCommand(Input $input, Output $output): void
     {
-        $jd = new QuickJumpDir($this->settings->toArray());
-        $jd->run();
+        $jd = $this->getQJDir();
 
         $name = $input->getStringArg('name');
         $dir  = $jd->match($name);
@@ -150,44 +236,57 @@ class JumpController extends Controller
     }
 
     /**
-     * dump current work directory path.
+     * Set the name to real directory path.
+     *
+     * @arguments
+     *  name   The name for quick jump.
+     *  path   The target directory path.
+     *
+     * @options
+     *  --override       Override exist name.
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function setCommand(Input $input, Output $output): void
+    {
+        $jd = $this->getQJDir();
+
+        $name = (string)$input->getRequiredArg('name');
+        $path = (string)$input->getRequiredArg('path');
+
+        $ok = $jd->addNamed($name, $path, $input->getBoolOpt('override'));
+        if ($ok) {
+            $jd->dump();
+            $output->success("Set: $name=$path");
+        } else {
+            $output->liteError('name exists or path is not and dir');
+        }
+    }
+
+    /**
+     * by the jump dir hook, record target directory path.
      *
      * @param Input  $input
      * @param Output $output
      */
     public function chdirCommand(Input $input, Output $output): void
     {
-        $curDir = $input->getWorkDir();
-        $output->writeln("INTO: $curDir");
-    }
-
-    /**
-     * Match directory paths by given keywords
-     *
-     * @arguments
-     *  keywords   The jump target directory keywords for match.
-     *
-     * @options
-     *  --limit       Limit the match result rows.
-     *
-     * @param Input  $input
-     * @param Output $output
-     */
-    public function hintCommand(Input $input, Output $output): void
-    {
-        $jd = new QuickJumpDir($this->settings->toArray());
-        $jd->run();
-
-        $name = $input->getStringArg('name');
-        // vdump($name, strlen($name));
-        $dirs = $jd->matchAll($name);
-
-        $tips = '';
-        if ($dirs) {
-            // $tips = sprintf("'%s'", implode( "' '", $dirs));
-            $tips = implode('', $dirs);
+        $targetDir = $input->getStringArg(0);
+        if (!$targetDir) {
+            $targetDir = $input->getWorkDir();
         }
 
-        $output->writeRaw($tips);
+        $jd = $this->getQJDir();
+        // update: add new dir path.
+        if ($jd->addHistory($targetDir)) {
+            $jd->dump();
+        }
+
+        if (is_dir($targetDir)) {
+            $output->colored("INTO: $targetDir");
+        } else {
+            $output->liteError('invalid dir path:' . $targetDir);
+        }
     }
 }

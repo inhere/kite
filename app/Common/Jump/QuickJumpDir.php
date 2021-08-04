@@ -2,13 +2,9 @@
 
 namespace Inhere\Kite\Common\Jump;
 
-use Toolkit\FsUtil\Dir;
-use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\Obj;
 use Toolkit\Sys\Sys;
-use function dirname;
-use function file_exists;
-use function file_get_contents;
+use function vdump;
 
 /**
  * Class QuickJumpDir
@@ -55,19 +51,14 @@ class QuickJumpDir
             $this->datafile = Sys::useHomeDir() . '/.config/quick-jump.json';
         }
 
-        $this->engine = new JumpStorage;
-
-        // ensure dir is created.
-        Dir::mkdir(dirname($this->datafile));
+        $this->engine = new JumpStorage($this->datafile);
+        $this->engine->init();
+        $this->engine->loadNamedPaths($this->aliases);
     }
 
     public function run(): void
     {
         $this->init();
-
-        $this->engine->loadFile($this->datafile, true);
-        $this->engine->loadData($this->aliases);
-
         $this->dump();
     }
 
@@ -78,10 +69,8 @@ class QuickJumpDir
      */
     public function match(string $name): string
     {
-        $dir = $this->engine->matchOne($name);
-        $this->engine->dumpTo($this->datafile);
-
-        return $dir;
+        // $this->engine->dumpTo($this->datafile);
+        return $this->engine->matchOne($name);
     }
 
     /**
@@ -94,9 +83,31 @@ class QuickJumpDir
         return $this->engine->matchAll($name);
     }
 
+    /**
+     * @param string $name
+     * @param string $path
+     * @param bool   $override
+     *
+     * @return bool
+     */
+    public function addNamed(string $name, string $path, bool $override = false): bool
+    {
+        return $this->engine->addNamed($name, $path, $override);
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return bool
+     */
+    public function addHistory(string $path): bool
+    {
+        return $this->engine->addHistory($path);
+    }
+
     public function dump(): void
     {
-        $this->engine->dumpTo($this->datafile);
+        $this->engine->dump();
     }
 
     /**
