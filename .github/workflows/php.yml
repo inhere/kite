@@ -57,4 +57,5 @@ jobs:
           php bin/kite -V
           php bin/kite -h
           php bin/kite git info
+          php bin/kite jump list
 

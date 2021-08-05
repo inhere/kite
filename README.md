@@ -5,17 +5,9 @@
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/inhere/kite)](https://github.com/inhere/kite)
 [![Actions Status](https://github.com/inhere/kite/workflows/Unit-Tests/badge.svg)](https://github.com/inhere/kite/actions)
 
-PHP编写的个人CLI工具包，方便本地开发和使用的一些工具。
+PHP编写的CLI工具应用，方便本地开发和使用的一些工具。
 
 > [kite](https://github.com/inhere/kite) 是基于 [inhere/php-console](https://github.com/inhere/php-console) 命令行包编写的CLI应用
-
-主要封装常用操作命令：
-
-- `git`
-- `gitlab`
-- `github`
-- `php`
-- `env`
 
 ## [English](README.md)
 

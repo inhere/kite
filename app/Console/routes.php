@@ -18,3 +18,7 @@ $app->registerGroups('Inhere\\Kite\\Console\\Controller', __DIR__ . '/Controller
 
 // internal group
 $app->addController(PharController::class);
+
+$app->addAliases('self:update', [
+    'selfupdate', 'self-update', 'updateself', 'update-self', 'upself', 'selfup'
+]);

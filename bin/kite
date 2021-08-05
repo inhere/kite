@@ -13,15 +13,11 @@ $app = new CliApplication([
     'version'     => '1.0.5',
     'publishAt'   => '2020.05.24',
     'updateAt'    => date('Y.m.d'),
-    'description' => 'Kite is an help commands tool for development',
+    'description' => 'Kite is a tool for help development',
 ]);
 
 // register routes
 require dirname(__DIR__) . '/app/Console/routes.php';
-
-$app->addAliases('self:update', [
-  'selfupdate', 'self-update', 'updateself', 'update-self', 'upself', 'selfup'
-]);
 
 // start application
 $app->run();
