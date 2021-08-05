@@ -14,10 +14,8 @@ use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\Jump\JumpShell;
-use Inhere\Kite\Common\Jump\QuickJumpDir;
 use Inhere\Kite\Common\Template\SimpleTemplate;
 use Inhere\Kite\Kite;
-use Toolkit\Stdlib\Obj\ConfigObject;
 use Toolkit\Sys\Util\ShellUtil;
 use function implode;
 use function is_dir;
@@ -44,25 +42,6 @@ class JumpController extends Controller
             'hint'  => ['match', 'search'],
             'chdir' => ['into'],
         ];
-    }
-
-    protected function beforeRun(): void
-    {
-        if ($this->app && !$this->params) {
-            $this->params = ConfigObject::new($this->app->getParam('jump', []));
-        }
-    }
-
-    /**
-     * @return QuickJumpDir
-     */
-    private function getQJDir(): QuickJumpDir
-    {
-        $jd = new QuickJumpDir($this->params->toArray());
-        // vdump($jd, $this->settings->toArray());
-        $jd->run();
-
-        return $jd;
     }
 
     protected function configure(): void
@@ -103,11 +82,11 @@ class JumpController extends Controller
      */
     public function listCommand(Input $input, Output $output): void
     {
-        $jd = $this->getQJDir();
-        $output->colored('Datafile: ' . $jd->getDatafile(), 'cyan');
+        $qj = Kite::jumper();
+        $output->colored('Datafile: ' . $qj->getDatafile(), 'cyan');
 
         $key  = $input->getFirstArg();
-        $data = $jd->getEngine()->toArray(true);
+        $data = $qj->getEngine()->toArray(true);
 
         if ($key && isset($data[$key])) {
             $output->aList($data[$key], $key);
@@ -185,14 +164,14 @@ class JumpController extends Controller
      */
     public function hintCommand(Input $input, Output $output): void
     {
-        $jd = $this->getQJDir();
+        $qj = Kite::jumper();
 
         $name = $input->getStringArg('keywords');
         // $flag = $input->getStringOpt('flag', 'both');
         Kite::logger()->info('jump hint keywords is: ' . $name);
 
         $tipsStr = '';
-        $results = $jd->matchAll($name);
+        $results = $qj->matchAll($name);
 
         if ($results) {
             // $tips = sprintf("'%s'", implode( "' '", $dirs));
@@ -226,10 +205,10 @@ class JumpController extends Controller
      */
     public function getCommand(Input $input, Output $output): void
     {
-        $jd = $this->getQJDir();
+        $qj = Kite::jumper();
 
         $name = $input->getStringArg('name');
-        $dir  = $jd->match($name);
+        $dir  = $qj->match($name);
 
         $output->writeRaw($dir, false);
     }
@@ -249,14 +228,14 @@ class JumpController extends Controller
      */
     public function setCommand(Input $input, Output $output): void
     {
-        $jd = $this->getQJDir();
+        $qj = Kite::jumper();
 
         $name = (string)$input->getRequiredArg('name');
         $path = (string)$input->getRequiredArg('path');
 
-        $ok = $jd->addNamed($name, $path, $input->getBoolOpt('override'));
+        $ok = $qj->addNamed($name, $path, $input->getBoolOpt('override'));
         if ($ok) {
-            $jd->dump();
+            $qj->dump();
             $output->success("Set: $name=$path");
         } else {
             $output->liteError('name exists or path is not and dir');
@@ -276,10 +255,10 @@ class JumpController extends Controller
             $targetDir = $input->getWorkDir();
         }
 
-        $jd = $this->getQJDir();
+        $qj = Kite::jumper();
         // update: add new dir path.
-        if ($jd->addHistory($targetDir)) {
-            $jd->dump();
+        if ($qj->addHistory($targetDir)) {
+            $qj->dump();
         }
 
         if (is_dir($targetDir)) {

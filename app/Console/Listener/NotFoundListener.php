@@ -3,7 +3,7 @@
 namespace Inhere\Kite\Console\Listener;
 
 use Inhere\Kite\Common\CmdRunner;
-use Inhere\Kite\Console\Application;
+use Inhere\Kite\Console\CliApplication;
 use Inhere\Kite\Kite;
 use Toolkit\Sys\Sys;
 
@@ -15,12 +15,12 @@ use Toolkit\Sys\Sys;
 final class NotFoundListener
 {
     /**
-     * @param string      $cmd
-     * @param Application $app
+     * @param string         $cmd
+     * @param CliApplication $app
      *
      * @return bool
      */
-    public function __invoke(string $cmd, Application $app): bool
+    public function __invoke(string $cmd, CliApplication $app): bool
     {
         $aliases = $app->getParam('aliases', []);
 
@@ -54,10 +54,10 @@ final class NotFoundListener
     }
 
     /**
-     * @param string      $cmd
-     * @param Application $app
+     * @param string         $cmd
+     * @param CliApplication $app
      */
-    private function callSystemCmd(string $cmd, Application $app): void
+    private function callSystemCmd(string $cmd, CliApplication $app): void
     {
         if ($cmd[0] === '\\') {
             $cmd = substr($cmd, 1);
@@ -76,10 +76,10 @@ final class NotFoundListener
     }
 
     /**
-     * @param string      $cmd
-     * @param Application $app
+     * @param string         $cmd
+     * @param CliApplication $app
      */
-    private function runCustomScript(string $cmd, Application $app): void
+    private function runCustomScript(string $cmd, CliApplication $app): void
     {
         /** @see \Inhere\Kite\Console\Command\RunCommand::execute() */
         $app->note("command not found, redirect to run script: $cmd");

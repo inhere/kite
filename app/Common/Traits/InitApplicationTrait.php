@@ -8,6 +8,8 @@ use Toolkit\Stdlib\Arr\ArrayHelper;
 use Toolkit\Stdlib\Obj\ObjectBox;
 use Toolkit\Stdlib\OS;
 use Toolkit\Stdlib\Util\PhpDotEnv;
+use function file_exists;
+use const BASE_PATH;
 
 /**
  * Trait InitApplicationTrait
@@ -24,9 +26,10 @@ trait InitApplicationTrait
     }
 
     /**
+     * @param string $runMode
      * @param string $workDir
      */
-    protected function loadAppConfig(string $workDir = ''): void
+    protected function loadAppConfig(string $runMode, string $workDir = ''): void
     {
         $baseFile = BASE_PATH . '/config/config.php';
         $loaded   = [$baseFile];
@@ -34,6 +37,16 @@ trait InitApplicationTrait
         // 基础配置
         /** @noinspection PhpIncludeInspection */
         $config = require $baseFile;
+
+        // eg: config.web.php
+        $modeFile = BASE_PATH . "/config/config.$runMode.php";
+        if (file_exists($modeFile)) {
+            $loaded[] = $modeFile;
+            /** @noinspection PhpIncludeInspection */
+            $modeConfig = require $modeFile;
+            // merge to config
+            $config = ArrayHelper::quickMerge($modeConfig, $config);
+        }
 
         // 自定义全局配置
         $globFile = BASE_PATH . '/.kite.php';
@@ -58,7 +71,7 @@ trait InitApplicationTrait
         }
 
         $config['__loaded_file'] = $loaded;
-        $this->setConfig($config);
+        $this->setParams($config);
     }
 
     /**

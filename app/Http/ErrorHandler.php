@@ -2,6 +2,8 @@
 
 namespace Inhere\Kite\Http;
 
+use Throwable;
+
 /**
  * Class ErrorHandler
  *
@@ -9,7 +11,10 @@ namespace Inhere\Kite\Http;
  */
 class ErrorHandler
 {
-    public function run(\Throwable $e): void
+    /**
+     * @param Throwable $e
+     */
+    public function run(Throwable $e): void
     {
         echo 'ERROR';
     }

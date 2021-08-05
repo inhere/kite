@@ -1,13 +1,13 @@
 #!/usr/bin/env php
 <?php
 
-use Inhere\Kite\Console\Application;
+use Inhere\Kite\Console\CliApplication;
 
 define('BASE_PATH', dirname(__DIR__));
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-$app = new Application([
+$app = new CliApplication([
     'name'        => 'kite',
     'rootPath'    => BASE_PATH,
     'version'     => '1.0.5',

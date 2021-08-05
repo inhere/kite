@@ -4,7 +4,7 @@ namespace Inhere\Kite\Console\Plugin;
 
 use Inhere\Console\Util\Helper;
 use Inhere\Console\Util\Show;
-use Inhere\Kite\Console\Application;
+use Inhere\Kite\Console\CliApplication;
 use RuntimeException;
 use SplFileInfo;
 use Toolkit\Cli\Color;
@@ -74,10 +74,10 @@ class PluginManager
     }
 
     /**
-     * @param string      $name plugin name or file path
-     * @param Application $app
+     * @param string         $name plugin name or file path
+     * @param CliApplication $app
      */
-    public function run(string $name, Application $app): void
+    public function run(string $name, CliApplication $app): void
     {
         $plugin = $this->getPlugin($name);
         if (!$plugin) {

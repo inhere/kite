@@ -9,7 +9,9 @@
 
 namespace Inhere\Kite\Console;
 
+use Inhere\Console\Application;
 use Inhere\Console\ConsoleEvent;
+use Inhere\Kite\Common\Jump\QuickJump;
 use Inhere\Kite\Common\Traits\InitApplicationTrait;
 use Inhere\Kite\Console\Listener\NotFoundListener;
 use Inhere\Kite\Console\Plugin\PluginManager;
@@ -22,7 +24,7 @@ use function date_default_timezone_set;
  *
  * @package Inhere\Kite\Console
  */
-class Application extends \Inhere\Console\Application
+class CliApplication extends Application
 {
     use InitApplicationTrait;
 
@@ -45,13 +47,16 @@ class Application extends \Inhere\Console\Application
         $this->loadEnvSettings();
 
         $workDir = $this->getInput()->getPwd();
-        $this->loadAppConfig($workDir);
+        $this->loadAppConfig(Kite::MODE_CLI, $workDir);
 
-        $this->registerServices(Kite::objs());
+        $this->registerServices(Kite::box());
 
         $this->initAppRun();
     }
 
+    /**
+     * @param ObjectBox $box
+     */
     protected function registerServices(ObjectBox $box): void
     {
         $this->registerComServices($box);
@@ -59,6 +64,11 @@ class Application extends \Inhere\Console\Application
         $box->set('plugManager', function () {
             $plugDirs = $this->getParam('pluginDirs', []);
             return new PluginManager($plugDirs);
+        });
+
+        $box->set('jumper', function () {
+            $jumpConf = $this->getParam('jump', []);
+            return QuickJump::new($jumpConf);
         });
     }
 
@@ -69,5 +79,13 @@ class Application extends \Inhere\Console\Application
         $this->on(ConsoleEvent::ON_NOT_FOUND, new NotFoundListener());
 
         Kite::logger()->info('console app init completed');
+    }
+
+    /**
+     * @param array $config
+     */
+    public function setParams(array $config): void
+    {
+        $this->setConfig($config);
     }
 }

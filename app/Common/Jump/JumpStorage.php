@@ -2,11 +2,11 @@
 
 namespace Inhere\Kite\Common\Jump;
 
-use Inhere\Kite\Helper\AppHelper;
 use InvalidArgumentException;
 use JsonSerializable;
 use RuntimeException;
 use Toolkit\FsUtil\Dir;
+use Toolkit\FsUtil\FS;
 use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\OS;
 use function array_values;
@@ -15,7 +15,6 @@ use function dirname;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
-use function getcwd;
 use function is_dir;
 use function md5;
 use function stripos;
@@ -142,7 +141,7 @@ class JumpStorage implements JsonSerializable
     public function addNamed(string $id, string $path, bool $override = false): bool
     {
         if ($override || !isset($this->namedPaths[$id])) {
-            $path = AppHelper::realpath($path);
+            $path = FS::realpath($path);
 
             if (is_dir($path)) {
                 $this->dataChanged     = true;
@@ -174,7 +173,7 @@ class JumpStorage implements JsonSerializable
         $id = $this->genID($path);
 
         if (!isset($this->histories[$id])) {
-            $path = AppHelper::realpath($path);
+            $path = FS::realpath($path);
 
             if (is_dir($path)) {
                 $this->dataChanged    = true;

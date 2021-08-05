@@ -1,7 +1,7 @@
 <?php
 
 use Inhere\Console\IO\Input;
-use Inhere\Kite\Console\Application;
+use Inhere\Kite\Console\CliApplication;
 use Inhere\Kite\Console\Plugin\AbstractPlugin;
 
 use League\CommonMark\Environment;
@@ -20,10 +20,10 @@ class DemoPlugin extends AbstractPlugin
     }
 
     /**
-     * @param Application $app
-     * @param Input       $input
+     * @param CliApplication $app
+     * @param Input          $input
      */
-    public function exec(Application $app, Input $input): void
+    public function exec(CliApplication $app, Input $input): void
     {
         vdump(__METHOD__);
 

@@ -556,7 +556,7 @@ kite 里除了提供 `scripts` 访问执行外部命令，还可以编写自定�
 <?php
 
 use Inhere\Console\IO\Input;
-use Inhere\Kite\Console\Application;
+use Inhere\Kite\Console\CliApplication;
 use Inhere\Kite\Console\Plugin\AbstractPlugin;
 
 /**
@@ -571,7 +571,7 @@ class DemoPlugin extends AbstractPlugin
         ];
     }
 
-    public function exec(Application $app, Input $input): void
+    public function exec(CliApplication $app, Input $input): void
     {
         vdump(__METHOD__);
     }

@@ -24,14 +24,9 @@ use function date_default_timezone_set;
  *
  * @package Inhere\Kite\Http
  */
-class Application
+class WebApplication
 {
     use InitApplicationTrait;
-
-    /**
-     * @var Router
-     */
-    private $router;
 
     /**
      * @var HtmlTemplate
@@ -41,7 +36,7 @@ class Application
     /**
      * @var array
      */
-    private $config = [];
+    private $params = [];
 
     /**
      * The root path for project
@@ -67,9 +62,9 @@ class Application
     {
         $this->loadEnvSettings();
 
-        $this->loadAppConfig();
+        $this->loadAppConfig(Kite::MODE_WEB);
 
-        $this->registerServices(Kite::objs());
+        $this->registerServices(Kite::box());
 
         $this->initAppRun();
     }
@@ -81,14 +76,18 @@ class Application
     {
         $this->registerComServices($box);
 
-        $box->set('router', function () {
+        $box->set('webRouter', function () {
             return new Router();
         });
         $box->set('renderer', function () {
             $config = $this->getParam('renderer', []);
-
             return new HtmlTemplate($config);
         });
+        $box->set('dispatcher', [
+            'class'        => Dispatcher::class,
+            // prop settings
+            'actionSuffix' => '',
+        ]);
     }
 
     protected function initAppRun(): void
@@ -104,11 +103,9 @@ class Application
     public function run(): void
     {
         try {
-            $dispatcher = new Dispatcher([
-                'actionSuffix' => '',
-            ]);
+            $dispatcher = Kite::dispatcher();
 
-            $this->router->dispatch($dispatcher);
+            Kite::webRouter()->dispatch($dispatcher);
         } catch (Throwable $e) {
             (new ErrorHandler())->run($e);
         }
@@ -118,21 +115,21 @@ class Application
      * @param array $config
      * @param bool  $merge
      */
-    public function setConfig(array $config, bool $merge = true): void
+    public function setParams(array $config, bool $merge = true): void
     {
         if ($merge) {
-            $this->config = array_merge($this->config, $config);
+            $this->params = array_merge($this->params, $config);
         } else {
-            $this->config = $config;
+            $this->params = $config;
         }
     }
 
     /**
      * @return array
      */
-    public function getConfig(): array
+    public function getParams(): array
     {
-        return $this->config;
+        return $this->params;
     }
 
     /**
@@ -145,7 +142,7 @@ class Application
      */
     public function getParam(string $name, $default = null)
     {
-        return $this->config[$name] ?? $default;
+        return $this->params[$name] ?? $default;
     }
 
     /**
@@ -153,7 +150,7 @@ class Application
      */
     public function getRouter(): Router
     {
-        return Kite::objs()->get('router');
+        return Kite::box()->get('router');
     }
 
     /**
@@ -184,6 +181,6 @@ class Application
      */
     public function getRenderer(): HtmlTemplate
     {
-        return Kite::objs()->get('renderer');
+        return Kite::box()->get('renderer');
     }
 }

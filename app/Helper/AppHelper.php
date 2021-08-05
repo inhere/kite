@@ -4,22 +4,14 @@ namespace Inhere\Kite\Helper;
 
 use Inhere\Console\Application;
 use Inhere\Console\Util\Show;
-use Toolkit\Stdlib\OS;
 use Toolkit\Sys\Sys;
-use function array_filter;
-use function array_pop;
-use function array_values;
 use function defined;
 use function explode;
 use function getenv;
-use function implode;
 use function is_array;
 use function putenv;
-use function str_replace;
 use function strpos;
 use function trim;
-use function vdump;
-use const DIRECTORY_SEPARATOR;
 
 /**
  * Class AppHelper
@@ -149,48 +141,4 @@ class AppHelper
             putenv("$name=$value");
         }
     }
-
-    /**
-     * @param string $path
-     *
-     * @return string
-     * @see realpath()
-     * @link https://www.php.net/manual/zh/function.realpath.php#84012
-     * @deprecated  use FS::realpath()
-     */
-    public static function realpath(string $path): string
-    {
-        $path  = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
-        $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
-        if (!$parts = array_values($parts)) {
-            return '';
-        }
-
-        $start  = '';
-        $isUnix = DIRECTORY_SEPARATOR === '/';
-        if ($isUnix) {
-            // ~: is user home dir in *nix OS
-            if ($parts[0] === '~') {
-                $parts[0] = OS::getUserHomeDir();
-            } else {
-                $start = '/';
-            }
-        }
-
-        $absolutes = [];
-        foreach ($parts as $part) {
-            if ('.' === $part) {
-                continue;
-            }
-
-            if ('..' === $part) {
-                array_pop($absolutes);
-            } else {
-                $absolutes[] = $part;
-            }
-        }
-
-        return $start . implode(DIRECTORY_SEPARATOR, $absolutes);
-    }
-
 }

@@ -12,7 +12,7 @@ use Inhere\Kite\Http\Controller\HomeController;
 use Inhere\Kite\Http\Controller\JsonController;
 use Inhere\Kite\Kite;
 
-$router = Kite::webApp()->getRouter();
+$router = Kite::webRouter();
 
 $router->get('/', HomeController::class . '@index');
 $router->get('/json5', JsonController::class . '@json5');

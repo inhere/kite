@@ -3,7 +3,7 @@
 namespace Inhere\Kite\Console\Plugin;
 
 use Inhere\Console\IO\Input;
-use Inhere\Kite\Console\Application;
+use Inhere\Kite\Console\CliApplication;
 use function array_merge;
 
 /**
@@ -99,20 +99,20 @@ abstract class AbstractPlugin implements PluginInterface
     }
 
     /**
-     * @param Application $app
-     * @param Input       $input
+     * @param CliApplication $app
+     * @param Input          $input
      */
-    public function run(Application $app, Input $input): void
+    public function run(CliApplication $app, Input $input): void
     {
         // TODO before run
         $this->exec($app, $input);
     }
 
     /**
-     * @param Application $app
-     * @param Input       $input
+     * @param CliApplication $app
+     * @param Input          $input
      */
-    abstract public function exec(Application $app, Input $input): void;
+    abstract public function exec(CliApplication $app, Input $input): void;
 
     /**
      * @return string

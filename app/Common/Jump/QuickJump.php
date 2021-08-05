@@ -7,11 +7,11 @@ use Toolkit\Sys\Sys;
 use function vdump;
 
 /**
- * Class QuickJumpDir
+ * Class QuickJump - quick jump directory
  *
  * @package Inhere\Kite\Common
  */
-class QuickJumpDir
+class QuickJump
 {
     private $initialized = false;
 
@@ -31,6 +31,16 @@ class QuickJumpDir
     private $aliases = [];
 
     /**
+     * @param array $config
+     *
+     * @return static
+     */
+    public static function new(array $config = []): self
+    {
+        return new self($config);
+    }
+
+    /**
      * Class constructor.
      *
      * @param array $config
@@ -42,6 +52,7 @@ class QuickJumpDir
 
     public function init(): void
     {
+        vdump(__METHOD__);
         if ($this->initialized) {
             return;
         }
@@ -54,12 +65,7 @@ class QuickJumpDir
         $this->engine = new JumpStorage($this->datafile);
         $this->engine->init();
         $this->engine->loadNamedPaths($this->aliases);
-    }
-
-    public function run(): void
-    {
-        $this->init();
-        $this->dump();
+        $this->engine->dump();
     }
 
     /**
