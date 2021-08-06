@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Common\Template;
+namespace Inhere\Kite\Lib\Template;
 
 use InvalidArgumentException;
 use Toolkit\Stdlib\Obj;
@@ -13,7 +13,7 @@ use function strtr;
 /**
  * Class SimpleTemplate
  *
- * @package Inhere\Kite\Common\Template
+ * @package Inhere\Kite\Lib\Template
  */
 class SimpleTemplate extends AbstractTemplate
 {

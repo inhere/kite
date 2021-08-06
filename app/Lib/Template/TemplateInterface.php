@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Common\Template;
+namespace Inhere\Kite\Lib\Template;
 
 /**
  * Interface TemplateInterface
  *
- * @package Inhere\Kite\Common\Template
+ * @package Inhere\Kite\Lib\Template
  */
 interface TemplateInterface
 {

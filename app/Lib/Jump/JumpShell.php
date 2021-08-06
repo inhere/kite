@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Common\Jump;
+namespace Inhere\Kite\Lib\Jump;
 
 use RuntimeException;
 use function in_array;
@@ -8,7 +8,7 @@ use function in_array;
 /**
  * Class JumpDirShell
  *
- * @package Inhere\Kite\Common
+ * @package Inhere\Kite\Lib
  */
 class JumpShell
 {

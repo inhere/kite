@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Common\Template;
+namespace Inhere\Kite\Lib\Template;
 
 use InvalidArgumentException;
 use Toolkit\FsUtil\File;
@@ -10,7 +10,7 @@ use function strpos;
 /**
  * Class HtmlTemplate
  *
- * @package Inhere\Kite\Common
+ * @package Inhere\Kite\Lib
  */
 class HtmlTemplate extends TextTemplate
 {

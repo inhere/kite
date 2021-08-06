@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Common\Jump;
+namespace Inhere\Kite\Lib\Jump;
 
 use InvalidArgumentException;
 use JsonSerializable;
@@ -25,7 +25,7 @@ use const JSON_UNESCAPED_SLASHES;
 /**
  * Class JumpStorage
  *
- * @package Inhere\Kite\Common\Jump
+ * @package Inhere\Kite\Lib\Jump
  */
 class JumpStorage implements JsonSerializable
 {

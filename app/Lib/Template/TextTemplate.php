@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Common\Template;
+namespace Inhere\Kite\Lib\Template;
 
 use InvalidArgumentException;
 use RuntimeException;

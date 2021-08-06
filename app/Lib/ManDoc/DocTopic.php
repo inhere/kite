@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\ManDoc;
+namespace Inhere\Kite\Lib\ManDoc;
 
 use function count;
 use function file_get_contents;
@@ -8,7 +8,7 @@ use function file_get_contents;
 /**
  * Class DocTopic
  *
- * @package Inhere\Kite\Common
+ * @package Inhere\Kite\Lib\ManDoc
  */
 class DocTopic
 {

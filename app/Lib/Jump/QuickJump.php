@@ -1,15 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Common\Jump;
+namespace Inhere\Kite\Lib\Jump;
 
 use Toolkit\Stdlib\Obj;
 use Toolkit\Sys\Sys;
-use function vdump;
 
 /**
  * Class QuickJump - quick jump directory
  *
- * @package Inhere\Kite\Common
+ * @package Inhere\Kite\Lib
  */
 class QuickJump
 {
