@@ -52,7 +52,48 @@ chmod a+x /usr/local/bin/kite
 
 ## 配置工具
 
-## 常用命令组别名
+### 生成自动补齐脚本
+
+**ZSH 环境**：
+
+生成zsh补齐脚本文件，可以指定生成文件；也可以在生成后移到到想要的目录
+
+> 提示：生成到oh-my-zsh的相应目录下不需要手动配置到 `.zshrc`，放置到其他目录可能需要手动添加到 `.zshrc`
+
+```bash
+kite --auto-completion \
+  --shell-env zsh \
+  --gen-file ~/.oh-my-zsh/completions/_kite \
+  --tpl-file resource/templates/completion/zsh.tpl
+```
+
+生成 `oh-my-zsh` 的插件(推荐，里面同时含有常用别名)
+
+```bash
+kite --auto-completion \
+  --shell-env zsh \
+  --gen-file ~/.oh-my-zsh/custom/plugins/kite/kite.plugin.zsh \
+  --tpl-file resource/templates/completion/zsh.plugin.tpl
+```
+
+**BASH 环境**
+
+生成bash补齐脚本文件，可以指定生成文件；也可以在生成后移到到想要的目录
+
+> 提示：生成后需要手动配置到 `.bashrc`
+
+```bash
+kite --auto-completion \
+  --shell-env bash \
+  --gen-file \
+  --tpl-file resource/templates/completion/bash.tpl
+```
+
+**使用效果(zsh)**
+
+![auto-complete](resource/images/kite-auto-complete.png)
+
+### 常用命令组别名
 
 推荐配置常用命令组别名，这样可以快速使用常用的命令组。
 

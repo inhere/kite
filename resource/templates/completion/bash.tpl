@@ -24,3 +24,5 @@ complete -F _complete_for_{{fmtBinName}} {{binName}}
 ## aliases for {{binName}}
 #alias kj="kite jump"
 alias kgit="kite git"
+alias kgl="kite gitlab"
+alias kgh="kite github"
