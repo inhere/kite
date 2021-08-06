@@ -29,3 +29,15 @@ chmod a+x bin/kite
 # link bin file to ENV path
 ln -s "$PWD"/bin/htu /usr/local/bin/htu
 ln -s "$PWD"/bin/kite /usr/local/bin/kite
+
+# gen completion script
+#kite --auto-completion \
+#  --shell-env "$SHELL" \
+#  --gen-file ~/.oh-my-zsh/completions/_kite \
+#  --tpl-file resource/templates/completion/zsh.tpl
+
+# gen oh-my-zsh plugin script
+#kite --auto-completion \
+#  --shell-env "$SHELL" \
+#  --gen-file ~/.oh-my-zsh/custom/plugins/kite/kite.plugin.zsh \
+#  --tpl-file resource/templates/completion/zsh.plugin.tpl

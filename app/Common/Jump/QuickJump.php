@@ -52,7 +52,6 @@ class QuickJump
 
     public function init(): void
     {
-        vdump(__METHOD__);
         if ($this->initialized) {
             return;
         }
@@ -75,7 +74,6 @@ class QuickJump
      */
     public function match(string $name): string
     {
-        // $this->engine->dumpTo($this->datafile);
         return $this->engine->matchOne($name);
     }
 

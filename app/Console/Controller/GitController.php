@@ -27,7 +27,6 @@ use PhpGit\Info\TagsInfo;
 use PhpGit\Repo;
 use Toolkit\Stdlib\Str;
 use function array_keys;
-use function edump;
 use function implode;
 use function in_array;
 use function sprintf;
@@ -609,6 +608,19 @@ class GitController extends Controller
      * @arguments
      *  files...   Only add special files
      *
+     * @help
+     * commit types:
+     *  build     "Build system"
+     *  chore     "Chore"
+     *  ci        "CI"
+     *  docs      "Documentation"
+     *  feat      "Features"
+     *  fix       "Bug fixes"
+     *  perf      "Performance"
+     *  refactor  "Refactor"
+     *  style     "Style"
+     *  test      "Testing"
+     *
      * @param Input  $input
      * @param Output $output
      */
@@ -638,8 +650,8 @@ class GitController extends Controller
 
         // will auto fetch user info by git
         if ($autoSign && !$signText) {
-            $git = Git::new();
-            $username = $git->config->get('user.name');
+            $git       = Git::new();
+            $username  = $git->config->get('user.name');
             $userEmail = $git->config->get('user.email');
             // eg "Signed-off-by: inhere <in.798@qq.com>"
             if ($username && $userEmail) {

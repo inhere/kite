@@ -210,6 +210,8 @@ class JumpController extends Controller
         $name = $input->getStringArg('name');
         $dir  = $qj->match($name);
 
+        Kite::logger()->info("jump get dir is: $dir, name: $name");
+
         $output->writeRaw($dir, false);
     }
 
@@ -258,6 +260,10 @@ class JumpController extends Controller
         $qj = Kite::jumper();
         // update: add new dir path.
         if ($qj->addHistory($targetDir)) {
+            Kite::logger()->info('add new dir to history and latest path', [
+                'dir' => $targetDir,
+            ]);
+
             $qj->dump();
         }
 

@@ -40,6 +40,16 @@ class JumpStorage implements JsonSerializable
     private $dataChanged = false;
 
     /**
+     * @var string
+     */
+    private $prevPath = '';
+
+    /**
+     * @var string
+     */
+    private $lastPath = '';
+
+    /**
      * Named jump paths.
      *
      * ```php
@@ -115,6 +125,14 @@ class JumpStorage implements JsonSerializable
     {
         $this->loadNamedPaths($data['namedPaths'] ?? []);
         $this->loadHistories($data['histories'] ?? []);
+
+        if (!empty($data['lastPath'])) {
+            $this->lastPath = $data['lastPath'];
+        }
+
+        if (!empty($data['prevPath'])) {
+            $this->prevPath = $data['prevPath'];
+        }
     }
 
     /**
@@ -170,20 +188,30 @@ class JumpStorage implements JsonSerializable
      */
     public function addHistory(string $path): bool
     {
+        $ok = false;
         $id = $this->genID($path);
 
-        if (!isset($this->histories[$id])) {
-            $path = FS::realpath($path);
+        $path  = FS::realpath($path);
+        $isDir = is_dir($path);
 
-            if (is_dir($path)) {
-                $this->dataChanged    = true;
-                $this->histories[$id] = $path;
-            }
+        // add latest path.
+        if ($isDir && $this->lastPath !== $path) {
+            $this->dataChanged = true;
+            $this->prevPath    = $this->lastPath;
+            $this->lastPath    = $path;
 
-            return true;
+            $ok = true;
         }
 
-        return false;
+        // add to history
+        if ($isDir && !isset($this->histories[$id])) {
+            $this->dataChanged    = true;
+            $this->histories[$id] = $path;
+
+            $ok = true;
+        }
+
+        return $ok;
     }
 
     public function dump(): void
@@ -225,7 +253,10 @@ class JumpStorage implements JsonSerializable
             return OS::getWorkDir();
         }
 
-        // TODO = '.'
+        // latestPath
+        if ($keywords === '-') {
+            return $this->prevPath;
+        }
 
         if (is_dir($keywords)) {
             return $keywords;
@@ -313,6 +344,8 @@ class JumpStorage implements JsonSerializable
 
         return [
             'datetime'   => date('Y-m-d H:i:s'),
+            'lastPath'   => $this->lastPath,
+            'prevPath'   => $this->prevPath,
             'namedPaths' => $this->namedPaths,
             'histories'  => $hs,
         ];
@@ -371,5 +404,21 @@ class JumpStorage implements JsonSerializable
     public function setDatafile(string $datafile): void
     {
         $this->datafile = $datafile;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLastPath(): string
+    {
+        return $this->lastPath;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrevPath(): string
+    {
+        return $this->prevPath;
     }
 }

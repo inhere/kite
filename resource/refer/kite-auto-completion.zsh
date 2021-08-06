@@ -50,3 +50,7 @@ _complete_for_kite () {
 }
 
 compdef _complete_for_kite kite
+
+## aliases for {{binName}}
+#alias kj="kite jump"
+alias kgit="kite git"

@@ -14,6 +14,7 @@ use Inhere\Console\Component\Interact\IShell;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Show;
+use Inhere\Kite\Kite;
 use InvalidArgumentException;
 use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
@@ -22,6 +23,7 @@ use Symfony\Component\VarExporter\VarExporter;
 use Throwable;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\Color;
+use Toolkit\Cli\Util\Readline;
 use Toolkit\Stdlib\Helper\DataHelper;
 use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Str\StrBuffer;
@@ -29,9 +31,12 @@ use function array_shift;
 use function count;
 use function in_array;
 use function is_numeric;
+use function str_replace;
+use function stripos;
 use function strpos;
 use function substr;
 use function trim;
+use const BASE_PATH;
 
 /**
  * Class ExprCommand
@@ -41,6 +46,8 @@ class ExprCommand extends Command
     protected static $name = 'expr';
 
     protected static $description = 'Use for expression calculation';
+
+    public const RESULT_VAR = 'ret';
 
     /**
      * @var ExpressionLanguage
@@ -128,25 +135,12 @@ class ExprCommand extends Command
         return 0;
     }
 
+    /**
+     * @throws Throwable
+     */
     private function runByShell(): void
     {
-        IShell::run(function (string $expr) {
-            if ($this->filterExpr($expr)) {
-                return;
-            }
-
-            $firstChar = $expr[0];
-            if (in_array($firstChar, ['+', '-', '*', '/'], true)) {
-                $expr = 'ret ' . $expr;
-            }
-
-            // evaluate
-            $value = $this->el->evaluate($expr, $this->vars);
-
-            // save last result.
-            $this->vars['ret'] = $value;
-            echo DataHelper::toString($value);
-        }, [
+        $sh = IShell::new([
             'prefix'      => 'EXPR',
             'validator'   => function (string $line) {
                 if ($line === '') {
@@ -155,7 +149,77 @@ class ExprCommand extends Command
                 return $line;
             },
             'helpHandler' => $this->createHelpHandler(),
+            'historyFile' => BASE_PATH . '/tmp/expr-history.txt',
         ]);
+
+        $sh->setHandler(function (string $expr) {
+            if ($expr) {
+                $firstChar = $expr[0];
+                // starts with calc chars
+                if (in_array($firstChar, ['+', '-', '*', '/'], true)) {
+                    $expr = self::RESULT_VAR . ' ' . $expr;
+                }
+            }
+
+            if ($this->filterExpr($expr)) {
+                return;
+            }
+
+            // evaluate
+            $value = $this->el->evaluate($expr, $this->vars);
+
+            // save last result.
+            $this->vars[self::RESULT_VAR] = $value;
+            echo DataHelper::toString($value);
+        });
+
+        $sh->setAutoCompleter(function (string $input, int $index) {
+            $commands = [
+                '?',
+                'help',
+                'quit',
+                'list',
+                'get',
+                'set',
+                'unset',
+                'history',
+                self::RESULT_VAR,
+            ];
+
+            $info = Readline::getInfo();
+            // $line contains $input
+            $line = trim(substr($info['line_buffer'], 0, $info['end']));
+            if ($info['point'] !== $info['end']) {
+                return true;
+            }
+
+            if (!$line) {
+                return $commands;
+            }
+
+            $founded = [];
+
+            // $line=$input completion for top command name prefix.
+            if (strpos($line, ' ') === false) {
+                foreach ($commands as $name) {
+                    if (stripos($name, $input) !== false) {
+                        $founded[] = $name;
+                    }
+                }
+
+                Kite::logger()->info("expr - input keywords '$input' for complete", [
+                    'index'   => $index,
+                    'founded' => $founded,
+                    'rlInfo'  => $info,
+                ]);
+            } else { // completion for subcommand
+                // todo ...
+            }
+
+            return $founded ?: $commands;
+        });
+
+        $sh->start();
     }
 
     /**
@@ -170,6 +234,7 @@ class ExprCommand extends Command
         $buf->writeln('          eg: `@get debug`   Get current debug mode');
         $buf->writeln('@set     Set for the shell program');
         $buf->writeln('          eg: `@set debug=true`   Switch debug mode');
+        $buf->writeln('q,quit   Quit shell');
         $buf->writeln('');
         $buf->writeln('<comment>Commands:</comment>');
         $buf->writeln('list         List all defined vars.');
@@ -205,7 +270,13 @@ class ExprCommand extends Command
         }
 
         // record history
-        $this->histories[] = $expr;
+        $var = self::RESULT_VAR;
+        if (isset($this->vars[$var]) && strpos($expr, $var) !== false) {
+            $this->histories[] = str_replace($var, (string)$this->vars[$var], $expr);
+        } else {
+            $this->histories[] = $expr;
+        }
+
         if (count($this->histories) > $this->historyNum) {
             array_shift($this->histories);
         }
