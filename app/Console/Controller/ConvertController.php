@@ -25,6 +25,14 @@ class ConvertController extends Controller
     protected static $description = 'Some useful convert development tool commands';
 
     /**
+     * @return string[]
+     */
+    public static function aliases(): array
+    {
+        return ['conv'];
+    }
+
+    /**
      * convert markdown table to create mysql table SQL
      *
      * @options

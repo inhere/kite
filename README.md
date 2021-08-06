@@ -1,4 +1,4 @@
-# Kite
+# Kite [English](README.en.md)
 
 [![License](https://img.shields.io/packagist/l/inhere/console.svg?style=flat-square)](LICENSE)
 [![Php Version](https://img.shields.io/badge/php-%3E=7.2.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
@@ -9,7 +9,7 @@ PHP编写的CLI工具应用，方便本地开发和使用的一些工具。
 
 > [kite](https://github.com/inhere/kite) 是基于 [inhere/php-console](https://github.com/inhere/php-console) 命令行包编写的CLI应用
 
-## [English](README.en.md)
+![](resource/images/kite-commands.png)
 
 ## 安装
 
@@ -50,7 +50,9 @@ mv kite-v1.0.5.phar /usr/local/bin/kite
 chmod a+x /usr/local/bin/kite
 ```
 
-### 配置常用命令组别名
+## 配置工具
+
+## 常用命令组别名
 
 推荐配置常用命令组别名，这样可以快速使用常用的命令组。
 
@@ -67,11 +69,20 @@ alias kgh="kite github"
 
 ### 查看命令帮助
 
+列出全部命令:
+
 ```bash
-kite -h
+kite
+kite list
 ```
 
-![](resource/images/kite-help.png)
+查看帮助:
+
+```bash
+kite -h
+kite --help
+kite help
+```
 
 ## Git 使用
 
