@@ -9,7 +9,7 @@
 
 namespace Inhere\Kite\Http;
 
-use Inhere\Kite\Common\Template\HtmlTemplate;
+use Inhere\Kite\Lib\Template\HtmlTemplate;
 use Inhere\Kite\Common\Traits\InitApplicationTrait;
 use Inhere\Kite\Kite;
 use Inhere\Route\Dispatcher\Dispatcher;

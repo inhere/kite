@@ -13,12 +13,13 @@ use Inhere\Kite\Helper\SysCmd;
 use Inhere\Kite\Kite;
 use Throwable;
 use Toolkit\Cli\Color;
+use Toolkit\Stdlib\OS;
 use Toolkit\Sys\Sys;
+use Toolkit\Sys\Util\ShellUtil;
 use function array_keys;
 use function array_merge;
 use function count;
 use function is_scalar;
-use function vdump;
 use const BASE_PATH;
 
 /**
@@ -46,8 +47,10 @@ class SelfController extends Controller
     {
         return [
             'up'     => 'update',
-            'webui'    => [
-                'web', 'webUI', 'web-ui'
+            'webui'  => [
+                'web',
+                'webUI',
+                'web-ui'
             ],
             'config' => [
                 'conf'
@@ -74,13 +77,19 @@ class SelfController extends Controller
         $app  = $this->getApp();
         $conf = $app->getConfig();
 
-        $output->aList([
-            'work dir'     => $input->getWorkDir(),
-            'root path'    => $conf['rootPath'],
-            'script count' => count($conf['scripts']),
-            'plugin dirs'  => Kite::plugManager()->getPluginDirs(),
-            'config files' => $conf['__loaded_file'],
-        ], 'information');
+        $output->mList([
+            'kite'   => [
+                'root dir'     => $conf['rootPath'],
+                'work dir'     => $input->getWorkDir(),
+                'script count' => count($conf['scripts']),
+                'plugin dirs'  => Kite::plugManager()->getPluginDirs(),
+                'config files' => $conf['__loaded_file'],
+            ],
+            'system' => [
+                'OS name'   => OS::name(),
+                'shell env' => ShellUtil::getName(true),
+            ]
+        ]);
     }
 
     /**
@@ -108,7 +117,7 @@ class SelfController extends Controller
         if ($key) {
             $val = $app->getParam($key);
             if ($val === null) {
-                throw new PromptException("config key '{$key}' is not exists");
+                throw new PromptException("config key '$key' is not exists");
             }
 
             if (is_scalar($val)) {
@@ -185,13 +194,13 @@ class SelfController extends Controller
     protected $webUi = [
         // document root
         // 'root'     => 'public',
-        'root'     => '',
+        'root'    => '',
         // 'entry'     => 'public/index.php',
-        'entry'    => '',
+        'entry'   => '',
         // 'php-bin'  => 'php'
-        'php-bin'  => '',
+        'php-bin' => '',
         // address
-        'addr' => '127.0.0.1:8552',
+        'addr'    => '127.0.0.1:8552',
     ];
 
     /**
@@ -215,7 +224,7 @@ class SelfController extends Controller
     public function webuiCommand(Input $input, Output $output): void
     {
         $this->webUi = array_merge($this->webUi, $this->app->getParam('webui', []));
-        vdump(BASE_PATH, $this->webUi);
+        // vdump(BASE_PATH, $this->webUi);
 
         $svrAddr = $input->getSameStringOpt('s,S,addr', $this->webUi['addr']);
         $phpBin  = $input->getStringOpt('php-bin', $this->webUi['php-bin']);

@@ -5,11 +5,12 @@
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/inhere/kite)](https://github.com/inhere/kite)
 [![Actions Status](https://github.com/inhere/kite/workflows/Unit-Tests/badge.svg)](https://github.com/inhere/kite/actions)
 
-Kite is a tool for help development
+Kite is a tool for help development.
 
-> Github https://github.com/inhere/kite
+> GitHub https://github.com/inhere/kite 
+> kite is build on the [inhere/php-console](https://github.com/inhere/php-console)
 
-## [中文说明](README.zh-CN.md)
+## [中文说明](README..md)
 
 ## Install
 

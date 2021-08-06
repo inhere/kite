@@ -15,8 +15,8 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
 use Inhere\Kite\Common\CliMarkdown;
 use Inhere\Kite\Helper\AppHelper;
-use Inhere\Kite\ManDoc\DocTopic;
-use Inhere\Kite\ManDoc\Document;
+use Inhere\Kite\Lib\ManDoc\DocTopic;
+use Inhere\Kite\Lib\ManDoc\Document;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Proc\ProcWrapper;
 use function array_pop;
@@ -182,6 +182,7 @@ TXT;
     /**
      * @param Document $doc
      * @param Output   $output
+     * @param string   $nameString
      */
     private function createTopic(Document $doc, Output $output, string $nameString): void
     {

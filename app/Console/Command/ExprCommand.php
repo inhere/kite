@@ -55,11 +55,6 @@ class ExprCommand extends Command
     private $el;
 
     /**
-     * @var mixed
-     */
-    // private $ret;
-
-    /**
      * @var bool
      */
     private $debug = false;
@@ -105,7 +100,15 @@ class ExprCommand extends Command
     }
 
     /**
-     * Do execute command
+     * @options
+     *  -i, --interactive     Start an interactive shell environment
+     *
+     * @example
+     *  <code>$ {binWithCmd} -i</code>
+     *  Expr > 45 + 45
+     *  90
+     *  Expr > ret * 2
+     *  180
      *
      * @param Input  $input
      * @param Output $output
@@ -127,11 +130,8 @@ class ExprCommand extends Command
         Color::println('Input expr: ' . $expr);
 
         $value = $this->el->evaluate($expr);
-        // vdump($el->compile('1 + 2')); // displays (1 + 2)
-
         Color::println('Result:');
         echo VarExporter::export($value), PHP_EOL;
-
         return 0;
     }
 
@@ -141,7 +141,7 @@ class ExprCommand extends Command
     private function runByShell(): void
     {
         $sh = IShell::new([
-            'prefix'      => 'EXPR',
+            'prefix'      => 'Expr',
             'validator'   => function (string $line) {
                 if ($line === '') {
                     throw new InvalidArgumentException('input is empty!');

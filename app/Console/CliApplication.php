@@ -11,7 +11,7 @@ namespace Inhere\Kite\Console;
 
 use Inhere\Console\Application;
 use Inhere\Console\ConsoleEvent;
-use Inhere\Kite\Common\Jump\QuickJump;
+use Inhere\Kite\Lib\Jump\QuickJump;
 use Inhere\Kite\Common\Traits\InitApplicationTrait;
 use Inhere\Kite\Console\Listener\NotFoundListener;
 use Inhere\Kite\Console\Plugin\PluginManager;
@@ -33,10 +33,10 @@ class CliApplication extends Application
      */
     private $plugManager;
 
-    protected function prepareRun(): void
-    {
-        parent::prepareRun();
-    }
+    // protected function prepareRun(): void
+    // {
+    //     parent::prepareRun();
+    // }
 
     protected function init(): void
     {

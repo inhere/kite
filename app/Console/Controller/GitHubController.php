@@ -83,7 +83,7 @@ class GitHubController extends Controller
 
         // resolve alias
         $gitCtrl = $this->app->getController(GitController::getName());
-        $command = $gitCtrl->getRealCommandName($action);
+        $command = $gitCtrl->resolveAlias($action);
 
         $redirectGitGroup = $this->settings['redirectGit'] ?? [];
 

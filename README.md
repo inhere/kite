@@ -9,7 +9,7 @@ PHP编写的CLI工具应用，方便本地开发和使用的一些工具。
 
 > [kite](https://github.com/inhere/kite) 是基于 [inhere/php-console](https://github.com/inhere/php-console) 命令行包编写的CLI应用
 
-## [English](README.md)
+## [English](README.en.md)
 
 ## 安装
 
@@ -48,6 +48,19 @@ chmod a+x bin/kite
 wget -c https://github.com/inhere/kite/releases/download/v1.0.5/kite-v1.0.5.phar
 mv kite-v1.0.5.phar /usr/local/bin/kite
 chmod a+x /usr/local/bin/kite
+```
+
+### 配置常用命令组别名
+
+推荐配置常用命令组别名，这样可以快速使用常用的命令组。
+
+```bash
+## aliases for kite
+# NOTICE: zsh plugin support add aliases
+#alias kj="kite jump"
+alias kgit="kite git"
+alias kgl="kite gitlab"
+alias kgh="kite github"
 ```
 
 ## 使用说明

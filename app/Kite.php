@@ -10,7 +10,7 @@
 namespace Inhere\Kite;
 
 use BadMethodCallException;
-use Inhere\Kite\Common\Jump\QuickJump;
+use Inhere\Kite\Lib\Jump\QuickJump;
 use Inhere\Kite\Console\CliApplication;
 use Inhere\Kite\Console\Plugin\PluginManager;
 use Inhere\Kite\Http\WebApplication;
@@ -18,6 +18,7 @@ use Inhere\Route\Dispatcher\Dispatcher;
 use Inhere\Route\Router;
 use Monolog\Logger;
 use Toolkit\Stdlib\Obj\ObjectBox;
+use const BASE_PATH;
 
 /**
  * Class Kite
@@ -29,7 +30,7 @@ use Toolkit\Stdlib\Obj\ObjectBox;
  */
 class Kite
 {
-    public const VERSION = '1.0.11';
+    public const VERSION = '1.1.7';
 
     public const MODE_CLI = 'cli';
     public const MODE_WEB = 'web';
@@ -100,6 +101,16 @@ class Kite
     public static function logger(): Logger
     {
         return self::box()->get('logger');
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return string
+     */
+    public static function getPath(string $path): string
+    {
+        return BASE_PATH . '/' . $path;
     }
 
     /**
