@@ -32,6 +32,11 @@ class Document
     private $lang;
 
     /**
+     * @var string
+     */
+    private $fallbackLang = self::DEF_LANG;
+
+    /**
      * @var array
      */
     private $realPaths = [];
@@ -319,5 +324,21 @@ class Document
     public function getTopicNames(): array
     {
         return $this->topicNames;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFallbackLang(): string
+    {
+        return $this->fallbackLang;
+    }
+
+    /**
+     * @param string $fallbackLang
+     */
+    public function setFallbackLang(string $fallbackLang): void
+    {
+        $this->fallbackLang = $fallbackLang;
     }
 }

@@ -4,6 +4,7 @@ namespace Inhere\Kite\Helper;
 
 use Inhere\Console\Application;
 use Inhere\Console\Util\Show;
+use Toolkit\Stdlib\OS;
 use Toolkit\Sys\Sys;
 use function defined;
 use function explode;
@@ -140,5 +141,35 @@ class AppHelper
         foreach ($osEnv as $name => $value) {
             putenv("$name=$value");
         }
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return string eg: ~/.config/kite.php
+     */
+    public static function userConfigDir(string $path = ''): string
+    {
+        return OS::getUserHomeDir() . '/.config' . ($path ? "/$path" : '');
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return string
+     */
+    public static function userHomeDir(string $path = ''): string
+    {
+        return OS::getUserHomeDir() . ($path ? "/$path" : '');
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return string
+     */
+    public static function userCacheDir(string $path = ''): string
+    {
+        return OS::getUserHomeDir() . '/.cache' . ($path ? "/$path" : '');
     }
 }

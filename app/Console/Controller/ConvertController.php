@@ -10,8 +10,13 @@
 namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
+use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use function base_convert;
+use function date;
+use function strlen;
+use function substr;
 
 /**
  * Class ConvertController
@@ -30,6 +35,19 @@ class ConvertController extends Controller
     public static function aliases(): array
     {
         return ['conv'];
+    }
+
+    /**
+     * @return string[][]
+     */
+    protected static function commandAliases(): array
+    {
+        return [
+            'ts2date' => [
+                'tc',
+                'td',
+            ],
+        ];
     }
 
     /**
@@ -76,4 +94,61 @@ class ConvertController extends Controller
     {
         $output->success('Complete');
     }
+
+    /**
+     * Number base conversion
+     *
+     * @arguments
+     *  number      The want convert number.
+     *
+     * @options
+     *  -f,--fbase      The from base value.
+     *  -t,--tbase      The to base value.
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function baseCommand(Input $input, Output $output): void
+    {
+        $num = $input->getStringArg(0);
+
+        $fBase  = $input->getSameIntOpt('f,fbase', 10);
+        $toBase = $input->getSameIntOpt('t,tbase', 10);
+        if ($toBase > 36) {
+            throw new PromptException('to base value cannot be');
+        }
+
+        $output->colored('Result: ' . base_convert($num, $fBase, $toBase));
+    }
+
+    /**
+     * convert timestamp to datetime
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function ts2dateCommand(Input $input, Output $output): void
+    {
+        $args = $input->getArguments();
+        if (!$args) {
+            throw new PromptException('missing arguments');
+        }
+
+        $data = [];
+        foreach ($args as $time) {
+            if (strlen($time) > 10) {
+                $time = substr($time, 0, 10);
+            }
+
+            $data[] = [
+                'timestamp' => $time,
+                'datetime'  => date('Y-m-d H:i:s', (int)$time),
+            ];
+        }
+
+        $output->colored('- Current Time: ' . date('Y-m-d H:i:s'));
+        // opts
+        $output->table($data, 'Time to date', []);
+    }
+
 }

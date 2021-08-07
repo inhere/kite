@@ -15,7 +15,7 @@ class JumpShell
     public const SUPPORTED = [self::NAME_BASH, self::NAME_ZSH];
 
     public const NAME_BASH = 'bash';
-    public const NAME_ZSH = 'zsh';
+    public const NAME_ZSH  = 'zsh';
 
     /**
      * @link https://github.com/gsamokovarov/jump/blob/main/shell/bash.go
@@ -72,22 +72,21 @@ typeset -gaU chpwd_functions
 chpwd_functions+=(__jump_chpwd)
 
 _jump_completion() {
-#  reply="'$(kite jump hint "$@")'"
-   #reply=('test1' 'test2')
-   # local -a commands
-   typeset -a commands histories
-   # commands for use `_values`
-   #commands+=('test1[/path/to/dir1]' 'test2[/path/to/dir2]')
-   #_values 'jump dirs' \${commands[@]}
-   # commands for use `_describe`
-   # commands+=('test1:/path/to/dir1' 'test2:/path/to/dir2')
-   commands+=($(kite jump hint "$@"))
-   _describe 'commands' commands
+    # reply=('test1' 'test2')
+    # reply="'$(kite jump hint "$@")'"
+    typeset -a commands
+
+    # commands+=($(kite jump hint "$@"))
+    commands+=($(kite jump hint "\$words[2]"))
+    # _describe -t 'commands' commands
+    _describe 'commands' commands
+    _alternative \
+        'files:filename:_files'
 }
 
 {{bindFunc}}() {
   local dir
-  dir="$(kite jump get $@)"
+  dir=$(kite jump get "$@")
   test -d "\$dir" && cd "\$dir"
 }
 
@@ -95,9 +94,6 @@ _jump_completion() {
 # compctl -U -K _jump_completion {{bindFunc}}
 # for use `_describe`
 compdef _jump_completion '{{bindFunc}}'
-
-# add alias for: kite jump
-alias kj="kite jump"
 ZSH;
 
     /**
@@ -116,6 +112,16 @@ ZSH;
         }
 
         throw new RuntimeException("not supported shell env name: $shell");
+    }
+
+    /**
+     * @param string $shell
+     */
+    public static function checkShellName(string $shell): void
+    {
+        if (!self::isSupported($shell)) {
+            throw new RuntimeException("not supported shell env name: $shell");
+        }
     }
 
     /**

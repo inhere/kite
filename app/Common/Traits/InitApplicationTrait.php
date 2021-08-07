@@ -80,10 +80,11 @@ trait InitApplicationTrait
     protected function registerComServices(ObjectBox $box): void
     {
         $box->set('logger', function () {
-            $logger = new Logger('kite');
-            $handler = new RotatingFileHandler(BASE_PATH . '/tmp/kite.log');
-            $logger->pushHandler($handler);
+            $config = $this->getParam('logger', []);
+            $logger = new Logger($config['name'] ?? 'kite');
 
+            $handler = new RotatingFileHandler($config['logfile']);
+            $logger->pushHandler($handler);
             return $logger;
         });
     }

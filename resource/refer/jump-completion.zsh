@@ -32,7 +32,7 @@ _jump_completion() {
 
 j() {
   local dir
-  dir="$(kite jump cd $@)"
+  dir=$(kite jump cd "$@")
   test -d "$dir" && cd "$dir"
 }
 

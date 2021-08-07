@@ -26,7 +26,10 @@ use PhpGit\Git;
 use PhpGit\Info\TagsInfo;
 use PhpGit\Repo;
 use Toolkit\Stdlib\Str;
+use Toolkit\Sys\Cmd\CmdBuilder;
 use function array_keys;
+use function array_values;
+use function count;
 use function implode;
 use function in_array;
 use function sprintf;
@@ -140,18 +143,6 @@ class GitController extends Controller
     }
 
     /**
-     * run raw git command by call system git
-     *
-     * @param Input  $input
-     * @param Output $output
-     */
-    public function runCommand(Input $input, Output $output): void
-    {
-        // TODO
-        $output->colored('TODO');
-    }
-
-    /**
      * update codes from origin by git pull
      *
      * @param Input  $input
@@ -159,10 +150,27 @@ class GitController extends Controller
      */
     public function updateCommand(Input $input, Output $output): void
     {
-        $runner = CmdRunner::new();
-        $runner->setDryRun($input->getBoolOpt('dry-run'));
-        $runner->add('git pull');
-        $runner->runAndPrint();
+        // $flags eg: {
+        //     [0]=> string(6) "git"
+        //     [1]=> string(4) "pull"
+        //     [2]=> string(14) "-f"
+        //   }
+        $args = [];
+        $flags = $input->getFlags();
+        if (count($flags) > 2) {
+            unset($flags[0], $flags[1]);
+            $args = array_values($flags);
+        }
+
+        $c = CmdBuilder::git('pull');
+        $c->setDryRun($input->getBoolOpt('dry-run'));
+        $c->addArgs(...$args);
+        $c->run(true);
+
+        // $runner = CmdRunner::new();
+        // $runner->setDryRun($input->getBoolOpt('dry-run'));
+        // $runner->add('git pull');
+        // $runner->runAndPrint();
 
         $output->success('Complete');
     }
@@ -175,10 +183,24 @@ class GitController extends Controller
      */
     public function pushCommand(Input $input, Output $output): void
     {
-        $runner = CmdRunner::new();
-        $runner->setDryRun($input->getBoolOpt('dry-run'));
-        $runner->add('git push');
-        $runner->runAndPrint();
+        // eg: {
+        //     [0]=> string(6) "github"
+        //     [1]=> string(4) "push"
+        //     [2]=> string(14) "--set-upstream"
+        //     [3]=> string(6) "origin"
+        //     [4]=> string(4) "main"
+        //   }
+        $args = [];
+        $flags = $input->getFlags();
+        if (count($flags) > 2) {
+            unset($flags[0], $flags[1]);
+            $args = array_values($flags);
+        }
+
+        $c = CmdBuilder::git('push');
+        $c->setDryRun($input->getBoolOpt('dry-run'));
+        $c->addArgs(...$args);
+        $c->run(true);
 
         $output->success('Complete');
     }
@@ -190,11 +212,13 @@ class GitController extends Controller
     public function statusCommand(Input $input, Output $output): void
     {
         $commands = [
-            'echo hi',
+            'git log -2',
             'git status' // git status -s
         ];
 
         CmdRunner::new()->batch($commands)->runAndPrint();
+
+        $output->success('Complete');
     }
 
     /**
@@ -471,6 +495,7 @@ class GitController extends Controller
         ];
 
         CmdRunner::new()->batch($commands)->runAndPrint();
+        $output->success('Complete');
     }
 
     /**

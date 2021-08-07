@@ -19,6 +19,13 @@ _complete_for_{{fmtBinName}} () {
     )
 
     _describe 'commands' commands
+
+    case "\$words[1]" in
+        (git)
+            _arguments \
+                -v'[Verbose (more) output]'
+            ;;
+    esac
 }
 
 compdef _complete_for_{{fmtBinName}} {{binName}}

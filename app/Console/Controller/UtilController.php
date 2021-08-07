@@ -10,9 +10,9 @@
 namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
-use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Kite;
 use function date;
 use function explode;
 use function implode;
@@ -56,7 +56,6 @@ class UtilController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'tc'   => 'timeConv',
             'fjb'  => 'findJetBrains',
             'join' => ['implode'],
         ];
@@ -117,36 +116,6 @@ class UtilController extends Controller
     }
 
     /**
-     * convert timestamp to datetime
-     *
-     * @param Input  $input
-     * @param Output $output
-     */
-    public function timeConvCommand(Input $input, Output $output): void
-    {
-        $args = $input->getArguments();
-        if (!$args) {
-            throw new PromptException('missing arguments');
-        }
-
-        $data = [];
-        foreach ($args as $time) {
-            if (strlen($time) > 10) {
-                $time = substr($time, 0, 10);
-            }
-
-            $data[] = [
-                'timestamp' => $time,
-                'datetime'  => date('Y-m-d H:i:s', (int)$time),
-            ];
-        }
-
-        $output->colored('- Current Time: ' . date('Y-m-d H:i:s'));
-        $output->table($data, 'Time to date', [// opts
-        ]);
-    }
-
-    /**
      * find IDEA in the machine
      *
      * @param Input  $input
@@ -165,5 +134,21 @@ class UtilController extends Controller
         // rm -rf ~/Library/Application\ Support/${NAME}*/eval
 
         vdump($dirs);
+    }
+
+    /**
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function logCommand(Input $input, Output $output): void
+    {
+        $msg = $input->getFirstArg();
+        $type = $input->getStringOpt('type');
+
+        if (!$msg && !$type) {
+            return;
+        }
+
+        Kite::logger()->info($msg, ['type' => $type]);
     }
 }

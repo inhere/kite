@@ -1,11 +1,17 @@
 <?php
 
+use Inhere\Kite\Helper\AppHelper;
+
 return [
     'app'  => [
         'staticDir' => '/static',
     ],
+    'logger'  => [
+        'name'    => 'Kite',
+        'logfile' => AppHelper::userCacheDir('kite.log'),
+    ],
     'staticDir' => [
-        '/static' => BASE_PATH . '/pub'
+        '/static' => BASE_PATH . '/public'
     ],
     'git' => [
         // remote
@@ -59,26 +65,20 @@ return [
         // 'http_proxy'  => 'http://127.0.0.1:1081',
         // 'https_proxy' => 'http://127.0.0.1:1081',
     ],
-    // command aliases. element is: alias command => real command
-    'aliases' => [
-        'ac'     => 'git:ac',
-        'acp'    => 'git:acp',
-        'glpr'   => 'gitlab:pr',
-        'config' => 'self config',
-        'webui'  => 'self webui',
-    ],
     // tool command usage docs
     'manDocs' => [
         // if 'lang' not setting, will read from ENV.
         // 'lang'  => 'en',
-        'paths' => [
+        'fallbackLang'  => 'en',
+        'paths'    => [
             'root' => BASE_PATH . '/resource/mandocs'
         ],
     ],
-    // custom scripts for quick run an command
-    'scripts' => require 'scripts.php',
-
     'pluginDirs' => [
         // '/plugin/'
     ],
+    // command aliases. element is: alias command => real command
+    'aliases' => require 'aliases.php',
+    // custom scripts for quick run an command
+    'scripts' => require 'scripts.php',
 ];

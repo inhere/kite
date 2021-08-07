@@ -29,6 +29,10 @@ use const JSON_UNESCAPED_SLASHES;
  */
 class JumpStorage implements JsonSerializable
 {
+    public const MATCH_NAMED = 1;
+    public const MATCH_HIST  = 2;
+    public const MATCH_BOTH  = 3;
+
     /**
      * @var string
      */
@@ -277,10 +281,35 @@ class JumpStorage implements JsonSerializable
 
     /**
      * @param string $keywords
+     * @param int    $flag
      *
      * @return array
      */
-    public function matchAll(string $keywords): array
+    public function matchAll(string $keywords, int $flag = self::MATCH_BOTH): array
+    {
+        $result = [];
+
+        if ($flag & self::MATCH_NAMED) {
+            $result = $this->matchFromNamed($keywords);
+        }
+
+        if ($flag & self::MATCH_HIST) {
+            foreach ($this->histories as $path) {
+                if (stripos($path, $keywords) !== false) {
+                    $result[] = $path;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $keywords
+     *
+     * @return array
+     */
+    public function matchFromNamed(string $keywords): array
     {
         $result = [];
         foreach ($this->namedPaths as $name => $path) {
@@ -290,13 +319,6 @@ class JumpStorage implements JsonSerializable
                 $result[$name] = $path;
             }
         }
-
-        foreach ($this->histories as $path) {
-            if (stripos($path, $keywords) !== false) {
-                $result[] = $path;
-            }
-        }
-
         return $result;
     }
 

@@ -13,9 +13,10 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Lib\Jump\JumpShell;
-use Inhere\Kite\Lib\Template\SimpleTemplate;
 use Inhere\Kite\Kite;
+use Inhere\Kite\Lib\Jump\JumpShell;
+use Inhere\Kite\Lib\Jump\JumpStorage;
+use Inhere\Kite\Lib\Template\SimpleTemplate;
 use Toolkit\Sys\Util\ShellUtil;
 use function implode;
 use function is_dir;
@@ -134,13 +135,18 @@ class JumpController extends Controller
             throw new PromptException("not supported shell name: $shell");
         }
 
+        $qj  = Kite::jumper();
         $tpl = new SimpleTemplate();
 
-        $bindFunc   = $input->getStringOpt('bind', 'jump');
-        $scriptBody = $tpl->renderString(JumpShell::getShellScript($shell), [
+        $bindFunc = $input->getStringOpt('bind', 'jump');
+        $tplVars  = [
             'shell'    => $shell,
             'bindFunc' => $bindFunc,
-        ]);
+        ];
+
+        // $tplContents = JumpShell::getShellScript($shell);
+        $tplContents = $qj->getShellTplContents($shell);
+        $scriptBody  = $tpl->renderString($tplContents, $tplVars);
 
         // $output->colored("Document for the #$nameString");
         $output->writeRaw($scriptBody);
@@ -153,10 +159,10 @@ class JumpController extends Controller
      *  keywords   The jump target directory keywords for match.
      *
      * @options
-     *  --flag         The flag set for match
-     *          both      match all directory list
-     *          mark      Only match marks directory list
-     *          history   Only match history directory list
+     *  --flag INT     The flag set for match paths.
+     *          1      Only match name path list
+     *          2      Only match history path list
+     *          3      match all directory path list(default)
      *  --limit         Limit the match result rows
      *
      * @param Input  $input
@@ -167,18 +173,16 @@ class JumpController extends Controller
         $qj = Kite::jumper();
 
         $name = $input->getStringArg('keywords');
-        // $flag = $input->getStringOpt('flag', 'both');
-        Kite::logger()->info('jump hint keywords is: ' . $name);
+        $flag = $input->getIntOpt('flag', JumpStorage::MATCH_BOTH);
 
         $tipsStr = '';
-        $results = $qj->matchAll($name);
+        $results = $qj->matchAll($name, $flag);
+
+        Kite::logger()->info('jump hint keywords is: ' . $name, [
+            'results' => $name ? $results : 'ALL',
+        ]);
 
         if ($results) {
-            // $tips = sprintf("'%s'", implode( "' '", $dirs));
-            // $tips = implode('', $dirs);
-            # commands for use `_describe`
-            # commands+=('test1:/path/to/dir1' 'test2:/path/to/dir2')
-            // $tips = "'" . implode("'\n'", $dirs) . "'";
             $tipsArr = [];
             foreach ($results as $name => $path) {
                 if (is_string($name)) {

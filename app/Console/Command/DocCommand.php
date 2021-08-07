@@ -126,7 +126,7 @@ TXT;
             return;
         }
 
-        $this->topName  = $input->getStringArg('top', '');
+        $this->topName  = $input->getStringArg('top');
         $this->subNames = $input->getArrayArg('subs', []);
 
         $nameString = Document::names2string($this->topName, $this->subNames);
