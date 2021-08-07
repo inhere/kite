@@ -714,12 +714,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/inhere/php-console.git",
-                "reference": "ce1e7f5b6bef201cbf76d51930937937b5b3f601"
+                "reference": "8e39a95cb8a7875de271395bc8735cc358c67a26"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/inhere/php-console/zipball/ce1e7f5b6bef201cbf76d51930937937b5b3f601",
-                "reference": "ce1e7f5b6bef201cbf76d51930937937b5b3f601",
+                "url": "https://api.github.com/repos/inhere/php-console/zipball/8e39a95cb8a7875de271395bc8735cc358c67a26",
+                "reference": "8e39a95cb8a7875de271395bc8735cc358c67a26",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -776,7 +776,7 @@
                 "issues": "https://github.com/inhere/php-console/issues",
                 "source": "https://github.com/inhere/php-console/tree/3.x"
             },
-            "time": "2021-06-11T04:02:49+00:00"
+            "time": "2021-08-07T13:42:15+00:00"
         },
         {
             "name": "inhere/sroute",
@@ -1392,16 +1392,16 @@
         },
         {
             "name": "php-http/client-common",
-            "version": "2.3.0",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-http/client-common.git",
-                "reference": "e37e46c610c87519753135fb893111798c69076a"
+                "reference": "29e0c60d982f04017069483e832b92074d0a90b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-http/client-common/zipball/e37e46c610c87519753135fb893111798c69076a",
-                "reference": "e37e46c610c87519753135fb893111798c69076a",
+                "url": "https://api.github.com/repos/php-http/client-common/zipball/29e0c60d982f04017069483e832b92074d0a90b2",
+                "reference": "29e0c60d982f04017069483e832b92074d0a90b2",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1467,9 +1467,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-http/client-common/issues",
-                "source": "https://github.com/php-http/client-common/tree/2.3.0"
+                "source": "https://github.com/php-http/client-common/tree/2.4.0"
             },
-            "time": "2020-07-21T10:04:13+00:00"
+            "time": "2021-07-05T08:19:25+00:00"
         },
         {
             "name": "php-http/discovery",
@@ -1615,16 +1615,16 @@
         },
         {
             "name": "php-http/message",
-            "version": "1.11.1",
+            "version": "1.11.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-http/message.git",
-                "reference": "887734d9c515ad9a564f6581a682fff87a6253cc"
+                "reference": "295c82867d07261f2fa4b3a26677519fc6f7f5f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-http/message/zipball/887734d9c515ad9a564f6581a682fff87a6253cc",
-                "reference": "887734d9c515ad9a564f6581a682fff87a6253cc",
+                "url": "https://api.github.com/repos/php-http/message/zipball/295c82867d07261f2fa4b3a26677519fc6f7f5f6",
+                "reference": "295c82867d07261f2fa4b3a26677519fc6f7f5f6",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1689,9 +1689,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-http/message/issues",
-                "source": "https://github.com/php-http/message/tree/1.11.1"
+                "source": "https://github.com/php-http/message/tree/1.11.2"
             },
-            "time": "2021-05-24T18:11:08+00:00"
+            "time": "2021-08-03T11:52:11+00:00"
         },
         {
             "name": "php-http/message-factory",
@@ -2695,16 +2695,16 @@
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v4.4.25",
+            "version": "v4.4.27",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/options-resolver.git",
-                "reference": "2e607d627c70aa56284a02d34fc60dfe3a9a352e"
+                "reference": "66a3346190f9ddb8bcb160649ee452af3529a990"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/2e607d627c70aa56284a02d34fc60dfe3a9a352e",
-                "reference": "2e607d627c70aa56284a02d34fc60dfe3a9a352e",
+                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/66a3346190f9ddb8bcb160649ee452af3529a990",
+                "reference": "66a3346190f9ddb8bcb160649ee452af3529a990",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -2714,7 +2714,8 @@
                 ]
             },
             "require": {
-                "php": ">=7.1.3"
+                "php": ">=7.1.3",
+                "symfony/polyfill-php80": "^1.16"
             },
             "type": "library",
             "autoload": {
@@ -2747,7 +2748,7 @@
                 "options"
             ],
             "support": {
-                "source": "https://github.com/symfony/options-resolver/tree/v4.4.25"
+                "source": "https://github.com/symfony/options-resolver/tree/v4.4.27"
             },
             "funding": [
                 {
@@ -2763,7 +2764,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-05-26T11:20:16+00:00"
+            "time": "2021-07-23T15:41:52+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -2852,16 +2853,16 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.23.0",
+            "version": "v1.23.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "2df51500adbaebdc4c38dea4c89a2e131c45c8a1"
+                "reference": "9174a3d80210dca8daa7f31fec659150bbeabfc6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/2df51500adbaebdc4c38dea4c89a2e131c45c8a1",
-                "reference": "2df51500adbaebdc4c38dea4c89a2e131c45c8a1",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/9174a3d80210dca8daa7f31fec659150bbeabfc6",
+                "reference": "9174a3d80210dca8daa7f31fec659150bbeabfc6",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -2918,7 +2919,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.23.0"
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.23.1"
             },
             "funding": [
                 {
@@ -2934,20 +2935,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-05-27T09:27:20+00:00"
+            "time": "2021-05-27T12:26:48+00:00"
         },
         {
             "name": "symfony/polyfill-php80",
-            "version": "v1.23.0",
+            "version": "v1.23.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php80.git",
-                "reference": "eca0bf41ed421bed1b57c4958bab16aa86b757d0"
+                "reference": "1100343ed1a92e3a38f9ae122fc0eb21602547be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/eca0bf41ed421bed1b57c4958bab16aa86b757d0",
-                "reference": "eca0bf41ed421bed1b57c4958bab16aa86b757d0",
+                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/1100343ed1a92e3a38f9ae122fc0eb21602547be",
+                "reference": "1100343ed1a92e3a38f9ae122fc0eb21602547be",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3007,7 +3008,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.23.0"
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.23.1"
             },
             "funding": [
                 {
@@ -3023,20 +3024,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-02-19T12:13:01+00:00"
+            "time": "2021-07-28T13:41:28+00:00"
         },
         {
             "name": "symfony/process",
-            "version": "v4.4.25",
+            "version": "v4.4.27",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "cd61e6dd273975c6625316de9d141ebd197f93c9"
+                "reference": "0b7dc5599ac4aa6d7b936c8f7d10abae64f6cf7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/cd61e6dd273975c6625316de9d141ebd197f93c9",
-                "reference": "cd61e6dd273975c6625316de9d141ebd197f93c9",
+                "url": "https://api.github.com/repos/symfony/process/zipball/0b7dc5599ac4aa6d7b936c8f7d10abae64f6cf7f",
+                "reference": "0b7dc5599ac4aa6d7b936c8f7d10abae64f6cf7f",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3046,7 +3047,8 @@
                 ]
             },
             "require": {
-                "php": ">=7.1.3"
+                "php": ">=7.1.3",
+                "symfony/polyfill-php80": "^1.16"
             },
             "type": "library",
             "autoload": {
@@ -3074,7 +3076,7 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v4.4.25"
+                "source": "https://github.com/symfony/process/tree/v4.4.27"
             },
             "funding": [
                 {
@@ -3090,7 +3092,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-05-26T11:20:16+00:00"
+            "time": "2021-07-23T15:41:52+00:00"
         },
         {
             "name": "symfony/service-contracts",
@@ -3258,16 +3260,16 @@
         },
         {
             "name": "toolkit/cli-utils",
-            "version": "v1.2.5",
+            "version": "v1.2.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/cli-utils.git",
-                "reference": "481c31b86187a57d3b7b60a834be386be6cdddff"
+                "reference": "909008ec32b33c6b248adb700f060ac27b588794"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/cli-utils/zipball/481c31b86187a57d3b7b60a834be386be6cdddff",
-                "reference": "481c31b86187a57d3b7b60a834be386be6cdddff",
+                "url": "https://api.github.com/repos/php-toolkit/cli-utils/zipball/909008ec32b33c6b248adb700f060ac27b588794",
+                "reference": "909008ec32b33c6b248adb700f060ac27b588794",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3280,7 +3282,7 @@
                 "php": ">7.1.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.5"
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5"
             },
             "suggest": {
                 "inhere/console": "a lightweight php console application library."
@@ -3299,7 +3301,7 @@
                 {
                     "name": "inhere",
                     "email": "in.798@qq.com",
-                    "homepage": "http://www.yzone.net/"
+                    "homepage": "http://github.com/inhere"
                 }
             ],
             "description": "useful cli tool library of the php",
@@ -3313,9 +3315,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-toolkit/cli-utils/issues",
-                "source": "https://github.com/php-toolkit/cli-utils/tree/v1.2.5"
+                "source": "https://github.com/php-toolkit/cli-utils/tree/v1.2.10"
             },
-            "time": "2021-05-09T03:17:57+00:00"
+            "time": "2021-08-06T14:39:02+00:00"
         },
         {
             "name": "toolkit/fsutil",
@@ -3377,16 +3379,16 @@
         },
         {
             "name": "toolkit/stdlib",
-            "version": "v1.0.15",
+            "version": "v1.0.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/stdlib.git",
-                "reference": "96ba84787ab64c75841b84778347cd4b9d63df66"
+                "reference": "5b799a10ca0c36878c43f0be4150ecaeb72b2d9a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/stdlib/zipball/96ba84787ab64c75841b84778347cd4b9d63df66",
-                "reference": "96ba84787ab64c75841b84778347cd4b9d63df66",
+                "url": "https://api.github.com/repos/php-toolkit/stdlib/zipball/5b799a10ca0c36878c43f0be4150ecaeb72b2d9a",
+                "reference": "5b799a10ca0c36878c43f0be4150ecaeb72b2d9a",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3434,22 +3436,22 @@
             ],
             "support": {
                 "issues": "https://github.com/php-toolkit/stdlib/issues",
-                "source": "https://github.com/php-toolkit/stdlib/tree/v1.0.15"
+                "source": "https://github.com/php-toolkit/stdlib/tree/v1.0.16"
             },
-            "time": "2021-08-04T15:31:34+00:00"
+            "time": "2021-08-06T14:55:49+00:00"
         },
         {
             "name": "toolkit/sys-utils",
-            "version": "v1.2.6",
+            "version": "v1.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/sys-utils.git",
-                "reference": "1e44c1389f3862915207429fc4c8f56cb32ab18f"
+                "reference": "c294cca060b7ba8b4b161bf33df76a344e0b8796"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/sys-utils/zipball/1e44c1389f3862915207429fc4c8f56cb32ab18f",
-                "reference": "1e44c1389f3862915207429fc4c8f56cb32ab18f",
+                "url": "https://api.github.com/repos/php-toolkit/sys-utils/zipball/c294cca060b7ba8b4b161bf33df76a344e0b8796",
+                "reference": "c294cca060b7ba8b4b161bf33df76a344e0b8796",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3492,9 +3494,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-toolkit/sys-utils/issues",
-                "source": "https://github.com/php-toolkit/sys-utils/tree/v1.2.6"
+                "source": "https://github.com/php-toolkit/sys-utils/tree/v1.2.7"
             },
-            "time": "2021-05-09T14:06:00+00:00"
+            "time": "2021-07-25T16:01:25+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -3579,5 +3581,5 @@
         "ext-mbstring": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.0.0"
 }
