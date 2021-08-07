@@ -160,10 +160,11 @@ class JumpController extends Controller
      *
      * @options
      *  --flag INT     The flag set for match paths.
-     *          1      Only match name path list
-     *          2      Only match history path list
-     *          3      match all directory path list(default)
-     *  --limit         Limit the match result rows
+     *          1       Only match name path list
+     *          2       Only match history path list
+     *          3       match all directory path list(default)
+     *  --no-name      Not output name for named paths, useful for bash env.
+     *  --limit INT    Limit the match result rows
      *
      * @param Input  $input
      * @param Output $output
@@ -184,8 +185,10 @@ class JumpController extends Controller
 
         if ($results) {
             $tipsArr = [];
+            $notName = $input->getBoolOpt('no-name');
+
             foreach ($results as $name => $path) {
-                if (is_string($name)) {
+                if (false === $notName && is_string($name)) {
                     $tipsArr[] = sprintf("%s:%s", $name, $path);
                 } else {
                     $tipsArr[] = sprintf("%s", $path);
@@ -214,7 +217,7 @@ class JumpController extends Controller
         $name = $input->getStringArg('name');
         $dir  = $qj->match($name);
 
-        Kite::logger()->info("jump get dir is: $dir, name: $name");
+        Kite::logger()->info("jump get directory is: $dir, name: $name");
 
         $output->writeRaw($dir, false);
     }
@@ -249,7 +252,10 @@ class JumpController extends Controller
     }
 
     /**
-     * by the jump dir hook, record target directory path.
+     * record target directory path, by the jump dir hooks.
+     *
+     * @options
+     *  --quiet       Quiet, not print workdir.
      *
      * @param Input  $input
      * @param Output $output
@@ -272,7 +278,11 @@ class JumpController extends Controller
         }
 
         if (is_dir($targetDir)) {
-            $output->colored("INTO: $targetDir");
+            $quiet = $input->getBoolOpt('quiet');
+
+            if (!$quiet) {
+                $output->colored("INTO: $targetDir");
+            }
         } else {
             $output->liteError('invalid dir path:' . $targetDir);
         }

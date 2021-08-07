@@ -82,7 +82,7 @@ class CliApplication extends Application
         });
 
         $box->set('jumper', function () {
-            $jumpConf = $this->getParam('jump', []);
+            $jumpConf = $this->getParam('jumper', []);
             return QuickJump::new($jumpConf);
         });
     }

@@ -9,6 +9,7 @@ use Toolkit\FsUtil\Dir;
 use Toolkit\FsUtil\FS;
 use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\OS;
+use function array_merge;
 use function array_values;
 use function date;
 use function dirname;
@@ -287,8 +288,11 @@ class JumpStorage implements JsonSerializable
      */
     public function matchAll(string $keywords, int $flag = self::MATCH_BOTH): array
     {
-        $result = [];
+        if (!$keywords) {
+            return array_merge($this->namedPaths, array_values($this->histories));
+        }
 
+        $result = [];
         if ($flag & self::MATCH_NAMED) {
             $result = $this->matchFromNamed($keywords);
         }

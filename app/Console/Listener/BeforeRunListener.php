@@ -19,7 +19,9 @@ class BeforeRunListener
      */
     public function __invoke(CliApplication $app)
     {
-        Kite::logger()->info('will run command: ' . $app->getInput()->getCommand(), [
+        $command = $app->getInput()->getCommand();
+
+        Kite::logger()->info('will run command: ' . $command, [
             'flags' => $app->getInput()->getFlags(),
         ]);
     }

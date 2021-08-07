@@ -1,6 +1,17 @@
 <?php
 
+use Inhere\Kite\Helper\AppHelper;
+
 return [
+    // enable interactive
+    'no-interactive' => false,
+    /** @see \Inhere\Kite\Lib\Jump\QuickJump */
+    'jumper' => [
+        'datafile' => AppHelper::userConfigDir('kite-jump.json'),
+        'aliases' => [
+            'home' => '~',
+        ]
+    ],
     // self:webui
     'webui' => [
         'addr' => '127.0.0.1:8090',

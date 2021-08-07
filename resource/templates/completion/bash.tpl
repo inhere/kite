@@ -19,7 +19,7 @@ _complete_for_{{fmtBinName}} () {
     COMPREPLY=($(compgen -W "$commands" -- "$cur"))
 }
 
-complete -F _complete_for_{{fmtBinName}} {{binName}}
+complete -o bashdefault -F _complete_for_{{fmtBinName}} {{binName}}
 
 ## aliases for {{binName}}
 #alias kj="kite jump"

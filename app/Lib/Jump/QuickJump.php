@@ -74,7 +74,7 @@ class QuickJump
         $this->initialized = true;
 
         if (!$this->datafile) {
-            $this->datafile = Sys::userHomeDir() . '/.config/quick-jump.json';
+            $this->datafile = Sys::userHomeDir() . '/.config/kite-jump.json';
         }
 
         $this->engine = new JumpStorage($this->datafile);
