@@ -5,7 +5,7 @@
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/inhere/kite)](https://github.com/inhere/kite)
 [![Actions Status](https://github.com/inhere/kite/workflows/Unit-Tests/badge.svg)](https://github.com/inhere/kite/actions)
 
-PHP编写的CLI工具应用，方便本地开发和使用的一些工具。
+PHP编写的，方便本地开发和使用的一些CLI工具应用。
 
 > [kite](https://github.com/inhere/kite) 是基于 [inhere/php-console](https://github.com/inhere/php-console) 命令行包编写的CLI应用
 
@@ -18,6 +18,8 @@ PHP编写的CLI工具应用，方便本地开发和使用的一些工具。
 - git
 - php 7.3+
 - composer
+
+> TIP: 支持windows 10
 
 **脚本安装**
 
