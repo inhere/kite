@@ -1,13 +1,16 @@
 <?php
 
 use Inhere\Kite\Helper\AppHelper;
+use Toolkit\Stdlib\OS;
+
+$osName = OS::name();
 
 return [
     // enable interactive
     'no-interactive' => false,
     /** @see \Inhere\Kite\Lib\Jump\QuickJump */
     'jumper' => [
-        'datafile' => AppHelper::userConfigDir('kite-jump.json'),
+        'datafile' => OS::userHomeDir(".kite/tmp/kite-jump.$osName.json"),
         'aliases' => [
             'home' => '~',
         ]

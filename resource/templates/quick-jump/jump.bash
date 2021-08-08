@@ -8,8 +8,9 @@
 
 # hooks on dir changed
 __jump_prompt_command() {
+    # eg: "j" or "j /path/to/dir"
     local lastCmd=$(history 1 | {
-        read x cmd
+        read x cmd args
         echo "$cmd"
     })
 

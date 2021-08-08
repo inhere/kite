@@ -4,6 +4,7 @@ namespace Inhere\Kite\Common\Log;
 
 use Inhere\Kite\Kite;
 use Monolog\Processor\ProcessorInterface;
+use Toolkit\Stdlib\OS;
 
 /**
  * Class CliLogProcessor
@@ -23,6 +24,7 @@ class CliLogProcessor implements ProcessorInterface
         $workDir = Kite::cliApp()->getInput()->getWorkDir();
 
         // add to log
+        $record['extra']['OSName'] = OS::name();
         $record['extra']['workDir'] = $workDir;
 
         return $record;
