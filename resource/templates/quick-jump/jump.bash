@@ -21,7 +21,7 @@ __jump_prompt_command() {
     fi
 
     local status=$?
-    kite jump chdir --quiet && return $status
+    kite jump chdir && return $status
 }
 
 # will call func on every command exec.

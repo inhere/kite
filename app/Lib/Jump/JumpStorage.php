@@ -18,6 +18,7 @@ use function file_get_contents;
 use function file_put_contents;
 use function is_dir;
 use function md5;
+use function str_replace;
 use function stripos;
 use function strpos;
 use const JSON_PRETTY_PRINT;
@@ -85,6 +86,11 @@ class JumpStorage implements JsonSerializable
     private $histories = [];
 
     /**
+     * @var bool
+     */
+    private $windowsOS;
+
+    /**
      * Class constructor.
      *
      * @param string $datafile
@@ -92,6 +98,7 @@ class JumpStorage implements JsonSerializable
     public function __construct(string $datafile = '')
     {
         $this->datafile = $datafile;
+        $this->windowsOS  = OS::isWindows();
     }
 
     public function init(): void
@@ -132,11 +139,11 @@ class JumpStorage implements JsonSerializable
         $this->loadHistories($data['histories'] ?? []);
 
         if (!empty($data['lastPath'])) {
-            $this->lastPath = $data['lastPath'];
+            $this->lastPath = $this->formatPath($data['lastPath']);
         }
 
         if (!empty($data['prevPath'])) {
-            $this->prevPath = $data['prevPath'];
+            $this->prevPath = $this->formatPath($data['prevPath']);
         }
     }
 
@@ -167,6 +174,8 @@ class JumpStorage implements JsonSerializable
             $path = FS::realpath($path);
 
             if (is_dir($path)) {
+                $path = $this->formatPath($path);
+
                 $this->dataChanged     = true;
                 $this->namedPaths[$id] = $path;
                 return true;
@@ -193,13 +202,16 @@ class JumpStorage implements JsonSerializable
      */
     public function addHistory(string $path): bool
     {
-        $ok = false;
-        $id = $this->genID($path);
-
         $path  = FS::realpath($path);
         $isDir = is_dir($path);
 
+        // fix: completed result not works for jump
+        if ($isDir && $this->windowsOS) {
+            $path = str_replace('\\', '/', $path);
+        }
+
         // add latest path.
+        $ok = false;
         if ($isDir && $this->lastPath !== $path) {
             $this->dataChanged = true;
             $this->prevPath    = $this->lastPath;
@@ -209,6 +221,7 @@ class JumpStorage implements JsonSerializable
         }
 
         // add to history
+        $id = $this->genID($path);
         if ($isDir && !isset($this->histories[$id])) {
             $this->dataChanged    = true;
             $this->histories[$id] = $path;
@@ -341,6 +354,20 @@ class JumpStorage implements JsonSerializable
             $this->histories  = [];
             $this->namedPaths = [];
         }
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return string
+     */
+    public function formatPath(string $path): string
+    {
+        if ($this->windowsOS) {
+            $path = str_replace('\\', '/', $path);
+        }
+
+        return $path;
     }
 
     /**

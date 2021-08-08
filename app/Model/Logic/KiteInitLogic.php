@@ -15,6 +15,11 @@ use Toolkit\Sys\Util\ShellUtil;
 class KiteInitLogic extends AbstractObj
 {
     /**
+     * @var bool
+     */
+    public $dryRun = false;
+
+    /**
      * @var string
      */
     public $workDir = '';
@@ -28,6 +33,14 @@ class KiteInitLogic extends AbstractObj
      */
     public function initConfig(): void
     {
+        $app = Kite::cliApp();
+
+        if ($this->dryRun) {
+            $app->colored('DRY-RUN: install config OK', 'cyan');
+            return;
+        }
+
+        $app->colored('INIT: install config OK', 'mga');
     }
 
     /**
@@ -51,10 +64,16 @@ class KiteInitLogic extends AbstractObj
             $args['--tpl-file'] = $tplFile;
         }
 
+        $app = Kite::cliApp();
+        if ($this->dryRun) {
+            $app->colored('DRY-RUN: install completer OK', 'cyan');
+            return;
+        }
+
         $in = new Input\ArrayInput($args);
 
-        $app = Kite::cliApp();
         $app->runWithIO($in, $app->getOutput());
+        $app->colored('INIT: install config OK', 'mga');
     }
 
     /**
@@ -65,5 +84,13 @@ class KiteInitLogic extends AbstractObj
         return  [
             'status' => 'OK'
         ];
+    }
+
+    /**
+     * @param bool $dryRun
+     */
+    public function setDryRun(bool $dryRun): void
+    {
+        $this->dryRun = $dryRun;
     }
 }

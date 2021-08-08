@@ -29,7 +29,8 @@ class InitCommand extends Command
 
     /**
      * @options
-     *  -y, --yes       Not confirm anything
+     *  -y, --yes           Not confirm anything
+     *      --dry-run       Dry run, not real execute any commands.
      *
      * @param Input  $input
      * @param Output $output
@@ -42,6 +43,9 @@ class InitCommand extends Command
             'workDir' => $input->getWorkDir(),
             'kiteDir' => Dir::clearPharPath(BASE_PATH),
         ]);
+
+        $dryRun = $input->getBoolOpt('dry-run');
+        $logic->setDryRun($dryRun);
 
         $output->info('init kite runtime config');
         $logic->initConfig();

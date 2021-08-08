@@ -23,6 +23,7 @@ use function implode;
 use function is_dir;
 use function is_string;
 use function sprintf;
+use function vdump;
 
 /**
  * Class JumpController
@@ -216,6 +217,7 @@ class JumpController extends Controller
     {
         $qj = Kite::jumper();
 
+        // vdump($input, $_SERVER['argv']);
         $name = $input->getStringArg('name');
         $dir  = $qj->match($name);
 
