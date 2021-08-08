@@ -57,5 +57,9 @@ jobs:
           php bin/kite -V
           php bin/kite -h
           php bin/kite git info
-          php bin/kite jump list
 
+      - name: Generate changelog
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.php == '7.4' }}
+        run: |
+          php bin/kite git chlog last head --style gh-release --no-merges --fetch-tags --file tmp/changelog.md
+          cat tmp/changelog.md

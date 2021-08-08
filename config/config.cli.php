@@ -1,6 +1,5 @@
 <?php
 
-use Inhere\Kite\Helper\AppHelper;
 use Toolkit\Stdlib\OS;
 
 $osName = OS::name();
