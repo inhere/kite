@@ -18,6 +18,7 @@ use Inhere\Kite\Lib\Jump\JumpShell;
 use Inhere\Kite\Lib\Jump\JumpStorage;
 use Inhere\Kite\Lib\Template\SimpleTemplate;
 use Toolkit\Sys\Util\ShellUtil;
+use function addslashes;
 use function implode;
 use function is_dir;
 use function is_string;
@@ -172,16 +173,12 @@ class JumpController extends Controller
     public function hintCommand(Input $input, Output $output): void
     {
         $qj = Kite::jumper();
+        $kw = $input->getStringArg('keywords');
 
-        $name = $input->getStringArg('keywords');
         $flag = $input->getIntOpt('flag', JumpStorage::MATCH_BOTH);
 
         $tipsStr = '';
-        $results = $qj->matchAll($name, $flag);
-
-        Kite::logger()->info('jump hint keywords is: ' . $name, [
-            'results' => $name ? $results : 'ALL',
-        ]);
+        $results = $qj->matchAll($kw, $flag);
 
         if ($results) {
             $tipsArr = [];
@@ -194,6 +191,11 @@ class JumpController extends Controller
                     $tipsArr[] = sprintf("%s", $path);
                 }
             }
+
+            // addslashes($string);
+            Kite::logger()->info('jump hint keywords is: ' . $kw, [
+                'results' => $kw ? $tipsArr : 'ALL',
+            ]);
 
             $tipsStr = implode("\n", $tipsArr);
         }

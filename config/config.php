@@ -1,6 +1,6 @@
 <?php
 
-use Inhere\Kite\Helper\AppHelper;
+use Toolkit\Stdlib\OS;
 
 return [
     'app'  => [
@@ -8,7 +8,7 @@ return [
     ],
     'logger'  => [
         'name'    => 'Kite',
-        'logfile' => AppHelper::userCacheDir('kite.log'),
+        'logfile' => OS::userCacheDir('kite.log'),
     ],
     'staticDir' => [
         '/static' => BASE_PATH . '/public'

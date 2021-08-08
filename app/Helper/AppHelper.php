@@ -11,6 +11,8 @@ use function explode;
 use function getenv;
 use function is_array;
 use function putenv;
+use function random_int;
+use function strlen;
 use function strpos;
 use function trim;
 
@@ -172,4 +174,33 @@ class AppHelper
     {
         return OS::getUserHomeDir() . '/.cache' . ($path ? "/$path" : '');
     }
+
+    /**
+     * @param string $sname
+     * @param int    $length
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public static function genRandomStr(string $sname, int $length): string
+    {
+        $samples = [
+            'alpha'        => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+            'alpha_num'    => '0123456789abcdefghijklmnopqrstuvwxyz',
+            'alpha_num_up' => '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+            'alpha_num_c'  => '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-+!@#$%&*',
+        ];
+
+        $chars = $samples[$sname] ?? $samples['alpha_num'];
+
+        $str = '';
+        $max = strlen($chars) - 1;
+
+        for ($i = 0; $i < $length; $i++) {
+            $str .= $chars[random_int(0, $max)];
+        }
+
+        return $str;
+    }
+
 }

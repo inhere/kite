@@ -7,6 +7,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Lib\Template\TextTemplate;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Proc\ProcWrapper;
@@ -213,7 +214,8 @@ class GenerateController extends Controller
      * generate an random string.
      *
      * @options
-     *  -l, --length    The string length
+     *  -l, --length    The string length. default: 12
+     *  -n, --number    The number of generated strings. default: 1
      *  -t, --template  The sample template name. allow: alpha, alpha_num, alpha_num_c
      *
      * @param Input  $input
@@ -224,24 +226,26 @@ class GenerateController extends Controller
     public function randomCommand(Input $input, Output $output): void
     {
         $length  = $input->getSameIntOpt('l,length', 12);
-        $samples = [
-            'alpha'        => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
-            'alpha_num'    => '0123456789abcdefghijklmnopqrstuvwxyz',
-            'alpha_num_up' => '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
-            'alpha_num_c'  => '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-+!@#$%&*',
-        ];
+        $number  = $input->getSameIntOpt('n,number', 1);
 
-        $sname = $input->getSameStringOpt('t,template', 'alpha_num');
-        $chars = $samples[$sname] ?? $samples['alpha_num'];
-
-        $str = '';
-        $max = strlen($chars) - 1;   //strlen($chars) 计算字符串的长度
-
-        for ($i = 0; $i < $length; $i++) {
-            $str .= $chars[random_int(0, $max)];
+        if ($number < 1 || $number > 20) {
+            $number = 1;
         }
 
-        $output->info('Generated: ' . $str);
+        $sname = $input->getSameStringOpt('t,template', 'alpha_num');
+
+        if ($number === 1) {
+            $str = AppHelper::genRandomStr($sname, $length);
+            $output->info('Generated: ' . $str);
+            return;
+        }
+
+        $list = ['Generated:'];
+        for ($i = 0; $i < $number; $i++) {
+            $list[] = AppHelper::genRandomStr($sname, $length);
+        }
+
+        $output->info($list);
     }
 
 }

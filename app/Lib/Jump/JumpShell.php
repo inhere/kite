@@ -32,7 +32,8 @@ __jump_prompt_command() {
   local status=$?
   kite jump chdir && return \$status
 }
-__jump_hint() {
+
+_jump_completion() {
   local term="\${COMP_LINE/#{{bindFunc}} /}"
   echo \'$(kite jump hint "\$term")\'
 }
@@ -45,7 +46,7 @@ __jump_hint() {
 [[ "\$PROMPT_COMMAND" =~ __jump_prompt_command ]] || {
   PROMPT_COMMAND="__jump_prompt_command;\$PROMPT_COMMAND"
 }
-complete -o dirnames -C '__jump_hint' {{bindFunc}}
+complete -o dirnames -C '_jump_completion' {{bindFunc}}
 
 # add alias for: kite jump
 alias kj="kite jump"
