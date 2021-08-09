@@ -21,7 +21,7 @@ _complete_for_{{fmtBinName}} () {
 
 # complete -o bashdefault -o default -o nospace -F _complete_for_{{fmtBinName}} {{binName}}
 # complete -o dirnames -F _complete_for_{{fmtBinName}} {{binName}}
-complete -o dirnames -F _complete_for_{{fmtBinName}} {{binName}}
+complete -o dirnames -o plusdirs -F _complete_for_{{fmtBinName}} {{binName}}
 
 ## aliases for {{binName}}
 #alias kj="kite jump"

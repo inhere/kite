@@ -2,15 +2,12 @@
 
 namespace Inhere\Kite\Helper;
 
-use Inhere\Console\Application;
 use Inhere\Console\Util\Show;
 use Toolkit\Stdlib\OS;
 use Toolkit\Sys\Sys;
 use function defined;
 use function explode;
 use function getenv;
-use function is_array;
-use function putenv;
 use function random_int;
 use function strlen;
 use function strpos;
@@ -111,38 +108,18 @@ class AppHelper
     public static function openBrowser(string $pageUrl): void
     {
         if (Sys::isMac()) {
-            $cmd = "open \"{$pageUrl}\"";
+            $cmd = "open \"$pageUrl\"";
         } elseif (Sys::isWin()) {
             // $cmd = 'cmd /c start';
-            $cmd = "start {$pageUrl}";
+            $cmd = "start $pageUrl";
         } else {
-            $cmd = "x-www-browser \"{$pageUrl}\"";
+            $cmd = "x-www-browser \"$pageUrl\"";
         }
 
         Show::info("Will open the page on browser:\n  $pageUrl");
 
         // Show::writeln("> $cmd");
         Sys::execute($cmd);
-    }
-
-    /**
-     * @param Application $app
-     */
-    public static function loadOsEnvInfo(Application $app): void
-    {
-        $osEnv = $app->getParam('osEnv', []);
-        if (!$osEnv || !is_array($osEnv)) {
-            return;
-        }
-
-        Show::aList($osEnv, 'Put ENV From Config: "osEnv"', [
-            'ucFirst'      => false,
-            'ucTitleWords' => false,
-        ]);
-        // Sys::setOSEnv() TODO
-        foreach ($osEnv as $name => $value) {
-            putenv("$name=$value");
-        }
     }
 
     /**
@@ -153,26 +130,6 @@ class AppHelper
     public static function userConfigDir(string $path = ''): string
     {
         return OS::getUserHomeDir() . '/.config' . ($path ? "/$path" : '');
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return string
-     */
-    public static function userHomeDir(string $path = ''): string
-    {
-        return OS::getUserHomeDir() . ($path ? "/$path" : '');
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return string
-     */
-    public static function userCacheDir(string $path = ''): string
-    {
-        return OS::getUserHomeDir() . '/.cache' . ($path ? "/$path" : '');
     }
 
     /**

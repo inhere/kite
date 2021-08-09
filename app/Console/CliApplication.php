@@ -12,6 +12,7 @@ namespace Inhere\Kite\Console;
 use Inhere\Console\Application;
 use Inhere\Console\ConsoleEvent;
 use Inhere\Kite\Common\Log\CliLogProcessor;
+use Inhere\Kite\Console\Listener\BeforeCommandRunListener;
 use Inhere\Kite\Console\Listener\BeforeRunListener;
 use Inhere\Kite\Lib\Jump\QuickJump;
 use Inhere\Kite\Common\Traits\InitApplicationTrait;
@@ -93,6 +94,10 @@ class CliApplication extends Application
 
         $this->on(ConsoleEvent::ON_BEFORE_RUN, new BeforeRunListener());
         $this->on(ConsoleEvent::ON_NOT_FOUND, new NotFoundListener());
+
+        // auto proxy setting
+        $autoProxy = $this->getParam('autoProxy', []);
+        $this->on(ConsoleEvent::COMMAND_RUN_BEFORE, BeforeCommandRunListener::new($autoProxy));
 
         Kite::logger()->info('console app init completed');
     }

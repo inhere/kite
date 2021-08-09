@@ -18,7 +18,6 @@ use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Helper\AppHelper;
 use PhpComp\Http\Client\Client;
 use function in_array;
-use function vdump;
 
 /**
  * Class GitHubGroup
@@ -88,12 +87,6 @@ class GitHubController extends Controller
         $redirectGitGroup = $this->settings['redirectGit'] ?? [];
 
         if (in_array($command, $redirectGitGroup, true)) {
-            $loadEnvActions = $this->settings['loadEnvOn'] ?? [];
-            if ($loadEnvActions && in_array($command, $loadEnvActions, true)) {
-                $this->output->info(self::getName() . ' - load osEnv setting for command: ' . $command);
-                AppHelper::loadOsEnvInfo($this->app);
-            }
-
             $this->output->notice("will redirect to git group for run `git $command`");
             Console::app()->dispatch("git:$command");
             return true;
@@ -121,20 +114,20 @@ class GitHubController extends Controller
         }
     }
 
-    protected function beforeAction(): bool
-    {
-        if ($this->app) {
-            $action = $this->getAction();
-
-            $loadEnvActions = $this->settings['loadEnvOn'] ?? [];
-            if ($loadEnvActions && in_array($action, $loadEnvActions, true)) {
-                $this->output->info(self::getName() . ' - will load osEnv setting for command: ' . $action);
-                AppHelper::loadOsEnvInfo($this->app);
-            }
-        }
-
-        return true;
-    }
+    // protected function beforeAction(): bool
+    // {
+    //     if ($this->app) {
+    //         $action = $this->getAction();
+    //
+    //         $loadEnvActions = $this->settings['loadEnvOn'] ?? [];
+    //         if ($loadEnvActions && in_array($action, $loadEnvActions, true)) {
+    //             $this->output->info(self::getName() . ' - will load osEnv setting for command: ' . $action);
+    //             AppHelper::loadOsEnvInfo($this->app);
+    //         }
+    //     }
+    //
+    //     return true;
+    // }
 
     /**
      * Show a list of commands that will be redirected to git

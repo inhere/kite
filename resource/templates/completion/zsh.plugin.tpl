@@ -19,6 +19,8 @@ _complete_for_{{fmtBinName}} () {
     )
 
     _describe 'commands' commands
+    _alternative \
+        'files:filename:_files'
 
     case "\$words[1]" in
         (git)

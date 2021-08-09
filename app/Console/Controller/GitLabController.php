@@ -19,7 +19,6 @@ use Inhere\Kite\Common\GitLocal\GitLab;
 use Inhere\Kite\Console\Attach\Gitlab\ProjectInit;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
-use ReflectionException;
 use Toolkit\Stdlib\Str;
 use function array_merge;
 use function explode;
@@ -147,12 +146,6 @@ class GitLabController extends Controller
         $redirectGitGroup = $this->settings['redirectGit'] ?? [];
 
         if (in_array($command, $redirectGitGroup, true)) {
-            // $loadEnvActions = $this->settings['loadEnvOn'] ?? [];
-            // if ($loadEnvActions && in_array($command, $loadEnvActions, true)) {
-            //     $this->output->info(self::getName() . ' - load osEnv setting for command: ' . $command);
-            //     AppHelper::loadOsEnvInfo($this->app);
-            // }
-
             $this->output->notice("will redirect to git group for run `git $command`");
             Console::app()->dispatch("git:$command");
             return true;
@@ -316,8 +309,6 @@ class GitLabController extends Controller
      *
      * @param Input  $input
      * @param Output $output
-     *
-     * @throws ReflectionException
      */
     public function newBranchCommand(Input $input, Output $output): void
     {
@@ -388,7 +379,7 @@ class GitLabController extends Controller
      */
     protected function doDeleteBranch(string $name, string $mainRemote, CmdRunner $run, bool $notMain): void
     {
-        $this->output->title("delete the branch:{$name}", [
+        $this->output->title("delete the branch: $name", [
             'indent' => 0,
         ]);
 
@@ -605,7 +596,7 @@ class GitLabController extends Controller
 
         // deny as an source branch
         if ($denyBrs && $srcBranch !== $tgtBranch && in_array($srcBranch, $denyBrs, true)) {
-            throw new PromptException("the branch '{$srcBranch}' dont allow as source-branch for PR to other branch");
+            throw new PromptException("the branch '$srcBranch' dont allow as source-branch for PR to other branch");
         }
 
         $repo  = $p->repo;
@@ -638,8 +629,9 @@ class GitLabController extends Controller
 
         // $link = $this->config['hostUrl'];
         $link = $gitlab->getHost();
-        $link .= "/{$group}/{$repo}/merge_requests/new?";
-        $link .= http_build_query($query, '', '&');
+        $link .= "/$group/$repo/merge_requests/new?";
+        $link .= http_build_query($query);
+        // $link = UrlHelper::build($link, $query);
 
         if ($open) {
             // $output->info('will auto open link on browser');
@@ -687,7 +679,8 @@ class GitLabController extends Controller
             if (isset($query['utf8'])) {
                 // $query['utf8'] = '%E2%9C%93'; // ✓
                 unset($query['utf8']);
-                $info['query'] = http_build_query($query, '', '&');
+                $info['query'] = http_build_query($query);
+                // $info['query'] = UrlHelper::build('', $query);
             }
             $info['queryMap'] = $query;
         }
@@ -713,7 +706,6 @@ class GitLabController extends Controller
      * @param Input  $input
      * @param Output $output
      *
-     * @throws ReflectionException
      * @example
      *  {binWithCmd}             Sync code from the main repo remote {curBranchName} branch
      *  {binWithCmd} -b master   Sync code from the main repo remote master branch
@@ -789,7 +781,7 @@ class GitLabController extends Controller
         }
 
         $workDir = $input->getWorkDir();
-        $fGroup  = $input->getSameStringOpt(['o', 'fork-group'], '');
+        $fGroup  = $input->getSameStringOpt(['o', 'fork-group']);
 
         $output->aList([
             'the gitlab git url' => $gitUrl,

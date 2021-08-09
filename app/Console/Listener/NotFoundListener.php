@@ -2,6 +2,7 @@
 
 namespace Inhere\Kite\Console\Listener;
 
+use Inhere\Console\ConsoleEvent;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Console\CliApplication;
 use Inhere\Kite\Kite;
@@ -19,6 +20,7 @@ final class NotFoundListener
      * @param CliApplication $app
      *
      * @return bool
+     * @see ConsoleEvent::ON_NOT_FOUND
      */
     public function __invoke(string $cmd, CliApplication $app): bool
     {

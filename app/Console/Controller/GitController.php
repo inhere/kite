@@ -30,9 +30,7 @@ use Toolkit\Sys\Cmd\CmdBuilder;
 use function array_keys;
 use function array_values;
 use function count;
-use function edump;
 use function implode;
-use function in_array;
 use function sprintf;
 use function strlen;
 use function strpos;
@@ -117,17 +115,17 @@ class GitController extends Controller
     /**
      * @return bool
      */
-    protected function beforeAction(): bool
-    {
-        if ($this->app) {
-            $proxyActions = $this->settings['loadEnvOn'] ?? [];
-            if ($proxyActions && in_array($this->getAction(), $proxyActions, true)) {
-                AppHelper::loadOsEnvInfo($this->app);
-            }
-        }
-
-        return true;
-    }
+    // protected function beforeAction(): bool
+    // {
+    //     if ($this->app) {
+    //         $proxyActions = $this->settings['loadEnvOn'] ?? [];
+    //         if ($proxyActions && in_array($this->getAction(), $proxyActions, true)) {
+    //             AppHelper::loadOsEnvInfo($this->app);
+    //         }
+    //     }
+    //
+    //     return true;
+    // }
 
     /**
      * @param string $action
@@ -156,7 +154,7 @@ class GitController extends Controller
         //     [1]=> string(4) "pull"
         //     [2]=> string(14) "-f"
         //   }
-        $args = [];
+        $args  = [];
         $flags = $input->getFlags();
         if (count($flags) > 2) {
             unset($flags[0], $flags[1]);
@@ -191,7 +189,7 @@ class GitController extends Controller
         //     [3]=> string(6) "origin"
         //     [4]=> string(4) "main"
         //   }
-        $args = [];
+        $args  = [];
         $flags = $input->getFlags();
         if (count($flags) > 2) {
             unset($flags[0], $flags[1]);

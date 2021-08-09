@@ -20,6 +20,8 @@ _complete_for_{{fmtBinName}} () {
     )
 
     _describe 'commands' commands
+    _alternative \
+        'files:filename:_files'
 }
 
 compdef _complete_for_{{fmtBinName}} {{binName}}
