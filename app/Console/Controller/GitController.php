@@ -790,6 +790,7 @@ class GitController extends Controller
      *  --repo-url          The git repo URL address. eg: https://github.com/inhere/kite
      *                      default will auto use current git origin remote url
      *  --no-merges         No contains merge request logs
+     *  --unshallow         Convert to a complete warehouse, useful on GitHub Action.
      *  --with-author       Display commit author name
      *
      * @param Input  $input
@@ -811,7 +812,12 @@ class GitController extends Controller
 
         $repo = Repo::new();
         if ($input->getBoolOpt('fetch-tags')) {
-            $repo->newCmd('fetch', '--tags', '--force')->runAndPrint();
+            $fetch = $repo->newCmd('fetch', '--tags');
+            // fix: fetch tags history error on github action.
+            // see https://stackoverflow.com/questions/4916492/git-describe-fails-with-fatal-no-names-found-cannot-describe-anything
+            $fetch->addIf('--unshallow', $input->getBoolOpt('unshallow'));
+            $fetch->addArgs('--force');
+            $fetch->runAndPrint();
         }
 
         // git log v1.0.7...v1.0.8 --pretty=format:'<project>/commit/%H %s' --reverse
@@ -830,7 +836,6 @@ class GitController extends Controller
         }
 
         $output->info('collect git log output');
-
         $builder->add("$oldVersion...$newVersion");
         $builder->addf('--pretty=format:"%s"', $logFmt);
 
@@ -866,9 +871,8 @@ class GitController extends Controller
             $gcl->setItemFormatter(new SimpleFormatter());
         }
 
-        $output->info('parse logs and generate changelog');
-
         // parse and generate.
+        $output->info('parse logs and generate changelog');
         $gcl->generate();
 
         $outFile = $input->getStringOpt('file');
