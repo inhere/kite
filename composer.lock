@@ -3379,16 +3379,16 @@
         },
         {
             "name": "toolkit/stdlib",
-            "version": "v1.0.16",
+            "version": "v1.0.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/stdlib.git",
-                "reference": "5b799a10ca0c36878c43f0be4150ecaeb72b2d9a"
+                "reference": "234bbaff905ccc804680c6486d84d283db27405b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/stdlib/zipball/5b799a10ca0c36878c43f0be4150ecaeb72b2d9a",
-                "reference": "5b799a10ca0c36878c43f0be4150ecaeb72b2d9a",
+                "url": "https://api.github.com/repos/php-toolkit/stdlib/zipball/234bbaff905ccc804680c6486d84d283db27405b",
+                "reference": "234bbaff905ccc804680c6486d84d283db27405b",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3436,9 +3436,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-toolkit/stdlib/issues",
-                "source": "https://github.com/php-toolkit/stdlib/tree/v1.0.16"
+                "source": "https://github.com/php-toolkit/stdlib/tree/v1.0.17"
             },
-            "time": "2021-08-06T14:55:49+00:00"
+            "time": "2021-08-07T02:34:53+00:00"
         },
         {
             "name": "toolkit/sys-utils",
@@ -3581,5 +3581,5 @@
         "ext-mbstring": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }

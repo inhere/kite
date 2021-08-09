@@ -9,7 +9,6 @@ use Inhere\Console\Util\Show;
 use Toolkit\Stdlib\Obj\AbstractObj;
 use Toolkit\Stdlib\OS;
 use function in_array;
-use function vdump;
 
 /**
  * Class BeforeCommandRunListener
