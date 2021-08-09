@@ -58,14 +58,14 @@ jobs:
           php bin/kite -h
           php bin/kite git info
 
-      # git status && git log -1 && git fetch --force
       # git status && git log -1 && git fetch --tags --force
       # git status && git log -1 && git fetch --prune --unshallow
+      # git status && git log -1 && git fetch --depth=500 --tags --force
       - name: Generate changelog
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.php == '7.4' }}
         run: |
           echo "changelog list by git"
-          git status && git log -1 && git fetch --depth=500 --tags --force
+          git status && git log -1 && git fetch --tags --prune --unshallow --force
           git describe --abbrev=0 --tags
           lastTag=$(git describe --abbrev=0 --tags) && git log $lastTag...HEAD --pretty=format:"%H | %s" --no-merges --reverse
           echo "::group::changelog list by kite"
