@@ -58,7 +58,7 @@ jobs:
         run: |
           git status
           php bin/kite git info
-          php bin/kite gh cl prev $RELEASE_TAG --style gh-release --no-merges --fetch-tags --file tmp/changelog-${RELEASE_TAG}.md
+          php bin/kite gh cl prev $RELEASE_TAG --style gh-release --no-merges --fetch-tags --unshallow --file tmp/changelog-${RELEASE_TAG}.md
           cat tmp/changelog-${RELEASE_TAG}.md
 
       # https://github.com/meeDamian/github-release
