@@ -61,5 +61,8 @@ jobs:
       - name: Generate changelog
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.php == '7.4' }}
         run: |
+          git status
+          git log -2
+          git pull
           php bin/kite git chlog last head --style gh-release --no-merges --fetch-tags --file tmp/changelog.md
           cat tmp/changelog.md
