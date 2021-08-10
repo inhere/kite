@@ -7,8 +7,8 @@ on:
       - '**.php'
       - 'composer.json'
       - '**.yml'
-    tags-ignore:
-      - v* # not trigger on tag release
+    tags:
+      - v0 # not trigger on tag release
 
 jobs:
   test:
