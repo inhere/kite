@@ -56,7 +56,6 @@ jobs:
         run: |
           php bin/kite -V
           php bin/kite -h
-          php bin/kite git info
 
       # git status && git log -1 && git fetch --tags --force
       # git status && git log -1 && git fetch --prune --unshallow

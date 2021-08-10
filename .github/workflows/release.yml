@@ -42,7 +42,7 @@ jobs:
         run: |
           tag1=${GITHUB_REF#refs/*/}
           echo "release tag: ${tag1}"
-          composer install --no-progress
+          composer update --no-progress
 
       # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
       # Docs: https://getcomposer.org/doc/articles/scripts.md
