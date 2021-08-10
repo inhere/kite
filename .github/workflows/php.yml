@@ -7,8 +7,6 @@ on:
       - '**.php'
       - 'composer.json'
       - '**.yml'
-    tags:
-      - v0 # not trigger on tag release
 
 jobs:
   test:
@@ -63,9 +61,9 @@ jobs:
       # git status && git log -1 && git fetch --tags --force
       # git status && git log -1 && git fetch --prune --unshallow
       # git status && git log -1 && git fetch --depth=500 --tags --force
-      - name: Generate changelog
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.php == '7.4' }}
-        run: |
-          echo "changelog list by kite"
-          php bin/kite git chlog last head --style gh-release --no-merges --fetch-tags --unshallow --file tmp/changelog.md
-          cat tmp/changelog.md
+#      - name: Generate changelog
+#        if: ${{ matrix.os == 'ubuntu-latest' && matrix.php == '7.4' }}
+#        run: |
+#          echo "changelog list by kite"
+#          php bin/kite git chlog last head --style gh-release --no-merges --fetch-tags --unshallow --file tmp/changelog.md
+#          cat tmp/changelog.md
