@@ -1,13 +1,14 @@
 name: Unit-Tests
 
+# https://docs.github.com/cn/actions/reference/workflow-syntax-for-github-actions
 on:
   push:
-    tags-ignore:
-      - v* # not trigger on tag release
     paths:
       - '**.php'
       - 'composer.json'
       - '**.yml'
+    tags-ignore:
+      - v* # not trigger on tag release
 
 jobs:
   test:
