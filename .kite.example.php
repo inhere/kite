@@ -3,13 +3,29 @@
  * you can copy the file as `.kite.php` for custom config kite.
  */
 
+use Toolkit\Stdlib\OS;
+
+$osName = OS::name();
+
 return [
+    // application config
+    'no-interactive' => false,
     'php:serve' => [
         'host' => '127.0.0.1:8552',
         // document root
         'root' => 'public'
     ],
-
+    'logger' => [
+        'logfile' => BASE_PATH . '/tmp/logs/kite.log',
+    ],
+    'jumper'         => [
+        'datafile' => __DIR__ . "/tmp/jump-data.$osName.json",
+        'aliases'  => [
+            'home'  => '~',
+            'godev' => '~/Workspace/godev',
+            'php'   => '~/Workspace/php',
+        ],
+    ],
     /** @see Inhere\Kite\Common\GitLocal\GitLab */
     'gitlab'  => [
         'projects' => [
