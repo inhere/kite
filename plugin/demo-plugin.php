@@ -28,6 +28,8 @@ class DemoPlugin extends AbstractPlugin
         vdump(__METHOD__);
 
         $env = Environment::createGFMEnvironment();
+        $env->addInlineRenderer($inlineClass, $renderer);
+        $env->
         $env->mergeConfig([]);
 
         $converter = new MarkdownConverter($env);

@@ -5,9 +5,16 @@ namespace Inhere\Kite\Common;
 use cebe\markdown\GithubMarkdown;
 use Toolkit\Cli\Color;
 use Toolkit\Cli\ColorTag;
+use function array_merge;
 use function explode;
 use function implode;
+use function ltrim;
+use function sprintf;
 use function str_repeat;
+use function str_replace;
+use function strpos;
+use function substr;
+use function trim;
 use function ucwords;
 
 /**
@@ -25,13 +32,17 @@ class CliMarkdown extends GithubMarkdown
 
     public const LANG_EN = 'en';
 
+    public const GITHUB_HOST = 'https://github.com/';
+
     public const THEME_LIGHT = [
         'headline'   => 'lightBlue',
         'paragraph'  => '',
         'list'       => '',
         'link'       => 'info',
         'code'       => 'brown',
-        'inlineCode' => 'light_red_ex',
+        'quote'      => 'cyan',
+        'strong'     => 'bold',
+        'inlineCode' => 'lightRedEx',
     ];
 
     public const THEME_DARK = [
@@ -46,6 +57,11 @@ class CliMarkdown extends GithubMarkdown
     private $lang;
 
     /**
+     * @var array
+     */
+    private $theme = self::THEME_LIGHT;
+
+    /**
      * Class constructor.
      *
      * @param string $lang
@@ -53,6 +69,18 @@ class CliMarkdown extends GithubMarkdown
     public function __construct(string $lang = '')
     {
         $this->lang = $lang;
+    }
+
+    /**
+     * @param string $text
+     *
+     * @return string
+     */
+    public function parse($text): string
+    {
+        $parsed = parent::parse($text);
+
+        return str_replace(["\n\n\n", "\n\n\n\n"], "\n\n", ltrim($parsed));
     }
 
     /**
@@ -73,7 +101,7 @@ class CliMarkdown extends GithubMarkdown
 
         $hlText = $prefix . ' ' . $title;
 
-        return self::NL . ColorTag::add($hlText, 'lightBlue') . self::NL2;
+        return self::NL . ColorTag::add($hlText, $this->theme['headline']) . self::NL2;
     }
 
     /**
@@ -97,7 +125,7 @@ class CliMarkdown extends GithubMarkdown
     {
         $output = self::NL;
 
-        foreach ($block['items'] as $item => $itemLines) {
+        foreach ($block['items'] as $itemLines) {
             $output .= '● ' . $this->renderAbsy($itemLines) . "\n";
         }
 
@@ -107,25 +135,24 @@ class CliMarkdown extends GithubMarkdown
     /**
      * @param array $block
      *
-     * @return mixed|string
+     * @return string
      */
-    protected function renderTable($block)
+    protected function renderTable($block): string
     {
         $head = '';
         $body = '';
         $cols = $block['cols'];
 
         $first = true;
-        foreach($block['rows'] as $row) {
+        foreach ($block['rows'] as $row) {
             $cellTag = $first ? 'th' : 'td';
-            $tds = '';
+            $tds     = '';
             foreach ($row as $c => $cell) {
                 $align = empty($cols[$c]) ? '' : ' align="' . $cols[$c] . '"';
-                $tds .= "<$cellTag$align>" . trim($this->renderAbsy($cell)) . "</$cellTag>";
+                $tds   .= "<$cellTag$align>" . trim($this->renderAbsy($cell)) . "</$cellTag>";
             }
 
             if ($first) {
-                \vdump($row);
                 $head .= "<tr>$tds</tr>\n";
             } else {
                 $body .= "<tr>$tds</tr>\n";
@@ -136,6 +163,12 @@ class CliMarkdown extends GithubMarkdown
         return $this->composeTable($head, $body);
     }
 
+    /**
+     * @param string $head
+     * @param string $body
+     *
+     * @return string
+     */
     protected function composeTable($head, $body): string
     {
         $table = <<<TXT
@@ -150,12 +183,48 @@ TXT;
     /**
      * @param array $block
      *
-     * @return mixed|string
+     * @return string
      */
-    protected function renderLink($block)
+    protected function renderLink($block): string
     {
-        // \var_dump($block);
-        return ColorTag::add($block['orig'], 'info');
+        return ColorTag::add($block['orig'], $this->theme['link']);
+    }
+
+    /**
+     * @param $block
+     *
+     * @return string
+     */
+    protected function renderUrl($block): string
+    {
+        return parent::renderUrl($block);
+    }
+
+    /**
+     * @param $block
+     *
+     * @return string
+     */
+    protected function renderAutoUrl($block): string
+    {
+        $tag = $this->theme['link'];
+        $url = $text = $block[1];
+
+        if (strpos($url, self::GITHUB_HOST) !== false) {
+            $text = substr($text, 19);
+        }
+
+        return sprintf('<%s>[%s]%s</%s>', $tag, $text, $url, $tag);
+    }
+
+    /**
+     * @param $block
+     *
+     * @return string
+     */
+    protected function renderImage($block): string
+    {
+        return sprintf('%s', $block['orig']);
     }
 
     /**
@@ -166,22 +235,23 @@ TXT;
     protected function renderQuote($block): string
     {
         // ¶ §
-        $prefix = Color::render('¶ ', [Color::FG_GREEN, Color::BOLD]);
+        $prefix  = Color::render('¶ ', [Color::FG_GREEN, Color::BOLD]);
+        $content = ltrim($this->renderAbsy($block['content']));
 
-        return $prefix . ColorTag::add($this->renderAbsy($block['content']), 'cyan');
+        return self::NL . $prefix . ColorTag::add($content, $this->theme['quote']);
     }
 
     /**
      * @param array $block
      *
-     * @return string|void
+     * @return string
      */
-    protected function renderCode($block)
+    protected function renderCode($block): string
     {
         $lines = explode(self::NL, $block['content']);
         $text  = implode("\n    ", $lines);
 
-        return "\n    " . ColorTag::add($text, 'brown') . self::NL2;
+        return "\n    " . ColorTag::add($text, $this->theme['code']) . self::NL2;
     }
 
     /**
@@ -191,7 +261,19 @@ TXT;
      */
     protected function renderInlineCode($block): string
     {
-        return ColorTag::add($block[1], 'light_red_ex');
+        return ColorTag::add($block[1], $this->theme['inlineCode']);
+    }
+
+    /**
+     * @param $block
+     *
+     * @return string
+     */
+    protected function renderStrong($block): string
+    {
+        $text = $this->renderAbsy($block[1]);
+
+        return self::NL . ColorTag::add("**$text**", $this->theme['strong']) . self::NL;
     }
 
     /**
@@ -202,5 +284,21 @@ TXT;
     protected function renderText($block): string
     {
         return $block[1];
+    }
+
+    /**
+     * @return array
+     */
+    public function getTheme(): array
+    {
+        return $this->theme;
+    }
+
+    /**
+     * @param array $theme
+     */
+    public function setTheme(array $theme): void
+    {
+        $this->theme = array_merge($this->theme, $theme);
     }
 }

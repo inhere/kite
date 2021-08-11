@@ -21,23 +21,33 @@ use function file_get_contents;
  */
 class MarkdownCommand extends Command
 {
+    /** @var string  */
     protected static $name = 'markdown';
 
+    /**
+     * @var string
+     */
     protected static $description = 'render markdown file on terminal';
 
+    /**
+     * @return string[]
+     */
     public static function aliases(): array
     {
         return ['md', 'mkdown'];
     }
 
     /**
-     * do execute
+     * @arguments
+     *   mdfile     <red>*</red>The markdown file path.
+     *
      * @param  Input $input
      * @param  Output $output
      */
     protected function execute($input, $output)
     {
-        $filename = $input->getFirstArg();
+        $input->bindArgument('mdfile', 0);
+        $filename = $input->getRequiredArg('mdfile');
 
         $text = file_get_contents($filename);
 
