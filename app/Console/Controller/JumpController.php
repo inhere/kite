@@ -18,12 +18,10 @@ use Inhere\Kite\Lib\Jump\JumpShell;
 use Inhere\Kite\Lib\Jump\JumpStorage;
 use Inhere\Kite\Lib\Template\SimpleTemplate;
 use Toolkit\Sys\Util\ShellUtil;
-use function addslashes;
 use function implode;
 use function is_dir;
 use function is_string;
 use function sprintf;
-use function vdump;
 
 /**
  * Class JumpController
@@ -32,18 +30,25 @@ class JumpController extends Controller
 {
     protected static $name = 'jump';
 
-    protected static $description = 'Jump helps you navigate faster by learning your habits.';
+    protected static $description = 'Jump helps you navigate faster by your history.';
 
+    /**
+     * @return string[]
+     */
     public static function aliases(): array
     {
         return ['goto'];
     }
 
+    /**
+     * @return string[][]
+     */
     protected static function commandAliases(): array
     {
         return [
             'hint'  => ['match', 'search'],
             'chdir' => ['into'],
+            'get'   => ['cd'],
         ];
     }
 
@@ -87,6 +92,7 @@ class JumpController extends Controller
     {
         $qj = Kite::jumper();
         $output->colored('Datafile: ' . $qj->getDatafile(), 'cyan');
+        $output->println('------------------------------------------------------------');
 
         $key  = $input->getFirstArg();
         $data = $qj->getEngine()->toArray(true);
@@ -115,11 +121,11 @@ class JumpController extends Controller
      * @param Output $output
      *
      * @help
-     *  auto jump for bash(add to ~/.bashrc):
+     *  quick jump for bash(add to ~/.bashrc):
      *      # shell func is: jump
      *      eval "$(kite jump shell bash)"
      *
-     *  auto jump for zsh(add to ~/.zshrc):
+     *  quick jump for zsh(add to ~/.zshrc):
      *      # shell func is: jump
      *      eval "$(kite jump shell zsh)"
      *      # set the bind func name is: j

@@ -13,8 +13,8 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Common\Cmd;
 use Inhere\Kite\Common\CmdRunner;
-use Inhere\Kite\Common\MapObject;
 use Inhere\Kite\Console\Manage\GitBranchManage;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
@@ -25,8 +25,8 @@ use PhpGit\Changelog\GitChangeLog;
 use PhpGit\Git;
 use PhpGit\Info\TagsInfo;
 use PhpGit\Repo;
+use Toolkit\Stdlib\Obj\ConfigObject;
 use Toolkit\Stdlib\Str;
-use Toolkit\Sys\Cmd\CmdBuilder;
 use function array_keys;
 use function array_values;
 use function count;
@@ -50,7 +50,7 @@ class GitController extends Controller
     protected static $description = 'Provide useful tool commands for quick use git';
 
     /**
-     * @var MapObject
+     * @var ConfigObject
      */
     private $settings;
 
@@ -108,7 +108,7 @@ class GitController extends Controller
     protected function beforeRun(): void
     {
         if ($this->app && !$this->settings) {
-            $this->settings = MapObject::new($this->app->getParam('git', []));
+            $this->settings = ConfigObject::new($this->app->getParam('git', []));
         }
     }
 
@@ -161,7 +161,7 @@ class GitController extends Controller
             $args = array_values($flags);
         }
 
-        $c = CmdBuilder::git('pull');
+        $c = Cmd::git('pull');
         $c->setDryRun($input->getBoolOpt('dry-run'));
         $c->addArgs(...$args);
         $c->run(true);
@@ -196,7 +196,7 @@ class GitController extends Controller
             $args = array_values($flags);
         }
 
-        $c = CmdBuilder::git('push');
+        $c = Cmd::git('push');
         $c->setDryRun($input->getBoolOpt('dry-run'));
         $c->addArgs(...$args);
         $c->run(true);

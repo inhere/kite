@@ -29,7 +29,7 @@ class DemoPlugin extends AbstractPlugin
 
         $env = Environment::createGFMEnvironment();
         $env->addInlineRenderer($inlineClass, $renderer);
-        $env->
+        // $env->
         $env->mergeConfig([]);
 
         $converter = new MarkdownConverter($env);

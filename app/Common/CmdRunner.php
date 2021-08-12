@@ -10,7 +10,7 @@ use function is_string;
 use function sprintf;
 
 /**
- * Class SysCmdExec
+ * Class CmdRunner - batch run multi commands
  *
  * @package Inhere\Kite\Common
  */
@@ -258,8 +258,9 @@ class CmdRunner extends AbstractCmdBuilder
             $this->innerExecute($command, $this->workDir);
 
             // stop on error
-            if (0 !== $this->code && false === $this->ignoreError) {
-                Color::println("\nCommand exit code not equal to 0(code: {$this->code}), stop run.", 'red');
+            $code = $this->code;
+            if (0 !== $code && false === $this->ignoreError) {
+                Color::println("\nCommand exit code not equal to 0(code: $code), stop run.", 'red');
                 return $this;
             }
         }
@@ -277,6 +278,7 @@ class CmdRunner extends AbstractCmdBuilder
     private function runCommands(array $commands): void
     {
         Color::println('Starting Handle', 'suc');
+
         $step = 1;
         foreach ($commands as $command) {
             $workDir = $this->workDir;
@@ -287,7 +289,7 @@ class CmdRunner extends AbstractCmdBuilder
 
                 $func = $item['where'] ?? '';
                 if ($func && false === $func()) {
-                    Color::println("Skip {$step} ...", 'cyan');
+                    Color::println("Skip $step ...", 'cyan');
                     Color::println("- Does not meet the conditions", 'cyan');
                     continue;
                 }
@@ -296,7 +298,7 @@ class CmdRunner extends AbstractCmdBuilder
                 $command = $item['command'];
             }
 
-            Color::println("STEP {$step}:", 'mga0');
+            Color::println("STEP $step:", 'mga0');
 
             // custom work dir
             if ($workDir) {
@@ -307,8 +309,9 @@ class CmdRunner extends AbstractCmdBuilder
             $step++;
 
             // stop on error
-            if (0 !== $this->code && false === $this->ignoreError) {
-                Color::println("\nCommand exit code not equal to 0(code: {$this->code}), stop run.", 'red');
+            $code = $this->code;
+            if (0 !== $code && false === $this->ignoreError) {
+                Color::println("\nCommand exit code not equal to 0(code: $code), stop run.", 'red');
                 break;
             }
         }

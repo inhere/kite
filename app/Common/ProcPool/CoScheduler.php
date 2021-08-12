@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Common;
+namespace Inhere\Kite\Common\ProcPool;
 
 use RuntimeException;
 use Swoole\Coroutine;

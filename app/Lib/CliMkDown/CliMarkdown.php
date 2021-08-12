@@ -2,6 +2,9 @@
 
 namespace Inhere\Kite\Lib\CliMkDown;
 
+use League\CommonMark\Environment;
+use League\CommonMark\MarkdownConverter;
+
 /**
  * Class CliMarkdown
  *
@@ -16,8 +19,18 @@ class CliMarkdown
      */
     private $lang = '';
 
+    /**
+     * @return string
+     */
     public function render(): string
     {
+        $env = Environment::createGFMEnvironment();
+        // $env->addInlineRenderer($inlineClass, $renderer);
+        // $env->
+        $env->mergeConfig([]);
 
+        $converter = new MarkdownConverter($env);
+
+        echo $converter->convertToHtml("# Hello GFM!\n welcome");
     }
 }

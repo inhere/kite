@@ -13,7 +13,7 @@
 
 _complete_for_{{fmtBinName}} () {
     local -a commands
-    IFS=$'\n'
+    local IFS=$'\n'
     commands+=(
 {{commands}}
     )
@@ -26,7 +26,7 @@ _complete_for_{{fmtBinName}} () {
         (git)
             _arguments \
                 -v'[Verbose (more) output]'
-            ;;
+        ;;
     esac
 }
 

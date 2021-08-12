@@ -4,7 +4,6 @@ namespace Inhere\Kite\Common;
 
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Cmd\CmdBuilder;
-use function vdump;
 
 /**
  * class Cmd builder

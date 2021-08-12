@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Common;
+namespace Inhere\Kite\Console\Component;
 
 use Toolkit\Stdlib\Obj\AbstractObj;
 use Toolkit\Stdlib\OS;
