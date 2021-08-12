@@ -282,9 +282,9 @@ class GitHubController extends Controller
      * @param Output $output
      *
      * @example
-     *  {fullCmd}  php-toolkit/cli-utils
-     *  {fullCmd}  php-toolkit/cli-utils my-repo
-     *  {fullCmd}  https://github.com/php-toolkit/cli-utils
+     *  {binWithCmd}  php-toolkit/cli-utils
+     *  {binWithCmd}  php-toolkit/cli-utils my-repo
+     *  {binWithCmd}  https://github.com/php-toolkit/cli-utils
      */
     public function cloneCommand(Input $input, Output $output): void
     {

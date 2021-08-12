@@ -6,16 +6,22 @@ use cebe\markdown\GithubMarkdown;
 use Toolkit\Cli\Color;
 use Toolkit\Cli\ColorTag;
 use function array_merge;
+use function array_sum;
+use function count;
 use function explode;
 use function implode;
 use function ltrim;
+use function mb_strlen;
+use function rtrim;
 use function sprintf;
+use function str_pad;
 use function str_repeat;
 use function str_replace;
 use function strpos;
 use function substr;
 use function trim;
 use function ucwords;
+use function vdump;
 
 /**
  * Class CliMarkdown
@@ -34,19 +40,16 @@ class CliMarkdown extends GithubMarkdown
 
     public const GITHUB_HOST = 'https://github.com/';
 
-    public const THEME_LIGHT = [
+    public const THEME_DEFAULT = [
         'headline'   => 'lightBlue',
         'paragraph'  => '',
         'list'       => '',
-        'link'       => 'info',
+        'link'       => 'underscore',
+        'image'      => 'info',
         'code'       => 'brown',
         'quote'      => 'cyan',
         'strong'     => 'bold',
         'inlineCode' => 'lightRedEx',
-    ];
-
-    public const THEME_DARK = [
-
     ];
 
     /**
@@ -59,7 +62,7 @@ class CliMarkdown extends GithubMarkdown
     /**
      * @var array
      */
-    private $theme = self::THEME_LIGHT;
+    private $theme = self::THEME_DEFAULT;
 
     /**
      * Class constructor.
@@ -81,6 +84,18 @@ class CliMarkdown extends GithubMarkdown
         $parsed = parent::parse($text);
 
         return str_replace(["\n\n\n", "\n\n\n\n"], "\n\n", ltrim($parsed));
+    }
+
+    /**
+     * @param string $text
+     *
+     * @return string
+     */
+    public function render(string $text): string
+    {
+        $parsed = $this->parse($text);
+
+        return Color::parseTag($parsed);
     }
 
     /**
@@ -111,7 +126,7 @@ class CliMarkdown extends GithubMarkdown
      */
     protected function renderParagraph($block): string
     {
-        return $this->renderAbsy($block['content']) . self::NL;
+        return self::NL . $this->renderAbsy($block['content']) . self::NL;
     }
 
     /**
@@ -139,45 +154,80 @@ class CliMarkdown extends GithubMarkdown
      */
     protected function renderTable($block): string
     {
-        $head = '';
-        $body = '';
-        $cols = $block['cols'];
+        $head = $body = '';
+        // $cols = $block['cols'];
+
+        $tabInfo = ['width' => 60];
+        $colWidths = [];
+        foreach ($block['rows'] as $row) {
+            foreach ($row as $c => $cell) {
+                $cellLen = $this->getCellWith($cell);
+
+                if (!isset($tabInfo[$c])) {
+                    $colWidths[$c] = 16;
+                }
+
+                $colWidths[$c] = $this->compareMax($cellLen, $colWidths[$c]);
+            }
+        }
+
+        $colCount = count($colWidths);
+        $tabWidth = (int)array_sum($colWidths);
 
         $first = true;
+        $splits = [];
         foreach ($block['rows'] as $row) {
-            $cellTag = $first ? 'th' : 'td';
-            $tds     = '';
+            // $cellTag = $first ? 'th' : 'td';
+            $tds = [];
             foreach ($row as $c => $cell) {
-                $align = empty($cols[$c]) ? '' : ' align="' . $cols[$c] . '"';
-                $tds   .= "<$cellTag$align>" . trim($this->renderAbsy($cell)) . "</$cellTag>";
+                $cellLen = $colWidths[$c];
+
+                // ︱｜｜—―￣==＝＝▪▪▭▭▃▃▄▄▁▁▕▏▎┇╇══
+                if ($first) {
+                    $splits[] = str_pad('=', $cellLen+1, '=');
+                }
+
+                $lastIdx = count($cell) - 1;
+                // padding space to last item contents.
+                foreach ($cell as $idx => &$item) {
+                    if ($lastIdx === $idx) {
+                        $item[1] = str_pad($item[1], $cellLen);
+                    } else {
+                        $cellLen -= mb_strlen($item[1]);
+                    }
+                }
+                unset($item);
+                // vdump($cellLen, $lastIdx, $cell);
+
+                $tds[] = trim($this->renderAbsy($cell), "\n\r");
             }
 
+            $tdsStr = implode(' | ', $tds);
             if ($first) {
-                $head .= "<tr>$tds</tr>\n";
+                $head .= implode('=', $splits) . "\n$tdsStr\n" . implode('|', $splits) . "\n";
             } else {
-                $body .= "<tr>$tds</tr>\n";
+                $body .= "$tdsStr\n";
             }
             $first = false;
         }
 
-        return $this->composeTable($head, $body);
+        // return $this->composeTable($head, $body);
+        return $head . $body . str_pad('=', $tabWidth + $colCount + 1, '=') . self::NL;
     }
 
     /**
-     * @param string $head
-     * @param string $body
+     * @param array $cellElems
      *
-     * @return string
+     * @return int
      */
-    protected function composeTable($head, $body): string
+    protected function getCellWith(array $cellElems): int
     {
-        $table = <<<TXT
-$head
-========|==============
-$body
-TXT;
+        $width = 0;
+        foreach ($cellElems as $elem) {
+            $width += mb_strlen($elem[1] ?? '');
+        }
 
-        return $table;
+        return $width;
     }
 
     /**
@@ -187,7 +237,7 @@ TXT;
      */
     protected function renderLink($block): string
     {
-        return ColorTag::add($block['orig'], $this->theme['link']);
+        return ColorTag::add('♆ ' . $block['orig'], $this->theme['link']);
     }
 
     /**
@@ -224,7 +274,7 @@ TXT;
      */
     protected function renderImage($block): string
     {
-        return sprintf('%s', $block['orig']);
+        return self::NL . Color::addTag( '▨ ' . $block['orig'], $this->theme['image']);
     }
 
     /**
@@ -277,13 +327,14 @@ TXT;
     }
 
     /**
-     * @param array $block
+     * @param array $text
      *
      * @return string
      */
-    protected function renderText($block): string
+    protected function renderText($text): string
     {
-        return $block[1];
+        // vdump($text);
+        return $text[1];
     }
 
     /**
@@ -300,5 +351,16 @@ TXT;
     public function setTheme(array $theme): void
     {
         $this->theme = array_merge($this->theme, $theme);
+    }
+
+    /**
+     * @param int $len1
+     * @param int $len2
+     *
+     * @return int
+     */
+    private function compareMax(int $len1, int $len2): int
+    {
+        return $len1 > $len2 ? $len1 : $len2;
     }
 }
