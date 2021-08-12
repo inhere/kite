@@ -26,6 +26,20 @@ return [
             'php'   => '~/Workspace/php',
         ],
     ],
+    /** @see \Inhere\Kite\Console\Listener\BeforeCommandRunListener */
+    'autoProxy'      => [
+        'envSettings' => [
+            // proxy settings
+            // export http_proxy=http://127.0.0.1:1081;export https_proxy=http://127.0.0.1:1081;
+            // 'http_proxy'  => 'http://127.0.0.1:1081',
+            // 'https_proxy' => 'http://127.0.0.1:1081',
+        ],
+        'groupLimits' => [],
+        'commandIds'  => [
+            // item is commandID
+            // 'php:ghPkg',
+        ],
+    ],
     /** @see Inhere\Kite\Common\GitLocal\GitLab */
     'gitlab'  => [
         'projects' => [

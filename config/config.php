@@ -46,7 +46,6 @@ return [
         // group
         'defaultGroup'     => 'swoft',
         'defaultForkGroup' => 'ulue',
-        'loadEnvOn'     => [],
         'redirectGit'   => [
             'acp',
             'log',

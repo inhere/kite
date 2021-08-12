@@ -9,6 +9,7 @@ use Inhere\Console\Util\Show;
 use Toolkit\Stdlib\Obj\AbstractObj;
 use Toolkit\Stdlib\OS;
 use function in_array;
+use function vdump;
 
 /**
  * Class BeforeCommandRunListener
@@ -33,9 +34,15 @@ class BeforeCommandRunListener extends AbstractObj
     public $envSettings = [];
 
     /**
-     * @var array
+     * ```ph
+     *  groupName => [], // for the group
+     *  // for special subcommands in the group
+     *  groupName => ['sub1', 'sub2'],
+     * ```
+     *
+     * @var array[]
      */
-    public $groupNames = [];
+    public $groupLimits = [];
 
     /**
      * @var array
@@ -65,13 +72,26 @@ class BeforeCommandRunListener extends AbstractObj
         }
 
         $cmdId = $input->getCommandId();
+
         if ($this->commandIds && in_array($cmdId, $this->commandIds, true)) {
             $this->setProxyEnv($this->envSettings, $cmdId);
             return;
         }
 
-        if (!$alone && $this->groupNames && in_array($commandName, $this->groupNames, true)) {
-            $this->setProxyEnv($this->envSettings, $cmdId);
+        $groupName = $input->getCommand();
+        // vdump($groupName, $this);
+        if (!$alone && isset($this->groupLimits[$groupName])) {
+            // vdump($commandName, $cmdId , $input);
+            if (!$this->groupLimits[$groupName]) {
+                $this->setProxyEnv($this->envSettings, $cmdId);
+                return;
+            }
+
+            $subName = $input->getSubCommand();
+
+            if (in_array($subName, $this->groupLimits[$groupName], true)) {
+                $this->setProxyEnv($this->envSettings, $cmdId);
+            }
         }
     }
 

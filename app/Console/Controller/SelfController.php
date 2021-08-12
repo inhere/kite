@@ -20,6 +20,7 @@ use function array_keys;
 use function array_merge;
 use function count;
 use function is_scalar;
+use function stripos;
 use const BASE_PATH;
 
 /**
@@ -96,7 +97,8 @@ class SelfController extends Controller
      * show the application config information
      *
      * @options
-     *  --keys     Only show all key names of config
+     *      --keys           Only show all key names of config
+     *  -s, --search         Search config names by `key` argument
      *
      * @arguments
      *  key     The key of config
@@ -112,32 +114,44 @@ class SelfController extends Controller
             return;
         }
 
-        $key = $input->getStringArg(0);
+        $conf = $app->getConfig();
+        $key  = $input->getStringArg(0);
 
-        if ($key) {
-            $val = $app->getParam($key);
-            if ($val === null) {
-                throw new PromptException("config key '$key' is not exists");
-            }
-
-            if (is_scalar($val)) {
-                $output->info("Config '$key' Value: $val");
-            } else {
-                $output->title("Config: '$key'", [
-                    'indent'   => 0,
-                    'titlePos' => Title::POS_MIDDLE,
-                ]);
-                $output->json($val);
-            }
+        // show all config
+        if (!$key) {
+            $output->title('Application Config', [
+                'indent'   => 0,
+                'titlePos' => Title::POS_MIDDLE,
+            ]);
+            $output->json($conf);
             return;
         }
 
-        $conf = $app->getConfig();
-        $output->title('Application Config', [
-            'indent'   => 0,
-            'titlePos' => Title::POS_MIDDLE,
-        ]);
-        $output->json($conf);
+        $value = null;
+        $match = $input->getSameBoolOpt('s,search');
+        if ($match) { // match key
+            foreach ($conf as $name => $item) {
+                if (stripos($name, $key) !== false) {
+                    $value[$name] = $item;
+                }
+            }
+        } elseif (isset($conf[$key])) {
+            $value = $conf[$key];
+        }
+
+        if ($value === null) {
+            throw new PromptException("config key '$key' is not exists");
+        }
+
+        if (is_scalar($value)) {
+            $output->info("Config '$key' Value: $value");
+        } else {
+            $output->title("Config: '$key'", [
+                'indent'   => 0,
+                'titlePos' => Title::POS_MIDDLE,
+            ]);
+            $output->json($value);
+        }
     }
 
     /**
