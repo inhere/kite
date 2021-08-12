@@ -51,7 +51,7 @@ return [
         // if 'lang' not setting, will read from ENV.
         // 'lang'  => 'en',
         'paths' => [
-            'root' => BASE_PATH . '/docs'
+            'root' => BASE_PATH . '/resource/mandocs'
         ],
     ],
     // command aliases. element is: alias command => real command
