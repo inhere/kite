@@ -4,19 +4,17 @@ use Toolkit\Stdlib\OS;
 
 return [
     'app'  => [
-        'staticDir' => '/static',
     ],
     'logger'  => [
         'name'    => 'Kite',
         'logfile' => OS::userCacheDir('kite.log'),
     ],
-    'staticDir' => [
-        '/static' => BASE_PATH . '/public'
-    ],
     'git' => [
         // remote
         'mainRemote'       => 'main',
         'forkRemote'       => 'origin',
+        // 'auto-sign' => true,
+        // 'sign-text' => 'inhere <in.798@qq.com>',
     ],
     'gitlab'  => [
         // remote

@@ -86,7 +86,25 @@ abstract class AbstractPlugin implements PluginInterface
     /**
      * @return array
      */
+    public function getOptions(): array
+    {
+        return $this->options();
+    }
+
+    /**
+     * @return array
+     */
     public function getHelpInfo(): array
+    {
+        return [
+            'examples' => '', // allow: string, array<string>
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getSimpleInfo(): array
     {
         // $meta = $this->metadata();
 

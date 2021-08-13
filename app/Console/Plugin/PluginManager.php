@@ -99,12 +99,18 @@ class PluginManager
     public function showInfo(AbstractPlugin $plugin): void
     {
         Color::println($plugin->getName() . ':', 'comment');
-        Color::println('  ' . $plugin->getDesc(), 'normal');
+        Color::println('  ' . $plugin->getDesc() . "\n", 'normal');
 
         // Show::aList($plugin->getHelpInfo(), 'Information');
         $panel = [
-            'Information' => $plugin->getHelpInfo(),
+            'Information' => $plugin->getSimpleInfo(),
         ];
+
+        // input options
+        if ($plugOpts = $plugin->getOptions()) {
+            $panel['plugin options:'] = $plugOpts;
+        }
+
         $meta = $plugin->getMetadata();
         if ($meta['example']) {
             $panel['example'] = $meta['example'];

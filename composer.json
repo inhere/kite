@@ -25,7 +25,6 @@
     "phpcom-lab/phpgit": "dev-master",
     "phpcom-lab/hucron": "dev-master",
     "toolkit/fsutil": "^1.0",
-    "league/commonmark": "^1.6",
     "colinodell/json5": "^2.2",
     "laktak/hjson": "^2.1",
     "knplabs/github-api": "^3.0",

@@ -40,6 +40,10 @@ return [
             // 'php:ghPkg',
         ],
     ],
+    'git' => [
+        // 'auto-sign' => true,
+        // 'sign-text' => 'inhere <in.798@qq.com>',
+    ],
     /** @see Inhere\Kite\Common\GitLocal\GitLab */
     'gitlab'  => [
         'projects' => [
