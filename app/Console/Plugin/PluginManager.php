@@ -246,12 +246,12 @@ class PluginManager
                 throw new RuntimeException("plugin dir: $pluginDir - is not exists");
             }
 
-            $strLen   = strlen($pluginDir);
+            $pathLen  = strlen($pluginDir);
             $iterator = Helper::directoryIterator($pluginDir, $fileFilter);
 
             foreach ($iterator as $fi) {
                 $filepath   = $fi->getPathname();
-                $pluginName = substr($filepath, $strLen, -4);
+                $pluginName = substr($filepath, $pathLen, -4);
 
                 $this->pluginFiles[$pluginName] = $filepath;
             }
@@ -288,7 +288,6 @@ class PluginManager
      */
     private function requireFile(string $phpFile): void
     {
-        /** @noinspection PhpIncludeInspection */
         require_once $phpFile;
     }
 

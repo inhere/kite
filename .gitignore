@@ -5,6 +5,7 @@
 .idea/
 .git/
 tmp/
+custom/
 vendor/
 *.lock
 *.phar
@@ -14,9 +15,8 @@ vendor/
 *.cache
 .phpintel/
 .env
-.phpstorm.meta.php
+#.phpstorm.meta.php
 .DS_Store
 .kite.php
 bin/php-cs-fixer
-/plugin/local/
 node_modules/
