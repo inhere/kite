@@ -11,6 +11,42 @@ use Toolkit\Sys\Cmd\CmdBuilder;
 class Cmd extends CmdBuilder
 {
     /**
+     * @var string
+     */
+    protected $cmdline  = '';
+
+    /**
+     * @param string $cmdline
+     *
+     * @return Cmd
+     */
+    public function setCmdline(string $cmdline): Cmd
+    {
+        $this->cmdline = $cmdline;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCmdline(): string
+    {
+        return $this->cmdline;
+    }
+
+    /**
+     * @return string
+     */
+    protected function buildCommandLine(): string
+    {
+        if ($this->cmdline) {
+            return $this->cmdline;
+        }
+
+        return parent::buildCommandLine();
+    }
+
+    /**
      * @param string $msg
      * @param string $scene
      */

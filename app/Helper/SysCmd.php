@@ -23,6 +23,7 @@ class SysCmd
 {
     /**
      * @param string $command
+     * @param string $workDir
      */
     public static function quickExec(string $command, string $workDir = ''): void
     {
@@ -37,7 +38,7 @@ class SysCmd
         // $hasOutput = false;
         if ($exitCode !== 0) {
             // $hasOutput = true;
-            Color::println("error code {$exitCode}:\n" . $lastLine, 'red');
+            Color::println("error code $exitCode:\n" . $lastLine, 'red');
         }
 
         // if (false === $hasOutput &&$lastLine) {

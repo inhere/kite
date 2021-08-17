@@ -72,19 +72,20 @@ class RunCommand extends Command
             return;
         }
 
-        if (!$name) {
-            $output->liteError('please input an script name for run');
+        // support search
+        $kw = $input->getSameStringOpt(['s', 'search']) ?: $name;
+        if ($input->hasOneOpt(['s', 'search'])) {
+            $this->searchScripts($output, $kw);
             return;
         }
 
-        // support search
-        if ($input->getSameBoolOpt(['s', 'search'])) {
-            $this->searchScripts($output, $name);
+        if (!$name) {
+            $output->liteError('please input an script name for run or use -l see all scripts');
             return;
         }
 
         if (!isset($this->scripts[$name])) {
-            $output->liteError("please input an exists script name for run. ('{$name}' not exists)");
+            $output->liteError("please input an exists script name for run. ('$name' not exists)");
             return;
         }
 
@@ -111,7 +112,8 @@ class RunCommand extends Command
             $command = $this->replaceScriptVars($name, $commands, $runArgs);
             // CmdRunner::new($command)->do(true);
             SysCmd::quickExec($command);
-            $output->info('DONE: ' . $command);
+            $output->println('');
+            $output->colored("DONE:\n $command");
             return;
         }
 
@@ -123,12 +125,12 @@ class RunCommand extends Command
             foreach ($commands as $index => $command) {
                 $pos = $name . '.' . $index;
                 if (!$command) {
-                    $output->liteError("The script {$pos} command is empty, skip run it");
+                    $output->liteError("The script $pos command is empty, skip run it");
                     continue;
                 }
 
                 if (!is_string($command)) {
-                    $output->liteError("The script {$pos} command is not string, skip run it");
+                    $output->liteError("The script $pos command is not string, skip run it");
                     continue;
                 }
 
@@ -140,7 +142,7 @@ class RunCommand extends Command
             return;
         }
 
-        $output->error("invalid script commands for '{$name}', only allow: string, string[]");
+        $output->error("invalid script commands for '$name', only allow: string, string[]");
     }
 
     /**
@@ -228,7 +230,7 @@ class RunCommand extends Command
             preg_match('/\$[\d+|@]/', $cmdString, $matches);
             if ($matches) {
                 // \vdump($cmdString, $matches);
-                throw new PromptException("missing arguments for run script '{$name}', detail: '$cmdString'");
+                throw new PromptException("missing arguments for run script '$name', detail: '$cmdString'");
             }
         }
 

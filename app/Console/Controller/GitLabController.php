@@ -14,6 +14,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Common\Cmd;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitLab;
 use Inhere\Kite\Console\Attach\Gitlab\ProjectInit;
@@ -170,7 +171,7 @@ class GitLabController extends Controller
     }
 
     /**
-     * init an gitlab project
+     * init a gitlab project
      *
      * @options
      *  -l, --list    List all project information
@@ -244,7 +245,7 @@ class GitLabController extends Controller
      *  --git    Use git protocol for git clone.
      *
      * @arguments
-     *  repo    The remote git repo URL or repository name
+     *  repo    The remote git repo URL or repository name.
      *  name    The repository name at local, default is same `repo`
      *
      * @param Input  $input
@@ -266,12 +267,19 @@ class GitLabController extends Controller
             return;
         }
 
-        $cmd = "git clone $repoUrl";
-        if ($name = $input->getStringArg('name')) {
-            $cmd .= " $name";
-        }
+        // git clone $repoUrl
+        $name = $input->getStringArg('name');
 
-        CmdRunner::new($cmd)->do(true);
+        // $cmd = Cmd::git('clone')
+        Cmd::git('clone')
+            ->add($repoUrl)
+            ->addIf($name, $name !== '')
+            ->setDryRun($input->getBoolOpt('dry-run'))
+            ->run(true);
+
+        // if ($cmd->isSuccess()) {
+        //     Cmd::new('cd', $name);
+        // }
 
         $output->success('Complete');
     }
@@ -556,7 +564,7 @@ class GitLabController extends Controller
 
         $p = $gitlab->getCurProject();
 
-        $brPrefix = $gitlab->getValue('branchPrefix', '');
+        // $brPrefix = $gitlab->getValue('branchPrefix', '');
         $fixedBrs = $gitlab->getValue('fixedBranch', []);
         // 这里面的分支禁止作为源分支(source)来发起PR
         $denyBrs = $gitlab->getValue('denyBranches', []);
@@ -573,22 +581,29 @@ class GitLabController extends Controller
 
         if ($fullSBranch = $input->getStringOpt('full-source')) {
             $srcBranch = $fullSBranch;
-        } elseif ($srcBranch) {
-            if (!in_array($srcBranch, $fixedBrs, true)) {
-                $srcBranch = $brPrefix . $srcBranch;
-            }
-        } else {
+        // } elseif ($srcBranch) {
+        //     if (!in_array($srcBranch, $fixedBrs, true)) {
+        //         $srcBranch = $brPrefix . $srcBranch;
+        //     }
+        } elseif (!$srcBranch) {
             $srcBranch = $curBranch;
         }
 
-        if ($tgtBranch) {
-            if (!in_array($tgtBranch, $fixedBrs, true)) {
-                $tgtBranch = $brPrefix . $tgtBranch;
+        // if ($tgtBranch) {
+        //     if (!in_array($tgtBranch, $fixedBrs, true)) {
+        //         $tgtBranch = $brPrefix . $tgtBranch;
+        //     }
+        // } elseif (is_string($open) && $open) {
+        //     $tgtBranch = $open;
+        // } else {
+        //     $tgtBranch = $curBranch;
+        // }
+        if (!$tgtBranch) {
+            if (is_string($open) && $open) {
+                $tgtBranch = $open;
+            } else {
+                $tgtBranch = $curBranch;
             }
-        } elseif (is_string($open) && $open) {
-            $tgtBranch = $open;
-        } else {
-            $tgtBranch = $curBranch;
         }
 
         $srcBranch = $gitlab->getRealBranchName($srcBranch);
