@@ -14,14 +14,23 @@ use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Helper\SysCmd;
+use Inhere\Kite\Kite;
+use Toolkit\FsUtil\File;
+use Toolkit\FsUtil\FS;
+use Toolkit\Stdlib\Str;
+use function basename;
 use function count;
+use function explode;
+use function in_array;
 use function is_array;
+use function is_file;
 use function is_scalar;
 use function is_string;
 use function json_encode;
 use function preg_match;
 use function strpos;
 use function strtr;
+use function trim;
 
 /**
  * Class RunCommand
@@ -33,9 +42,24 @@ class RunCommand extends Command
     protected static $description = 'run an script command in the "scripts"';
 
     /**
+     * @var bool
+     */
+    private $dryRun = false;
+
+    /**
      * @var array
      */
     private $scripts = [];
+
+    /**
+     * @var array
+     */
+    private $scriptExts = ['.sh', '.bash', '.php'];
+
+    /**
+     * @var array
+     */
+    private $scriptDirs = [];
 
     /**
      * @return string[]
@@ -45,6 +69,15 @@ class RunCommand extends Command
         return ['exec', 'script'];
     }
 
+    protected function beforeExecute(): bool
+    {
+        $this->scripts = $this->app->getParam('scripts', []);
+
+        $this->scriptDirs = $this->app->getParam('scriptDirs', []);
+
+        return parent::beforeExecute();
+    }
+
     /**
      * Do execute
      *
@@ -52,6 +85,7 @@ class RunCommand extends Command
      *  -l, --list      List information for all scripts or one script
      *  -s, --search    Display all matched scripts by the input name
      *      --dry-run   Mock running an script
+     *
      * @arguments
      *  name        The script name for execute
      *
@@ -60,12 +94,6 @@ class RunCommand extends Command
      */
     protected function execute($input, $output)
     {
-        $this->scripts = $this->app->getParam('scripts', []);
-        if (!$this->scripts) {
-            $output->write('no any scripts in the config');
-            return;
-        }
-
         $name = $input->getFirstArg();
         if ($input->getSameOpt(['l', 'list'], false)) {
             $this->listScripts($output, $name);
@@ -84,7 +112,13 @@ class RunCommand extends Command
             return;
         }
 
+        // not found name
         if (!isset($this->scripts[$name])) {
+            if ($scriptFile = $this->findScriptFile($name)) {
+                $this->runScriptFile($output, $scriptFile);
+                return;
+            }
+
             $output->liteError("please input an exists script name for run. ('$name' not exists)");
             return;
         }
@@ -97,6 +131,7 @@ class RunCommand extends Command
         $commands = $this->scripts[$name];
 
         // run scripts
+        $this->dryRun = $input->getBoolOpt('dry-run');
         $this->executeScripts($output, $name, $runArgs, $commands);
     }
 
@@ -109,11 +144,16 @@ class RunCommand extends Command
     private function executeScripts(Output $output, string $name, array $runArgs, $commands): void
     {
         if (is_string($commands)) {
+            // bash -c "echo hello"
+            // bash some.sh
+            if ($scriptFile = $this->findScriptFile($commands)) {
+                $this->runScriptFile($output, $scriptFile);
+                return;
+            }
+
             $command = $this->replaceScriptVars($name, $commands, $runArgs);
             // CmdRunner::new($command)->do(true);
-            SysCmd::quickExec($command);
-            $output->println('');
-            $output->colored("DONE:\n $command");
+            $this->executeScript($output, $command, true);
             return;
         }
 
@@ -134,15 +174,99 @@ class RunCommand extends Command
                     continue;
                 }
 
+                // bash -c "echo hello"
+                // bash some.sh
+                if ($scriptFile = $this->findScriptFile($command)) {
+                    $this->runScriptFile($output, $scriptFile);
+                    continue;
+                }
+
                 $command = $this->replaceScriptVars($name, $command, $runArgs);
-                // CmdRunner::new($command)->do(true);
-                SysCmd::quickExec($command);
-                $output->info('DONE: ' . $command);
+
+                $this->executeScript($output, $command);
             }
             return;
         }
 
         $output->error("invalid script commands for '$name', only allow: string, string[]");
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    private function findScriptFile(string $name): string
+    {
+        $ext = File::getExtension($name);
+        if (!$ext || !in_array($ext, $this->scriptExts, true)) {
+            return '';
+        }
+
+        if (is_file($name)) {
+            return $name;
+        }
+
+        foreach ($this->scriptDirs as $scriptDir) {
+            $relativeFile = $scriptDir . '/' . $name;
+            if (is_file($relativeFile)) {
+                return $relativeFile;
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * @param Output $output
+     * @param string $scriptFile
+     */
+    private function runScriptFile(Output $output, string $scriptFile): void
+    {
+        // #!/usr/bin/env bash
+        // #!/usr/bin/bash
+        $line = File::readFirstLine($scriptFile);
+        $name = basename($scriptFile);
+
+        // must start withs '#!'
+        if (!$line || strpos($line, '#!') !== 0) {
+            $output->colored("will direct run the script file: $name", 'cyan');
+            $this->executeScript($output, $scriptFile);
+            return;
+        }
+
+        $output->colored("will run the script file: $name (shebang: $line)", 'cyan');
+
+        // eg: '#!/usr/bin/env bash'
+        if (strpos($line, ' ') > 0) {
+            [, $binName] = explode(' ', $line, 2);
+        } else { // eg: '#!/usr/bin/bash'
+            $binName = trim($line, '#!');
+        }
+
+        // eg: "bash hello.sh"
+        $this->executeScript($output, "$binName $scriptFile");
+    }
+
+    /**
+     * @param Output $output
+     * @param string $command
+     * @param bool   $onlyOne
+     */
+    private function executeScript(Output $output, string $command, bool $onlyOne = false): void
+    {
+        // CmdRunner::new($command)->do(true);
+        if ($this->dryRun) {
+            $output->colored('DRY-RUN: ' . $command, 'cyan');
+        } else {
+            SysCmd::quickExec($command);
+        }
+
+        if ($onlyOne) {
+            $output->println('');
+        }
+
+        $output->colored("DONE:\n $command");
     }
 
     /**

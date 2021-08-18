@@ -17,6 +17,7 @@ use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Jump\JumpShell;
 use Inhere\Kite\Lib\Jump\JumpStorage;
 use Inhere\Kite\Lib\Template\SimpleTemplate;
+use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Util\ShellUtil;
 use function implode;
 use function is_dir;
@@ -92,15 +93,18 @@ class JumpController extends Controller
     {
         $qj = Kite::jumper();
         $output->colored('Datafile: ' . $qj->getDatafile(), 'cyan');
-        $output->println('------------------------------------------------------------');
+        $output->println(Str::repeat('=', 60));
 
         $key  = $input->getFirstArg();
         $data = $qj->getEngine()->toArray(true);
+        $opts = [
+            'ucTitleWords' => false,
+        ];
 
         if ($key && isset($data[$key])) {
-            $output->aList($data[$key], $key);
+            $output->aList($data[$key], $key, $opts);
         } else {
-            $output->mList($data);
+            $output->mList($data, $opts);
         }
     }
 

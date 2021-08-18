@@ -13,7 +13,7 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
-use Inhere\Kite\Common\CliMarkdown;
+use Inhere\Kite\Component\CliMarkdown;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Lib\ManDoc\DocTopic;
 use Inhere\Kite\Lib\ManDoc\Document;

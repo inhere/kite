@@ -3,10 +3,14 @@
 use Toolkit\Stdlib\OS;
 
 $osName = OS::name();
+$basePath = Inhere\Kite\Kite::basePath();
 
 return [
     // enable interactive
     'no-interactive' => false,
+    // some config TODO
+    'disablePlugin'  => false,
+    'disableScript'  => false,
     /** @see \Inhere\Kite\Lib\Jump\QuickJump */
     'jumper'         => [
         'datafile' => OS::userHomeDir(".kite/tmp/kite-jump.$osName.json"),
@@ -17,7 +21,8 @@ return [
     // self:webui
     'webui'          => [
         'addr' => '127.0.0.1:8090',
-        'root' => BASE_PATH . '/public',
+        // 'root' => BASE_PATH . '/public',
+        'root' => $basePath . '/public',
     ],
     // @see app/Console/Controller/PhpController.php
     'php:serve'      => [

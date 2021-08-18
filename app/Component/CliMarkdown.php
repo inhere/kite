@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Common;
+namespace Inhere\Kite\Component;
 
 use cebe\markdown\GithubMarkdown;
 use Toolkit\Cli\Color;
@@ -12,7 +12,6 @@ use function explode;
 use function implode;
 use function ltrim;
 use function mb_strlen;
-use function rtrim;
 use function sprintf;
 use function str_pad;
 use function str_repeat;
@@ -21,12 +20,11 @@ use function strpos;
 use function substr;
 use function trim;
 use function ucwords;
-use function vdump;
 
 /**
  * Class CliMarkdown
  *
- * @package Inhere\Kite\Common
+ * @package Inhere\Kite\Component
  * @link    https://github.com/charmbracelet/glow color refer
  */
 class CliMarkdown extends GithubMarkdown
@@ -157,7 +155,7 @@ class CliMarkdown extends GithubMarkdown
         $head = $body = '';
         // $cols = $block['cols'];
 
-        $tabInfo = ['width' => 60];
+        $tabInfo   = ['width' => 60];
         $colWidths = [];
         foreach ($block['rows'] as $row) {
             foreach ($row as $c => $cell) {
@@ -174,7 +172,7 @@ class CliMarkdown extends GithubMarkdown
         $colCount = count($colWidths);
         $tabWidth = (int)array_sum($colWidths);
 
-        $first = true;
+        $first  = true;
         $splits = [];
         foreach ($block['rows'] as $row) {
             // $cellTag = $first ? 'th' : 'td';
@@ -184,7 +182,7 @@ class CliMarkdown extends GithubMarkdown
 
                 // ︱｜｜—―￣==＝＝▪▪▭▭▃▃▄▄▁▁▕▏▎┇╇══
                 if ($first) {
-                    $splits[] = str_pad('=', $cellLen+1, '=');
+                    $splits[] = str_pad('=', $cellLen + 1, '=');
                 }
 
                 $lastIdx = count($cell) - 1;
@@ -274,7 +272,7 @@ class CliMarkdown extends GithubMarkdown
      */
     protected function renderImage($block): string
     {
-        return self::NL . Color::addTag( '▨ ' . $block['orig'], $this->theme['image']);
+        return self::NL . Color::addTag('▨ ' . $block['orig'], $this->theme['image']);
     }
 
     /**

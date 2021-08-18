@@ -8,14 +8,15 @@ use PhpComp\Http\Client\ClientInterface;
 use Toolkit\Stdlib\Helper\JsonHelper;
 use Toolkit\Stdlib\Obj\AbstractObj;
 use function explode;
+use function implode;
+use function sprintf;
 
 /**
  * class AbstractGitAPI
  */
 abstract class AbstractGitAPI extends AbstractObj
 {
-
-    public const DEF_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.119 Safari/537.36';
+    public const DEFAULT_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.119 Safari/537.36';
 
     /**
      * @var string
@@ -123,6 +124,27 @@ abstract class AbstractGitAPI extends AbstractObj
     }
 
     /**
+     * @param string|int ...$nodes
+     *
+     * @return string
+     */
+    public function buildPath(...$nodes): string
+    {
+        return implode('/', $nodes);
+    }
+
+    /**
+     * @param string     $format
+     * @param string|int ...$args
+     *
+     * @return string
+     */
+    public function buildPathf(string $format, ...$args): string
+    {
+        return sprintf($format, ...$args);
+    }
+
+    /**
      * @return ClientInterface|AbstractClient
      */
     public function newClient(): AbstractClient
@@ -133,7 +155,7 @@ abstract class AbstractGitAPI extends AbstractObj
             'headers' => [
                 // 'Authorization' => 'Basic ' . $this->token,
                 'Authorization' => 'Token ' . $this->token,
-                'User-Agent'    => self::DEF_USER_AGENT,
+                'User-Agent'    => self::DEFAULT_UA,
             ],
         ]);
 
@@ -141,12 +163,26 @@ abstract class AbstractGitAPI extends AbstractObj
     }
 
     /**
+     * @param string $uri
+     *
+     * @return array
+     */
+    public function sendGET(string $uri): array
+    {
+        /** @var AbstractClient $client */
+        $client = $this->newClient()->get($this->baseUrl . $uri);
+
+        return $client->getJsonArray();
+    }
+
+    /**
      * @param string $uriPath
      * @param array  $data
      *
      * @return array
+     * @throws \JsonException
      */
-    public function sendRequest(string $uriPath, array $data): array
+    public function sendPOST(string $uriPath, array $data): array
     {
         // curl -u username:token https://api.github.com/user
         // curl -H "Authorization: token OAUTH-TOKEN" https://api.github.com

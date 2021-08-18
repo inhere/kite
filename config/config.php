@@ -2,28 +2,30 @@
 
 use Toolkit\Stdlib\OS;
 
+$basePath = Inhere\Kite\Kite::basePath();
+
 return [
-    'app'  => [
+    'app'        => [
     ],
-    'logger'  => [
+    'logger'     => [
         'name'    => 'Kite',
         'logfile' => OS::userCacheDir('kite.log'),
     ],
-    'git' => [
+    'git'        => [
         // remote
-        'mainRemote'       => 'main',
-        'forkRemote'       => 'origin',
+        'mainRemote' => 'main',
+        'forkRemote' => 'origin',
         // 'auto-sign' => true,
         // 'sign-text' => 'inhere <in.798@qq.com>',
     ],
-    'gitlab'  => [
+    'gitlab'     => [
         // remote
         'mainRemote'       => 'main',
         'forkRemote'       => 'origin',
         // group
         'defaultGroup'     => 'group',
         'defaultForkGroup' => 'inhere',
-        'redirectGit'   => [
+        'redirectGit'      => [
             'ac',
             'acp',
             'log',
@@ -37,16 +39,16 @@ return [
             'changelog',
         ],
         // gitlab api config
-        'baseUrl' => '',
+        'baseUrl'          => '',
     ],
-    'github'  => [
+    'github'     => [
         // remote
         'mainRemote'       => 'main',
         'forkRemote'       => 'origin',
         // group
         'defaultGroup'     => 'swoft',
         'defaultForkGroup' => 'ulue',
-        'redirectGit'   => [
+        'redirectGit'      => [
             'acp',
             'log',
             'info',
@@ -61,25 +63,32 @@ return [
         // github api config
         // 'baseUrl' => '',
     ],
-    'osEnv'   => [
+    'osEnv'      => [
         // proxy settings
         // 'http_proxy'  => 'http://127.0.0.1:1081',
         // 'https_proxy' => 'http://127.0.0.1:1081',
     ],
     // tool command usage docs
-    'manDocs' => [
+    'manDocs'    => [
         // if 'lang' not setting, will read from ENV.
         // 'lang'  => 'en',
-        'fallbackLang'  => 'en',
-        'paths'    => [
-            'root' => BASE_PATH . '/resource/mandocs'
+        'fallbackLang' => 'en',
+        'paths'        => [
+            'root' => $basePath . '/resource/mandocs'
         ],
     ],
     'pluginDirs' => [
-        // '/plugin/'
+        // BASE_PATH . '/plugin'
+        $basePath . '/plugin',
+        $basePath . '/custom/plugin',
+    ],
+    'scriptDirs' => [
+        // BASE_PATH . '/script',
+        $basePath . '/script',
+        $basePath . '/custom/script',
     ],
     // command aliases. element is: alias command => real command
-    'aliases' => require 'aliases.php',
+    'aliases'    => require 'aliases.php',
     // custom scripts for quick run an command
-    'scripts' => require 'scripts.php',
+    'scripts'    => require 'scripts.php',
 ];

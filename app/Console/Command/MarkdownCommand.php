@@ -12,7 +12,7 @@ namespace Inhere\Kite\Console\Command;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Common\CliMarkdown;
+use Inhere\Kite\Component\CliMarkdown;
 use Toolkit\Cli\Color;
 use function file_get_contents;
 

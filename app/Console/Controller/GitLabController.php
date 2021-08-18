@@ -188,8 +188,8 @@ class GitLabController extends Controller
         $fRemote = $gl->getForkRemote();
 
         $output->aList([
-            'main remote(source)'  => $mRemote,
-            'fork remote(for dev)' => $fRemote,
+            'main remote(source):'  => $mRemote,
+            'fork remote(develop):' => $fRemote,
         ], 'Config:', ['ucFirst' => false]);
 
         $remotes = $gl->getRepo()->getRemotes();
@@ -200,31 +200,85 @@ class GitLabController extends Controller
             return;
         }
 
-        if (!$gl->getRepo()->hasRemote($fRemote)) {
-            $output->colored('- the fork(develop) remote not exists, please set it');
+        $updated  = false;
+        $doEdit   = $input->getSameBoolOpt('e,edit');
+        $markName = 'main';
+        $markMsg  = 'main(source)';
 
-            $url = $output->ask('forked remote url');
-            if (!$url) {
-                return;
+        $repo = $gl->getRepo();
+        if ($repo->hasRemote($mRemote)) {
+            if ($doEdit) {
+                $output->colored("- update the $markMsg remote '$mRemote' url");
+                $remoteUrl = $output->ask("$markName remote url:");
+                if (Str\UrlHelper::isGitUrl($remoteUrl)) {
+                    $updated = true;
+                    // set remote url
+                    $repo->getGit()->remote->url->set($mRemote, $remoteUrl);
+                } else {
+                    $output->warning('input is invalid url, not update');
+                }
+            } else {
+                $output->info("$markName remote '$mRemote' exists, skip set");
+            }
+        } else {
+            $output->colored("- the $markMsg remote '$mRemote' not exists, please set it");
+
+            $remoteUrl = $output->ask("$markName remote url:");
+            // add remote
+            if (Str\UrlHelper::isGitUrl($remoteUrl)) {
+                $updated = true;
+                $repo->getGit()->remote->add($mRemote, $remoteUrl);
+            } else {
+                $output->warning('input is invalid url, not add');
             }
         }
 
-        if (!$gl->getRepo()->hasRemote($fRemote)) {
-            $output->colored('- the fork(develop) remote not exists, please set it');
+        $markName = 'fork';
+        $markMsg  = 'fork(develop)';
+        if ($repo->hasRemote($fRemote)) {
+            if ($doEdit) {
+                $output->colored("- update the $markMsg remote '$fRemote' url");
+                $remoteUrl = $output->ask("$markName remote url:");
+                if (Str\UrlHelper::isGitUrl($remoteUrl)) {
+                    $updated = true;
+                    // set remote url
+                    $repo->getGit()->remote->url->set($fRemote, $remoteUrl);
+                } else {
+                    $output->warning('input is invalid url, not update');
+                }
+            } else {
+                $output->info("$markName remote '$fRemote' exists, skip set");
+            }
+        } else {
+            $output->colored("- the $markMsg remote '$fRemote' not exists, please set it");
 
-            $url = $output->ask('forked remote url');
-            if (!$url) {
-                return;
+            $remoteUrl = $output->ask("$markName remote url:");
+            // add remote
+            if (Str\UrlHelper::isGitUrl($remoteUrl)) {
+                $updated = true;
+                $repo->getGit()->remote->add($fRemote, $remoteUrl);
+            } else {
+                $output->warning('input is invalid url, not add');
             }
         }
 
-        $fi = $gl->getRemoteInfo($gl->getForkRemote());
+        if ($updated) {
+            $remotes = $gl->getRepo()->getRemotes(true);
+            $output->prettyJSON($remotes, 'Remotes(by git):');
+        }
+
+        // $fi = $gl->getRemoteInfo($gl->getForkRemote());
         // if ($fi)
 
         // TODO config remote
         // $output->ask($question);
 
         $output->colored('Complete', 'green1');
+    }
+
+    protected function initSetRemote(): void
+    {
+
     }
 
     /**
@@ -581,10 +635,10 @@ class GitLabController extends Controller
 
         if ($fullSBranch = $input->getStringOpt('full-source')) {
             $srcBranch = $fullSBranch;
-        // } elseif ($srcBranch) {
-        //     if (!in_array($srcBranch, $fixedBrs, true)) {
-        //         $srcBranch = $brPrefix . $srcBranch;
-        //     }
+            // } elseif ($srcBranch) {
+            //     if (!in_array($srcBranch, $fixedBrs, true)) {
+            //         $srcBranch = $brPrefix . $srcBranch;
+            //     }
         } elseif (!$srcBranch) {
             $srcBranch = $curBranch;
         }

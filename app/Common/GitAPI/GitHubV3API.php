@@ -32,6 +32,6 @@ class GitHubV3API extends AbstractGitAPI
         // POST /repos/:owner/:repo/issues/:issue_number/comments
         $url = sprintf(self::ADD_ISSUE_COMMENT, $this->group, $this->repo, $issueId);
 
-        return $this->sendRequest($url, ['body' => $comment]);
+        return $this->sendPOST($url, ['body' => $comment]);
     }
 }

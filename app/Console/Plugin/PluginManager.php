@@ -32,6 +32,11 @@ class PluginManager
     private $loaded = false;
 
     /**
+     * @var bool
+     */
+    private $enable = true;
+
+    /**
      * loaded plugin objects
      *
      * @var AbstractPlugin[]
@@ -305,5 +310,21 @@ class PluginManager
     public function getPluginFiles(): array
     {
         return $this->pluginFiles;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnable(): bool
+    {
+        return $this->enable;
+    }
+
+    /**
+     * @param bool|int $enable
+     */
+    public function setEnable($enable): void
+    {
+        $this->enable = (bool)$enable;
     }
 }
