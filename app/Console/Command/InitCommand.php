@@ -14,9 +14,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Model\Logic\KiteInitLogic;
-use Toolkit\FsUtil\Dir;
 use Toolkit\FsUtil\FS;
-use const BASE_PATH;
 
 /**
  * Class InitCommand
@@ -41,7 +39,7 @@ class InitCommand extends Command
 
         $logic = new KiteInitLogic([
             'workDir' => $input->getWorkDir(),
-            'kiteDir' => Dir::clearPharPath(BASE_PATH),
+            'kiteDir' => Kite::basePath(),
         ]);
 
         $dryRun = $input->getBoolOpt('dry-run');

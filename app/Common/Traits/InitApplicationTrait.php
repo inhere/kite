@@ -2,6 +2,9 @@
 
 namespace Inhere\Kite\Common\Traits;
 
+use Inhere\Kite\Common\GitAPI\GitHubV3API;
+use Inhere\Kite\Common\GitAPI\GitLabV4API;
+use Inhere\Kite\Kite;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Toolkit\Stdlib\Arr\ArrayHelper;
@@ -18,11 +21,18 @@ use const BASE_PATH;
  */
 trait InitApplicationTrait
 {
+    /**
+     * Load .env settings
+     * should call it before loadAppConfig()
+     */
     protected function loadEnvSettings(): void
     {
-        // get user homedir
-        $homeDir = OS::getUserHomeDir();
-        PhpDotEnv::load($homeDir . '/.config/.kite.env');
+        $loader = PhpDotEnv::global();
+        // kite root dir
+        $loader->add(Kite::getPath('.env'));
+
+        // user homedir
+        $loader->add(OS::userConfigDir('.kite.env'));
     }
 
     /**
@@ -35,26 +45,23 @@ trait InitApplicationTrait
         $loaded   = [$baseFile];
 
         // 基础配置
-        /** @noinspection PhpIncludeInspection */
         $config = require $baseFile;
 
         // eg: config.web.php
         $modeFile = BASE_PATH . "/config/config.$runMode.php";
         if (file_exists($modeFile)) {
-            $loaded[] = $modeFile;
-            /** @noinspection PhpIncludeInspection */
+            $loaded[]   = $modeFile;
             $modeConfig = require $modeFile;
-            // merge to config
+            // merge config
             $config = ArrayHelper::quickMerge($modeConfig, $config);
         }
 
         // 自定义全局配置
         $globFile = BASE_PATH . '/.kite.php';
         if (file_exists($globFile)) {
-            $loaded[] = $globFile;
-            /** @noinspection PhpIncludeInspection */
+            $loaded[]   = $globFile;
             $userConfig = require $globFile;
-            // merge to config
+            // merge config
             $config = ArrayHelper::quickMerge($userConfig, $config);
         }
 
@@ -62,10 +69,9 @@ trait InitApplicationTrait
         if ($workDir) {
             $proFile = $workDir . '/.kite.php';
             if ($proFile !== $globFile && file_exists($proFile)) {
-                $loaded[] = $proFile;
-                /** @noinspection PhpIncludeInspection */
+                $loaded[]  = $proFile;
                 $proConfig = require $proFile;
-                // merge to config
+                // merge config
                 $config = ArrayHelper::quickMerge($proConfig, $config);
             }
         }
@@ -86,6 +92,17 @@ trait InitApplicationTrait
             $handler = new RotatingFileHandler($config['logfile']);
             $logger->pushHandler($handler);
             return $logger;
+        });
+
+        $box->set('glApi', function () {
+            $config = $this->getParam('gitlab', []);
+
+            return new GitLabV4API($config);
+        });
+
+        $box->set('ghApi', function () {
+            $config = $this->getParam('github', []);
+            return new GitHubV3API($config);
         });
     }
 }

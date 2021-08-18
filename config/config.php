@@ -36,6 +36,8 @@ return [
             'tagDelete',
             'changelog',
         ],
+        // gitlab api config
+        'baseUrl' => '',
     ],
     'github'  => [
         // remote
@@ -56,6 +58,8 @@ return [
             'tagDelete',
             'changelog',
         ],
+        // github api config
+        // 'baseUrl' => '',
     ],
     'osEnv'   => [
         // proxy settings

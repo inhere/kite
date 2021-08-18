@@ -13,7 +13,10 @@ use Inhere\Kite\Helper\SysCmd;
 use Inhere\Kite\Kite;
 use Throwable;
 use Toolkit\Cli\Color;
+use Toolkit\Stdlib\Obj\ObjectBox;
 use Toolkit\Stdlib\OS;
+use Toolkit\Stdlib\Php;
+use Toolkit\Stdlib\Util\PhpDotEnv;
 use Toolkit\Sys\Sys;
 use Toolkit\Sys\Util\ShellUtil;
 use function array_keys;
@@ -22,6 +25,7 @@ use function count;
 use function is_scalar;
 use function stripos;
 use const BASE_PATH;
+use const PHP_VERSION;
 
 /**
  * Class SelfController
@@ -56,6 +60,9 @@ class SelfController extends Controller
             'config' => [
                 'conf'
             ],
+            'object' => [
+                'obj'
+            ],
         ];
     }
 
@@ -68,7 +75,7 @@ class SelfController extends Controller
     }
 
     /**
-     * show the application information
+     * show the kite application information
      *
      * @param Input  $input
      * @param Output $output
@@ -84,11 +91,14 @@ class SelfController extends Controller
                 'work dir'     => $input->getWorkDir(),
                 'script count' => count($conf['scripts']),
                 'plugin dirs'  => Kite::plugManager()->getPluginDirs(),
+                '.env files'   => PhpDotEnv::global()->getLoadedFiles(),
                 'config files' => $conf['__loaded_file'],
             ],
             'system' => [
-                'OS name'   => OS::name(),
-                'shell env' => ShellUtil::getName(true),
+                'OS name'     => OS::name(),
+                'shell env'   => ShellUtil::getName(true),
+                'PHP version' => PHP_VERSION,
+                'home dir'    => OS::getUserHomeDir(),
             ]
         ]);
     }
@@ -151,6 +161,40 @@ class SelfController extends Controller
                 'titlePos' => Title::POS_MIDDLE,
             ]);
             $output->json($value);
+        }
+    }
+
+    /**
+     * Show container objects information on the kite
+     *
+     * @arguments
+     *  objectName      Show an object info in the kite
+     *
+     * @options
+     *   -l, --list      List all registered object names
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function objectCommand(Input $input, Output $output): void
+    {
+        $box = Kite::box();
+        if ($input->getSameBoolOpt('l,list')) {
+            $output->aList($box->getObjectIds(), 'Registered IDs');
+            return;
+        }
+
+        $input->bindArgument('objId', 0);
+        $objName = $input->getStringArg('objId');
+        if (!$objName) {
+            $output->liteError("Please input an object ID/name for see detail");
+            return;
+        }
+
+        if (!$box->has($objName)) {
+            $output->liteError("Object '$objName' not found in kite");
+        } else {
+            echo Php::dumpVars($box->get($objName));
         }
     }
 

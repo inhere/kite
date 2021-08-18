@@ -1,57 +1,72 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Common;
+namespace Inhere\Kite\Common\GitAPI;
 
 use PhpComp\Http\Client\AbstractClient;
 use PhpComp\Http\Client\Client;
 use PhpComp\Http\Client\ClientInterface;
 use Toolkit\Stdlib\Helper\JsonHelper;
+use Toolkit\Stdlib\Obj\AbstractObj;
 use function explode;
-use function sprintf;
 
 /**
- * Class GitHubV3API
+ * class AbstractGitAPI
  */
-class GitHubV3API
+abstract class AbstractGitAPI extends AbstractObj
 {
-    public const BASE_API_URL = 'https://api.github.com';
-
-    public const BASE_REPOS_URL = 'https://api.github.com/repos';
-
-    // POST /repos/:owner/:repo/issues/:issue_number/comments
-    public const ADD_ISSUE_COMMENT = '/repos/%s/%s/issues/%d/comments';
 
     public const DEF_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.119 Safari/537.36';
+
+    /**
+     * @var string
+     */
+    protected $baseUrl = 'https://gitlab.example.com/api/v4';
 
     /**
      * The repository owner user/group
      *
      * @var string
      */
-    private $owner = '';
+    protected $group = '';
 
     /**
      * The repository name
      *
      * @var string
      */
-    private $repo = '';
+    protected $repo = '';
 
     /**
-     * Github access token
+     * Gitlab/Github person access token
      *
-     * @see https://github.com/settings/tokens
-     *
+     * @see https://github.com/settings/tokens on Github
+     * @see https://HOST/profile/personal_access_tokens on Gitlab
      * @var string
      */
-    private $token = '';
+    protected $token = '';
 
     /**
-     * @return static
+     * @param string $group "gookit"
+     *
+     * @return $this
      */
-    public static function new(): self
+    public function withGroup(string $group): self
     {
-        return new self();
+        $self = clone $this;
+
+        $self->group = $group;
+
+        return $self;
+    }
+
+    /**
+     * @param string $owner
+     *
+     * @return $this
+     */
+    public function withOwner(string $owner): self
+    {
+        return $this->withGroup($owner);
     }
 
     /**
@@ -76,38 +91,35 @@ class GitHubV3API
      */
     public function withOwnerRepo(string $owner, string $repo): self
     {
+        return $this->withGroupRepo($owner, $repo);
+    }
+
+    /**
+     * @param string $group "gookit"
+     * @param string $repo  "color"
+     *
+     * @return $this
+     */
+    public function withGroupRepo(string $group, string $repo): self
+    {
         $self = clone $this;
 
-        $self->owner = $owner;
+        $self->group = $group;
         $self->repo  = $repo;
 
         return $self;
     }
 
     /**
-     * @param string $ownerAndRepo eg: "gookit/color"
+     * @param string $repoPath eg: "gookit/color"
      *
      * @return $this
      */
-    public function withPathRepo(string $ownerAndRepo): self
+    public function withPathRepo(string $repoPath): self
     {
-        [$owner, $repo] = explode('/', $ownerAndRepo, 2);
+        [$owner, $repo] = explode('/', $repoPath, 2);
 
         return $this->withOwnerRepo($owner, $repo);
-    }
-
-    /**
-     * @param int    $issueId
-     * @param string $comment
-     *
-     * @return array
-     */
-    public function addIssueComment(int $issueId, string $comment): array
-    {
-        // POST /repos/:owner/:repo/issues/:issue_number/comments
-        $url = sprintf(self::ADD_ISSUE_COMMENT, $this->owner, $this->repo, $issueId);
-
-        return $this->sendRequest($url, ['body' => $comment]);
     }
 
     /**
@@ -129,39 +141,23 @@ class GitHubV3API
     }
 
     /**
-     * @param string $url
+     * @param string $uriPath
      * @param array  $data
      *
      * @return array
      */
-    public function sendRequest(string $url, array $data): array
+    public function sendRequest(string $uriPath, array $data): array
     {
         // curl -u username:token https://api.github.com/user
         // curl -H "Authorization: token OAUTH-TOKEN" https://api.github.com
         $http = $this->newClient();
-        $resp = $http->byJson()->post(self::BASE_API_URL . $url, $data);
+        $resp = $http->byJson()->post($this->baseUrl . $uriPath, $data);
 
         if (!$json = $resp->getBody()->getContents()) {
             return [];
         }
 
         return JsonHelper::decode($json, true);
-    }
-
-    /**
-     * @return string
-     */
-    public function getRepo(): string
-    {
-        return $this->repo;
-    }
-
-    /**
-     * @param string $repo
-     */
-    public function setRepo(string $repo): void
-    {
-        $this->repo = $repo;
     }
 
     /**
@@ -183,16 +179,56 @@ class GitHubV3API
     /**
      * @return string
      */
-    public function getOwner(): string
+    public function getRepo(): string
     {
-        return $this->owner;
+        return $this->repo;
     }
 
     /**
-     * @param string $owner
+     * @param string $repo
      */
-    public function setOwner(string $owner): void
+    public function setRepo(string $repo): void
     {
-        $this->owner = $owner;
+        $this->repo = $repo;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGroup(): string
+    {
+        return $this->group;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOwner(): string
+    {
+        return $this->group;
+    }
+
+    /**
+     * @param string $group
+     */
+    public function setGroup(string $group): void
+    {
+        $this->group = $group;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
+    /**
+     * @param string $baseUrl
+     */
+    public function setBaseUrl(string $baseUrl): void
+    {
+        $this->baseUrl = $baseUrl;
     }
 }
