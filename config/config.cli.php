@@ -8,14 +8,19 @@ $basePath = Inhere\Kite\Kite::basePath();
 return [
     // enable interactive
     'no-interactive' => false,
-    // some config TODO
-    'disablePlugin'  => false,
+
+    // --------- component object config -----------
+
     /** @see \Inhere\Kite\Lib\Jump\QuickJump */
     'jumper'         => [
         'datafile' => OS::userHomeDir(".kite/tmp/kite-jump.$osName.json"),
         'aliases'  => [
             'home' => '~',
         ]
+    ],
+    /** @see \Inhere\Kite\Console\Plugin\PluginManager */
+    'pluginManager' => [
+        'enable'  => true,
     ],
     /** @see \Inhere\Kite\Component\ScriptRunner */
     'scriptRunner' => [

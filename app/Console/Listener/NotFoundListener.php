@@ -35,23 +35,28 @@ final class NotFoundListener
             return true;
         }
 
-        // check custom scripts
-        $scripts = $app->getParam('scripts', []);
-        if (!$scripts || !isset($scripts[$cmd])) {
-            // - run plugin
-            if (Kite::plugManager()->isPlugin($cmd)) {
-                $app->notice("input is an plugin name, will run plugin: $cmd");
-                Kite::plugManager()->run($cmd, $app);
-                return true;
-            }
-
-            // - call system command.
-            $this->callSystemCmd($cmd, $app);
-            return true;
-        }
+        $sr = Kite::scriptRunner();
 
         // - run custom scripts.
-        $this->runCustomScript($cmd, $app);
+        if ($sr->isScriptName($cmd)) {
+            $this->runCustomScript($cmd, $app);
+
+        } elseif (Kite::plugManager()->isPlugin($cmd)) {
+            // - is an plugin
+            $app->notice("input is an plugin name, will run plugin: $cmd");
+
+            Kite::plugManager()->run($cmd, $app);
+        } elseif ($sFile = $sr->findScriptFile($cmd)) {
+            // - is script file
+            $app->notice("input is an script file, will call it: $cmd");
+
+            $args = $app->getInput()->getArgs();
+            $sr->runScriptFile($sFile, $args);
+        } else {
+            // - call system command.
+            $this->callSystemCmd($cmd, $app);
+        }
+
         return true;
     }
 

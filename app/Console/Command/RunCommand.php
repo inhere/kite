@@ -19,6 +19,7 @@ use Toolkit\FsUtil\File;
 use function basename;
 use function count;
 use function explode;
+use function implode;
 use function in_array;
 use function is_array;
 use function is_file;
@@ -87,6 +88,9 @@ class RunCommand extends Command
      * @arguments
      *  name        The script name for execute
      *
+     * @example
+     *   {binWithCmd} hello.sh one two three 'a b c'
+     *
      * @param Input  $input
      * @param Output $output
      */
@@ -110,20 +114,20 @@ class RunCommand extends Command
             return;
         }
 
+        $runArgs = $input->getArguments();
+        // first is script name
+        unset($runArgs[0]);
+
         // not found name
         if (!isset($this->scripts[$name])) {
             if ($scriptFile = $this->findScriptFile($name)) {
-                $this->runScriptFile($output, $scriptFile);
+                $this->runScriptFile($output, $scriptFile, $runArgs);
                 return;
             }
 
             $output->liteError("please input an exists script name for run. ('$name' not exists)");
             return;
         }
-
-        $runArgs = $input->getArguments();
-        // first is script name
-        unset($runArgs[0]);
 
         // script commands
         $commands = $this->scripts[$name];
@@ -145,7 +149,7 @@ class RunCommand extends Command
             // bash -c "echo hello"
             // bash some.sh
             if ($scriptFile = $this->findScriptFile($commands)) {
-                $this->runScriptFile($output, $scriptFile);
+                $this->runScriptFile($output, $scriptFile, $runArgs);
                 return;
             }
 
@@ -175,7 +179,7 @@ class RunCommand extends Command
                 // bash -c "echo hello"
                 // bash some.sh
                 if ($scriptFile = $this->findScriptFile($command)) {
-                    $this->runScriptFile($output, $scriptFile);
+                    $this->runScriptFile($output, $scriptFile, $runArgs);
                     continue;
                 }
 
@@ -217,8 +221,9 @@ class RunCommand extends Command
     /**
      * @param Output $output
      * @param string $scriptFile
+     * @param array  $runArgs
      */
-    private function runScriptFile(Output $output, string $scriptFile): void
+    private function runScriptFile(Output $output, string $scriptFile, array $runArgs): void
     {
         // #!/usr/bin/env bash
         // #!/usr/bin/bash
@@ -228,21 +233,26 @@ class RunCommand extends Command
         // must start withs '#!'
         if (!$line || strpos($line, '#!') !== 0) {
             $output->colored("will direct run the script file: $name", 'cyan');
-            $this->executeScript($scriptFile);
-            return;
+            $command = $scriptFile;
+        } else {
+            $output->colored("will run the script file: $name (shebang: $line)", 'cyan');
+
+            // eg: '#!/usr/bin/env bash'
+            if (strpos($line, ' ') > 0) {
+                [, $binName] = explode(' ', $line, 2);
+            } else { // eg: '#!/usr/bin/bash'
+                $binName = trim($line, '#!');
+            }
+
+            // eg: "bash hello.sh"
+            $command = "$binName $scriptFile";
         }
 
-        $output->colored("will run the script file: $name (shebang: $line)", 'cyan');
-
-        // eg: '#!/usr/bin/env bash'
-        if (strpos($line, ' ') > 0) {
-            [, $binName] = explode(' ', $line, 2);
-        } else { // eg: '#!/usr/bin/bash'
-            $binName = trim($line, '#!');
+        if ($runArgs) {
+            $command .= ' ' . implode(' ', $runArgs);
         }
 
-        // eg: "bash hello.sh"
-        $this->executeScript("$binName $scriptFile");
+        $this->executeScript($command);
     }
 
     /**
