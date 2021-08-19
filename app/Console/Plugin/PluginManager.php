@@ -8,6 +8,7 @@ use Inhere\Kite\Console\CliApplication;
 use RuntimeException;
 use SplFileInfo;
 use Toolkit\Cli\Color;
+use Toolkit\FsUtil\Dir;
 use Toolkit\Stdlib\Str;
 use function basename;
 use function class_exists;
@@ -247,12 +248,14 @@ class PluginManager
 
         $fileFilter = $this->getFileFilter();
         foreach ($this->pluginDirs as $pluginDir) {
+            // support parse ~ as user home dir.
+            $pluginDir = Dir::realpath($pluginDir);
             if (!is_dir($pluginDir)) {
                 throw new RuntimeException("plugin dir: $pluginDir - is not exists");
             }
 
             $pathLen  = strlen($pluginDir);
-            $iterator = Helper::directoryIterator($pluginDir, $fileFilter);
+            $iterator = Dir::getIterator($pluginDir, $fileFilter);
 
             foreach ($iterator as $fi) {
                 $filepath   = $fi->getPathname();

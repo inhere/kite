@@ -503,7 +503,7 @@ class GitController extends Controller
      * @options
      *  -v, --version       The new tag version. e.g: v2.0.4
      *  -m, --message       The message for add new tag.
-     *      --next          Auto calc next version for add new tag.
+     *  -n, --next          Auto calc next version for add new tag.
      *
      * @param Input  $input
      * @param Output $output
@@ -513,7 +513,7 @@ class GitController extends Controller
         $lTag = '';
         $dir  = $input->getPwd();
 
-        if ($input->getBoolOpt('next')) {
+        if ($input->getSameBoolOpt('n,next')) {
             $lTag = GitUtil::findTag($dir, false);
             if (!$lTag) {
                 $output->error('No any tags found of the project');

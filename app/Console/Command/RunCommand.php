@@ -118,10 +118,13 @@ class RunCommand extends Command
      */
     private function listScriptFiles(Output $output, string $name): void
     {
-        $files = $this->sr->getAllScriptFiles();
+        $files = $this->sr->getAllScriptFiles($name);
         $count = count($files);
 
-        $output->aList($files, "founded script files(total: $count)");
+        $appendTitle = $name ? ", keyword:$name" : '';
+
+        $output->aList($this->sr->getScriptDirs(), "added script dirs");
+        $output->aList($files, "founded script files(total:$count$appendTitle)");
     }
 
     /**

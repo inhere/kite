@@ -5,10 +5,13 @@ namespace Inhere\Kite\Component;
 use Inhere\Console\Util\Show;
 use Inhere\Kite\Helper\SysCmd;
 use InvalidArgumentException;
+use RuntimeException;
 use Toolkit\Cli\Cli;
 use Toolkit\FsUtil\Dir;
 use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Obj\AbstractObj;
+use function array_filter;
+use function array_map;
 use function array_merge;
 use function basename;
 use function count;
@@ -16,11 +19,13 @@ use function explode;
 use function implode;
 use function in_array;
 use function is_array;
+use function is_dir;
 use function is_file;
 use function is_scalar;
 use function is_string;
 use function json_encode;
 use function preg_match;
+use function stripos;
 use function strpos;
 use function trim;
 
@@ -315,16 +320,32 @@ class ScriptRunner extends AbstractObj
     }
 
     /**
+     * @param string $keyword
+     *
      * @return array
      */
-    public function getAllScriptFiles(): array
+    public function getAllScriptFiles(string $keyword = ''): array
     {
-        $extMatch = '';
+        $extMatch = implode('|', array_map(function ($ext) {
+            return trim($ext, '.');
+        }, $this->scriptExts));
 
         $files = [];
-        foreach ($this->scriptDirs as $scriptDir) {
+        foreach ($this->scriptDirs as $dir) {
+            $dir = Dir::realpath($dir);
+
+            if (!is_dir($dir)) {
+                throw new RuntimeException("script dir '$dir' - is not exists");
+            }
+
             // $iter = Dir::getIterator($scriptDir);
-            $files = Dir::getFiles($scriptDir, $extMatch, true, $scriptDir . '/', $files);
+            $files = Dir::getFiles($dir, $extMatch, true, $dir . '/', $files);
+        }
+
+        if ($keyword) {
+            $files = array_filter($files, static function ($file) use($keyword) {
+                return stripos($file, $keyword) !== false;
+            });
         }
 
         return $files;
