@@ -12,6 +12,7 @@ $app = new CliApplication([
     'name'        => 'kite',
     'rootPath'    => BASE_PATH,
     'version'     => Kite::VERSION,
+    'homepage'    => Kite::HOMEPAGE,
     'publishAt'   => '2020.05.24',
     'updateAt'    => date('Y.m.d'),
     'description' => 'Kite is a tool for help development',

@@ -36,7 +36,8 @@ use const BASE_PATH;
  */
 class Kite
 {
-    public const VERSION = '1.1.7';
+    public const VERSION  = '1.1.8';
+    public const HOMEPAGE = 'https://github.com/inhere/kite';
 
     public const MODE_CLI = 'cli';
     public const MODE_WEB = 'web';

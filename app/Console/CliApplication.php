@@ -116,6 +116,16 @@ class CliApplication extends Application
         Kite::logger()->info('console app init completed');
     }
 
+    // protected function buildVersionInfo(): array
+    // {
+    //     $info = parent::buildVersionInfo();
+    //
+    //     $info[] = '---------';
+    //     $info['Homepage'] = Kite::HOMEPAGE;
+    //
+    //     return $info;
+    // }
+
     /**
      * @param array $config
      */
