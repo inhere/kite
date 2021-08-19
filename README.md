@@ -446,9 +446,31 @@ INTO: /Users/inhere/Workspace/godev
 
 ## 其他常用命令
 
-**kite json5**
+### expr 简易表达式
 
-`json5` 文件格式读取，转换为 `json`
+`kite expr|calc -i` - 开启一个简易的表达式计算终端，可以当做计算器使用
+
+```bash
+kite expr -i
+```
+
+![kite-expr-i-run](resource/images/kite-expr-i-run.png)
+
+### json5 内容读取
+
+`kite json5` - `json5` 文件格式读取，转换为 `json` 输出
+
+```bash
+kite json5 FILE
+```
+
+### markdown 渲染
+
+`kite markdown|mkdown|md` - 命令行渲染markdown文件内容并输出到终端，会自动美化格式
+
+```bash
+kite markdown FILE
+```
 
 ### php开发服务器
 
@@ -537,11 +559,61 @@ Matched Results(Kw:ter)
 
 ## 扩展使用
 
-### 使用简单脚本
+### 使用脚本
 
-除了使用内部提供的命令，`kite` 也提供了快速的 `scripts` 脚本配置。
+除了使用内部提供的命令，`kite` 也提供了快速的 `scripts` 脚本命令配置以及脚本文件配置 `scriptDirs`。
+
+#### 脚本文件
+
+脚本文件支持：
+
+- `['.sh', '.bash', '.php']` 为后缀的 shell, php 脚本文件
+- 用户可以自定义添加支持执行其他脚本文件 
+
+默认通过脚本文件首行的 `shebang` (eg: `#!/usr/bin/env bash`) 确定使用什么来执行脚本文件 
+
+TIP: 可以配置通过后缀来指定执行脚本的主体
+
+例如 `scriptExts` 新增配置 `.go`, `scriptExt2bin` 增加 `['.go' => 'go run']`;
+执行 `kite run hello.go`, 则会调用 `go run hello.go`
+
+默认的脚本文件目录 `scriptDirs` 配置:
+
+> `$basePath` 指的是 kite 所在目录，你还可以用户配置文件追加配置自己的脚本目录
+
+```php
+[
+    'scriptRunner' => [
+        'enable'  => true,
+        // 'scriptExts' => [] 
+        // 'scriptExt2bin' => []
+    ],
+    'scriptDirs' => [
+        $basePath . '/script',
+        $basePath . '/custom/script',
+    ],
+]
+```
+
+查看可执行的脚本文件列表 `kite run -l file`：
+
+![scripts-files](resource/images/kite-run-l-file.png)
+
+运行脚本文件：
+
+```bash
+kite SCRIPT-FILENAME
+kite run SCRIPT-FILENAME
+```
+
+![run-script-file](resource/images/kite-run-script-file.png)
+
+#### 脚本命令
+
+默认的快捷命令 `scripts` 配置:
 
 下面是一份默认的快捷 `scripts` 配置，你同样可以通过用户配置文件 `~/.kite/.kite.php` 添加自己的脚本命令
+可以通过命令 `kite run -l cmd` 查看已配置的全部命令
 
 ```php
 <?php
@@ -563,17 +635,19 @@ return [
 ];
 ```
 
-当你执行 `kite gst` 时，会直接调用系统的 `git status` 命令。
-
 **使用示例**
 
+当你执行 `kite run gst` 时，会直接调用系统的 `git status` 命令。
+
 ```bash
-kite gst
+kite run gst
 ```
 
 ![scripts-gst](resource/images/scripts-gst.png)
 
-### 命令别名配置
+> 当你的脚本名或脚本文件名，不会命中kite内置命令、别名时，可以直接使用 `kite NAME|FILE` 执行脚本。 因此 `kite gst` 等同于执行 `kite run gst`
+
+### 命令别名
 
 默认的命令别名请看 [config/config.php](config/config.php) 文件中的 `aliaes` 配置
 

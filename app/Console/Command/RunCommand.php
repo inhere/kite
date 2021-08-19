@@ -73,16 +73,16 @@ class RunCommand extends Command
             return;
         }
 
-        // default list script commands
-        if ($listType) {
-            $this->listScripts($output, $name);
-            return;
-        }
-
         // support search
         $kw = $input->getSameStringOpt(['s', 'search']) ?: $name;
         if ($input->hasOneOpt(['s', 'search'])) {
             $this->searchScripts($output, $kw);
+            return;
+        }
+
+        // default list script commands
+        if ($listType) {
+            $this->listScripts($output, $name);
             return;
         }
 
@@ -179,6 +179,6 @@ class RunCommand extends Command
         $listOpt = [
             'ucFirst' => false,
         ];
-        $output->aList($matched, "matched scripts(total: $count)", $listOpt);
+        $output->aList($matched, "matched scripts(total:$count, keyword:$kw)", $listOpt);
     }
 }

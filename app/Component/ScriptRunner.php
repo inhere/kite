@@ -70,7 +70,7 @@ class ScriptRunner extends AbstractObj
     /**
      * @var array
      */
-    private $scriptExts = ['.sh', '.bash', '.php'];
+    private $scriptExts = ['.sh', '.zsh', '.bash', '.php', '.go'];
 
     /**
      * @var array
@@ -78,17 +78,23 @@ class ScriptRunner extends AbstractObj
     private $scriptFiles = [];
 
     /**
+     * Whether allow auto match bin by ext name.
+     *
      * @var bool
      */
     private $autoScriptBin = true;
 
     /**
+     * If not set the shebang line, will find bin by ext
+     *
      * @var string[]
      */
     private $scriptExt2bin = [
         '.sh'   => 'sh',
+        '.zsh'  => 'zsh',
         '.bash' => 'bash',
         '.php'  => 'php',
+        '.go'   => 'go run',
     ];
 
     /**
@@ -311,7 +317,7 @@ class ScriptRunner extends AbstractObj
 
     public function loadAllScriptFiles(): void
     {
-        $extMatch = '';
+        // $extMatch = '';
 
         foreach ($this->scriptDirs as $scriptDir) {
             // $iter = Dir::getIterator($scriptDir);
