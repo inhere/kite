@@ -12,6 +12,7 @@ namespace Inhere\Kite\Console;
 use Inhere\Console\Application;
 use Inhere\Console\ConsoleEvent;
 use Inhere\Kite\Common\Log\CliLogProcessor;
+use Inhere\Kite\Component\ScriptRunner;
 use Inhere\Kite\Console\Listener\BeforeCommandRunListener;
 use Inhere\Kite\Console\Listener\BeforeRunListener;
 use Inhere\Kite\Lib\Jump\QuickJump;
@@ -80,6 +81,19 @@ class CliApplication extends Application
         $box->set('plugManager', function () {
             $plugDirs = $this->getParam('pluginDirs', []);
             return new PluginManager($plugDirs);
+        });
+
+        $box->set('scriptRunner', function () {
+            $config = $this->getParam('scriptRunner', []);
+            $scripts = $this->getParam('scripts', []);
+
+            // create object
+            $sr = new ScriptRunner($config);
+            $sr->setScripts($scripts);
+            $scriptDirs = $this->getParam('scriptDirs', []);
+            $sr->setScriptDirs($scriptDirs);
+
+            return $sr;
         });
 
         $box->set('jumper', function () {

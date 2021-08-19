@@ -3,6 +3,7 @@
 namespace Inhere\Kite\Component;
 
 use Toolkit\Stdlib\Obj\AbstractObj;
+use function array_merge;
 
 /**
  * class ScriptRunner
@@ -38,6 +39,20 @@ class ScriptRunner extends AbstractObj
      * @var array
      */
     private $scriptFiles = [];
+
+    /**
+     * @var bool
+     */
+    private $autoScriptBin = true;
+
+    /**
+     * @var string[]
+     */
+    private $scriptExt2bin = [
+        '.sh'   => 'sh',
+        '.bash' => 'bash',
+        '.php'  => 'php',
+    ];
 
     /**
      * @return array
@@ -109,5 +124,53 @@ class ScriptRunner extends AbstractObj
     public function getScriptFiles(): array
     {
         return $this->scriptFiles;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAutoScriptBin(): bool
+    {
+        return $this->autoScriptBin;
+    }
+
+    /**
+     * @param bool|string $autoScriptBin
+     */
+    public function setAutoScriptBin($autoScriptBin): void
+    {
+        $this->autoScriptBin = (bool)$autoScriptBin;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getScriptExt2bin(): array
+    {
+        return $this->scriptExt2bin;
+    }
+
+    /**
+     * @param array<string> $scriptExt2bin
+     */
+    public function setScriptExt2bin(array $scriptExt2bin): void
+    {
+        $this->scriptExt2bin = array_merge($this->scriptExt2bin, $scriptExt2bin);
+    }
+
+    /**
+     * @return array
+     */
+    public function getScriptExts(): array
+    {
+        return $this->scriptExts;
+    }
+
+    /**
+     * @param array $scriptExts
+     */
+    public function setScriptExts(array $scriptExts): void
+    {
+        $this->scriptExts = $scriptExts;
     }
 }

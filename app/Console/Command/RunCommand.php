@@ -14,10 +14,8 @@ use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Helper\SysCmd;
-use Inhere\Kite\Kite;
+use Toolkit\Cli\Cli;
 use Toolkit\FsUtil\File;
-use Toolkit\FsUtil\FS;
-use Toolkit\Stdlib\Str;
 use function basename;
 use function count;
 use function explode;
@@ -153,7 +151,7 @@ class RunCommand extends Command
 
             $command = $this->replaceScriptVars($name, $commands, $runArgs);
             // CmdRunner::new($command)->do(true);
-            $this->executeScript($output, $command, true);
+            $this->executeScript($command, true);
             return;
         }
 
@@ -182,8 +180,7 @@ class RunCommand extends Command
                 }
 
                 $command = $this->replaceScriptVars($name, $command, $runArgs);
-
-                $this->executeScript($output, $command);
+                $this->executeScript($command);
             }
             return;
         }
@@ -231,7 +228,7 @@ class RunCommand extends Command
         // must start withs '#!'
         if (!$line || strpos($line, '#!') !== 0) {
             $output->colored("will direct run the script file: $name", 'cyan');
-            $this->executeScript($output, $scriptFile);
+            $this->executeScript($scriptFile);
             return;
         }
 
@@ -245,28 +242,27 @@ class RunCommand extends Command
         }
 
         // eg: "bash hello.sh"
-        $this->executeScript($output, "$binName $scriptFile");
+        $this->executeScript("$binName $scriptFile");
     }
 
     /**
-     * @param Output $output
      * @param string $command
      * @param bool   $onlyOne
      */
-    private function executeScript(Output $output, string $command, bool $onlyOne = false): void
+    private function executeScript(string $command, bool $onlyOne = false): void
     {
         // CmdRunner::new($command)->do(true);
         if ($this->dryRun) {
-            $output->colored('DRY-RUN: ' . $command, 'cyan');
+            Cli::colored('DRY-RUN: ' . $command, 'cyan');
         } else {
             SysCmd::quickExec($command);
         }
 
         if ($onlyOne) {
-            $output->println('');
+            Cli::println('');
         }
 
-        $output->colored("DONE:\n $command");
+        Cli::colored("DONE:\n $command");
     }
 
     /**
@@ -353,7 +349,6 @@ class RunCommand extends Command
             $matches = [];
             preg_match('/\$[\d+|@]/', $cmdString, $matches);
             if ($matches) {
-                // \vdump($cmdString, $matches);
                 throw new PromptException("missing arguments for run script '$name', detail: '$cmdString'");
             }
         }

@@ -10,13 +10,16 @@ return [
     'no-interactive' => false,
     // some config TODO
     'disablePlugin'  => false,
-    'disableScript'  => false,
     /** @see \Inhere\Kite\Lib\Jump\QuickJump */
     'jumper'         => [
         'datafile' => OS::userHomeDir(".kite/tmp/kite-jump.$osName.json"),
         'aliases'  => [
             'home' => '~',
         ]
+    ],
+    /** @see \Inhere\Kite\Component\ScriptRunner */
+    'scriptRunner' => [
+        'enable'  => true,
     ],
     // self:webui
     'webui'          => [
