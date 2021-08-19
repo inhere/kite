@@ -6,16 +6,20 @@ use Inhere\Console\Util\Show;
 use Inhere\Kite\Helper\SysCmd;
 use InvalidArgumentException;
 use Toolkit\Cli\Cli;
+use Toolkit\FsUtil\Dir;
 use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Obj\AbstractObj;
 use function array_merge;
 use function basename;
+use function count;
 use function explode;
 use function implode;
 use function in_array;
 use function is_array;
 use function is_file;
+use function is_scalar;
 use function is_string;
+use function json_encode;
 use function preg_match;
 use function strpos;
 use function trim;
@@ -25,6 +29,9 @@ use function trim;
  */
 class ScriptRunner extends AbstractObj
 {
+    public const TYPE_CMD  = 'cmd';
+    public const TYPE_FILE = 'file';
+
     /**
      * @var bool
      */
@@ -34,6 +41,16 @@ class ScriptRunner extends AbstractObj
      * @var bool
      */
     private $enable = true;
+
+    /**
+     * @var array
+     */
+    private $envs = [];
+
+    /**
+     * @var array
+     */
+    private $vars = [];
 
     /**
      * @var array
@@ -73,6 +90,23 @@ class ScriptRunner extends AbstractObj
      * @param string $name
      * @param array  $runArgs
      */
+    public function run(string $name, array $runArgs): void
+    {
+        if ($this->isScriptName($name)) {
+            $this->runCustomScript($name, $runArgs);
+        } elseif ($this->isScriptFile($name)) {
+            $this->runScriptFile($name, $runArgs);
+        } else {
+            throw new InvalidArgumentException("invalid script command or script file. (name: $name)");
+        }
+    }
+
+    /**
+     * run script by name
+     *
+     * @param string $name
+     * @param array  $runArgs
+     */
     public function runCustomScript(string $name, array $runArgs): void
     {
         if (!isset($this->scripts[$name])) {
@@ -82,8 +116,7 @@ class ScriptRunner extends AbstractObj
         // script commands
         $commands = $this->scripts[$name];
 
-        // run scripts
-        // TODO $this->dryRun = $input->getBoolOpt('dry-run');
+        // run script commands
         $this->executeScripts($name, $runArgs, $commands);
     }
 
@@ -271,6 +304,67 @@ class ScriptRunner extends AbstractObj
         return '';
     }
 
+    public function loadAllScriptFiles(): void
+    {
+        $extMatch = '';
+
+        foreach ($this->scriptDirs as $scriptDir) {
+            // $iter = Dir::getIterator($scriptDir);
+            // $files = Dir::getFiles($scriptDir, $extMatch);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllScriptFiles(): array
+    {
+        $extMatch = '';
+
+        $files = [];
+        foreach ($this->scriptDirs as $scriptDir) {
+            // $iter = Dir::getIterator($scriptDir);
+            $files = Dir::getFiles($scriptDir, $extMatch, true, $scriptDir . '/', $files);
+        }
+
+        return $files;
+    }
+
+    /**
+     * @param string $kw
+     *
+     * @return array
+     */
+    public function searchScripts(string $kw): array
+    {
+        $matched = [];
+        foreach ($this->scripts as $name => $item) {
+            if (strpos($name, $kw) !== false) {
+                $matched[$name] = $item;
+            } else {
+                $itemString = is_scalar($item) ? (string)$item : json_encode($item);
+
+                if (strpos($itemString, $kw) !== false) {
+                    $matched[$name] = $item;
+                }
+            }
+        }
+
+        return $matched;
+    }
+
+    // -------------------------------- scripts --------------------------------
+
+    /**
+     * @param string $name
+     *
+     * @return mixed|null
+     */
+    public function getScript(string $name)
+    {
+        return $this->scripts[$name] ?? null;
+    }
+
     /**
      * @param string $name
      *
@@ -280,6 +374,32 @@ class ScriptRunner extends AbstractObj
     {
         return isset($this->scripts[$name]);
     }
+
+    /**
+     * @return array
+     */
+    public function getScripts(): array
+    {
+        return $this->scripts;
+    }
+
+    /**
+     * @param array $scripts
+     */
+    public function setScripts(array $scripts): void
+    {
+        $this->scripts = $scripts;
+    }
+
+    /**
+     * @return int
+     */
+    public function getScriptCount(): int
+    {
+        return count($this->scripts);
+    }
+
+    // -------------------------------- scriptFiles --------------------------------
 
     /**
      * @param string $name
@@ -315,54 +435,6 @@ class ScriptRunner extends AbstractObj
     public function setScriptDirs(array $scriptDirs): void
     {
         $this->scriptDirs = $scriptDirs;
-    }
-
-    /**
-     * @return array
-     */
-    public function getScripts(): array
-    {
-        return $this->scripts;
-    }
-
-    /**
-     * @param array $scripts
-     */
-    public function setScripts(array $scripts): void
-    {
-        $this->scripts = $scripts;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isDryRun(): bool
-    {
-        return $this->dryRun;
-    }
-
-    /**
-     * @param bool $dryRun
-     */
-    public function setDryRun(bool $dryRun): void
-    {
-        $this->dryRun = $dryRun;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEnable(): bool
-    {
-        return $this->enable;
-    }
-
-    /**
-     * @param bool|int $enable
-     */
-    public function setEnable($enable): void
-    {
-        $this->enable = (bool)$enable;
     }
 
     /**
@@ -420,4 +492,39 @@ class ScriptRunner extends AbstractObj
     {
         $this->scriptExts = $scriptExts;
     }
+
+    // -------------------------------- others --------------------------------
+
+    /**
+     * @return bool
+     */
+    public function isDryRun(): bool
+    {
+        return $this->dryRun;
+    }
+
+    /**
+     * @param bool $dryRun
+     */
+    public function setDryRun(bool $dryRun): void
+    {
+        $this->dryRun = $dryRun;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnable(): bool
+    {
+        return $this->enable;
+    }
+
+    /**
+     * @param bool|int $enable
+     */
+    public function setEnable($enable): void
+    {
+        $this->enable = (bool)$enable;
+    }
+
 }
