@@ -12,7 +12,6 @@ use Toolkit\Stdlib\Obj\ObjectBox;
 use Toolkit\Stdlib\OS;
 use Toolkit\Stdlib\Util\PhpDotEnv;
 use function file_exists;
-use const BASE_PATH;
 
 /**
  * Trait InitApplicationTrait
@@ -41,14 +40,16 @@ trait InitApplicationTrait
      */
     protected function loadAppConfig(string $runMode, string $workDir = ''): void
     {
-        $baseFile = BASE_PATH . '/config/config.php';
+        $diskBasePath = Kite::basePath();
+
+        $baseFile = $diskBasePath . '/config/config.php';
         $loaded   = [$baseFile];
 
         // 基础配置
         $config = require $baseFile;
 
         // eg: config.web.php
-        $modeFile = BASE_PATH . "/config/config.$runMode.php";
+        $modeFile = $diskBasePath . "/config/config.$runMode.php";
         if (file_exists($modeFile)) {
             $loaded[]   = $modeFile;
             $modeConfig = require $modeFile;
@@ -57,7 +58,7 @@ trait InitApplicationTrait
         }
 
         // 自定义全局配置
-        $globFile = BASE_PATH . '/.kite.php';
+        $globFile = $diskBasePath . '/.kite.php';
         if (file_exists($globFile)) {
             $loaded[]   = $globFile;
             $userConfig = require $globFile;

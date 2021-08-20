@@ -111,21 +111,28 @@ class Kite
     }
 
     /**
+     * @param bool $onDisk Will clear prefix 'phar://', if on phar package.
+     *
      * @return string
      */
-    public static function basePath(): string
+    public static function basePath(bool $onDisk = true): string
     {
-        return Dir::clearPharPath(BASE_PATH);
+        return $onDisk ? Dir::clearPharPath(BASE_PATH) : BASE_PATH;
     }
 
     /**
      * @param string $path
+     * @param bool   $onDisk Will clear prefix 'phar://', if on phar package.
      *
      * @return string
      */
-    public static function getPath(string $path): string
+    public static function getPath(string $path = '', bool $onDisk = true): string
     {
-        return BASE_PATH . '/' . $path;
+        if (!$path) {
+            return self::basePath($onDisk);
+        }
+
+        return self::basePath($onDisk) . '/' . $path;
     }
 
     /**

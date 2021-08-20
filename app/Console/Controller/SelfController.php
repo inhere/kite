@@ -13,7 +13,6 @@ use Inhere\Kite\Helper\SysCmd;
 use Inhere\Kite\Kite;
 use Throwable;
 use Toolkit\Cli\Color;
-use Toolkit\Stdlib\Obj\ObjectBox;
 use Toolkit\Stdlib\OS;
 use Toolkit\Stdlib\Php;
 use Toolkit\Stdlib\Util\PhpDotEnv;
@@ -104,11 +103,42 @@ class SelfController extends Controller
     }
 
     /**
+     * get the kite paths
+     *
+     * @options
+     *  --inline    Output without newline.
+     *
+     * @arguments
+     *  path        The sub-path in the kite. if empty, return kite path.
+     *
+     * @example
+     *  {binWithCmd}
+     *  {binWithCmd} tmp/logs/some.log
+     *  {binWithCmd} tmp/logs/some.log --inline
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function pathCommand(Input $input, Output $output): void
+    {
+        $subPath = $input->getStringArg(0);
+        $fullPath = Kite::getPath($subPath);
+
+        if ($input->getBoolOpt('inline')) {
+            $output->writeRaw($fullPath);
+            return;
+        }
+
+        $output->println($fullPath);
+    }
+
+    /**
      * show the application config information
      *
      * @options
-     *      --keys           Only show all key names of config
      *  -s, --search         Search config names by `key` argument
+     *      --keys           Only show all key names of config
+     *      --clean          Output clean value.
      *
      * @arguments
      *  key     The key of config
