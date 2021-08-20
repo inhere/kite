@@ -15,9 +15,15 @@ $compiler
   // ->stripComments(false)
   ->setShebang(true)
   ->addExclude([
-    'test',
+    'custom',
+    'example',
+    'plugin',
     'runtime',
     'resource',
+    'node_modules',
+    'script',
+    'test',
+    'tmp',
   ])
   ->addFile([
     'LICENSE',
@@ -30,7 +36,7 @@ $compiler
 ;
 
 $compiler->on(PharCompiler::ADD_CLI_INDEX, static function ($file, $content) {
-    echo "Set publish date to {$file}\n";
+    echo "Set publish date to $file\n";
 
     $pubDate = date('Y.m.d H:i');
 

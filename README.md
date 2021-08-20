@@ -761,7 +761,7 @@ chmod a+x bin/kite
 ## 构建Phar包
 
 ```bash
-php -d phar.readonly=0 bin/kite phar:pack
+php -d phar.readonly=0 bin/kite phar pack
 ```
 
 ![build-phar](resource/images/build-phar.png)

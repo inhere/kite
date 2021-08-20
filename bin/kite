@@ -10,7 +10,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 $app = new CliApplication([
     'name'        => 'kite',
-    'rootPath'    => BASE_PATH,
+    'rootPath'    => Kite::basePath(),
     'version'     => Kite::VERSION,
     'homepage'    => Kite::HOMEPAGE,
     'publishAt'   => '2020.05.24',
