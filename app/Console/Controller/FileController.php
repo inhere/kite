@@ -148,13 +148,15 @@ class FileController extends Controller
     }
 
     /**
+     * Download an remote file to local by terminal
+     *
      * @arguments
      *   fileUrl   The remote file url address.
      *
      * @options
      *  -v                  Open debug mode.
      *      --pt   STRING   The progress bar type. allow: txt,bar
-     *  -s, --save STRING   The local file for downloaded.
+     *  -s, --save STRING   The save local file for downloaded.
      *
      * @param Input  $input
      * @param Output $output
@@ -164,8 +166,9 @@ class FileController extends Controller
         $url = $input->getRequiredArg(0);
 
         $d = Download::create($url);
-        $d->setShowType($input->getStringOpt('pt'));
+        $d->setShowType($input->getStringOpt('pt', Download::PROGRESS_BAR));
         $d->setDebug($input->getBoolOpt('v'));
+        $d->setSaveAs($input->getStringOpt('s,save'));
         $d->start();
 
         $output->success("Complete Download: $url");

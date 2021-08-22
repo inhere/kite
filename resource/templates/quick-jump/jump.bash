@@ -8,6 +8,8 @@
 
 # hooks on dir changed
 __jump_prompt_command() {
+    # x: is number
+    # cmd: the command name
     # eg: "j" or "j /path/to/dir"
     local lastCmd=$(history 1 | {
         read x cmd args

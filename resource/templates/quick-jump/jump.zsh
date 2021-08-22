@@ -8,6 +8,20 @@
 
 # change pwd hook
 __jump_chpwd() {
+    # x: is number
+    # cmd: the command name
+    # eg: "j" or "j /path/to/dir"
+    local lastCmd=$(history 1 | {
+        read x cmd args
+        echo "$cmd"
+    })
+
+    # kite util log "lastCmd $lastCmd" --type zsh-jump-chdir
+    # Do not process other commands executed
+    if [[ $lastCmd != "{{bindFunc}}" ]]; then
+        return 0
+    fi
+
     kite jump chdir
 }
 
