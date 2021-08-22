@@ -144,6 +144,9 @@ class GitController extends Controller
     /**
      * update codes from origin by git pull
      *
+     * @options
+     *  --dir   The want updated git repo dir. default is workdir
+     *
      * @param Input  $input
      * @param Output $output
      */
