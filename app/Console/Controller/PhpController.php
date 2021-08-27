@@ -190,6 +190,27 @@ class PhpController extends Controller
     }
 
     /**
+     * Create new php package from a github template repo
+     *
+     * @arguments
+     *  name        The new package name.
+     *
+     * @options
+     *  --tpl-repo  The remote git repo path or url.
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function pkgNew(Input $input, Output $output): void
+    {
+        $pkgName  = $input->getRequiredArg(0);
+        $repoPath = 'inherelab/php-pkg-template';
+
+        $run = CmdRunner::new();
+        $run->addf('git clone %s/%s %s', GitHub::GITHUB_HOST, $repoPath, $pkgName);
+    }
+
+    /**
      * @param Input $input
      */
     protected function ghPkgConfigure(Input $input): void

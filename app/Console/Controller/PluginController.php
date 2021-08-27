@@ -32,6 +32,29 @@ class PluginController extends Controller
     }
 
     /**
+     * list all plugins dir and file information
+     *
+     * @options
+     *  --only-files    Only list all plugin names
+     *
+     * @param Input  $input
+     * @param Output $output
+     */
+    public function listCommand(Input $input, Output $output): void
+    {
+        $kpm = Kite::plugManager();
+        $opts = ['ucFirst' => false];
+
+        if (!$input->getBoolOpt('only-files')) {
+            $dirs = $kpm->getPluginDirs();
+            $output->aList($dirs, 'plugin dirs', $opts);
+        }
+
+        $files = $kpm->loadPluginFiles()->getPluginFiles();
+        $output->aList($files, 'Plugin Files', $opts);
+    }
+
+    /**
      * display information for an plugin
      *
      * @arguments
@@ -72,30 +95,5 @@ class PluginController extends Controller
 
         $kpm = Kite::plugManager();
         $kpm->run($name, $this->app);
-
-        $output->success('completed');
-    }
-
-    /**
-     * list all plugins dir and file information
-     *
-     * @options
-     *  --only-files    Only list all plugin names
-     *
-     * @param Input  $input
-     * @param Output $output
-     */
-    public function listCommand(Input $input, Output $output): void
-    {
-        $kpm = Kite::plugManager();
-        $opts = ['ucFirst' => false];
-
-        if (!$input->getBoolOpt('only-files')) {
-            $dirs = $kpm->getPluginDirs();
-            $output->aList($dirs, 'plugin dirs', $opts);
-        }
-
-        $files = $kpm->loadPluginFiles()->getPluginFiles();
-        $output->aList($files, 'Plugin Files', $opts);
     }
 }

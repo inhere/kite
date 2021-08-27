@@ -2,9 +2,8 @@
 
 namespace Inhere\Kite\Console\Plugin;
 
-use Inhere\Console\Util\Helper;
+use Inhere\Console\Application;
 use Inhere\Console\Util\Show;
-use Inhere\Kite\Console\CliApplication;
 use RuntimeException;
 use SplFileInfo;
 use Toolkit\Cli\Color;
@@ -80,10 +79,10 @@ class PluginManager
     }
 
     /**
-     * @param string         $name plugin name or file path
-     * @param CliApplication $app
+     * @param string      $name plugin name or file path
+     * @param Application $app
      */
-    public function run(string $name, CliApplication $app): void
+    public function run(string $name, Application $app): void
     {
         $plugin = $this->getPlugin($name);
         if (!$plugin) {
@@ -254,7 +253,7 @@ class PluginManager
                 throw new RuntimeException("plugin dir: $pluginDir - is not exists");
             }
 
-            $pathLen  = strlen($pluginDir);
+            $pathLen  = strlen($pluginDir) + 1;
             $iterator = Dir::getIterator($pluginDir, $fileFilter);
 
             foreach ($iterator as $fi) {

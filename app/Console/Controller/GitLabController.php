@@ -408,6 +408,7 @@ class GitLabController extends Controller
         $notMain = $input->getBoolOpt('not-main');
         $dryRun  = $input->getBoolOpt('dry-run');
 
+        $deletedNum = 0;
         $mainRemote = $gitlab->getMainRemote();
         foreach ($names as $name) {
             if (strpos($name, ',') > 0) {
@@ -417,6 +418,7 @@ class GitLabController extends Controller
             }
 
             foreach ($nameList as $brName) {
+                $deletedNum++;
                 $run = CmdRunner::new();
                 $run->setDryRun($dryRun);
 
@@ -428,9 +430,14 @@ class GitLabController extends Controller
             }
         }
 
+        // $output->info('update git branch list after deleted');
         // git fetch main --prune
+        // $run = CmdRunner::new();
+        // $run->add('git fetch origin --prune');
+        // $run->addf('git fetch %s --prune', $mainRemote);
+        // $run->run(true);
 
-        $output->success('Completed');
+        $output->success('Completed. Total delete: ' . $deletedNum);
     }
 
     /**
