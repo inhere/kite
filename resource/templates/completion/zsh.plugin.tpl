@@ -35,6 +35,7 @@ compdef _complete_for_{{fmtBinName}} {{binName}}
 ## aliases for {{binName}}
 # NOTICE: zsh plugin support add aliases
 #alias kj="kite jump"
+alias kg="kite git"
 alias kgit="kite git"
 alias kgl="kite gitlab"
 alias kgh="kite github"

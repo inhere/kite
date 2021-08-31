@@ -22,6 +22,7 @@ use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use Toolkit\Stdlib\Str;
 use function array_merge;
+use function date;
 use function explode;
 use function http_build_query;
 use function in_array;
@@ -943,6 +944,6 @@ class GitLabController extends Controller
         }
 
         $runner->run(true);
-        $output->success('Complete');
+        $output->success('Complete. datetime: ' . date('Y-m-d H:i:s'));
     }
 }
