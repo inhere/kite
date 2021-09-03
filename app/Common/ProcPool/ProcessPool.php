@@ -24,7 +24,7 @@ class ProcessPool extends AbstractPool
      * @param int  $msgQueueKey
      * @param bool $enableCoroutine
      *
-     * @return static
+     * @return self
      */
     public static function new(int $workerNum, int $ipcType = 0, int $msgQueueKey = 0, bool $enableCoroutine = true): self
     {

@@ -1,5 +1,10 @@
-FROM php:7.4-alpine
+#
+FROM php:8.0-alpine
 
-FROM php:7.4-alpine
+WORKDIR /appdir
+COPY . /appdir
 
-COPY --from=0 /home/worker/build ./
+RUN composer install --no-progress \
+  && comoser clearcache \
+
+ENTRYPOINT ["php", "bin/kite"]

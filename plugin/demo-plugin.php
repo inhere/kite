@@ -1,11 +1,9 @@
 <?php
 
+use Inhere\Console\Application;
 use Inhere\Console\IO\Input;
 use Inhere\Kite\Console\CliApplication;
 use Inhere\Kite\Console\Plugin\AbstractPlugin;
-
-use League\CommonMark\Environment;
-use League\CommonMark\MarkdownConverter;
 
 /**
  * Class DemoPlugin
@@ -20,20 +18,11 @@ class DemoPlugin extends AbstractPlugin
     }
 
     /**
-     * @param CliApplication $app
+     * @param Application $app
      * @param Input          $input
      */
-    public function exec(CliApplication $app, Input $input): void
+    public function exec(Application $app, Input $input): void
     {
         vdump(__METHOD__);
-
-        $env = Environment::createGFMEnvironment();
-        $env->addInlineRenderer($inlineClass, $renderer);
-        // $env->
-        $env->mergeConfig([]);
-
-        $converter = new MarkdownConverter($env);
-
-        echo $converter->convertToHtml("# Hello GFM!\n welcome");
     }
 }

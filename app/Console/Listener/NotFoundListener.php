@@ -24,7 +24,7 @@ final class NotFoundListener
      */
     public function __invoke(string $cmd, CliApplication $app): bool
     {
-        $aliases = $app->getParam('aliases', []);
+        $aliases = $app->getArrayParam('aliases');
 
         // - is an command alias.
         if ($aliases && isset($aliases[$cmd])) {

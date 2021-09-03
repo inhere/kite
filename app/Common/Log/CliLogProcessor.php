@@ -10,14 +10,15 @@ use Toolkit\Stdlib\OS;
  * Class CliLogProcessor
  *
  * @package Inhere\Kite\Common\Log
+ * @psalm-template Record
  */
 class CliLogProcessor implements ProcessorInterface
 {
     /**
      * @return array The processed record
      *
-     * @phpstan-param  Record $record
-     * @phpstan-return Record
+     * @psalm-param  Record $record
+     * @psalm-return Record
      */
     public function __invoke(array $record)
     {

@@ -80,7 +80,7 @@ class WebApplication
             return new Router();
         });
         $box->set('renderer', function () {
-            $config = $this->getParam('renderer', []);
+            $config = $this->getArrayParam('renderer');
             return new HtmlTemplate($config);
         });
         $box->set('dispatcher', [
@@ -130,6 +130,21 @@ class WebApplication
     public function getParams(): array
     {
         return $this->params;
+    }
+
+    /**
+     * @param string $name
+     * @param array  $default
+     *
+     * @return array
+     */
+    public function getArrayParam(string $name, array $default = []): array
+    {
+        if (isset($this->config[$name])) {
+            return (array)$this->config[$name];
+        }
+
+        return $default;
     }
 
     /**

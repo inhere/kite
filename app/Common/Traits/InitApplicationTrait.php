@@ -87,7 +87,7 @@ trait InitApplicationTrait
     protected function registerComServices(ObjectBox $box): void
     {
         $box->set('logger', function () {
-            $config = $this->getParam('logger', []);
+            $config = $this->getArrayParam('logger');
             $logger = new Logger($config['name'] ?? 'kite');
 
             $handler = new RotatingFileHandler($config['logfile']);
@@ -96,13 +96,13 @@ trait InitApplicationTrait
         });
 
         $box->set('glApi', function () {
-            $config = $this->getParam('gitlab', []);
+            $config = $this->getArrayParam('gitlab');
 
             return new GitLabV4API($config);
         });
 
         $box->set('ghApi', function () {
-            $config = $this->getParam('github', []);
+            $config = $this->getArrayParam('github');
             return new GitHubV3API($config);
         });
     }

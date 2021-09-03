@@ -71,7 +71,7 @@ abstract class AbstractPlugin implements PluginInterface
     }
 
     /**
-     * @return array[]
+     * @return array
      */
     public function getInfo(): array
     {

@@ -131,7 +131,7 @@ class PhpController extends Controller
      */
     public function serveCommand(Input $input, Output $output): void
     {
-        $conf = $this->app->getParam('php:serve', []);
+        $conf = $this->app->getArrayParam('php:serve');
         if ($conf) {
             $conf = array_merge(self::DEF_SERVE_CONF, $conf);
 

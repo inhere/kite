@@ -69,7 +69,7 @@ class CliApplication extends Application
 
         // override logger, add processor
         $box->set('logger', function () {
-            $config = $this->getParam('logger', []);
+            $config = $this->getArrayParam('logger');
             $logger = new Logger($config['name'] ?? 'kite');
             $logger->pushProcessor(new CliLogProcessor());
 
@@ -79,25 +79,25 @@ class CliApplication extends Application
         }, true);
 
         $box->set('plugManager', function () {
-            $plugDirs = $this->getParam('pluginDirs', []);
+            $plugDirs = $this->getArrayParam('pluginDirs');
             return new PluginManager($plugDirs);
         });
 
         $box->set('scriptRunner', function () {
-            $config = $this->getParam('scriptRunner', []);
-            $scripts = $this->getParam('scripts', []);
+            $config = $this->getArrayParam('scriptRunner');
+            $scripts = $this->getArrayParam('scripts');
 
             // create object
             $sr = new ScriptRunner($config);
             $sr->setScripts($scripts);
-            $scriptDirs = $this->getParam('scriptDirs', []);
+            $scriptDirs = $this->getArrayParam('scriptDirs');
             $sr->setScriptDirs($scriptDirs);
 
             return $sr;
         });
 
         $box->set('jumper', function () {
-            $jumpConf = $this->getParam('jumper', []);
+            $jumpConf = $this->getArrayParam('jumper');
             return QuickJump::new($jumpConf);
         });
     }
@@ -110,7 +110,7 @@ class CliApplication extends Application
         $this->on(ConsoleEvent::ON_NOT_FOUND, new NotFoundListener());
 
         // auto proxy setting
-        $autoProxy = $this->getParam('autoProxy', []);
+        $autoProxy = $this->getArrayParam('autoProxy');
         $this->on(ConsoleEvent::COMMAND_RUN_BEFORE, BeforeCommandRunListener::new($autoProxy));
 
         Kite::logger()->info('console app init completed');

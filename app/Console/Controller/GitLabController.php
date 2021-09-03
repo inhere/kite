@@ -48,7 +48,7 @@ class GitLabController extends Controller
     private $settings = [];
 
     /**
-     * @return array|string[]
+     * @return string[]
      */
     public static function aliases(): array
     {
@@ -126,7 +126,7 @@ class GitLabController extends Controller
     protected function beforeRun(): void
     {
         if ($this->app && !$this->settings) {
-            $this->settings = $this->app->getParam('gitlab', []);
+            $this->settings = $this->app->getArrayParam('gitlab');
         }
     }
 
@@ -744,8 +744,9 @@ class GitLabController extends Controller
     {
         $link = $input->getRequiredArg('link');
         $info = (array)parse_url($link);
+        // Str\UrlHelper::parseUrl($link);
 
-        [$group, $repo,] = explode('/', trim($info['path'], '/'), 3);
+        [$group, $repo,] = explode('/', trim($info['path'] ?? '', '/'), 3);
 
         if (!empty($info['query'])) {
             $qStr = $info['query'];

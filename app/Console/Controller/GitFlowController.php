@@ -60,7 +60,7 @@ class GitFlowController extends Controller
 
     protected function configure(): void
     {
-        $this->config = $this->app->getParam('gitflow', []);
+        $this->config = $this->app->getArrayParam('gitflow');
 
         $this->forkRemote = $this->config['fork']['remote'] ?? '';
         $this->mainRemote = $this->config['main']['remote'] ?? '';

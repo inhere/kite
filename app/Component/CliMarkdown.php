@@ -325,14 +325,14 @@ class CliMarkdown extends GithubMarkdown
     }
 
     /**
-     * @param array $text
+     * @param array $block
      *
      * @return string
      */
-    protected function renderText($text): string
+    protected function renderText($block): string
     {
-        // vdump($text);
-        return $text[1];
+        // vdump($block);
+        return $block[1];
     }
 
     /**

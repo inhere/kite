@@ -65,7 +65,7 @@ class GitHubController extends Controller
     protected function beforeRun(): void
     {
         if ($this->app && !$this->settings) {
-            $this->settings = $this->app->getParam('github', []);
+            $this->settings = $this->app->getArrayParam('github');
         }
     }
 

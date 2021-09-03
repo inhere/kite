@@ -49,7 +49,7 @@ class QuickJump
     /**
      * @param array $config
      *
-     * @return static
+     * @return self
      */
     public static function new(array $config = []): self
     {

@@ -78,7 +78,7 @@ class DocTopic
      * @param string $fsName
      * @param bool   $isDir
      *
-     * @return static
+     * @return self
      */
     public static function new(string $name, string $path, string $fsName, bool $isDir = false): self
     {
@@ -107,7 +107,7 @@ class DocTopic
      ******************************************************************/
 
     /**
-     * @return $this
+     * @return self
      */
     public function load(): self
     {
@@ -178,7 +178,7 @@ class DocTopic
     /**
      * @param array $subs
      *
-     * @return $this|null
+     * @return self|null
      */
     public function findTopicByPaths(array $subs): ?self
     {
@@ -196,7 +196,7 @@ class DocTopic
     }
 
     /**
-     * @return $this|null
+     * @return self|null
      */
     public function getDocFile(): ?self
     {
@@ -210,7 +210,7 @@ class DocTopic
     /**
      * Get the default file document
      *
-     * @return $this|null
+     * @return self|null
      */
     public function getDefault(): ?self
     {

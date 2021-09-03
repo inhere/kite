@@ -311,7 +311,7 @@ class SelfController extends Controller
      */
     public function webuiCommand(Input $input, Output $output): void
     {
-        $this->webUi = array_merge($this->webUi, $this->app->getParam('webui', []));
+        $this->webUi = array_merge($this->webUi, $this->app->getArrayParam('webui'));
         // vdump(BASE_PATH, $this->webUi);
 
         $svrAddr = $input->getSameStringOpt('s,S,addr', $this->webUi['addr']);

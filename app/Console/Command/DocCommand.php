@@ -60,7 +60,7 @@ class DocCommand extends Command
         $def = $this->createDefinition();
 
         $lang = Document::DEF_LANG;
-        $conf = $this->app->getParam('manDocs', []);
+        $conf = $this->app->getArrayParam('manDocs');
         if (!empty($conf['lang'])) {
             $lang = $conf['lang'];
         }
@@ -96,7 +96,7 @@ TXT;
      */
     private function prepareManDoc(): Document
     {
-        $info = $this->app->getParam('manDocs');
+        $info = $this->app->getArrayParam('manDocs');
 
         $paths = $info['paths'] ?? [];
         $lang  = $this->input->getStringOpt('lang');

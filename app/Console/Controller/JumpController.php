@@ -84,7 +84,7 @@ class JumpController extends Controller
      *  {binWithCmd} histories
      *
      * @arguments
-     *  key         The data key name.
+     *  category         The data category key name. allow: namedPaths, histories, prevPath
      *
      * @param Input  $input
      * @param Output $output
