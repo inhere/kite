@@ -1,0 +1,7 @@
+.idea/
+.git/
+.phpintel/
+tmp/
+node_modules/
+*.cache
+test/

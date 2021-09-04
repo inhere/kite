@@ -1,0 +1,80 @@
+name: Publish-image
+
+on:
+  push:
+    branches:
+      - 'master'
+    tags:
+      - 'v*'
+  # pull_request:
+  #   branches:
+  #     - 'main'
+
+env:
+  # Use docker.io for Docker Hub if empty
+  # docker.pkg.github.com
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+
+  # https://docs.github.com/cn/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [ 8.0 ]
+    # needs: install-deps
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # usage refer https://github.com/shivammathur/setup-php
+      - name: Setup PHP ${{ matrix.php }}
+        timeout-minutes: 5
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php}}
+          tools: pecl, php-cs-fixer, phpunit
+          extensions: mbstring, dom, fileinfo, mysql, openssl # , swoole-4.4.19 #optional, setup extensions
+          ini-values: post_max_size=56M, short_open_tag=On #optional, setup php.ini configuration
+          coverage: none #optional, setup coverage driver: xdebug, none
+
+      - name: Install deps and run
+        run: |
+          composer install --no-progress
+          php bin/app
+
+      # Login against a Docker registry except on PR
+      # https://github.com/docker/login-action
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Extract metadata (tags, labels) for Docker
+      # https://github.com/docker/metadata-action
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      # Build and push Docker image with Buildx (don't push on PR)
+      # https://github.com/docker/build-push-action
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+

@@ -1,0 +1,12 @@
+---
+# action.yml
+name: 'changelog-kite'
+description: 'Generate changelog by kite tool'
+author: Inhere
+runs:
+  using: 'docker'
+  # image: 'Dockerfile'
+  image: 'docker://ghcr.io/inhere/kite/changelog:master'
+branding:
+  icon: "tag"
+  color: "blue"
