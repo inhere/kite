@@ -9,4 +9,4 @@ WORKDIR /appdir
 COPY . /appdir
 
 ENTRYPOINT ["php", "bin/kite"]
-CMD $KITE_CMD
+#CMD $KITE_CMD

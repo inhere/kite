@@ -1,12 +1,20 @@
 ---
 # action.yml
-name: 'changelog-kite'
-description: 'Generate changelog by kite tool'
+# docs https://docs.github.com/en/actions/creating-actions/creating-a-docker-container-action
+name: 'kite'
+description: 'Kite is a tool for help development.'
 author: Inhere
+inputs:
+  cmd:  # id of input
+    description: 'the command name of kite'
+    required: true
+    default: 'list'
 runs:
   using: 'docker'
   # image: 'Dockerfile'
-  image: 'docker://ghcr.io/inhere/kite/changelog:master'
+  image: 'docker://ghcr.io/inhere/kite:master'
+  args:
+    - ${{ inputs.cmd }}
 branding:
   icon: "tag"
   color: "blue"
