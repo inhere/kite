@@ -49,6 +49,7 @@ return [
         'defaultGroup'     => 'swoft',
         'defaultForkGroup' => 'ulue',
         'redirectGit'      => [
+            'ac',
             'acp',
             'log',
             'info',

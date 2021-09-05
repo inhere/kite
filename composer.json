@@ -34,6 +34,10 @@
     "symfony/expression-language": "^5.3",
     "monolog/monolog": "^2.3"
   },
+  "require-dev": {
+    "ext-posix": "*",
+    "ext-readline": "*"
+  },
   "autoload": {
     "psr-4": {
       "Inhere\\Kite\\": "app/"
