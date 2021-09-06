@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d7a7fe81f0ecfe42d94127ed520b4cea",
+    "content-hash": "ff49bcffa987232c2ed3841361b67455",
     "packages": [
         {
             "name": "cebe/markdown",
@@ -314,16 +314,16 @@
         },
         {
             "name": "gitonomy/gitlib",
-            "version": "v1.2.3",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/gitonomy/gitlib.git",
-                "reference": "d22f212b97fdb631ac73dfae65c194dc4cb0d227"
+                "reference": "e096edbdb88ac7cf2e27113f9b9b1f410a2891a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/gitonomy/gitlib/zipball/d22f212b97fdb631ac73dfae65c194dc4cb0d227",
-                "reference": "d22f212b97fdb631ac73dfae65c194dc4cb0d227",
+                "url": "https://api.github.com/repos/gitonomy/gitlib/zipball/e096edbdb88ac7cf2e27113f9b9b1f410a2891a8",
+                "reference": "e096edbdb88ac7cf2e27113f9b9b1f410a2891a8",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -336,11 +336,11 @@
                 "ext-pcre": "*",
                 "php": "^5.6 || ^7.0 || ^8.0",
                 "symfony/polyfill-mbstring": "^1.7",
-                "symfony/process": "^3.4 || ^4.0 || ^5.0"
+                "symfony/process": "^3.4 || ^4.4 || ^5.0 || ^6.0"
             },
             "require-dev": {
                 "ext-fileinfo": "*",
-                "phpunit/phpunit": "^5.7 || ^6.5 || ^7.0 || ^8.0 || ^9.0",
+                "phpunit/phpunit": "^5.7.27 || ^6.5.14 || ^7.5.20 || ^8.5.20 || ^9.5.9",
                 "psr/log": "^1.0"
             },
             "suggest": {
@@ -360,7 +360,7 @@
             "authors": [
                 {
                     "name": "Graham Campbell",
-                    "email": "graham@alt-three.com"
+                    "email": "hello@gjcampbell.co.uk"
                 },
                 {
                     "name": "Julien Didier",
@@ -378,7 +378,7 @@
             "description": "Library for accessing git",
             "support": {
                 "issues": "https://github.com/gitonomy/gitlib/issues",
-                "source": "https://github.com/gitonomy/gitlib/tree/v1.2.3"
+                "source": "https://github.com/gitonomy/gitlib/tree/v1.3.0"
             },
             "funding": [
                 {
@@ -386,7 +386,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-12-29T16:48:45+00:00"
+            "time": "2021-09-04T20:05:52+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -3006,16 +3006,16 @@
         },
         {
             "name": "symfony/process",
-            "version": "v4.4.27",
+            "version": "v4.4.30",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "0b7dc5599ac4aa6d7b936c8f7d10abae64f6cf7f"
+                "reference": "13d3161ef63a8ec21eeccaaf9a4d7f784a87a97d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/0b7dc5599ac4aa6d7b936c8f7d10abae64f6cf7f",
-                "reference": "0b7dc5599ac4aa6d7b936c8f7d10abae64f6cf7f",
+                "url": "https://api.github.com/repos/symfony/process/zipball/13d3161ef63a8ec21eeccaaf9a4d7f784a87a97d",
+                "reference": "13d3161ef63a8ec21eeccaaf9a4d7f784a87a97d",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3054,7 +3054,7 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v4.4.27"
+                "source": "https://github.com/symfony/process/tree/v4.4.30"
             },
             "funding": [
                 {
@@ -3070,7 +3070,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-07-23T15:41:52+00:00"
+            "time": "2021-08-04T20:31:23+00:00"
         },
         {
             "name": "symfony/service-contracts",
@@ -3558,6 +3558,9 @@
         "ext-json": "*",
         "ext-mbstring": "*"
     },
-    "platform-dev": [],
+    "platform-dev": {
+        "ext-posix": "*",
+        "ext-readline": "*"
+    },
     "plugin-api-version": "2.1.0"
 }
