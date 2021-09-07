@@ -314,16 +314,16 @@
         },
         {
             "name": "gitonomy/gitlib",
-            "version": "v1.3.0",
+            "version": "v1.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/gitonomy/gitlib.git",
-                "reference": "e096edbdb88ac7cf2e27113f9b9b1f410a2891a8"
+                "reference": "e73e439590b194b0b250b516b22a68c7116e2f21"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/gitonomy/gitlib/zipball/e096edbdb88ac7cf2e27113f9b9b1f410a2891a8",
-                "reference": "e096edbdb88ac7cf2e27113f9b9b1f410a2891a8",
+                "url": "https://api.github.com/repos/gitonomy/gitlib/zipball/e73e439590b194b0b250b516b22a68c7116e2f21",
+                "reference": "e73e439590b194b0b250b516b22a68c7116e2f21",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -378,7 +378,7 @@
             "description": "Library for accessing git",
             "support": {
                 "issues": "https://github.com/gitonomy/gitlib/issues",
-                "source": "https://github.com/gitonomy/gitlib/tree/v1.3.0"
+                "source": "https://github.com/gitonomy/gitlib/tree/v1.3.2"
             },
             "funding": [
                 {
@@ -386,7 +386,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-09-04T20:05:52+00:00"
+            "time": "2021-09-06T20:30:10+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
