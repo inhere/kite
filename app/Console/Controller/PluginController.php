@@ -13,6 +13,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Kite;
+use function array_keys;
 
 /**
  * Class PluginController
@@ -70,7 +71,7 @@ class PluginController extends Controller
 
         $kpm = Kite::plugManager();
         if (!$plg= $kpm->getPlugin($name)) {
-            $output->error("the plugin '{$name}' is not exists");
+            $output->error("the plugin '$name' is not exists");
             return;
         }
 
@@ -85,15 +86,28 @@ class PluginController extends Controller
      * @arguments
      *  name    The plugin name for run
      *
+     * @options
+     *  -i, --select    Run plugin by select
+     *
      * @param Input  $input
      * @param Output $output
      */
     public function runCommand(Input $input, Output $output): void
     {
-        $input->bindArgument('name', 0);
-        $name = $input->getRequiredArg('name');
-
         $kpm = Kite::plugManager();
+
+        if ($input->getSameBoolOpt('i,select')) {
+            $files = $kpm->loadPluginFiles()->getPluginFiles();
+
+            $list = array_keys($files);
+            $name = $output->select('select an plugin', $list, null, true, [
+                'returnVal' => true,
+            ]);
+        } else {
+            $input->bindArgument('name', 0);
+            $name = $input->getRequiredArg('name');
+        }
+
         $kpm->run($name, $this->app);
     }
 }

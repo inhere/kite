@@ -52,6 +52,7 @@ class RunCommand extends Command
      *  -s, --search        Display all matched scripts by the input name
      *      --info          Show information for give script name or file
      *      --dry-run       Mock running an script
+     *      --proxy         Enable proxy ENV setting
      *
      * @arguments
      *  name        The script name for execute
@@ -61,7 +62,6 @@ class RunCommand extends Command
      *
      * @example
      *   {binWithCmd} hello.sh one two three 'a b c'
-     *
      */
     protected function execute($input, $output)
     {
