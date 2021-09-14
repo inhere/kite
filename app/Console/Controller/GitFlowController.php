@@ -14,8 +14,10 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\GitUtil;
+use Toolkit\PFlag\FlagsParser;
 use function array_keys;
 use function implode;
+use function vdump;
 
 /**
  * Class GitFlowGroup
@@ -54,7 +56,19 @@ class GitFlowController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'nb' => 'newBranch',
+            'newBranch'    => ['new-br', 'newbr', 'nbr', 'nb'],
+        ];
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function options(): array
+    {
+        return [
+            '--dry-run' => 'bool;Dry-run the workflow, dont real execute',
+            '-y, --yes' => 'bool;Direct execution without confirmation',
+            // '-i, --interactive' => 'Run in an interactive environment[TODO]',
         ];
     }
 
@@ -81,16 +95,18 @@ class GitFlowController extends Controller
         // $action = $this->getAction();
     }
 
-    protected function newBranchConfigure(Input $input): void
+    protected function newBranchConfigure(): void
     {
-        $input->bindArgument('branch', 0);
+        $fs = $this->newActionFlags();
+        // $fs->addOptByRule('f,force', 'bool;Force execute delete command, ignore error');
+        $fs->addOptByRule('not-main', 'bool;Dont delete branch on the main remote');
+        $fs->addArg('branch', 'The new branch name. eg: fea_210602', 'string', true);
     }
 
     /**
      * checkout an new branch for development
      *
      * @options
-     *  --dry-run    Dry-run the workflow
      *  --not-main   Dont push new branch to the main remote
      *
      * @arguments
@@ -106,16 +122,21 @@ class GitFlowController extends Controller
      *  4. git push -u <info>{forkRemote}</info> NEW_BRANCH
      *  5. git push <info>{mainRemote}</info> NEW_BRANCH
      */
-    public function newBranchCommand(Input $input, Output $output): void
+    public function newBranchCommand(FlagsParser $fs, Output $output): void
     {
-        $newBranch = $input->getRequiredArg('branch');
-        $notToMain = $input->getBoolOpt('not-main');
+        // vdump($this->input->getArgs());
+        // $newBranch = $input->getRequiredArg('branch');
+        $notToMain = $fs->getOpt('not-main');
+        $newBranch = $fs->getArg('branch');
 
         // $cmd = CmdRunner::new('git checkout master')->do(true);
         // $cmd->afterOkRun("git pull {$this->mainRemote} master")
         //     ->afterOkRun("git checkout -b {$newBranch}")
         //     ->afterOkRun("git push -u {$this->forkRemote} {$newBranch}")
         //     ->afterOkRun("git push {$this->mainRemote} {$newBranch}");
+
+        $dryRun = true;
+        // $dryRun = $this->flags->getOpt('dry-run');
 
         $cmd = CmdRunner::new()
             ->add('git checkout master')
@@ -127,7 +148,7 @@ class GitFlowController extends Controller
                 return $notToMain === false;
             }, 'git push %s %s', $this->mainRemote, $newBranch)
             // ->addf('git push %s %s', $this->mainRemote, $newBranch)
-            ->setDryRun($input->getBoolOpt('dry-run'))
+            ->setDryRun($dryRun)
             ->run(true);
 
         if ($cmd->isSuccess()) {

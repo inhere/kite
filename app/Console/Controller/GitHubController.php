@@ -17,6 +17,7 @@ use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Helper\AppHelper;
 use PhpComp\Http\Client\Client;
+use Throwable;
 use function in_array;
 
 /**
@@ -71,10 +72,12 @@ class GitHubController extends Controller
 
     /**
      * @param string $action
+     * @param array  $args
      *
      * @return bool
+     * @throws Throwable
      */
-    protected function onNotFound(string $action): bool
+    protected function onNotFound(string $action, array $args): bool
     {
         if (!$this->app) {
             return false;
@@ -88,7 +91,8 @@ class GitHubController extends Controller
 
         if (in_array($command, $redirectGitGroup, true)) {
             $this->output->notice("will redirect to git group for run `git $command`");
-            Console::app()->dispatch("git:$command");
+            // Console::app()->dispatch("git:$command");
+            Console::app()->dispatch("git:$command", $args);
             return true;
         }
 

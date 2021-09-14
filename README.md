@@ -46,6 +46,8 @@ chmod a+x bin/kite
 
 注意替换为最新的版本号:
 
+> https://github.com/inhere/kite/releases/latest/download/kite.phar
+
 ```bash
 wget -c https://github.com/inhere/kite/releases/download/v1.0.5/kite-v1.0.5.phar
 mv kite-v1.0.5.phar /usr/local/bin/kite

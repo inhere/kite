@@ -14,7 +14,7 @@
     "php": ">7.2.0",
     "ext-json": "*",
     "ext-mbstring": "*",
-    "inhere/console": "3.x-dev",
+    "inhere/console": "dev-master",
     "inhere/sroute": "dev-master",
     "cebe/markdown": "^1.2",
     "psr/log": "^1.1",

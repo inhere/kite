@@ -20,6 +20,8 @@ use Inhere\Kite\Common\GitLocal\GitLab;
 use Inhere\Kite\Console\Attach\Gitlab\ProjectInit;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
+use Throwable;
+use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
 use function array_merge;
 use function date;
@@ -32,6 +34,7 @@ use function parse_url;
 use function sprintf;
 use function strpos;
 use function trim;
+use function vdump;
 
 /**
  * Class GitLabGroup
@@ -88,11 +91,11 @@ class GitLabController extends Controller
     /**
      * @return string[]
      */
-    protected function groupOptions(): array
+    protected function options(): array
     {
         return [
-            '--dry-run' => 'Dry-run the workflow, dont real execute',
-            '-y, --yes' => 'Direct execution without confirmation',
+            '--dry-run' => 'bool;Dry-run the workflow, dont real execute',
+            '-y, --yes' => 'bool;Direct execution without confirmation',
             // '-i, --interactive' => 'Run in an interactive environment[TODO]',
         ];
     }
@@ -134,8 +137,9 @@ class GitLabController extends Controller
      * @param string $action
      *
      * @return bool
+     * @throws Throwable
      */
-    protected function onNotFound(string $action): bool
+    protected function onNotFound(string $action, array $args): bool
     {
         if (!$this->app) {
             return false;
@@ -149,7 +153,9 @@ class GitLabController extends Controller
 
         if (in_array($command, $redirectGitGroup, true)) {
             $this->output->notice("will redirect to git group for run `git $command`");
-            Console::app()->dispatch("git:$command");
+            // Console::app()->dispatch("git:$command");
+            // Console::app()->dispatch("git:$command", $this->flags->getRawArgs());
+            Console::app()->dispatch("git:$command", $args);
             return true;
         }
 
@@ -373,15 +379,26 @@ class GitLabController extends Controller
      * @param Input  $input
      * @param Output $output
      */
-    public function newBranchCommand(Input $input, Output $output): void
+    public function newBranchCommand(FlagsParser $fs, Output $output): void
     {
-        $cmdName = $input->getCommand();
+        // $cmdName = $input->getCommand();
+        $cmdName = $this->getCommandName();
         /** @see GitFlowController::newBranchCommand() */
         $command = 'gitflow:newBranch';
 
         $output->notice("input $cmdName, will redirect to $command");
 
-        Console::app()->dispatch($command);
+        // Console::app()->dispatch($command, $input->getArgs());
+        // Console::app()->dispatch($command, $this->flags->getRawArgs());
+        Console::app()->dispatch($command, $fs->getRawArgs());
+    }
+
+    protected function deleteBranchConfigure(): void
+    {
+        $fs = $this->newActionFlags();
+
+        $fs->addOptByRule('f,force', 'bool;Force execute delete command, ignore error');
+        $fs->addOptByRule('not-main', 'bool;Dont delete branch on the main remote');
     }
 
     /**

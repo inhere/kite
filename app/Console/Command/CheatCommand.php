@@ -12,6 +12,7 @@ namespace Inhere\Kite\Console\Command;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Toolkit\PFlag\FlagType;
 
 /**
  * Class CheatCommand
@@ -32,14 +33,14 @@ class CheatCommand extends Command
      */
     protected function configure(): void
     {
-        $def = $this->createDefinition();
+        $fs = $this->getFlags();
 
-        $def->addArgument('lang', Input::ARG_REQUIRED, 'The language for search. eg: go, php, java, lua, python, js ...');
+        $fs->addArg('lang', 'The language for search. eg: go, php, java, lua, python, js ...', FlagType::STRING, true);
 
-        $def->addOption('Q', 'Q', Input::OPT_BOOLEAN, 'query');
-        $def->addOption('t', 'T', Input::OPT_BOOLEAN, 'query');
+        $fs->addOpt('Q', 'q', 'query');
+        $fs->addOpt('T', 't', 'query');
 
-        $def->setExample([
+        $fs->setExampleHelp([
             '{fullCmd} go reverse list'
         ]);
     }

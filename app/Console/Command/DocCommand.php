@@ -18,6 +18,7 @@ use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Lib\ManDoc\DocTopic;
 use Inhere\Kite\Lib\ManDoc\Document;
 use Toolkit\Cli\Color;
+use Toolkit\PFlag\FlagType;
 use Toolkit\Sys\Proc\ProcWrapper;
 use function array_pop;
 use function dirname;
@@ -57,7 +58,7 @@ class DocCommand extends Command
      */
     protected function configure(): void
     {
-        $def = $this->createDefinition();
+        $fs = $this->getFlags();
 
         $lang = Document::DEF_LANG;
         $conf = $this->app->getArrayParam('manDocs');
@@ -65,15 +66,15 @@ class DocCommand extends Command
             $lang = $conf['lang'];
         }
 
-        $def->addArgument('top', Input::ARG_OPTIONAL, 'The top document topic name');
-        $def->addArgument('subs', Input::ARG_IS_ARRAY, 'The more sub document topic name(s)');
+        $fs->addArg('top', 'The top document topic name');
+        $fs->addArg('subs', 'The more sub document topic name(s)', FlagType::ARRAY);
 
-        $def->addOption('lang', '', Input::OPT_OPTIONAL, 'use the language for find topic document', $lang);
-        $def->addOption('create', '', Input::OPT_BOOLEAN, 'create an new topic document');
-        $def->addOption('cat', '', Input::OPT_BOOLEAN, 'see the document file contents');
-        $def->addOption('edit', 'e', Input::OPT_BOOLEAN, 'edit an topic document');
-        $def->addOption('editor', '', Input::OPT_OPTIONAL, 'editor for edit the topic document', 'vim');
-        $def->addOption('list-topic', 'l', Input::OPT_BOOLEAN, 'list all top/sub topics');
+        $fs->addOpt('lang', '', 'use the language for find topic document', FlagType::STRING, false, $lang);
+        $fs->addOpt('create', '', 'create an new topic document', FlagType::BOOL);
+        $fs->addOpt('cat', '', 'see the document file contents', FlagType::BOOL);
+        $fs->addOpt('edit', 'e', 'edit an topic document', FlagType::BOOL);
+        $fs->addOpt('editor', '', 'editor for edit the topic document', FlagType::STRING, false, 'vim');
+        $fs->addOpt('list-topic', 'l', 'list all top/sub topics', FlagType::BOOL);
 
         $example = <<<TXT
 {binWithCmd} -l   List all top topics
@@ -88,7 +89,7 @@ TXT;
             $example = str_replace('binWithCmd', 'binName', $example);
         }
 
-        $def->setExample($example);
+        $fs->setExampleHelp($example);
     }
 
     /**
@@ -257,10 +258,10 @@ TXT;
         }
 
         // is topic dir.
-        $topics = $topic->getChildsInfo();
+        $topics  = $topic->getChildsInfo();
         $default = $topic->getDefault();
 
-        $info   = [
+        $info = [
             'metadata' => [
                 'name' => $topic->getName(),
                 'node' => '#' . $nameString,

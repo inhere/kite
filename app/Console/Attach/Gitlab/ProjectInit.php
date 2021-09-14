@@ -15,6 +15,11 @@ class ProjectInit extends Command
 {
     protected static $name = 'pinit';
 
+    protected function configure(): void
+    {
+        // $this->flags->addOptByRule($name, $rule);
+    }
+
     /**
      * Do execute command
      *

@@ -37,6 +37,7 @@ use function strpos;
 use function strtolower;
 use function substr;
 use function trim;
+use function vdump;
 
 /**
  * Class GitController
@@ -96,10 +97,10 @@ class GitController extends Controller
     /**
      * @return string[]
      */
-    protected function groupOptions(): array
+    protected function options(): array
     {
         return [
-            '--dry-run' => 'Dry-run the workflow, dont real execute',
+            '--dry-run' => 'bool;Dry-run the workflow, dont real execute',
             // '-y, --yes' => 'Direct execution without confirmation',
             // '-i, --interactive' => 'Run in an interactive environment[TODO]',
         ];
@@ -129,10 +130,11 @@ class GitController extends Controller
 
     /**
      * @param string $action
+     * @param array  $args
      *
      * @return bool
      */
-    protected function onNotFound(string $action): bool
+    protected function onNotFound(string $action, array $args): bool
     {
         $this->output->info("input command '$action' is not found, will exec git command: `git $action`");
 
