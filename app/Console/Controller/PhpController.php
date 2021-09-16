@@ -12,11 +12,11 @@ namespace Inhere\Kite\Console\Controller;
 use Exception;
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
-use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\PhpDevServe;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
+use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Json;
 use Toolkit\Sys\Sys;
 use function array_filter;
@@ -48,20 +48,20 @@ class PhpController extends Controller
      * run php-cs-fixer for an dir, and auto add git commit message
      *
      * @options
-     *  --not-commit  Dont run `git add` and `git commit` commands
+     *  --not-commit    bool;Dont run `git add` and `git commit` commands
      *
      * @arguments
-     *  directory  The directory for run php-cs-fixer
+     *  directory  string;The directory for run php-cs-fixer;required
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @example
      *  {binWithCmd} src/rpc-client
      */
-    public function csFixCommand(Input $input, Output $output): void
+    public function csFixCommand(FlagsParser $fs, Output $output): void
     {
-        $dir = $input->getRequiredArg(0);
+        $dir = $fs->getArg('directory');
 
         if (!is_dir($dir)) {
             $output->error('please input an exists directory. current: ' . $dir);
@@ -110,17 +110,17 @@ class PhpController extends Controller
      *  {binWithCmd} [-S :PORT] [entry file]
      *
      * @options
-     *  -s, -S, --addr STRING    The http server address. e.g 127.0.0.1:8552
-     *  -t, --doc-root STRING    The document root dir for server(<comment>public</comment>)
-     *  -b, --php-bin STRING     The php binary file(<comment>php</comment>)
-     *      --hce-file STRING    The IDEA http client env file
-     *      --hce-env STRING     The current http client env name
-     *      --show-info          Only show serve info, not start listen
+     *  -s, -S, --addr    The http server address. e.g 127.0.0.1:8552
+     *  -t, --doc-root    The document root dir for server(<comment>public</comment>)
+     *  -b, --php-bin     The php binary file(<comment>php</comment>)
+     *      --hce-file    The IDEA http client env file
+     *      --hce-env     The current http client env name
+     *      --show-info   bool;Only show serve info, not start listen
      *
      * @arguments
-     *  file=STRING         The entry file for server. e.g web/index.php
+     *  file         The entry file for server. e.g web/index.php
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @throws Exception
@@ -129,7 +129,7 @@ class PhpController extends Controller
      *  {binWithCmd} --hce-file test/clienttest/http-client.env.json
      *  {binWithCmd} --hce-file test/clienttest/http-client.env.json --hce-env development
      */
-    public function serveCommand(Input $input, Output $output): void
+    public function serveCommand(FlagsParser $fs, Output $output): void
     {
         $conf = $this->app->getArrayParam('php:serve');
         if ($conf) {
@@ -145,15 +145,13 @@ class PhpController extends Controller
             $conf = self::DEF_SERVE_CONF;
         }
 
-        $input->bindArgument('file', 0);
+        $hceFile = $fs->getOpt('hce-file', $conf['hce-file']);
+        $hceEnv  = $fs->getOpt('hce-env', $conf['hce-env']);
+        $phpBin  = $fs->getOpt('php-bin', $conf['php-bin']);
+        $docRoot = $fs->getOpt('doc-root', $conf['root']);
 
-        $hceFile = $input->getStringOpt('hce-file', $conf['hce-file']);
-        $hceEnv  = $input->getStringOpt('hce-env', $conf['hce-env']);
-        $phpBin  = $input->getStringOpt('php-bin', $conf['php-bin']);
-        $docRoot = $input->getSameStringOpt('t,doc-root', $conf['root']);
-
-        $entryFile = $input->getStringArg('file', $conf['entry']);
-        $serveAddr = $input->getSameStringOpt('s,S,addr', $conf['addr']);
+        $entryFile = $fs->getArg('file', $conf['entry']);
+        $serveAddr = $fs->getOpt('addr', $conf['addr']);
 
         $pds = PhpDevServe::new($serveAddr, $docRoot, $entryFile);
         $pds->setPhpBin($phpBin);
@@ -170,7 +168,7 @@ class PhpController extends Controller
             }
         }
 
-        if ($input->getBoolOpt('show-info')) {
+        if ($fs->getOpt('show-info')) {
             $output->aList($pds->getInfo(), 'Listen Information', ['ucFirst' => false]);
             return;
         }
@@ -181,10 +179,10 @@ class PhpController extends Controller
     /**
      * Search php package from packagist.org
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function pkgSearch(Input $input, Output $output): void
+    public function pkgSearch(FlagsParser $fs, Output $output): void
     {
 
     }
@@ -193,53 +191,47 @@ class PhpController extends Controller
      * Create new php package from a github template repo
      *
      * @arguments
-     *  name        The new package name.
+     *  name        string;The new package name;required
      *
      * @options
-     *  --tpl-repo  The remote git repo path or url.
+     *  --tpl-repo      The template repo remote github repo path or url.
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function pkgNew(Input $input, Output $output): void
+    public function pkgNew(FlagsParser $fs, Output $output): void
     {
-        $pkgName  = $input->getRequiredArg(0);
+        $pkgName  = $fs->getArg('name');
         $repoPath = 'inherelab/php-pkg-template';
 
         $run = CmdRunner::new();
         $run->addf('git clone %s/%s %s', GitHub::GITHUB_HOST, $repoPath, $pkgName);
-    }
 
-    /**
-     * @param Input $input
-     */
-    protected function ghPkgConfigure(Input $input): void
-    {
-        $input->bindArguments(['pkgName' => 0]);
+        $output->success('Completed');
     }
 
     /**
      * Replace the local package use github repository codes
      *
      * @arguments
-     *  pkgName     The package name. eg: inhere/console
+     *  pkgName     string;The package name. eg: inhere/console;required
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @example
      *  {binWithCmd} inhere/console
      *  {binWithCmd} vendor/inhere/console
      */
-    public function ghPkgCommand(Input $input, Output $output): void
+    public function ghPkgCommand(FlagsParser $fs, Output $output): void
     {
-        $pkgPath = $pkgName = $input->getRequiredArg('pkgName');
+        $pkgPath = $pkgName = $fs->getArg('pkgName');
 
         // an dirname
         if (!is_dir($pkgPath)) {
             $pkgPath = 'vendor/' . $pkgName;
             if (!is_dir($pkgPath)) {
-                throw new PromptException("package path '{$pkgPath}' is not exists");
+                throw new PromptException("package path '$pkgPath' is not exists");
             }
         }
 

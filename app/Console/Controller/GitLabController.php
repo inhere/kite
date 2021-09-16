@@ -25,14 +25,17 @@ use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
 use function array_merge;
 use function date;
+use function edump;
 use function explode;
 use function http_build_query;
+use function implode;
 use function in_array;
 use function is_string;
 use function parse_str;
 use function parse_url;
 use function sprintf;
 use function strpos;
+use function strtoupper;
 use function trim;
 use function vdump;
 
@@ -135,6 +138,7 @@ class GitLabController extends Controller
 
     /**
      * @param string $action
+     * @param array $args
      *
      * @return bool
      * @throws Throwable
@@ -395,41 +399,35 @@ class GitLabController extends Controller
         Console::app()->dispatch($command, $fs->getRawArgs());
     }
 
-    protected function deleteBranchConfigure(): void
-    {
-        $fs = $this->newActionFlags();
-
-        $fs->addOptByRule('f,force', 'bool;Force execute delete command, ignore error');
-        $fs->addOptByRule('not-main', 'bool;Dont delete branch on the main remote');
-    }
-
     /**
      * delete branches from local, origin, main remote
      *
      * @options
-     *  -f, --force      Force execute delete command, ignore error
-     *      --not-main   Dont delete branch on the main remote
+     *  -f, --force      bool;Force execute delete command, ignore error
+     *      --not-main   bool;Dont delete branch on the main remote
      *
      * @arguments
-     *  branches...   The want deleted branch name(s). eg: fea_6_12
+     *  branches...   array;The want deleted branch name(s). eg: fea_6_12;required
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function deleteBranchCommand(Input $input, Output $output): void
+    public function deleteBranchCommand(FlagsParser $fs, Output $output): void
     {
-        $names = $input->getArgs();
+        // $names = $input->getArgs();
+        $names = $fs->getArg('branches');
         if (!$names) {
             throw new PromptException('please input an branch name');
         }
 
         $gitlab  = $this->getGitlab();
-        $force   = $input->getSameBoolOpt(['f', 'force']);
-        $notMain = $input->getBoolOpt('not-main');
-        $dryRun  = $input->getBoolOpt('dry-run');
+        $force   = $fs->getOpt('force');
+        $notMain = $fs->getOpt('not-main');
+        $dryRun  = $this->flags->getOpt('dry-run');
 
         $deletedNum = 0;
         $mainRemote = $gitlab->getMainRemote();
+        $output->colored('Will deleted: ' . implode(',', $names));
         foreach ($names as $name) {
             if (strpos($name, ',') > 0) {
                 $nameList = Str::explode($name, ',');
@@ -601,16 +599,6 @@ class GitLabController extends Controller
     }
 
     /**
-     * Configure for the `pullRequestCommand`
-     *
-     * @param Input $input
-     */
-    protected function pullRequestConfigure(Input $input): void
-    {
-        $input->bindArgument('project', 0);
-    }
-
-    /**
      * generate an PR link for given project information
      *
      * @options
@@ -624,7 +612,7 @@ class GitLabController extends Controller
      * @argument
      *  project   The project key in 'gitlab' config. eg: group-name, name
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @example
@@ -633,12 +621,12 @@ class GitLabController extends Controller
      *  {binWithCmd} -t qa                 Will generate PR link for main 'HEAD_BRANCH' to main 'qa'
      *  {binWithCmd} -t qa  --direct       Will generate PR link for fork 'HEAD_BRANCH' to main 'qa'
      */
-    public function pullRequestCommand(Input $input, Output $output): void
+    public function pullRequestCommand(FlagsParser $fs, Output $output): void
     {
         // http://gitlab.my.com/group/repo/merge_requests/new?utf8=%E2%9C%93&merge_request%5Bsource_project_id%5D=319&merge_request%5Bsource_branch%5D=fea_4_16&merge_request%5Btarget_project_id%5D=319&merge_request%5Btarget_branch%5D=qa
         $gitlab = $this->getGitlab();
         if (!$pjName = $gitlab->findProjectName()) {
-            $pjName = $input->getRequiredArg('project');
+            $pjName = $fs->getArg('project');
         }
 
         $gitlab->loadProjectInfo($pjName);
@@ -646,28 +634,27 @@ class GitLabController extends Controller
         $p = $gitlab->getCurProject();
 
         // $brPrefix = $gitlab->getValue('branchPrefix', '');
-        $fixedBrs = $gitlab->getValue('fixedBranch', []);
+        // $fixedBrs = $gitlab->getValue('fixedBranch', []);
         // 这里面的分支禁止作为源分支(source)来发起PR
         $denyBrs = $gitlab->getValue('denyBranches', []);
 
         $srcPjId = $p->getForkPid();
         $tgtPjId = $p->getMainPid();
 
-        $open = $input->getSameOpt(['o', 'open']);
-
         $output->info('auto fetch current branch name');
         $curBranch = GitUtil::getCurrentBranchName();
-        $srcBranch = $input->getSameStringOpt(['s', 'source']);
-        $tgtBranch = $input->getSameStringOpt('t,target');
+        $srcBranch = $fs->getOpt('source');
+        $tgtBranch = $fs->getOpt('target');
 
-        if ($fullSBranch = $input->getStringOpt('full-source')) {
+        if ($fullSBranch = $fs->getOpt('full-source')) {
             $srcBranch = $fullSBranch;
-            // } elseif ($srcBranch) {
-            //     if (!in_array($srcBranch, $fixedBrs, true)) {
-            //         $srcBranch = $brPrefix . $srcBranch;
-            //     }
         } elseif (!$srcBranch) {
             $srcBranch = $curBranch;
+        }
+
+        $open = $fs->getOpt('open');
+        if ($open && strtoupper($open) === 'HEAD') {
+            $open = $curBranch;
         }
 
         // if ($tgtBranch) {
@@ -699,7 +686,7 @@ class GitLabController extends Controller
         $group = $p->group;
 
         // Is sync to remote
-        $isDirect = $input->getSameBoolOpt(['d', 'direct']);
+        $isDirect = $fs->getOpt('direct');
         if ($isDirect || $srcBranch === $tgtBranch) {
             $group = $p->getForkGroup();
         } else {

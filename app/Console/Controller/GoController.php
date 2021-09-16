@@ -41,18 +41,17 @@ class GoController extends Controller
      * run go fmt for current directory
      *
      * @options
-     *  --not-commit  Dont run `git add` and `git commit` commands
+     *  --not-commit    bool;Dont run `git add` and `git commit` commands
      *
      * @arguments
      *  directory  The directory for run go fmt
      *
-     * @param Input  $input
      * @param Output $output
      *
      * @example
      *  {binWithCmd} src/rpc-client
      */
-    public function formatCommand(Input $input, Output $output): void
+    public function formatCommand(Output $output): void
     {
         CmdRunner::new('go fmt ./...')->do(true);
 
@@ -62,10 +61,9 @@ class GoController extends Controller
     /**
      * Search php package from packagist.org
      *
-     * @param Input  $input
      * @param Output $output
      */
-    public function pkgSearch(Input $input, Output $output): void
+    public function pkgSearch(Output $output): void
     {
         $output->success('TODO');
     }

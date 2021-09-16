@@ -332,16 +332,16 @@ class GitController extends Controller
      * @arguments
      *  remote    The remote name for fetch. If not input, will use `origin`
      *
-     * @param Input $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @example
      *  {binWithCmd}
      *  {binWithCmd} other-remote
      */
-    public function branchUpdateCommand(Input $input, Output $output): void
+    public function branchUpdateCommand(FlagsParser $fs, Output $output): void
     {
-        $remote = $input->getStringArg(0, 'origin');
+        $remote = $fs->getArg('remote', 'origin');
 
         $gbm = new GitBranchManage();
         $gbm->update([$remote]);
@@ -368,18 +368,16 @@ class GitController extends Controller
      * @arguments
      *  remote    The remote name for open. If not input, will use `origin`
      *
-     * @param Input $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @example
      *  {binWithCmd}
      *  {binWithCmd} other-remote
      */
-    public function openCommand(Input $input, Output $output): void
+    public function openCommand(FlagsParser $fs, Output $output): void
     {
-        $input->bindArgument('remote', 0);
-
-        $remote = $input->getStringArg('remote', 'origin');
+        $remote = $fs->getArg('remote', 'origin');
 
         $repo = Repo::new();
         $info = $repo->getRemoteInfo($remote);
@@ -399,7 +397,7 @@ class GitController extends Controller
      *  repo    The remote git repo URL or repository name
      *  name    The repository name at local, default is same `repo`
      *
-     * @param Input $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @example
@@ -407,7 +405,7 @@ class GitController extends Controller
      *  {binWithCmd} php-toolkit/cli-utils my-repo --gh
      *  {binWithCmd} https://github.com/php-toolkit/cli-utils
      */
-    public function cloneCommand(Input $input, Output $output): void
+    public function cloneCommand(FlagsParser $fs, Output $output): void
     {
         $output->success('TODO');
     }
@@ -417,9 +415,10 @@ class GitController extends Controller
      *
      * @options
      * -d, --dir      The project directory path. default is current directory.
-     * --next-tag     Display the project next tag version. eg: v2.0.2 => v2.0.3
-     * --only-tag     Only output tag information
+     * --next-tag     bool;Display the project next tag version. eg: v2.0.2 => v2.0.3
+     * --only-tag     bool;Only output tag information
      *
+     * @param FlagsParser $fs
      * @param Input $input
      * @param Output $output
      *
@@ -430,13 +429,13 @@ class GitController extends Controller
      *   {fullCmd} -d ../view --next-tag --only-tag
      *
      */
-    public function tagFindCommand(Input $input, Output $output): void
+    public function tagFindCommand(FlagsParser $fs, Input $input, Output $output): void
     {
-        $dir = $input->getOpt('dir', $input->getOpt('d'));
+        $dir = $fs->getOpt('dir');
         $dir = $dir ?: $input->getPwd();
 
-        $onlyTag = $input->getBoolOpt('only-tag');
-        $nextTag = $input->getBoolOpt('next-tag');
+        $onlyTag = $fs->getOpt('only-tag');
+        $nextTag = $fs->getOpt('next-tag');
 
         $tagName = GitUtil::findTag($dir, !$onlyTag);
         if (!$tagName) {
@@ -465,14 +464,14 @@ class GitController extends Controller
      * @arguments
      *  keywords    Filter by input keywords
      *
-     * @param Input $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function tagListCommand(Input $input, Output $output): void
+    public function tagListCommand(FlagsParser $fs, Output $output): void
     {
         // git tag --sort=-creatordate 倒序排列
         $cmd = 'git tag -l -n2';
-        $kw  = $input->getStringArg(0);
+        $kw  = $fs->getArg(0);
         if ($kw) {
             $cmd .= " | grep $kw";
         }
@@ -486,14 +485,14 @@ class GitController extends Controller
      * display git tag information by `git show TAG`
      *
      * @arguments
-     *  tag    Tag name for show info
+     *  tag     string;Tag name for show info;required
      *
-     * @param Input $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function tagInfoCommand(Input $input, Output $output): void
+    public function tagInfoCommand(FlagsParser $fs, Output $output): void
     {
-        $tag = $input->getRequiredArg(0, 'tag');
+        $tag = $fs->getArg('tag');
 
         $commands = [
             "git show $tag",
@@ -509,17 +508,18 @@ class GitController extends Controller
      * @options
      *  -v, --version       The new tag version. e.g: v2.0.4
      *  -m, --message       The message for add new tag.
-     *  -n, --next          Auto calc next version for add new tag.
+     *  -n, --next          bool;Auto calc next version for add new tag.
      *
+     * @param FlagsParser $fs
      * @param Input $input
      * @param Output $output
      */
-    public function tagNewCommand(Input $input, Output $output): void
+    public function tagNewCommand(FlagsParser $fs, Input $input, Output $output): void
     {
         $lTag = '';
         $dir  = $input->getPwd();
 
-        if ($input->getSameBoolOpt('n,next')) {
+        if ($fs->getOpt('n,next')) {
             $lTag = GitUtil::findTag($dir, false);
             if (!$lTag) {
                 $output->error('No any tags found of the project');
@@ -528,7 +528,7 @@ class GitController extends Controller
 
             $tag = GitUtil::buildNextTag($lTag);
         } else {
-            $tag = $input->getSameStringOpt(['v', 'version']);
+            $tag = $fs->getOpt('version');
             if (!$tag) {
                 $output->error('please input new tag version, like: -v v2.0.4');
                 return;
@@ -549,7 +549,7 @@ class GitController extends Controller
             $info['Old Tag'] = $lTag;
         }
 
-        $msg = $input->getSameArg(['m', 'message']);
+        $msg = $fs->getArg('message');
         $msg = $msg ?: "Release $tag";
         // add message
         $info['Message'] = $msg;
@@ -561,7 +561,7 @@ class GitController extends Controller
             return;
         }
 
-        $dryRun = $input->getBoolOpt('dry-run');
+        $dryRun = $this->flags->getOpt('dry-run');
 
         // git tag -a $1 -m "Release $1"
         // git push origin --tags
