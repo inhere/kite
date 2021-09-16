@@ -33,7 +33,7 @@ class CronTabController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'execTime' => ['exec-time', 'execat', 'runat']
+            'execTime' => ['exec-time', 'execat', 'runat', 'next']
         ];
     }
 

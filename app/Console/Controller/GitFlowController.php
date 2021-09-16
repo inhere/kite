@@ -95,25 +95,18 @@ class GitFlowController extends Controller
         // $action = $this->getAction();
     }
 
-    protected function newBranchConfigure(): void
-    {
-        $fs = $this->newActionFlags();
-        // $fs->addOptByRule('f,force', 'bool;Force execute delete command, ignore error');
-        $fs->addOptByRule('not-main', 'bool;Dont delete branch on the main remote');
-        $fs->addArg('branch', 'The new branch name. eg: fea_210602', 'string', true);
-    }
-
     /**
      * checkout an new branch for development
      *
      * @options
-     *  --not-main   Dont push new branch to the main remote
+     *  --not-main   bool;Dont push new branch to the main remote
      *
      * @arguments
-     *  branch      The new branch name. eg: fea_6_12
+     *  branch      string;The new branch name. eg: fea_6_12;required
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
+     *
      * @example
      * Workflow:
      *  1. git checkout to master
@@ -135,8 +128,8 @@ class GitFlowController extends Controller
         //     ->afterOkRun("git push -u {$this->forkRemote} {$newBranch}")
         //     ->afterOkRun("git push {$this->mainRemote} {$newBranch}");
 
-        $dryRun = true;
-        // $dryRun = $this->flags->getOpt('dry-run');
+        // $dryRun = true;
+        $dryRun = $this->flags->getOpt('dry-run');
 
         $cmd = CmdRunner::new()
             ->add('git checkout master')

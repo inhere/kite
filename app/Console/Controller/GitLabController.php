@@ -371,13 +371,15 @@ class GitLabController extends Controller
      * checkout an new branch for development
      *
      * @options
-     *  --not-main   Dont push new branch to the main remote
+     *  --not-main   bool;Dont push new branch to the main remote
      *
      * @arguments
      *  branch      The new branch name. eg: fea_6_12
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
+     *
+     * @throws Throwable
      */
     public function newBranchCommand(FlagsParser $fs, Output $output): void
     {

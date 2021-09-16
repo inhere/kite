@@ -25,6 +25,8 @@ use PhpGit\Changelog\GitChangeLog;
 use PhpGit\Git;
 use PhpGit\Info\TagsInfo;
 use PhpGit\Repo;
+use Throwable;
+use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Obj\ConfigObject;
 use Toolkit\Stdlib\Str;
 use function array_keys;
@@ -37,7 +39,6 @@ use function strpos;
 use function strtolower;
 use function substr;
 use function trim;
-use function vdump;
 
 /**
  * Class GitController
@@ -130,7 +131,7 @@ class GitController extends Controller
 
     /**
      * @param string $action
-     * @param array  $args
+     * @param array $args
      *
      * @return bool
      */
@@ -149,7 +150,7 @@ class GitController extends Controller
      * @options
      *  --dir   The want updated git repo dir. default is workdir
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      */
     public function updateCommand(Input $input, Output $output): void
@@ -182,7 +183,7 @@ class GitController extends Controller
     /**
      * push codes to origin by `git push`
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      */
     public function pushCommand(Input $input, Output $output): void
@@ -210,7 +211,7 @@ class GitController extends Controller
     }
 
     /**
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      */
     public function statusCommand(Input $input, Output $output): void
@@ -231,7 +232,7 @@ class GitController extends Controller
      * @options
      * --show-commands  Show exec git commands
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      */
     public function infoCommand(Input $input, Output $output): void
@@ -264,7 +265,7 @@ class GitController extends Controller
      *
      * @arguments
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      */
     public function branchCommand(Input $input, Output $output): void
@@ -331,7 +332,7 @@ class GitController extends Controller
      * @arguments
      *  remote    The remote name for fetch. If not input, will use `origin`
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      *
      * @example
@@ -367,7 +368,7 @@ class GitController extends Controller
      * @arguments
      *  remote    The remote name for open. If not input, will use `origin`
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      *
      * @example
@@ -398,7 +399,7 @@ class GitController extends Controller
      *  repo    The remote git repo URL or repository name
      *  name    The repository name at local, default is same `repo`
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      *
      * @example
@@ -419,7 +420,7 @@ class GitController extends Controller
      * --next-tag     Display the project next tag version. eg: v2.0.2 => v2.0.3
      * --only-tag     Only output tag information
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      *
      * @example
@@ -464,7 +465,7 @@ class GitController extends Controller
      * @arguments
      *  keywords    Filter by input keywords
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      */
     public function tagListCommand(Input $input, Output $output): void
@@ -487,7 +488,7 @@ class GitController extends Controller
      * @arguments
      *  tag    Tag name for show info
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      */
     public function tagInfoCommand(Input $input, Output $output): void
@@ -510,7 +511,7 @@ class GitController extends Controller
      *  -m, --message       The message for add new tag.
      *  -n, --next          Auto calc next version for add new tag.
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      */
     public function tagNewCommand(Input $input, Output $output): void
@@ -582,7 +583,7 @@ class GitController extends Controller
      *  -v, --tag           The tag version. eg: v2.0.3
      *      --no-remote     Only delete local tag
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      */
     public function tagDeleteCommand(Input $input, Output $output): void
@@ -610,29 +611,39 @@ class GitController extends Controller
      * run git add/commit at once command
      *
      * @options
-     *  -m, --message The commit message
+     *  -m, --message    string;The commit message;required
      *
      * @arguments
-     *  files...   Only add special files
+     *  files   Only add special files
      *
-     * @param Input  $input
-     * @param Output $output
+     * @throws Throwable
      */
-    public function acCommand(Input $input, Output $output): void
+    public function acCommand(): void
     {
-        $input->setLOpt('not-push', true);
+        // $input->setLOpt('not-push', true);
+        /*
+         args:
+         array(3) {
+          [0]=> string(2) "ac"
+          [1]=> string(2) "-m"
+          [2]=> string(8) "some message"
+        }
+         */
+        $args = $this->flags->getRawArgs();
 
-        $this->acpCommand($input, $output);
+        $args[0] = 'acp';
+        $args[]  = '--not-push';
+        $this->doRun($args);
     }
 
     /**
      * run git add/commit/push at once command
      *
      * @options
-     *  -m, --message   The commit message
-     *      --not-push   Dont execute git push
-     *      --auto-sign  Auto add sign string after message.
-     *      --sign-text  Dont real execute command
+     *  -m, --message       string;The commit message;required
+     *      --not-push      bool;Dont execute git push
+     *      --auto-sign     bool;Auto add sign string after message.
+     *      --sign-text     Custom setting the sign text.
      *
      * @arguments
      *  files...   Only add special files
@@ -650,12 +661,12 @@ class GitController extends Controller
      *  style     "Style"
      *  test      "Testing"
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function acpCommand(Input $input, Output $output): void
+    public function acpCommand(FlagsParser $fs, Output $output): void
     {
-        $message = $input->getSameStringOpt(['m', 'message']);
+        $message = $fs->getOpt('message');
         if (!$message) {
             $output->liteError('please input an message for git commit');
             return;
@@ -667,15 +678,15 @@ class GitController extends Controller
             return;
         }
 
-        $output->info('Work Dir: ' . $input->getPwd());
+        $output->info('Work Dir: ' . $this->input->getPwd());
 
         $added = '.';
-        if ($args = $input->getArguments()) {
+        if ($args = $fs->getArg('files')) {
             $added = implode(' ', $args);
         }
 
-        $signText = $input->getStringOpt('sign-text', $this->settings->getString('sign-text'));
-        $autoSign = $input->getBoolOpt('auto-sign', $this->settings->getBool('auto-sign'));
+        $signText = $fs->getOpt('sign-text', $this->settings->getString('sign-text'));
+        $autoSign = $fs->getOpt('auto-sign', $this->settings->getBool('auto-sign'));
 
         // will auto fetch user info by git
         if ($autoSign && !$signText) {
@@ -693,13 +704,13 @@ class GitController extends Controller
         }
 
         $run = CmdRunner::new("git status $added");
-        $run->setDryRun($input->getBoolOpt('dry-run'));
+        $run->setDryRun($this->flags->getOpt('dry-run'));
 
         $run->do(true);
         $run->afterOkDo("git add $added");
         $run->afterOkDo(sprintf('git commit -m "%s"', $message));
 
-        if (false === $input->getBoolOpt('not-push')) {
+        if (false === $fs->getOpt('not-push')) {
             $run->afterOkDo('git push');
         }
 
@@ -729,22 +740,22 @@ class GitController extends Controller
      *  --format            The git log option `--pretty` value.
      *                      can be one of oneline, short, medium, full, fuller, reference, email, raw, format:<string> and tformat:<string>.
      *  --max-commit        Max display how many commits
-     *  --no-color          Dont use color render git output
-     *  --no-merges         No contains merge request logs
+     *  --no-color          bool;Dont use color render git output
+     *  --no-merges         bool;No contains merge request logs
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function logCommand(Input $input, Output $output): void
+    public function logCommand(FlagsParser $fs, Output $output): void
     {
         $b = Git::new()->newCmd('log');
 
-        $noColor = $input->getBoolOpt('no-color');
-        $exclude = $input->getStringOpt('exclude');
+        $noColor = $fs->getOpt('no-color');
+        $exclude = $fs->getOpt('exclude');
 
-        $noMerges  = $input->getBoolOpt('no-merges');
-        $abbrevID  = $input->getBoolOpt('abbrev-commit');
-        $maxCommit = $input->getIntOpt('max-commit', $input->getIntArg('maxCommit', 15));
+        $noMerges  = $fs->getOpt('no-merges');
+        $abbrevID  = $fs->getOpt('abbrev-commit');
+        $maxCommit = $fs->getOpt('max-commit', $fs->getArg('maxCommit', 15));
 
         // git log --color --graph --pretty=format:'%Cred%h%Creset:%C(ul yellow)%d%Creset %s (%Cgreen%cr%Creset, %C(bold blue)%an%Creset)' --abbrev-commit -10
         $b->add('--graph');
@@ -760,27 +771,19 @@ class GitController extends Controller
         $output->success('Complete');
     }
 
-    protected function changelogConfigure(Input $input): void
-    {
-        $input->bindArguments([
-            'oldVersion' => 0,
-            'newVersion' => 1,
-        ]);
-    }
-
     /**
      * collect git change log information by `git log`
      *
      * @arguments
-     *  oldVersion   The old version. eg: v1.0.2
+     *  oldVersion   string;The old version. eg: v1.0.2
      *                - keywords `last/latest` will auto use latest tag.
-     *                - keywords `prev/previous` will auto use previous tag.
-     *  newVersion   The new version. eg: v1.2.3
-     *                - keywords `head` will use `Head` commit.
+     *                - keywords `prev/previous` will auto use previous tag.;required
+     *  newVersion   string;The new version. eg: v1.2.3
+     *                - keywords `head` will use `Head` commit.;required
      *
      * @options
      *  --exclude           Exclude contains given sub-string. multi by comma split.
-     *  --fetch-tags        Update repo tags list by `git fetch --tags`
+     *  --fetch-tags        bool;Update repo tags list by `git fetch --tags`
      *  --file              Export changelog message to file
      *  --filters           Apply built in log filters. multi by `|` split
      *                      allow:
@@ -794,11 +797,11 @@ class GitController extends Controller
      *                      allow: markdown(<cyan>default</cyan>), simple, gh-release
      *  --repo-url          The git repo URL address. eg: https://github.com/inhere/kite
      *                      default will auto use current git origin remote url
-     *  --no-merges         No contains merge request logs
-     *  --unshallow         Convert to a complete warehouse, useful on GitHub Action.
-     *  --with-author       Display commit author name
+     *  --no-merges         bool;No contains merge request logs
+     *  --unshallow         bool;Convert to a complete warehouse, useful on GitHub Action.
+     *  --with-author       bool;Display commit author name
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      *
      * @example
@@ -806,7 +809,7 @@ class GitController extends Controller
      *  {binWithCmd} last head --style gh-release --no-merges
      *  {binWithCmd} v2.0.9 v2.0.10 --no-merges --style gh-release --exclude "cs-fixer,format codes"
      */
-    public function changelogCommand(Input $input, Output $output): void
+    public function changelogCommand(FlagsParser $fs, Output $output): void
     {
         $builder = Git::new()->newCmd('log');
         // see https://devhints.io/git-log-format
@@ -816,11 +819,11 @@ class GitController extends Controller
         // --exclude=<glob-pattern>
 
         $repo = Repo::new();
-        if ($input->getBoolOpt('fetch-tags')) {
+        if ($fs->getOpt('fetch-tags')) {
             $fetch = $repo->newCmd('fetch', '--tags');
             // fix: fetch tags history error on github action.
             // see https://stackoverflow.com/questions/4916492/git-describe-fails-with-fatal-no-names-found-cannot-describe-anything
-            $fetch->addIf('--unshallow', $input->getBoolOpt('unshallow'));
+            $fetch->addIf('--unshallow', $fs->getOpt('unshallow'));
             $fetch->addArgs('--force');
             $fetch->runAndPrint();
         }
@@ -828,14 +831,14 @@ class GitController extends Controller
         // git log v1.0.7...v1.0.8 --pretty=format:'<project>/commit/%H %s' --reverse
         // git log v1.0.7...v1.0.7 --pretty=format:'<li> <a href="https://github.com/inhere/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse
         // git log v1.0.7...HEAD --pretty=format:'<li> <a href="https://github.com/inhere/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse
-        $oldVersion = $input->getRequiredArg('oldVersion');
+        $oldVersion = $fs->getArg('oldVersion');
         $oldVersion = $this->getLogVersion($oldVersion);
 
-        $newVersion = $input->getRequiredArg('newVersion');
+        $newVersion = $fs->getArg('newVersion');
         $newVersion = $this->getLogVersion($newVersion);
 
         $logFmt = GitChangeLog::LOG_FMT_HS;
-        if ($input->getBoolOpt('with-author')) {
+        if ($fs->getOpt('with-author')) {
             // $logFmt = GitChangeLog::LOG_FMT_HSC;
             $logFmt = GitChangeLog::LOG_FMT_HSA;
         }
@@ -846,12 +849,12 @@ class GitController extends Controller
 
         // $b->addIf("--exclude $exclude", $exclude);
         // $b->addIf('--abbrev-commit', $abbrevID);
-        $noMerges = $input->getBoolOpt('no-merges');
+        $noMerges = $fs->getOpt('no-merges');
         $builder->addIf('--no-merges', $noMerges);
         $builder->add('--reverse');
         $builder->run();
 
-        $repoUrl = $input->getStringOpt('repo-url');
+        $repoUrl = $fs->getOpt('repo-url');
         if (!$repoUrl) {
             $info = $repo->getRemoteInfo();
 
@@ -864,12 +867,12 @@ class GitController extends Controller
         $gcl->setLogFormat($logFmt);
         $gcl->setRepoUrl($repoUrl);
 
-        if ($exclude = $input->getStringOpt('exclude')) {
+        if ($exclude = $fs->getOpt('exclude')) {
             $keywords = Str::explode($exclude, ',');
             $gcl->addItemFilter(new KeywordsFilter($keywords));
         }
 
-        $style = $input->getStringOpt('style');
+        $style = $fs->getOpt('style');
         if ($style === 'gh-release') {
             $gcl->setItemFormatter(new GithubReleaseFormatter());
         } elseif ($style === 'simple') {
@@ -880,7 +883,7 @@ class GitController extends Controller
         $output->info('parse logs and generate changelog');
         $gcl->generate();
 
-        $outFile = $input->getStringOpt('file');
+        $outFile = $fs->getOpt('file');
         $output->info('total collected changelog number: ' . $gcl->getLogCount());
 
         if ($outFile) {
