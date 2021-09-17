@@ -14,6 +14,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Show;
 use Toolkit\Cli\Util\Download;
+use Toolkit\PFlag\FlagsParser;
 use function basename;
 use function glob;
 use function preg_match;
@@ -47,24 +48,23 @@ class FileController extends Controller
      * @options
      *  --file          Only display files
      *  --dir           Only display directories
-     *  --only-name     Only display file/dir name
+     *  --only-name     bool;Only display file/dir name
      *  --prefix        Add prefix before each path
      *  --filter        Filter match path by given string
      *
      * @arguments
-     *  path  The ls path
+     *  path        The ls path
      *
      * @param Input  $input
-     * @param Output $output
      */
-    public function listCommand(Input $input, Output $output): void
+    public function listCommand(FlagsParser $fs): void
     {
-        $path = $input->getStringArg(0);
+        $path = $fs->getArg('path');
 
-        $filter = $input->getStringOpt('filter');
-        $prefix = $input->getStringOpt('prefix');
+        $filter = $fs->getOpt('filter');
+        $prefix = $fs->getOpt('prefix');
 
-        $onlyName = $input->getBoolOpt('only-name');
+        $onlyName = $fs->getOpt('only-name');
 
         foreach (glob($path . '/*', GLOB_MARK) as $item) {
             $line = $item;
@@ -77,7 +77,7 @@ class FileController extends Controller
                 continue;
             }
 
-            echo "{$prefix}$line\n";
+            echo "$prefix$line\n";
         }
     }
 
@@ -85,13 +85,12 @@ class FileController extends Controller
      * create ln
      *
      * @options
-     *  -s, --src  The server address. e.g 127.0.0.1:5577
-     *  -d, --dst  The server host address. e.g 127.0.0.1
+     *  -s, --src   The server address. e.g 127.0.0.1:5577
+     *  -d, --dst   The server host address. e.g 127.0.0.1
      *
-     * @param Input  $input
      * @param Output $output
      */
-    public function lnCommand(Input $input, Output $output): void
+    public function lnCommand(Output $output): void
     {
         // ln -s "$PWD"/bin/htu /usr/local/bin/htu
 
@@ -103,14 +102,14 @@ class FileController extends Controller
      * use vim edit an input file
      *
      * @arguments
-     *  path  The ls path
+     *  file      The file path
      *
      * @param Input  $input
      * @param Output $output
      */
-    public function vimCommand(Input $input, Output $output): void
+    public function vimCommand(FlagsParser $fs, Output $output): void
     {
-        $file = $input->bindArgument('file', 0)->getRequiredArg('file');
+        $file = $fs->getArg('file');
 
         $descriptors = [
             ['file', '/dev/tty', 'r'],
@@ -135,14 +134,14 @@ class FileController extends Controller
 
     /**
      * @options
-     *  -d, --dir STRING    The files directory for rename.
-     *  --driver STRING     The path match driver.
-     *                      allow: fn - fnmatch, reg - preg_match. (default: <cyan>fn</cyan>)
+     *  -d, --dir     The files directory for rename.
+     *  --driver      The path match driver.
+     *                 allow: fn - fnmatch, reg - preg_match. (default: <cyan>fn</cyan>)
      *
      * @param Input  $input
      * @param Output $output
      */
-    public function renameCommand(Input $input, Output $output): void
+    public function renameCommand(FlagsParser $fs, Output $output): void
     {
         $output->success('hello');
     }
@@ -151,24 +150,24 @@ class FileController extends Controller
      * Download an remote file to local by terminal
      *
      * @arguments
-     *   fileUrl   The remote file url address.
+     *   fileUrl   string;The remote file url address;required
      *
      * @options
-     *  -v                  Open debug mode.
-     *      --pt   STRING   The progress bar type. allow: txt,bar
-     *  -s, --save STRING   The save local file for downloaded.
+     *  -v            bool;Open debug mode.
+     *      --pt      The progress bar type. allow: txt,bar
+     *  -s, --save    The save local file for downloaded.
      *
      * @param Input  $input
      * @param Output $output
      */
-    public function downCommand(Input $input, Output $output): void
+    public function downCommand(FlagsParser $fs, Output $output): void
     {
-        $url = $input->getRequiredArg(0);
+        $url = $fs->getArg('fileUrl');
 
         $d = Download::create($url);
-        $d->setShowType($input->getStringOpt('pt', Download::PROGRESS_BAR));
-        $d->setDebug($input->getBoolOpt('v'));
-        $d->setSaveAs($input->getStringOpt('s,save'));
+        $d->setShowType($fs->getOpt('pt', Download::PROGRESS_BAR));
+        $d->setDebug($fs->getOpt('v'));
+        $d->setSaveAs($fs->getOpt('save'));
         $d->start();
 
         $output->success("Complete Download: $url");

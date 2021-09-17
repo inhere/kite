@@ -52,7 +52,7 @@ class GenerateController extends Controller
      * @param Input  $input
      * @param Output $output
      */
-    public function readmeCommand(Input $input, Output $output): void
+    public function readmeCommand(Output $output): void
     {
         $output->success('Complete');
     }

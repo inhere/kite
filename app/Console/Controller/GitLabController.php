@@ -25,7 +25,6 @@ use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
 use function array_merge;
 use function date;
-use function edump;
 use function explode;
 use function http_build_query;
 use function implode;
@@ -37,7 +36,6 @@ use function sprintf;
 use function strpos;
 use function strtoupper;
 use function trim;
-use function vdump;
 
 /**
  * Class GitLabGroup
@@ -169,13 +167,13 @@ class GitLabController extends Controller
     /**
      * Show a list of commands that will be redirected to git
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      */
     public function redirectListCommand(Input $input, Output $output): void
     {
         $output->aList([
-            'current group' => self::getName(),
+            'current group' => $this->getGroupName(),
             'current dir'   => $input->getWorkDir(),
             'redirect cmd'  => $this->settings['redirectGit'],
         ]);
@@ -185,13 +183,13 @@ class GitLabController extends Controller
      * init a gitlab project
      *
      * @options
-     *  -l, --list    List all project information
-     *  -e, --edit    Edit the project remote info
+     *  -l, --list    bool;List all project information
+     *  -e, --edit    bool;Edit the project remote info
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function initCommand(Input $input, Output $output): void
+    public function initCommand(FlagsParser $fs, Output $output): void
     {
         $gl = $this->getGitlab();
 
@@ -207,12 +205,12 @@ class GitLabController extends Controller
         $output->colored('Remotes(by git):', 'ylw0');
         $output->json($remotes);
 
-        if ($input->getSameBoolOpt('l,list')) {
+        if ($fs->getOpt('list')) {
             return;
         }
 
         $updated  = false;
-        $doEdit   = $input->getSameBoolOpt('e,edit');
+        $doEdit   = $fs->getOpt('edit');
         $markName = 'main';
         $markMsg  = 'main(source)';
 
@@ -293,39 +291,28 @@ class GitLabController extends Controller
     }
 
     /**
-     * @param Input $input
-     */
-    protected function cloneConfigure(Input $input): void
-    {
-        $input->bindArguments([
-            'repo' => 0,
-            'name' => 1,
-        ]);
-    }
-
-    /**
      * Clone an gitlab repository to local
      *
      * @options
-     *  --git    Use git protocol for git clone.
+     *  --git    bool;Use git protocol for git clone.
      *
      * @arguments
-     *  repo    The remote git repo URL or repository name.
+     *  repo    string;The remote git repo URL or repository name;required;
      *  name    The repository name at local, default is same `repo`
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @example
-     *  {fullCmd}  mylib/some-utils
-     *  {fullCmd}  mylib/some-utils local-repo
-     *  {fullCmd}  https://gitlab.com/some/pkg
+     *   {fullCmd}  mylib/some-utils
+     *   {fullCmd}  mylib/some-utils local-repo
+     *   {fullCmd}  https://gitlab.com/some/pkg
      */
-    public function cloneCommand(Input $input, Output $output): void
+    public function cloneCommand(FlagsParser $fs, Output $output): void
     {
-        $repo = $input->getRequiredArg('repo');
+        $repo = $fs->getArg('repo');
 
-        $useGit  = $input->getBoolOpt('git');
+        $useGit  = $fs->getOpt('git');
         $repoUrl = $this->getGitlab()->parseRepoUrl($repo, $useGit);
         if (!$repoUrl) {
             $output->error("invalid github 'repo' address: $repo");
@@ -333,13 +320,13 @@ class GitLabController extends Controller
         }
 
         // git clone $repoUrl
-        $name = $input->getStringArg('name');
+        $name = $fs->getArg('name');
 
         // $cmd = Cmd::git('clone')
         Cmd::git('clone')
             ->add($repoUrl)
             ->addIf($name, $name !== '')
-            ->setDryRun($input->getBoolOpt('dry-run'))
+            ->setDryRun($this->flags->getOpt('dry-run'))
             ->run(true);
 
         // if ($cmd->isSuccess()) {
@@ -353,14 +340,14 @@ class GitLabController extends Controller
      * show gitlab config information
      *
      * @options
-     *  -l, --list    List all project information
+     *  -l, --list    bool;List all project information
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function configCommand(Input $input, Output $output): void
+    public function configCommand(FlagsParser $fs, Output $output): void
     {
-        if ($input->getSameBoolOpt(['l', 'list'])) {
+        if ($fs->getOpt('list')) {
             $config = $this->getGitlab()->getConfig();
             $output->json($config);
             return;
@@ -459,10 +446,10 @@ class GitLabController extends Controller
     }
 
     /**
-     * @param string    $name
-     * @param string    $mainRemote
+     * @param string $name
+     * @param string $mainRemote
      * @param CmdRunner $run
-     * @param bool      $notMain
+     * @param bool $notMain
      */
     protected function doDeleteBranch(string $name, string $mainRemote, CmdRunner $run, bool $notMain): void
     {
@@ -486,24 +473,24 @@ class GitLabController extends Controller
      * show gitlab project config information
      *
      * @options
-     *  -l, --list    List all project information
+     *  -l, --list    bool;List all project information
      *
      * @argument
      *  name     Display project information for given name
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function projectCommand(Input $input, Output $output): void
+    public function projectCommand(FlagsParser $fs, Output $output): void
     {
         $gitlab = $this->getGitlab();
-        if ($input->getSameBoolOpt(['l', 'list'])) {
+        if ($fs->getOpt('list')) {
             $output->json($gitlab->getProjects());
             return;
         }
 
         if (!$pjName = $gitlab->findProjectName()) {
-            $pjName = $input->getArg('name');
+            $pjName = $fs->getArg('name');
         }
 
         $gitlab->loadProjectInfo($pjName);
@@ -517,24 +504,24 @@ class GitLabController extends Controller
      * open gitlab project page on browser
      *
      * @options
-     *  -m, --main   Open the main repo page
+     *  -m, --main   bool;Open the main repo page
      *
      * @argument
-     *  remote     The remote name. default: origin
+     *  remote      The remote name. default: origin
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function openCommand(Input $input, Output $output): void
+    public function openCommand(FlagsParser $fs, Output $output): void
     {
         $gitlab = $this->getGitlab();
 
         $defRemote = $gitlab->getForkRemote();
-        if ($input->getSameBoolOpt(['m', 'main'])) {
+        if ($fs->getOpt('main')) {
             $defRemote = $gitlab->getMainRemote();
         }
 
-        $remote = $input->getArg('remote', $defRemote);
+        $remote = $fs->getArg('remote', $defRemote);
 
         $info = $gitlab->getRemoteInfo($remote);
         $link = $info->getHttpUrl();
@@ -545,39 +532,27 @@ class GitLabController extends Controller
     }
 
     /**
-     * Configure for the `resolveCommand`
-     *
-     * @param Input $input
-     */
-    protected function resolveConfigure(Input $input): void
-    {
-        $input->bindArgument('branch', 0);
-    }
-
-    /**
      * Resolve conflicts preparing for current git branch.
      *
-     * 1. will checkout to <cyan>branch</cyan>
-     * 2. will update code by <cyan>git pull</cyan>
-     * 3. update the <cyan>branch</cyan> codes from main repository
-     * 4. merge current-branch codes from main repository
-     * 5. please resolve conflicts by tools or manual
+     * @help
+     *  1. will checkout to <cyan>branch</cyan>
+     *  2. will update code by <cyan>git pull</cyan>
+     *  3. update the <cyan>branch</cyan> codes from main repository
+     *  4. merge current-branch codes from main repository
+     *  5. please resolve conflicts by tools or manual
      *
      * @arguments
-     *    <cyan>branch</cyan>  The conflicts target branch name. eg: testing, qa, pre
+     *    branch    string;The conflicts target branch name. eg: testing, qa, pre;required
      *
-     * @options
-     *  --dry-run    Dry-run the workflow
-     *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function resolveCommand(Input $input, Output $output): void
+    public function resolveCommand(FlagsParser $fs, Output $output): void
     {
         $gitlab = $this->getGitlab();
-        $branch = $input->getRequiredArg('branch');
+        $branch = $fs->getArg('branch');
         $branch = $gitlab->getRealBranchName($branch);
-        $dryRun = $input->getBoolOpt('dry-run');
+        $dryRun = $this->flags->getOpt('dry-run');
 
         $curBranch = $gitlab->getCurBranch();
         $orgRemote = $gitlab->getForkRemote();
@@ -595,7 +570,7 @@ class GitLabController extends Controller
 
         $output->success('Complete. please resolve conflicts by tools or manual');
         $output->note('TIPS can exec this command after resolved for quick commit:');
-        $output->colored("git add . && git commit && git push && kite gl pr -o && git checkout $curBranch", 'mga');
+        $output->colored("git add . && git commit && git push && kite gl pr -o head && git checkout $curBranch", 'mga');
     }
 
     /**
@@ -606,7 +581,7 @@ class GitLabController extends Controller
      *      --full-source   The full source branch name
      *  -t, --target        The target branch name
      *  -o, --open          Open the generated PR link on browser
-     *  -d, --direct        The PR is direct from fork to main repository
+     *  -d, --direct        bool;The PR is direct from fork to main repository
      *      --new           Open new pr page on browser http://my.gitlab.com/group/repo/merge_requests/new
      *
      * @argument
@@ -743,7 +718,7 @@ class GitLabController extends Controller
      * @arguments
      * link     Please input an gitlab link
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      */
     public function linkInfoCommand(Input $input, Output $output): void
@@ -787,7 +762,7 @@ class GitLabController extends Controller
      *  -r, --remote  The main remote name, default: {mainRemote}
      *      --push    Push to origin remote after update
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      *
      * @example
@@ -822,9 +797,9 @@ class GitLabController extends Controller
      *  -r, --remote        The base skeleton project repo name with group.
      *
      * @arguments
-     *   name       The new project name.
+     *   name       string;The new project name.;required;
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      *
      * @example
@@ -834,10 +809,10 @@ class GitLabController extends Controller
      *  {binWithCmd} new-project -r common/yii2-demo-wzl -g wzl
      *  {binWithCmd} new-project -r go-common/demo -o xiajianjun-go
      */
-    public function createCommand(Input $input, Output $output): void
+    public function createCommand(FlagsParser $fs, Output $output): void
     {
-        $name = $input->getRequiredArg('name');
-        $addr = $input->getSameStringOpt(['r', 'remote']);
+        $name = $fs->getArg('name');
+        $addr = $fs->getOpt('remote');
         if (!$addr) {
             throw new PromptException('please input the base project address by "-r|--remote"');
         }
@@ -857,15 +832,15 @@ class GitLabController extends Controller
 
         [$baseGroup,] = explode('/', $addr, 2);
 
-        $group = $input->getSameStringOpt(['g', 'group'], $baseGroup);
+        $group = $fs->getOpt('group', $baseGroup);
 
         $gitUrl = $gitlab->getValue('gitUrl');
         if (!$gitUrl) {
             throw new PromptException('please config the "gitlab.gitUrl" address');
         }
 
-        $workDir = $input->getWorkDir();
-        $fGroup  = $input->getSameStringOpt(['o', 'fork-group']);
+        $workDir = $this->input->getWorkDir();
+        $fGroup  = $fs->getOpt('fork-group');
 
         $output->aList([
             'the gitlab git url' => $gitUrl,
@@ -878,7 +853,7 @@ class GitLabController extends Controller
         ]);
 
         $run = CmdRunner::new();
-        $run->setDryRun($input->getBoolOpt('dry-run'));
+        $run->setDryRun($this->flags->getOpt('dry-run'));
         $run->setWorkDir($workDir . '/' . $name);
 
         // $run->addf('git clone %s:%s.git %s', $gitUrl, $addr, $name);
@@ -899,7 +874,6 @@ class GitLabController extends Controller
         $run->addf('git push main master');
 
         // $run->addf('git push -u origin master');
-
         $run->run(true);
 
         $output->success("Create the '$name' ok!");
@@ -908,37 +882,44 @@ class GitLabController extends Controller
     /**
      * update codes from origin and main remote repositories, then push to remote
      *
-     * @options
-     *      --dry-run   Dry run workflow
-     *
-     * @param Input  $input
-     * @param Output $output
+     * @throws Throwable
      */
-    public function updatePushCommand(Input $input, Output $output): void
+    public function updatePushCommand(): void
     {
-        // do push
-        $input->setSOpt('p', true);
+        // $input->setSOpt('p', true);
+        // $this->updateCommand($input, $output);
 
-        $this->updateCommand($input, $output);
+        /*
+        args:
+        array(3) {
+         [0]=> string(2) "updatePush"
+        }
+        */
+        $args = $this->flags->getRawArgs();
+        // add option
+        $args[] = '--push';
+
+        // do push
+        $this->runActionWithArgs('update', $args);
     }
 
     /**
      * update codes from origin and main remote repositories
      *
      * @options
-     *  -p, --push      Push to origin remote after update
+     *  -p, --push      bool;Push to origin remote after update
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function updateCommand(Input $input, Output $output): void
+    public function updateCommand(FlagsParser $fs, Output $output): void
     {
         $gitlab = $this->getGitlab();
 
         $curBranch = $gitlab->getCurBranch();
 
         $runner = CmdRunner::new();
-        $runner->setDryRun($input->getBoolOpt('dry-run'));
+        $runner->setDryRun($this->flags->getOpt('dry-run'));
         $runner->add('git pull');
         $runner->addf('git pull %s %s', $gitlab->getMainRemote(), $curBranch);
 
@@ -946,7 +927,7 @@ class GitLabController extends Controller
             $runner->addf('git pull %s master', $gitlab->getMainRemote());
         }
 
-        if ($input->getSameBoolOpt(['p', 'push'])) {
+        if ($fs->getOpt('push')) {
             $runner->add('git push');
         }
 

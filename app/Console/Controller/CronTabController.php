@@ -15,6 +15,7 @@ use HuCron\HuCron;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Toolkit\PFlag\FlagsParser;
 
 /**
  * Class CronTabController
@@ -46,10 +47,10 @@ class CronTabController extends Controller
      * parse the human readable statement to an cron expression.
      *
      * @arguments
-     *  Statement       The human readable statement.
+     *  statement       string;The human readable statement;required
      *
      * @options
-     *  -i          Run an interactive environment
+     *  -i          bool;Run an interactive environment
      *
      * @example
      *  {binWithCmd} 'every 6 mins'         // '*\/6 * * * *'
@@ -61,9 +62,9 @@ class CronTabController extends Controller
      *
      * @throws Exception
      */
-    public function parseCommand(Input $input, Output $output): void
+    public function parseCommand(FlagsParser $fs, Output $output): void
     {
-        $stat = (string)$input->getRequiredArg('statement');
+        $stat = $fs->getArg('statement');
         $output->colored("Input Statement: '$stat'");
 
         $expr = HuCron::fromStatement($stat);
@@ -85,23 +86,23 @@ class CronTabController extends Controller
      * show next execution datetime for an cron expression.
      *
      * @arguments
-     *  Expression      The cronTab expression. eg: `20 10 * * *`
+     *  expression      string;The cronTab expression. eg: `20 10 * * *`;required
      *
      * @options
-     *  -n, --next NUMBER   Show next number exec datetime. default number is 3.
-     *  -p, --prev          Show previsions exec datetime
+     *  -n, --next      int;Show next number exec datetime. default number is 3.
+     *  -p, --prev      bool;Show previsions exec datetime
      *
      * @param Input  $input
      * @param Output $output
      *
      * @throws Exception
      */
-    public function execTimeCommand(Input $input, Output $output): void
+    public function execTimeCommand(FlagsParser $fs, Output $output): void
     {
-        $expr = (string)$input->getRequiredArg('expression');
+        $expr = $fs->getArg('expression');
         $output->colored('Cron Expression: ' . $expr);
 
-        $nextNum  = $input->getSameIntOpt('n,next', 3);
+        $nextNum  = $fs->getOpt('next', 3);
         $dateList = $this->getNextNTimesRunDate($nextNum, $expr);
 
         $output->aList($dateList, "Execution time for the next $nextNum times:");

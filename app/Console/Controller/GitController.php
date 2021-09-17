@@ -150,25 +150,25 @@ class GitController extends Controller
      * @options
      *  --dir   The want updated git repo dir. default is workdir
      *
+     * @arguments
+     *  gitArgs  Input more args or opts for run git
+     *
+     * @param FlagsParser $fs
      * @param Input $input
      * @param Output $output
+     *
+     * @example
+     * {binWithCmd} --all -f --unshallow
+     * {binWithCmd} --dir /path/to/mydir -- --all -f --unshallow
      */
-    public function updateCommand(Input $input, Output $output): void
+    public function updateCommand(FlagsParser $fs, Input $input, Output $output): void
     {
-        // $flags eg: {
-        //     [0]=> string(6) "git"
-        //     [1]=> string(4) "pull"
-        //     [2]=> string(14) "-f"
-        //   }
-        $args  = [];
-        $flags = $input->getFlags();
-        if (count($flags) > 2) {
-            unset($flags[0], $flags[1]);
-            $args = array_values($flags);
-        }
+        $repoDir = $fs->getOpt('dir') ?: $input->getWorkDir();
 
+        $args = $fs->getRawArgs();
         $c = Cmd::git('pull');
-        $c->setDryRun($input->getBoolOpt('dry-run'));
+        $c->setWorkDir($repoDir);
+        $c->setDryRun($this->flags->getOpt('dry-run'));
         $c->addArgs(...$args);
         $c->run(true);
 
@@ -519,7 +519,7 @@ class GitController extends Controller
         $lTag = '';
         $dir  = $input->getPwd();
 
-        if ($fs->getOpt('n,next')) {
+        if ($fs->getOpt('next')) {
             $lTag = GitUtil::findTag($dir, false);
             if (!$lTag) {
                 $output->error('No any tags found of the project');
@@ -549,7 +549,7 @@ class GitController extends Controller
             $info['Old Tag'] = $lTag;
         }
 
-        $msg = $fs->getArg('message');
+        $msg = $fs->getOpt('message');
         $msg = $msg ?: "Release $tag";
         // add message
         $info['Message'] = $msg;

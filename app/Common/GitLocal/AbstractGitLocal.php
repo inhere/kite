@@ -7,13 +7,11 @@ use Inhere\Kite\Helper\GitUtil;
 use PhpGit\Info\RemoteInfo;
 use PhpGit\Repo;
 use RuntimeException;
-use Toolkit\Cli\Color;
 use Toolkit\Stdlib\Obj;
 use function basename;
 use function count;
 use function explode;
 use function strpos;
-use function substr;
 use function trim;
 
 /**
@@ -102,6 +100,11 @@ abstract class AbstractGitLocal
     /**
      * @var string
      */
+    protected $defaultBranch = 'master';
+
+    /**
+     * @var string
+     */
     // protected $curBranch = '';
 
     /**
@@ -122,7 +125,7 @@ abstract class AbstractGitLocal
      *
      * @return static
      */
-    public static function new(Output $output = null, array $config = [])
+    public static function new(Output $output = null, array $config = []): self
     {
         return new static($output, $config);
     }
@@ -631,5 +634,21 @@ abstract class AbstractGitLocal
     public function setGitUrl(string $gitUrl): void
     {
         $this->gitUrl = $gitUrl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultBranch(): string
+    {
+        return $this->defaultBranch;
+    }
+
+    /**
+     * @param string $defaultBranch
+     */
+    public function setDefaultBranch(string $defaultBranch): void
+    {
+        $this->defaultBranch = $defaultBranch;
     }
 }

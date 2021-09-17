@@ -13,6 +13,8 @@ use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
+use Toolkit\PFlag\FlagsParser;
+use function file_get_contents;
 
 /**
  * Class GoController
@@ -77,7 +79,7 @@ class GoController extends Controller
     public function pkgListCommand(Input $input, Output $output): void
     {
         $filepath = $input->getWorkDir() . '/go.mod';
-        $content = \file_get_contents($filepath);
+        $content = file_get_contents($filepath);
 
         echo $content, "\n";
 
@@ -85,28 +87,20 @@ class GoController extends Controller
     }
 
     /**
-     * @param Input $input
-     */
-    protected function pkgUpConfigure(Input $input): void
-    {
-        $input->bindArguments(['pkgName' => 0]);
-    }
-
-    /**
      * update the package to latest by `go get -u`
      *
      * @arguments
-     *  pkgName     The package name. eg: gookit/rux
+     *  pkgName     string;The package name. eg: gookit/rux;required
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @example
      *  {binWithCmd} gookit/rux
      */
-    public function pkgUpCommand(Input $input, Output $output): void
+    public function pkgUpCommand(FlagsParser $fs, Output $output): void
     {
-        $pkgName = $input->getRequiredArg('pkgName');
+        $pkgName = $fs->getArg('pkgName');
         $pkgPath = "github.com/$pkgName";
 
         $output->aList([

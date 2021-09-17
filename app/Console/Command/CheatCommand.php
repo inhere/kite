@@ -16,6 +16,7 @@ use Inhere\Kite\Kite;
 use InvalidArgumentException;
 use PhpComp\Http\Client\AbstractClient;
 use PhpComp\Http\Client\Client;
+use PhpComp\Http\Client\ClientConst;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\Color;
 use Toolkit\FsUtil\Dir;
@@ -39,6 +40,9 @@ class CheatCommand extends Command
 
     protected static $description = 'Query cheat for development';
 
+    /**
+     * @return string[]
+     */
     public static function aliases(): array
     {
         return ['cht', 'cht.sh', 'cheat.sh'];
@@ -178,6 +182,8 @@ HELP
         Cli::info('will request remote URL: ' . $chtApiUrl);
         $resp = $this->httpClient()->get($chtApiUrl);
 
+        // vdump($resp->getResponseBody(), $resp->getResponseHeaders());
+
         $result  = trim($resp->getResponseBody());
         $headers = $resp->getResponseHeaders();
         $bodyLen = (int)($headers['Content-Length'] ?? 0);
@@ -216,8 +222,11 @@ HELP
         return $result;
     }
 
+    /**
+     * @return AbstractClient
+     */
     protected function httpClient(): AbstractClient
     {
-        return Client::factory([])->setUserAgent('CURL/7.0');
+        return Client::factory([])->setUserAgent(ClientConst::USERAGENT_CURL);
     }
 }

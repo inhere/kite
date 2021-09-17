@@ -11,8 +11,8 @@ namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
-use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Toolkit\PFlag\FlagsParser;
 use function base_convert;
 use function date;
 use function strlen;
@@ -54,13 +54,13 @@ class ConvertController extends Controller
      * convert markdown table to create mysql table SQL
      *
      * @options
-     *  -f,--file    The source markdown code
-     *  -o,--output  The output target. default is stdout.
+     *  -f,--file      The source markdown code
+     *  -o,--output    The output target. default is stdout.
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function md2sqlCommand(Input $input, Output $output): void
+    public function md2sqlCommand(FlagsParser $fs, Output $output): void
     {
         $output->success('Complete');
     }
@@ -69,13 +69,13 @@ class ConvertController extends Controller
      * convert create mysql table SQL to markdown table
      *
      * @options
-     *  -f,--file    The source markdown code
-     *  -o,--output  The output target. default is stdout.
+     *  -f,--file       The source markdown code
+     *  -o,--output     The output target. default is stdout.
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function sql2mdCommand(Input $input, Output $output): void
+    public function sql2mdCommand(FlagsParser $fs, Output $output): void
     {
         $output->success('Complete');
     }
@@ -84,13 +84,13 @@ class ConvertController extends Controller
      * convert an mysql insert SQL to php k-v array
      *
      * @options
-     *  -f,--file    The source markdown code
-     *  -o,--output  The output target. default is stdout.
+     *  -f,--file       The source markdown code
+     *  -o,--output     The output target. default is stdout.
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function insertSql2arrCommand(Input $input, Output $output): void
+    public function insertSql2arrCommand(FlagsParser $fs, Output $output): void
     {
         $output->success('Complete');
     }
@@ -99,21 +99,21 @@ class ConvertController extends Controller
      * Number base conversion
      *
      * @arguments
-     *  number      The want convert number.
+     *  number      int;The want convert number;required;
      *
      * @options
-     *  -f,--fbase      The from base value.
-     *  -t,--tbase      The to base value.
+     *  -f,--fbase      int;The from base value.
+     *  -t,--tbase      int;The to base value.
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function baseCommand(Input $input, Output $output): void
+    public function baseCommand(FlagsParser $fs, Output $output): void
     {
-        $num = $input->getStringArg(0);
+        $num = $fs->getArg('num');
 
-        $fBase  = $input->getSameIntOpt('f,fbase', 10);
-        $toBase = $input->getSameIntOpt('t,tbase', 10);
+        $fBase  = $fs->getOpt('f,fbase', 10);
+        $toBase = $fs->getOpt('t,tbase', 10);
         if ($toBase > 36) {
             throw new PromptException('to base value cannot be');
         }
@@ -124,12 +124,15 @@ class ConvertController extends Controller
     /**
      * convert timestamp to datetime
      *
-     * @param Input  $input
+     * @arguments
+     * times    array;The want convert timestamps;required
+     *
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function ts2dateCommand(Input $input, Output $output): void
+    public function ts2dateCommand(FlagsParser $fs, Output $output): void
     {
-        $args = $input->getArguments();
+        $args = $fs->getArg('times');
         if (!$args) {
             throw new PromptException('missing arguments');
         }
