@@ -118,7 +118,7 @@ HELP
      * @param Input $input
      * @param Output $output
      */
-    protected function execute($input, $output)
+    protected function execute(Input $input, Output $output)
     {
         // search by keywords
         $search = $this->flags->getOpt('search');

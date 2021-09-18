@@ -183,10 +183,13 @@ class GitController extends Controller
     /**
      * push codes to origin by `git push`
      *
-     * @param Input $input
+     * @arguments
+     *  gitArgs  Input more args or opts for run git
+     *
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function pushCommand(Input $input, Output $output): void
+    public function pushCommand(FlagsParser $fs, Output $output): void
     {
         // eg: {
         //     [0]=> string(6) "github"
@@ -195,15 +198,10 @@ class GitController extends Controller
         //     [3]=> string(6) "origin"
         //     [4]=> string(4) "main"
         //   }
-        $args  = [];
-        $flags = $input->getFlags();
-        if (count($flags) > 2) {
-            unset($flags[0], $flags[1]);
-            $args = array_values($flags);
-        }
+        $args = $fs->getRawArgs();
 
         $c = Cmd::git('push');
-        $c->setDryRun($input->getBoolOpt('dry-run'));
+        $c->setDryRun($this->flags->getOpt('dry-run'));
         $c->addArgs(...$args);
         $c->run(true);
 
@@ -211,10 +209,9 @@ class GitController extends Controller
     }
 
     /**
-     * @param Input $input
      * @param Output $output
      */
-    public function statusCommand(Input $input, Output $output): void
+    public function statusCommand(Output $output): void
     {
         $commands = [
             'git log -2',
@@ -230,15 +227,15 @@ class GitController extends Controller
      * display git information for the project
      *
      * @options
-     * --show-commands  Show exec git commands
+     * --show-commands  bool;Show exec git commands
      *
-     * @param Input $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function infoCommand(Input $input, Output $output): void
+    public function infoCommand(FlagsParser $fs, Output $output): void
     {
         $repo = Repo::new();
-        $repo->setPrintCmd($input->getBoolOpt('show-commands'));
+        $repo->setPrintCmd($fs->getOpt('show-commands'));
 
         $output->aList($repo->getInfo(), 'Project Info', [
             'ucFirst' => false,
@@ -581,14 +578,14 @@ class GitController extends Controller
      * @options
      *  -r, --remote        The remote name. default <comment>origin</comment>
      *  -v, --tag           The tag version. eg: v2.0.3
-     *      --no-remote     Only delete local tag
+     *      --no-remote     bool;Only delete local tag
      *
      * @param Input $input
      * @param Output $output
      */
-    public function tagDeleteCommand(Input $input, Output $output): void
+    public function tagDeleteCommand(FlagsParser $fs, Output $output): void
     {
-        $tag = $input->getSameOpt(['v', 'tag']);
+        $tag = $fs->getOpt('tag');
         if (!$tag) {
             throw new PromptException('please input tag name');
         }
@@ -596,8 +593,8 @@ class GitController extends Controller
         $run = CmdRunner::new();
         $run->addf('git tag -d %s', $tag);
 
-        if (false === $input->getBoolOpt('no-remote')) {
-            $remote = $input->getSameStringOpt(['r', 'remote'], 'origin');
+        if (false === $fs->getOpt('no-remote')) {
+            $remote = $fs->getOpt('remote', 'origin');
 
             $run->addf('git push %s :refs/tags/%s', $remote, $tag);
         }
@@ -630,10 +627,9 @@ class GitController extends Controller
         }
          */
         $args = $this->flags->getRawArgs();
+        $args[] = '--not-push';
 
-        $args[0] = 'acp';
-        $args[]  = '--not-push';
-        $this->doRun($args);
+        $this->runActionWithArgs('acp', $args);
     }
 
     /**
@@ -718,16 +714,6 @@ class GitController extends Controller
     }
 
     /**
-     * @param Input $input
-     */
-    protected function logConfigure(Input $input): void
-    {
-        $input->bindArguments([
-            'maxCommit' => 0,
-        ]);
-    }
-
-    /**
      * display recently git commits information by `git log`
      *
      * @arguments
@@ -801,7 +787,7 @@ class GitController extends Controller
      *  --unshallow         bool;Convert to a complete warehouse, useful on GitHub Action.
      *  --with-author       bool;Display commit author name
      *
-     * @param Input $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @example

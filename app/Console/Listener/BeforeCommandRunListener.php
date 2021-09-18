@@ -2,7 +2,7 @@
 
 namespace Inhere\Kite\Console\Listener;
 
-use Inhere\Console\AbstractHandler;
+use Inhere\Console\Handler\AbstractHandler;
 use Inhere\Console\ConsoleEvent;
 use Inhere\Console\IO\Input;
 use Inhere\Console\Util\Show;

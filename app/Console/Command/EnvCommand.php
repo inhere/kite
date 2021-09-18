@@ -39,7 +39,7 @@ class EnvCommand extends Command
      * @param  Input $input
      * @param  Output $output
      */
-    protected function execute($input, $output)
+    protected function execute(Input $input, Output $output)
     {
         $keywords = $input->getSameStringOpt('s,search');
 

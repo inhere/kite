@@ -32,7 +32,7 @@ class FindCommand extends Command
      * @param  Input $input
      * @param  Output $output
      */
-    protected function execute($input, $output): int
+    protected function execute(Input $input, Output $output): int
     {
         $output->info('recommended install fzf for search file');
         return 0;

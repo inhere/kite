@@ -31,7 +31,6 @@ use function implode;
 use function in_array;
 use function is_string;
 use function parse_str;
-use function parse_url;
 use function sprintf;
 use function strpos;
 use function strtoupper;
@@ -703,29 +702,18 @@ class GitLabController extends Controller
     }
 
     /**
-     * Configure for the `linkInfoCommand`
-     *
-     * @param Input $input
-     */
-    protected function linkInfoConfigure(Input $input): void
-    {
-        $input->bindArgument('link', 0);
-    }
-
-    /**
      * parse link print information
      *
      * @arguments
      * link     Please input an gitlab link
      *
-     * @param Input $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function linkInfoCommand(Input $input, Output $output): void
+    public function linkInfoCommand(FlagsParser $fs, Output $output): void
     {
-        $link = $input->getRequiredArg('link');
-        $info = (array)parse_url($link);
-        // Str\UrlHelper::parseUrl($link);
+        $link = $fs->getArg('link');
+        $info = Str\UrlHelper::parse2($link);
 
         [$group, $repo,] = explode('/', trim($info['path'] ?? '', '/'), 3);
 
@@ -779,16 +767,6 @@ class GitLabController extends Controller
     }
 
     /**
-     * Configure for the `createCommand`
-     *
-     * @param Input $input
-     */
-    protected function createConfigure(Input $input): void
-    {
-        $input->bindArgument('name', 0);
-    }
-
-    /**
      * create an new project from base project repo
      *
      * @options
@@ -799,7 +777,7 @@ class GitLabController extends Controller
      * @arguments
      *   name       string;The new project name.;required;
      *
-     * @param Input $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @example
@@ -832,8 +810,7 @@ class GitLabController extends Controller
 
         [$baseGroup,] = explode('/', $addr, 2);
 
-        $group = $fs->getOpt('group', $baseGroup);
-
+        $group  = $fs->getOpt('group', $baseGroup);
         $gitUrl = $gitlab->getValue('gitUrl');
         if (!$gitUrl) {
             throw new PromptException('please config the "gitlab.gitUrl" address');

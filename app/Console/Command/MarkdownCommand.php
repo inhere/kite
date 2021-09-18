@@ -44,7 +44,7 @@ class MarkdownCommand extends Command
      * @param  Input $input
      * @param  Output $output
      */
-    protected function execute($input, $output)
+    protected function execute(Input $input, Output $output)
     {
         $input->bindArgument('mdfile', 0);
         $filename = $input->getRequiredArg('mdfile');

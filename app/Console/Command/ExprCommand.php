@@ -116,7 +116,7 @@ class ExprCommand extends Command
      * @return int
      * @throws Throwable
      */
-    protected function execute($input, $output): int
+    protected function execute(Input $input, Output $output): int
     {
         $this->createELObject();
 

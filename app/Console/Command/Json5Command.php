@@ -50,9 +50,9 @@ class Json5Command extends Command
      * @param Input  $input
      * @param Output $output
      */
-    protected function execute($input, $output)
+    protected function execute(Input $input, Output $output)
     {
-        $j5file = (string)$input->getRequiredArg('json5file');
+        $j5file = $this->flags->getArg('json5file');
         if (!is_file($j5file)) {
             throw new InvalidArgumentException("the json5 file '$j5file' is not exists");
         }
@@ -61,7 +61,7 @@ class Json5Command extends Command
         $decoded = Json5Decoder::decode($source);
 
         $encFlag = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
-        $outFile = $input->getSameStringOpt('o, output');
+        $outFile = $this->flags->getOpt('output');
         if ($outFile) {
             file_put_contents($outFile, json_encode($decoded, $encFlag));
             $output->success('write contents to output file');

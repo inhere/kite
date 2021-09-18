@@ -24,7 +24,7 @@ class RunCommand extends Command
 {
     protected static $name = 'run';
 
-    protected static $description = 'run an script command or script file';
+    protected static $description = 'run an script command or script file or kite plugin';
 
     /**
      * @var ScriptRunner
@@ -48,11 +48,11 @@ class RunCommand extends Command
 
     /**
      * @options
-     *  -l, --list TYPE     List information for all scripts or script files. type: file, cmd(default)
+     *  -l, --list          List information for all scripts or script files. type: file, cmd(default)
      *  -s, --search        Display all matched scripts by the input name
      *      --info          Show information for give script name or file
-     *      --dry-run       Mock running an script
-     *      --proxy         Enable proxy ENV setting
+     *      --dry-run       bool;Mock running an script
+     *      --proxy         bool;Enable proxy ENV setting
      *
      * @arguments
      *  name        The script name for execute
@@ -63,18 +63,18 @@ class RunCommand extends Command
      * @example
      *   {binWithCmd} hello.sh one two three 'a b c'
      */
-    protected function execute($input, $output)
+    protected function execute(Input $input, Output $output)
     {
-        $name = $input->getFirstArg();
+        $name = $this->flags->getFirstArg();
 
-        $listType = $input->getSameStringOpt('l, list');
+        $listType = $this->flags->getOpt('list');
         if ($listType === ScriptRunner::TYPE_FILE) {
             $this->listScriptFiles($output, $name);
             return;
         }
 
         // support search
-        $kw = $input->getSameStringOpt(['s', 'search']) ?: $name;
+        $kw = $this->flags->getOpt('search') ?: $name;
         if ($input->hasOneOpt(['s', 'search'])) {
             $this->searchScripts($output, $kw);
             return;
@@ -94,13 +94,20 @@ class RunCommand extends Command
         $runArgs = $input->getArguments();
         unset($runArgs[0]); // first is script name
 
-        $dryRun = $input->getBoolOpt('dry-run');
+        $dryRun = $this->flags->getOpt('dry-run');
         $this->sr->setDryRun($dryRun);
 
         // not found script name
         if (!$this->sr->isScriptName($name)) {
             if ($scriptFile = $this->sr->findScriptFile($name)) {
                 $this->sr->runScriptFile($scriptFile, $runArgs);
+                return;
+            }
+
+            // - is an plugin
+            if (Kite::plugManager()->isPlugin($name)) {
+                $output->notice("input is an plugin name, will run plugin: $name");
+                Kite::plugManager()->run($name, $this->app);
                 return;
             }
 

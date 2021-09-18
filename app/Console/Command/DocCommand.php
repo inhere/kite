@@ -115,7 +115,7 @@ TXT;
      * @param Input  $input
      * @param Output $output
      */
-    protected function execute($input, $output)
+    protected function execute(Input $input, Output $output)
     {
         $man = $this->prepareManDoc();
         if ($errPaths = $man->getErrorPaths()) {

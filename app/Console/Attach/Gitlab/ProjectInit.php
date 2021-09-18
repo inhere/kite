@@ -28,7 +28,7 @@ class ProjectInit extends Command
      *
      * @return int|mixed
      */
-    protected function execute($input, $output)
+    protected function execute(Input $input, Output $output)
     {
         $output->println(__METHOD__);
         return 0;
