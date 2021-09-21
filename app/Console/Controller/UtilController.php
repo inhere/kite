@@ -10,9 +10,9 @@
 namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
-use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Kite;
+use Toolkit\PFlag\FlagsParser;
 use function date;
 use function explode;
 use function implode;
@@ -64,15 +64,18 @@ class UtilController extends Controller
     /**
      * join multi line text
      *
+     * @arguments
+     * text     The multi line text
+     *
      * @options
      *  --sep    The separator char. Defaults to an empty string.
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function joinCommand(Input $input, Output $output): void
+    public function joinCommand(FlagsParser $fs, Output $output): void
     {
-        $text = trim($input->getStringArg(0));
+        $text = trim($fs->getArg(0));
         if (!$text) {
             $output->colored('empty text');
             return;
@@ -80,17 +83,16 @@ class UtilController extends Controller
 
         $lines = explode("\n", $text);
 
-        $sep = $input->getStringOpt('sep');
+        $sep = $fs->getOpt('sep');
         echo implode($sep, $lines), "\n";
     }
 
     /**
      * print current datetime
      *
-     * @param Input  $input
      * @param Output $output
      */
-    public function dateCommand(Input $input, Output $output): void
+    public function dateCommand( Output $output): void
     {
         $time = time();
 
@@ -118,10 +120,10 @@ class UtilController extends Controller
     /**
      * find IDEA in the machine
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function findJetBrainsCommand(Input $input, Output $output): void
+    public function findJetBrainsCommand(FlagsParser $fs, Output $output): void
     {
         $dirs = [
             // '~/Library/Preferences/PhpStorm2019.3/',
@@ -130,20 +132,25 @@ class UtilController extends Controller
             '~/Library/Application\ Support/JetBrains/Toolbox/apps/',
         ];
 
-        $ideName = $input->getStringArg('name', 'all');
+        $ideName = $fs->getArg('name', 'all');
         // rm -rf ~/Library/Application\ Support/${NAME}*/eval
 
         vdump($dirs);
     }
 
     /**
-     * @param Input  $input
-     * @param Output $output
+     * @arguments
+     * msg      The log message
+     *
+     * @options
+     * --type       The log type name.
+     *
+     * @param FlagsParser $fs
      */
-    public function logCommand(Input $input, Output $output): void
+    public function logCommand(FlagsParser $fs): void
     {
-        $msg = $input->getFirstArg();
-        $type = $input->getStringOpt('type');
+        $msg = $fs->getFirstArg();
+        $type = $fs->getOpt('type');
 
         if (!$msg && !$type) {
             return;

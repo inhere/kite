@@ -11,6 +11,7 @@ namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Console;
 use Inhere\Console\Controller;
+use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
@@ -18,7 +19,9 @@ use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Helper\AppHelper;
 use PhpComp\Http\Client\Client;
 use Throwable;
+use Toolkit\PFlag\FlagsParser;
 use function in_array;
+use function strtoupper;
 
 /**
  * Class GitHubGroup
@@ -99,25 +102,6 @@ class GitHubController extends Controller
         return false;
     }
 
-    protected function configure(): void
-    {
-        parent::configure();
-
-        // binding arguments
-        switch ($this->getAction()) {
-            case 'open':
-                $this->input->bindArgument('remote', 0);
-                break;
-            case 'project':
-                $this->input->bindArgument('name', 0);
-                break;
-            case 'pullRequest':
-                // Configure for the `pullRequestCommand`
-                $this->input->bindArgument('project', 0);
-                break;
-        }
-    }
-
     // protected function beforeAction(): bool
     // {
     //     if ($this->app) {
@@ -195,22 +179,11 @@ class GitHubController extends Controller
     }
 
     /**
-     * @param Input  $input
      * @param Output $output
      */
-    public function workflowCommand(Input $input, Output $output): void
+    public function workflowCommand(Output $output): void
     {
         $output->success('Complete');
-    }
-
-    /**
-     * @param Input $input
-     */
-    protected function openConfigure(Input $input): void
-    {
-        $input->bindArguments([
-            'repoPath' => 0,
-        ]);
     }
 
     /**
@@ -218,25 +191,25 @@ class GitHubController extends Controller
      *
      * @options
      *  -r, --remote         The git remote name. default is `origin`
-     *      --main           Use the config `mainRemote` name
+     *      --main           bool;Use the config `mainRemote` name
      *
      * @arguments
      *  repoPath    The remote git repo URL or repository group/name.
      *              If not input, will auto parse from current work directory
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @example
      *  {fullCmd}  php-toolkit/cli-utils
      *  {fullCmd}  https://github.com/php-toolkit/cli-utils
      */
-    public function openCommand(Input $input, Output $output): void
+    public function openCommand(FlagsParser $fs, Output $output): void
     {
         $gh = $this->getGithub();
 
         // - input repoPath
-        $repoPath = $input->getStringArg('repoPath');
+        $repoPath = $fs->getArg('repoPath');
         if ($repoPath) {
             $repoUrl = $gh->parseRepoUrl($repoPath);
             if (!$repoUrl) {
@@ -250,8 +223,8 @@ class GitHubController extends Controller
         }
 
         // - auto parse
-        $remote = $input->getSameStringOpt(['r', 'remote'], 'origin');
-        if ($input->getBoolOpt('main')) {
+        $remote = $fs->getOpt('remote', 'origin');
+        if ($fs->getOpt('main')) {
             $remote = $gh->getMainRemote();
         }
 
@@ -262,27 +235,16 @@ class GitHubController extends Controller
     }
 
     /**
-     * @param Input $input
-     */
-    protected function cloneConfigure(Input $input): void
-    {
-        $input->bindArguments([
-            'repo' => 0,
-            'name' => 1,
-        ]);
-    }
-
-    /**
      * Clone an github repository to local
      *
      * @options
      * -w, --workdir    The clone work dir, defualt is current dir.
      *
      * @arguments
-     *  repo    The remote git repo URL or repository name
+     *  repo    string;The remote git repo URL or repository name;required
      *  name    The repository name at local, default is same `repo`
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @example
@@ -290,14 +252,14 @@ class GitHubController extends Controller
      *  {binWithCmd}  php-toolkit/cli-utils my-repo
      *  {binWithCmd}  https://github.com/php-toolkit/cli-utils
      */
-    public function cloneCommand(Input $input, Output $output): void
+    public function cloneCommand(FlagsParser $fs, Output $output): void
     {
-        $repo = $input->getRequiredArg('repo');
-        $name = $input->getStringArg('name');
+        $repo = $fs->getArg('repo');
+        $name = $fs->getArg('name');
 
         $gh = $this->getGithub();
 
-        $workDir = $input->getSameStringOpt('w,workdir');
+        $workDir = $fs->getOpt('workdir');
         $repoUrl = $gh->parseRepoUrl($repo);
         if (!$repoUrl) {
             $output->error("invalid github 'repo' address: $repo");
@@ -316,52 +278,55 @@ class GitHubController extends Controller
         }
 
         $run->run(true);
-
         $output->success('Complete');
     }
 
     /**
      * generate an PR link for given project information
      *
+     * @arguments
+     * project      The project name.
+     *
      * @options
      *  -s, --source        The source branch name. will auto prepend branchPrefix
      *      --full-source   The full source branch name
      *  -t, --target        The target branch name
      *  -o, --open          Open the generated PR link on browser
-     *  -d, --direct        The PR is direct from fork to main repository
+     *  -d, --direct        bool;The PR is direct from fork to main repository
      *      --new           Open new PR page on browser
      *
-     *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function pullRequestCommand(Input $input, Output $output): void
+    public function pullRequestCommand(FlagsParser $fs, Output $output): void
     {
         $gh = $this->getGithub();
         if (!$pjName = $gh->findProjectName()) {
-            $pjName = $input->getRequiredArg('project');
+            $pjName = $fs->getArg('project');
+            if (!$pjName) {
+                throw new PromptException('project is required');
+            }
         }
-
-        // if (!$gh->hasProject($pjName)) {
-        //     throw new PromptException("project '{$pjName}' is not found in the config");
-        // }
 
         $gh->loadProjectInfo($pjName);
 
         $p = $gh->getCurProject();
 
-        $open = $input->getSameOpt(['o', 'open']);
-
         $output->info('auto fetch current branch name');
         $curBranch = $gh->getCurBranch();
-        $srcBranch = $input->getSameStringOpt(['s', 'source']);
-        $tgtBranch = $input->getSameStringOpt(['t', 'target']);
+        $srcBranch = $fs->getOpt('source');
+        $tgtBranch = $fs->getOpt('target');
 
         $brPrefix = $gh->getValue('branchPrefix', '');
         if ($srcBranch) {
             $srcBranch = $brPrefix . $srcBranch;
         } else {
             $srcBranch = $curBranch;
+        }
+
+        $open = $fs->getOpt('open');
+        if ($open && strtoupper($open) === 'HEAD') {
+            $open = $curBranch;
         }
 
         if ($tgtBranch) {

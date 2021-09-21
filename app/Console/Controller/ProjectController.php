@@ -3,7 +3,6 @@
 namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
-use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 
 /**
@@ -34,16 +33,15 @@ class ProjectController extends Controller
         ];
     }
 
-    public function projectCommand(Input $input, Output $output): void
+    public function projectCommand(Output $output): void
     {
         $output->success('Complete');
     }
 
     /**
-     * @param Input  $input
      * @param Output $output
      */
-    public function packageCommand(Input $input, Output $output): void
+    public function packageCommand(Output $output): void
     {
 
 

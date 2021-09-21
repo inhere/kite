@@ -17,6 +17,7 @@ use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Jump\JumpShell;
 use Inhere\Kite\Lib\Jump\JumpStorage;
 use Inhere\Kite\Lib\Template\SimpleTemplate;
+use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Util\ShellUtil;
 use function implode;
@@ -86,16 +87,16 @@ class JumpController extends Controller
      * @arguments
      *  category         The data category key name. allow: namedPaths, histories, prevPath
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function listCommand(Input $input, Output $output): void
+    public function listCommand(FlagsParser $fs, Output $output): void
     {
         $qj = Kite::jumper();
         $output->colored('Datafile: ' . $qj->getDatafile(), 'cyan');
         $output->println(Str::repeat('=', 60));
 
-        $key  = $input->getFirstArg();
+        $key  = $fs->getFirstArg();
         $data = $qj->getEngine()->toArray(true);
         $opts = [
             'ucTitleWords' => false,
@@ -121,7 +122,7 @@ class JumpController extends Controller
      * @options
      *  --bind       The shell bind func name. default is `jump`
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @help
@@ -136,9 +137,9 @@ class JumpController extends Controller
      *      eval "$(kite jump shell zsh --bind j)"
      *
      */
-    public function shellCommand(Input $input, Output $output): void
+    public function shellCommand(FlagsParser $fs, Output $output): void
     {
-        $shell = $input->getStringArg('shellName');
+        $shell = $fs->getArg('shellName');
         if (!$shell) {
             $shell = ShellUtil::getName(true);
         }
@@ -150,7 +151,7 @@ class JumpController extends Controller
         $qj  = Kite::jumper();
         $tpl = new SimpleTemplate();
 
-        $bindFunc = $input->getStringOpt('bind', 'jump');
+        $bindFunc = $fs->getOpt('bind', 'jump');
         $tplVars  = [
             'shell'    => $shell,
             'bindFunc' => $bindFunc,
@@ -171,29 +172,30 @@ class JumpController extends Controller
      *  keywords   The jump target directory keywords for match.
      *
      * @options
-     *  --flag INT     The flag set for match paths.
-     *          1       Only match name path list
-     *          2       Only match history path list
-     *          3       match all directory path list(default)
-     *  --no-name      Not output name for named paths, useful for bash env.
-     *  --limit INT    Limit the match result rows
+     *  --flag     The flag set for match paths.
+     *              Allow:
+     *              1   Only match name path list
+     *              2   Only match history path list
+     *              3   match all directory path list(default)
+     *  --no-name   bool;Not output name for named paths, useful for bash env.
+     *  --limit     bool;Limit the match result rows
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function hintCommand(Input $input, Output $output): void
+    public function hintCommand(FlagsParser $fs, Output $output): void
     {
         $qj = Kite::jumper();
-        $kw = $input->getStringArg('keywords');
+        $kw = $fs->getArg('keywords');
 
-        $flag = $input->getIntOpt('flag', JumpStorage::MATCH_BOTH);
+        $flag = $fs->getOpt('flag', JumpStorage::MATCH_BOTH);
 
         $tipsStr = '';
         $results = $qj->matchAll($kw, $flag);
 
         if ($results) {
             $tipsArr = [];
-            $notName = $input->getBoolOpt('no-name');
+            $notName = $fs->getOpt('no-name');
 
             foreach ($results as $name => $path) {
                 if (false === $notName && is_string($name)) {
@@ -218,17 +220,17 @@ class JumpController extends Controller
      * Get the real directory path by given name.
      *
      * @arguments
-     *  name   The jump target directory name or path.
+     *  name    The jump target directory name or path.
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function getCommand(Input $input, Output $output): void
+    public function getCommand(FlagsParser $fs, Output $output): void
     {
         $qj = Kite::jumper();
 
         // vdump($input, $_SERVER['argv']);
-        $name = $input->getStringArg('name');
+        $name = $fs->getArg('name');
         $dir  = $qj->match($name);
 
         Kite::logger()->info("jump get directory is: $dir, name: $name");
@@ -240,23 +242,23 @@ class JumpController extends Controller
      * Set the name to real directory path.
      *
      * @arguments
-     *  name   The name for quick jump.
-     *  path   The target directory path.
+     *  name    string;The name for quick jump;required;
+     *  path    string;The target directory path;required;
      *
      * @options
-     *  --override       Override exist name.
+     *  --override       bool;Override exist name.
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function setCommand(Input $input, Output $output): void
+    public function setCommand(FlagsParser $fs, Output $output): void
     {
         $qj = Kite::jumper();
 
-        $name = (string)$input->getRequiredArg('name');
-        $path = (string)$input->getRequiredArg('path');
+        $name = $fs->getArg('name');
+        $path = $fs->getArg('path');
 
-        $ok = $qj->addNamed($name, $path, $input->getBoolOpt('override'));
+        $ok = $qj->addNamed($name, $path, $fs->getOpt('override'));
         if ($ok) {
             $qj->dump();
             $output->success("Set: $name=$path");
@@ -268,17 +270,20 @@ class JumpController extends Controller
     /**
      * record target directory path, by the jump dir hooks.
      *
-     * @options
-     *  --quiet       Quiet, not print workdir.
+     * @arguments
+     * targetDir   The into target dir path
      *
-     * @param Input  $input
+     * @options
+     *  --quiet       bool;Quiet, not print workdir.
+     *
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function chdirCommand(Input $input, Output $output): void
+    public function chdirCommand(FlagsParser $fs, Output $output): void
     {
-        $targetDir = $input->getStringArg(0);
+        $targetDir = $fs->getArg('targetDir');
         if (!$targetDir) {
-            $targetDir = $input->getWorkDir();
+            $targetDir = $this->input->getWorkDir();
         }
 
         $qj = Kite::jumper();
@@ -292,7 +297,7 @@ class JumpController extends Controller
         }
 
         if (is_dir($targetDir)) {
-            $quiet = $input->getBoolOpt('quiet');
+            $quiet = $fs->getOpt('quiet');
 
             if (!$quiet) {
                 $output->colored("INTO: $targetDir");

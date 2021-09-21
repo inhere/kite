@@ -103,7 +103,7 @@ class Request
     /**
      * @param string $str
      *
-     * @return static
+     * @return static|null
      */
     public static function fromHTTPString(string $str): ?self
     {
@@ -399,7 +399,7 @@ class Request
             $nodes = Str::explode($line, ':', 2);
             $name  = strtolower($nodes[0]);
             $value = $nodes[1] ?? '';
-            if ($value && strpos(';', $value) !== false) {
+            if ($value && strpos($value, ';') !== false) {
                 $headerMap[$name] = Str::explode($value, ';');
             } else {
                 $headerMap[$name] = [$value];

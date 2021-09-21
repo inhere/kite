@@ -55,7 +55,7 @@ class FileController extends Controller
      * @arguments
      *  path        The ls path
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      */
     public function listCommand(FlagsParser $fs): void
     {
@@ -104,7 +104,7 @@ class FileController extends Controller
      * @arguments
      *  file      The file path
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
     public function vimCommand(FlagsParser $fs, Output $output): void
@@ -157,7 +157,7 @@ class FileController extends Controller
      *      --pt      The progress bar type. allow: txt,bar
      *  -s, --save    The save local file for downloaded.
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
     public function downCommand(FlagsParser $fs, Output $output): void

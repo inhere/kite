@@ -35,17 +35,12 @@ class Json5Command extends Command
         return ['j5'];
     }
 
-    protected function configure(): void
-    {
-        $this->input->bindArgument('json5file', 0);
-    }
-
     /**
      * @options
      *  -o, --output     Output the decoded contents to the file
      *
      * @arguments
-     *  json5file        The script name for execute
+     *  json5file        string;The json5 file name for parse;required
      *
      * @param Input  $input
      * @param Output $output

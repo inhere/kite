@@ -10,9 +10,10 @@
 namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
-use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Kite;
+use InvalidArgumentException;
+use Toolkit\PFlag\FlagsParser;
 use function array_keys;
 
 /**
@@ -36,17 +37,17 @@ class PluginController extends Controller
      * list all plugins dir and file information
      *
      * @options
-     *  --only-files    Only list all plugin names
+     *  --only-files    bool;Only list all plugin names
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function listCommand(Input $input, Output $output): void
+    public function listCommand(FlagsParser $fs, Output $output): void
     {
         $kpm = Kite::plugManager();
         $opts = ['ucFirst' => false];
 
-        if (!$input->getBoolOpt('only-files')) {
+        if (!$fs->getOpt('only-files')) {
             $dirs = $kpm->getPluginDirs();
             $output->aList($dirs, 'plugin dirs', $opts);
         }
@@ -59,17 +60,16 @@ class PluginController extends Controller
      * display information for an plugin
      *
      * @arguments
-     *  name    The plugin name for display
+     *  name    string;The plugin name for display;required
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function infoCommand(Input $input, Output $output): void
+    public function infoCommand(FlagsParser $fs, Output $output): void
     {
-        $input->bindArgument('name', 0);
-        $name = $input->getRequiredArg('name');
+        $kpm  = Kite::plugManager();
+        $name = $fs->getArg('name');
 
-        $kpm = Kite::plugManager();
         if (!$plg= $kpm->getPlugin($name)) {
             $output->error("the plugin '$name' is not exists");
             return;
@@ -87,16 +87,16 @@ class PluginController extends Controller
      *  name    The plugin name for run
      *
      * @options
-     *  -i, --select    Run plugin by select
+     *  -i, --select    bool;Run plugin by select
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function runCommand(Input $input, Output $output): void
+    public function runCommand(FlagsParser $fs, Output $output): void
     {
         $kpm = Kite::plugManager();
 
-        if ($input->getSameBoolOpt('i,select')) {
+        if ($fs->getOpt('select')) {
             $files = $kpm->loadPluginFiles()->getPluginFiles();
 
             $list = array_keys($files);
@@ -104,8 +104,10 @@ class PluginController extends Controller
                 'returnVal' => true,
             ]);
         } else {
-            $input->bindArgument('name', 0);
-            $name = $input->getRequiredArg('name');
+            $name = $fs->getArg('name');
+            if (!$name) {
+                throw new InvalidArgumentException('must provide plugin name for run');
+            }
         }
 
         $kpm->run($name, $this->app);

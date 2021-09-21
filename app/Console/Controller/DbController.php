@@ -35,9 +35,8 @@ class DbController extends Controller
      *  -s, --source    The source sql file
      *  -o, --output    The output content file
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
-     *
      */
     public function sql2mdCommand(FlagsParser $fs, Output $output): void
     {
@@ -51,9 +50,8 @@ class DbController extends Controller
      *  -s, --source    The source markdown file
      *  -o, --output    The output sql file
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
-     *
      */
     public function md2sqlCommand(FlagsParser $fs, Output $output): void
     {

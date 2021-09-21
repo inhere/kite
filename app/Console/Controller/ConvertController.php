@@ -153,5 +153,4 @@ class ConvertController extends Controller
         // opts
         $output->table($data, 'Time to date', []);
     }
-
 }

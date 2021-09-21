@@ -34,11 +34,10 @@ class K8sController extends Controller
      *  -s, --source    The source sql file
      *  -o, --output    The output content file
      *
-     * @param Input  $input
      * @param Output $output
      *
      */
-    public function genTplCommand(Input $input, Output $output): void
+    public function genTplCommand(Output $output): void
     {
         $output->info('WIP');
     }

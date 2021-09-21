@@ -24,6 +24,11 @@ class ClientEnvReader
     private $envs = [];
 
     /**
+     * @var string
+     */
+    private $curEnv = '';
+
+    /**
      * @param string $envFile
      *
      * @return static

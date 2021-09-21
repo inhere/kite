@@ -30,8 +30,6 @@ use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Obj\ConfigObject;
 use Toolkit\Stdlib\Str;
 use function array_keys;
-use function array_values;
-use function count;
 use function implode;
 use function sprintf;
 use function strlen;
@@ -110,7 +108,7 @@ class GitController extends Controller
     protected function beforeRun(): void
     {
         if ($this->app && !$this->settings) {
-            $this->settings = ConfigObject::new($this->app->getParam('git', []));
+            $this->settings = ConfigObject::new($this->app->getArrayParam('git'));
         }
     }
 
@@ -227,7 +225,7 @@ class GitController extends Controller
      * display git information for the project
      *
      * @options
-     * --show-commands  bool;Show exec git commands
+     * --show-commands      bool;Show exec git commands
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -243,45 +241,37 @@ class GitController extends Controller
     }
 
     /**
-     * @param Input $input
-     */
-    protected function branchConfigure(Input $input): void
-    {
-        // $input->bindArguments(['keyword' => 0]);
-    }
-
-    /**
      * list branch by git branch
      *
      * @options
-     *  -a, --all                   Display all branches
-     *  -r, --remote <string>       Display given remote branches
-     *      --only-name             Only display branch name
-     *      --inline                Only display branch name and print inline
-     *  -s, --search <string>       The keyword name for search branches
+     *  -a, --all          bool;Display all branches
+     *  -r, --remote       Display branches for the given remote
+     *      --only-name    bool;Only display branch name
+     *      --inline       bool;Only display branch name and print inline
+     *  -s, --search       The keyword name for search branches
      *
      * @arguments
      *
-     * @param Input $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function branchCommand(Input $input, Output $output): void
+    public function branchCommand(FlagsParser $fs, Output $output): void
     {
         $opts = [];
         $repo = Repo::new();
 
         $remote = '';
-        $inline = $input->getBoolOpt('inline');
-        if ($input->getSameBoolOpt('a, all')) {
+        $inline = $fs->getOpt('inline');
+        if ($fs->getOpt('all')) {
             $opts['all'] = true;
-        } elseif ($remote = $input->getSameStringOpt('r,remote')) {
+        } elseif ($remote = $fs->getOpt('remote')) {
             $opts['remotes'] = true;
         }
 
         $list = $repo->getGit()->branch->getList($opts);
 
-        $onlyName = $input->getBoolOpt('only-name');
-        $keyword  = $input->getSameStringOpt('s,search');
+        $onlyName = $fs->getOpt('only-name');
+        $keyword  = $fs->getOpt('search');
 
         $msg = 'Branch List';
         if (strlen($remote) > 1) {
@@ -388,7 +378,7 @@ class GitController extends Controller
      * Clone an remote git repository to local
      *
      * @options
-     *  --gh        Define the remote repository is on github
+     *  --gh        bool;Define the remote repository is on github
      *
      * @arguments
      *  repo    The remote git repo URL or repository name
@@ -411,9 +401,9 @@ class GitController extends Controller
      * get the latest/next git tag from the project directory
      *
      * @options
-     * -d, --dir      The project directory path. default is current directory.
-     * --next-tag     bool;Display the project next tag version. eg: v2.0.2 => v2.0.3
-     * --only-tag     bool;Only output tag information
+     * -d, --dir          The project directory path. default is current directory.
+     *     --next-tag     bool;Display the project next tag version. eg: v2.0.2 => v2.0.3
+     *     --only-tag     bool;Only output tag information
      *
      * @param FlagsParser $fs
      * @param Input $input
@@ -580,7 +570,7 @@ class GitController extends Controller
      *  -v, --tag           The tag version. eg: v2.0.3
      *      --no-remote     bool;Only delete local tag
      *
-     * @param Input $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
     public function tagDeleteCommand(FlagsParser $fs, Output $output): void
@@ -761,11 +751,11 @@ class GitController extends Controller
      * collect git change log information by `git log`
      *
      * @arguments
-     *  oldVersion   string;The old version. eg: v1.0.2
-     *                - keywords `last/latest` will auto use latest tag.
-     *                - keywords `prev/previous` will auto use previous tag.;required
-     *  newVersion   string;The new version. eg: v1.2.3
-     *                - keywords `head` will use `Head` commit.;required
+     *  oldVersion      string;The old version. eg: v1.0.2
+     *                  - keywords `last/latest` will auto use latest tag.
+     *                  - keywords `prev/previous` will auto use previous tag.;required
+     *  newVersion      string;The new version. eg: v1.2.3
+     *                  - keywords `head` will use `Head` commit.;required
      *
      * @options
      *  --exclude           Exclude contains given sub-string. multi by comma split.
@@ -791,9 +781,9 @@ class GitController extends Controller
      * @param Output $output
      *
      * @example
-     *  {binWithCmd} last head
-     *  {binWithCmd} last head --style gh-release --no-merges
-     *  {binWithCmd} v2.0.9 v2.0.10 --no-merges --style gh-release --exclude "cs-fixer,format codes"
+     *   {binWithCmd} last head
+     *   {binWithCmd} last head --style gh-release --no-merges
+     *   {binWithCmd} v2.0.9 v2.0.10 --no-merges --style gh-release --exclude "cs-fixer,format codes"
      */
     public function changelogCommand(FlagsParser $fs, Output $output): void
     {

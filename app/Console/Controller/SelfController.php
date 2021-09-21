@@ -13,6 +13,7 @@ use Inhere\Kite\Helper\SysCmd;
 use Inhere\Kite\Kite;
 use Throwable;
 use Toolkit\Cli\Color;
+use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\OS;
 use Toolkit\Stdlib\Php;
 use Toolkit\Stdlib\Util\PhpDotEnv;
@@ -106,7 +107,7 @@ class SelfController extends Controller
      * get the kite paths
      *
      * @options
-     *  --inline    Output without newline.
+     *  --inline    bool;Output without newline.
      *
      * @arguments
      *  path        The sub-path in the kite. if empty, return kite path.
@@ -119,12 +120,12 @@ class SelfController extends Controller
      * @param Input  $input
      * @param Output $output
      */
-    public function pathCommand(Input $input, Output $output): void
+    public function pathCommand(FlagsParser $fs, Output $output): void
     {
-        $subPath = $input->getStringArg(0);
+        $subPath = $fs->getArg(0);
         $fullPath = Kite::getPath($subPath);
 
-        if ($input->getBoolOpt('inline')) {
+        if ($fs->getOpt('inline')) {
             $output->writeRaw($fullPath);
             return;
         }
@@ -137,25 +138,25 @@ class SelfController extends Controller
      *
      * @options
      *  -s, --search         Search config names by `key` argument
-     *      --keys           Only show all key names of config
-     *      --clean          Output clean value.
+     *      --keys           bool;Only show all key names of config
+     *      --clean          bool;Output clean value.
      *
      * @arguments
      *  key     The key of config
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function configCommand(Input $input, Output $output): void
+    public function configCommand(FlagsParser $fs, Output $output): void
     {
         $app = $this->getApp();
-        if ($input->getBoolOpt('keys')) {
+        if ($fs->getOpt('keys')) {
             $output->aList(array_keys($app->getConfig()), 'Keys of config');
             return;
         }
 
         $conf = $app->getConfig();
-        $key  = $input->getStringArg(0);
+        $key  = $fs->getArg(0);
 
         // show all config
         if (!$key) {
@@ -168,7 +169,7 @@ class SelfController extends Controller
         }
 
         $value = null;
-        $match = $input->getSameBoolOpt('s,search');
+        $match = $fs->getOpt('search');
         if ($match) { // match key
             foreach ($conf as $name => $item) {
                 if (stripos($name, $key) !== false) {
@@ -203,19 +204,18 @@ class SelfController extends Controller
      * @options
      *   -l, --list      List all registered object names
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function objectCommand(Input $input, Output $output): void
+    public function objectCommand(FlagsParser $fs, Output $output): void
     {
         $box = Kite::box();
-        if ($input->getSameBoolOpt('l,list')) {
+        if ($fs->getOpt('l,list')) {
             $output->aList($box->getObjectIds(), 'Registered IDs');
             return;
         }
 
-        $input->bindArgument('objId', 0);
-        $objName = $input->getStringArg('objId');
+        $objName = $fs->getArg('objectName');
         if (!$objName) {
             $output->liteError("Please input an object ID/name for see detail");
             return;
@@ -232,12 +232,12 @@ class SelfController extends Controller
      * update {binName} to latest from github repository(by git pull)
      *
      * @options
-     *  --no-deps     Not update deps by composer update
+     *  --no-deps     bool;Not update deps by composer update
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function updateCommand(Input $input, Output $output): void
+    public function updateCommand(FlagsParser $fs, Output $output): void
     {
         $dir = $this->baseDir;
         $output->info('Will change to kite directory: ' . $dir);
@@ -251,7 +251,7 @@ class SelfController extends Controller
         // [, $msg,] = Sys::run($cmd);
         SysCmd::quickExec($cmd, $dir);
 
-        if (!$input->getBoolOpt('no-deps')) {
+        if (!$fs->getOpt('no-deps')) {
             Color::println('Run composer update:');
             $cmd = 'composer update';
             // [, $msg,] = Sys::run($cmd);
@@ -260,7 +260,7 @@ class SelfController extends Controller
         }
 
         Color::println('Add execute perm:');
-        $binName = $input->getScriptName();
+        $binName = $this->input->getScriptName();
 
         // normal run
         [$code, $msg,] = Sys::run("chmod a+x bin/$binName", $dir);
@@ -300,22 +300,22 @@ class SelfController extends Controller
      *  {binWithCmd} [-S HOST:PORT]
      *
      * @options
-     *  -s, -S, --addr STRING    The http server address. e.g 127.0.0.1:8552
-     *  -b, --php-bin STRING     The php binary file(<comment>php</comment>)
-     *      --show-info          Only show serve info, not start listen
+     *  -s, -S, --addr     The http server address. e.g 127.0.0.1:8552
+     *  -b, --php-bin      The php binary file(<comment>php</comment>)
+     *      --show-info    bool;Only show serve info, not start listen
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @throws Throwable
      */
-    public function webuiCommand(Input $input, Output $output): void
+    public function webuiCommand(FlagsParser $fs, Output $output): void
     {
         $this->webUi = array_merge($this->webUi, $this->app->getArrayParam('webui'));
         // vdump(BASE_PATH, $this->webUi);
 
-        $svrAddr = $input->getSameStringOpt('s,S,addr', $this->webUi['addr']);
-        $phpBin  = $input->getStringOpt('php-bin', $this->webUi['php-bin']);
+        $svrAddr = $fs->getOpt('addr', $this->webUi['addr']);
+        $phpBin  = $fs->getOpt('php-bin', $this->webUi['php-bin']);
         // $docRoot = $input->getSameStringOpt('t,doc-root', $conf['root']);
 
         $docRoot = $this->webUi['root'];
@@ -323,7 +323,7 @@ class SelfController extends Controller
         $pds = PhpDevServe::new($svrAddr, $docRoot);
         $pds->setPhpBin($phpBin);
 
-        if ($input->getBoolOpt('show-info')) {
+        if ($fs->getOpt('show-info')) {
             $output->aList($pds->getInfo(), 'Listen Information', ['ucFirst' => false]);
             return;
         }

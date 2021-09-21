@@ -52,15 +52,15 @@ class CronTabController extends Controller
      * @options
      *  -i          bool;Run an interactive environment
      *
+     * @param FlagsParser $fs
+     * @param Output $output
+     *
+     * @throws Exception
      * @example
      *  {binWithCmd} 'every 6 mins'         // '*\/6 * * * *'
      *  {binWithCmd} 'every day 10 am'      // '0 10 * * *'
      *  {binWithCmd} 'every day 10:20 am'   // '20 10 * * *'
      *
-     * @param Input  $input
-     * @param Output $output
-     *
-     * @throws Exception
      */
     public function parseCommand(FlagsParser $fs, Output $output): void
     {
@@ -75,14 +75,6 @@ class CronTabController extends Controller
     }
 
     /**
-     * @param Input $input
-     */
-    public function execTimeConfigure(Input $input): void
-    {
-        $input->bindArgument('expression', 0);
-    }
-
-    /**
      * show next execution datetime for an cron expression.
      *
      * @arguments
@@ -92,7 +84,7 @@ class CronTabController extends Controller
      *  -n, --next      int;Show next number exec datetime. default number is 3.
      *  -p, --prev      bool;Show previsions exec datetime
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @throws Exception
