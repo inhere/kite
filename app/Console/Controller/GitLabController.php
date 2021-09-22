@@ -554,7 +554,7 @@ class GitLabController extends Controller
         $dryRun = $this->flags->getOpt('dry-run');
 
         $curBranch = $gitlab->getCurBranch();
-        $orgRemote = $gitlab->getForkRemote();
+        // $orgRemote = $gitlab->getForkRemote();
 
         $runner = CmdRunner::new();
         $runner->setDryRun($dryRun);
@@ -627,7 +627,8 @@ class GitLabController extends Controller
         }
 
         $open = $fs->getOpt('open');
-        if ($open && strtoupper($open) === 'HEAD') {
+        // if input '@', 'head', use current branch name.
+        if ($open && ($open === '@' || strtoupper($open) === 'HEAD')) {
             $open = $curBranch;
         }
 
@@ -753,6 +754,7 @@ class GitLabController extends Controller
      * @param Input $input
      * @param Output $output
      *
+     * @throws Throwable
      * @example
      *  {binWithCmd}             Sync code from the main repo remote {curBranchName} branch
      *  {binWithCmd} -b master   Sync code from the main repo remote master branch
