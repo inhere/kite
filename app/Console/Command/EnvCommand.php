@@ -29,21 +29,22 @@ class EnvCommand extends Command
      *
      * @options
      *  --format              Format the env value
-     *  --match-value         Match ENV value by keywords. default is match key.
+     *  --match-value         bool;Match ENV value by keywords. default is match key.
      *  --split               Split the env value by given char. eg ':' ','
-     *  -s, --search STRING   The keywords for search ENV information
+     *  -s, --search          The keywords for search ENV information
      *
      * @arguments
-     *  name STRING   The name in the ENV or keywords for search ENV keys
+     *  name        The name in the ENV or keywords for search ENV keys
      *
      * @param  Input $input
      * @param  Output $output
      */
     protected function execute(Input $input, Output $output)
     {
-        $keywords = $input->getSameStringOpt('s,search');
+        // $keywords = $input->getSameStringOpt('s,search');
+        $keywords = $this->flags->getOpt('search');
 
-        $name = $input->getFirstArg();
+        $name = $this->flags->getFirstArg();
         if (!$name && !$keywords) {
             // env | grep XXX
             $output->aList($_SERVER, 'ENV Information', ['ucFirst' => false]);
@@ -60,7 +61,7 @@ class EnvCommand extends Command
             }
 
             if ($value !== null) {
-                $sepChar = $input->getStringOpt('split');
+                $sepChar = $this->flags->getOpt('split');
                 if ($upKey === 'PATH') {
                     $sepChar = OS::isWin() ? ';' : ':';
                 }
@@ -76,7 +77,7 @@ class EnvCommand extends Command
         }
 
         $keywords = $keywords ?: $name;
-        $matchVal = $input->getBoolOpt('match-value');
+        $matchVal = $this->flags->getOpt('match-value');
         $matched  = $this->searchSERVER($keywords, $matchVal);
 
         if (!$matched) {
