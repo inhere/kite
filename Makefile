@@ -28,13 +28,13 @@
 help:
 	@echo "There some make command for the project\n"
 	@echo "Available Commands:"
-	@grep -h -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@grep -h -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 clean:  ## Clean all created artifacts
 	git clean --exclude=.idea/ -fdx
 
 phar:  ## build kite application to phar package
-	php -d phar.readonly=0 bin/kite phar pack
+	php -d phar.readonly=0 bin/kite phar:pack -o kite-latest.phar
 
 cs-fix:  ## Fix code style for all files
 	gofmt -w ./

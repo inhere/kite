@@ -64,5 +64,5 @@ jobs:
       - name: Test build Phar and run
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.php == '7.4' }}
         run: |
-          php -d phar.readonly=0 bin/kite phar:pack -o kite-latest.phar --no-progress
+          php -d phar.readonly=0 bin/kite --debug 4 phar:pack -o kite-latest.phar --no-progress
           php kite-latest.phar -V
