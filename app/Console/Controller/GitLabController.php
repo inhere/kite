@@ -18,6 +18,7 @@ use Inhere\Kite\Common\Cmd;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitLab;
 use Inhere\Kite\Console\Attach\Gitlab\ProjectInit;
+use Inhere\Kite\Console\Component\RedirectToGitGroup;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use Throwable;
@@ -146,21 +147,25 @@ class GitLabController extends Controller
             return false;
         }
 
+        $h = RedirectToGitGroup::new([
+            'cmdList' => $this->settings['redirectGit'] ?? [],
+        ]);
+
+        return $h->handle($this->app, $action, $args);
         // resolve alias
-        $gitCtrl = $this->app->getController(GitController::getName());
-        $command = $gitCtrl->resolveAlias($action);
-
-        $redirectGitGroup = $this->settings['redirectGit'] ?? [];
-
-        if (in_array($command, $redirectGitGroup, true)) {
-            $this->output->notice("will redirect to git group for run `git $command`");
-            // Console::app()->dispatch("git:$command");
-            // Console::app()->dispatch("git:$command", $this->flags->getRawArgs());
-            Console::app()->dispatch("git:$command", $args);
-            return true;
-        }
-
-        return false;
+        // $gitCtrl = $this->app->getController(GitController::getName());
+        // $command = $gitCtrl->resolveAlias($action);
+        //
+        // $redirectGitGroup = $this->settings['redirectGit'] ?? [];
+        // if (in_array($command, $redirectGitGroup, true)) {
+        //     $this->output->notice("will redirect to git group for run `git $command`");
+        //     // Console::app()->dispatch("git:$command");
+        //     // Console::app()->dispatch("git:$command", $this->flags->getRawArgs());
+        //     Console::app()->dispatch("git:$command", $args);
+        //     return true;
+        // }
+        //
+        // return false;
     }
 
     /**
