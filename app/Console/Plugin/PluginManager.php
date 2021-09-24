@@ -79,23 +79,18 @@ class PluginManager
     }
 
     /**
-     * @param string      $name plugin name or file path
+     * @param string $name plugin name or file path
      * @param Application $app
+     * @param array $args
      */
-    public function run(string $name, Application $app): void
+    public function run(string $name, Application $app, array $args = []): void
     {
         $plugin = $this->getPlugin($name);
         if (!$plugin) {
-            throw new RuntimeException('the plugin is not exists. plugin: ' . $name);
+            throw new RuntimeException("the plugin '$name' is not exists. plugin: ");
         }
 
-        $input = $app->getInput();
-        if ($input->getSameBoolOpt('h,help')) {
-            $this->showInfo($plugin);
-            return;
-        }
-
-        $plugin->run($app, $input);
+        $plugin->run($app, $args);
     }
 
     /**

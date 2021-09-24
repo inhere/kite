@@ -100,6 +100,11 @@ class CliApplication extends Application
             $jumpConf = $this->getArrayParam('jumper');
             return QuickJump::new($jumpConf);
         });
+
+        // $box->set('envLoader', function () {
+        //     $jumpConf = $this->getArrayParam('osEnv');
+        //     return QuickJump::new($jumpConf);
+        // });
     }
 
     protected function initAppRun(): void

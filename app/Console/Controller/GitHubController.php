@@ -9,7 +9,6 @@
 
 namespace Inhere\Kite\Console\Controller;
 
-use Inhere\Console\Console;
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
@@ -21,7 +20,6 @@ use Inhere\Kite\Helper\AppHelper;
 use PhpComp\Http\Client\Client;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
-use function in_array;
 use function strtoupper;
 
 /**
@@ -53,6 +51,18 @@ class GitHubController extends Controller
             'rls'          => 'release',
             'pr'           => 'pullRequest',
             'redirectList' => ['rl'],
+        ];
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function options(): array
+    {
+        return [
+            '--dry-run' => 'bool;Dry-run the workflow, dont real execute',
+            // '-y, --yes' => 'Direct execution without confirmation',
+            // '-i, --interactive' => 'Run in an interactive environment[TODO]',
         ];
     }
 
@@ -91,37 +101,8 @@ class GitHubController extends Controller
             'cmdList' => $this->settings['redirectGit'] ?? [],
         ]);
 
-        return $h->handle($this->app, $action, $args);
-
-        // resolve alias
-        // $gitCtrl = $this->app->getController(GitController::getName());
-        // $command = $gitCtrl->resolveAlias($action);
-        //
-        // $redirectGitGroup = $this->settings['redirectGit'] ?? [];
-        // if (in_array($command, $redirectGitGroup, true)) {
-        //     $this->output->notice("will redirect to git group for run `git $command`");
-        //     // Console::app()->dispatch("git:$command");
-        //     Console::app()->dispatch("git:$command", $args);
-        //     return true;
-        // }
-        //
-        // return false;
+        return $h->handle($this, $action, $args);
     }
-
-    // protected function beforeAction(): bool
-    // {
-    //     if ($this->app) {
-    //         $action = $this->getAction();
-    //
-    //         $loadEnvActions = $this->settings['loadEnvOn'] ?? [];
-    //         if ($loadEnvActions && in_array($action, $loadEnvActions, true)) {
-    //             $this->output->info(self::getName() . ' - will load osEnv setting for command: ' . $action);
-    //             AppHelper::loadOsEnvInfo($this->app);
-    //         }
-    //     }
-    //
-    //     return true;
-    // }
 
     /**
      * Show a list of commands that will be redirected to git
@@ -244,7 +225,7 @@ class GitHubController extends Controller
      * Clone an github repository to local
      *
      * @options
-     * -w, --workdir    The clone work dir, defualt is current dir.
+     *  -w, --workdir    The clone work dir, default is current dir.
      *
      * @arguments
      *  repo    string;The remote git repo URL or repository name;required

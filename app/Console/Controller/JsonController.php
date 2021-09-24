@@ -12,6 +12,8 @@ namespace Inhere\Kite\Console\Controller;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Console\Component\Clipboard;
+use InvalidArgumentException;
 use Toolkit\PFlag\FlagsParser;
 
 /**
@@ -19,13 +21,15 @@ use Toolkit\PFlag\FlagsParser;
  */
 class JsonController extends Controller
 {
-    protected static $name = 'demo';
+    protected static $name = 'json';
 
-    protected static $description = 'Some useful development tool commands';
+    protected static $description = 'Some useful json development tool commands';
 
-    public static function isEnabled(): bool
+    protected static function commandAliases(): array
     {
-        return false;
+        return [
+            'toText' => ['2kv', 'to-kv', '2text']
+        ];
     }
 
     /**
@@ -43,8 +47,67 @@ class JsonController extends Controller
      * @param FlagsParser $fs
      * @param Output $output
      */
-    public function serveCommand(FlagsParser $fs, Output $output): void
+    public function loadCommand(FlagsParser $fs, Output $output): void
     {
         $output->success('Complete');
+    }
+
+    /**
+     * search keywords in the loaded JSON data.
+     *
+     * @arguments
+     * keywords     The keywords for search
+     *
+     * @options
+     * --type       The search type. allow: keys, path
+     *
+     */
+    public function searchCommand(): void
+    {
+        $cb = Clipboard::new();
+
+        $json = $cb->read();
+        if (!$json) {
+            throw new InvalidArgumentException('');
+        }
+    }
+
+    /**
+     * multi line JSON logs.
+     */
+    public function mlLogCommand(): void
+    {
+        $cb = Clipboard::new();
+
+        $json = $cb->read();
+        if (!$json) {
+            throw new InvalidArgumentException('');
+        }
+    }
+
+    /**
+     * JSON to k-v text string.
+     */
+    public function ml2lineCommand(): void
+    {
+        $cb = Clipboard::new();
+
+        $json = $cb->read();
+        if (!$json) {
+            throw new InvalidArgumentException('');
+        }
+    }
+
+    /**
+     * JSON to k-v text string.
+     */
+    public function toTextCommand(): void
+    {
+        $cb = Clipboard::new();
+
+        $json = $cb->read();
+        if (!$json) {
+            throw new InvalidArgumentException('');
+        }
     }
 }

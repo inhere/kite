@@ -12,10 +12,13 @@ namespace Inhere\Kite\Console\Command;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Console\Util\Show;
 use Inhere\Kite\Component\ScriptRunner;
 use Inhere\Kite\Kite;
+use Toolkit\Stdlib\OS;
 use function count;
 use function is_array;
+use function vdump;
 
 /**
  * Class RunCommand
@@ -51,7 +54,7 @@ class RunCommand extends Command
      *  -l, --list          List information for all scripts or script files. type: file, cmd(default)
      *  -s, --search        Display all matched scripts by the input name
      *      --info          Show information for give script name or file
-     *      --dry-run       bool;Mock running an script
+     *      --dry-run       bool;Mock running, not real execute.
      *      --proxy         bool;Enable proxy ENV setting
      *
      * @arguments
@@ -65,7 +68,7 @@ class RunCommand extends Command
      */
     protected function execute(Input $input, Output $output)
     {
-        $name = $this->flags->getFirstArg();
+        $name = $this->flags->getArg('name');
 
         $listType = $this->flags->getOpt('list');
         if ($listType === ScriptRunner::TYPE_FILE) {
@@ -87,18 +90,30 @@ class RunCommand extends Command
         }
 
         if (!$name) {
-            $output->liteError('please input an script name for run or use -l TYPE see all scripts');
+            $output->liteError('please input an name for run or use -l TYPE see all scripts');
             return;
         }
-
-        $runArgs = $input->getArguments();
-        unset($runArgs[0]); // first is script name
 
         $dryRun = $this->flags->getOpt('dry-run');
         $this->sr->setDryRun($dryRun);
 
-        // not found script name
+        // proxy
+        $openProxy = $this->flags->getOpt('proxy');
+        $proxyEnv  = $this->app->getArrayParam('proxyEnv');
+        if ($openProxy && $proxyEnv) {
+            Show::aList($proxyEnv, 'Set Proxy ENV From Config: "proxyEnv"', [
+                'ucFirst'      => false,
+                'ucTitleWords' => false,
+            ]);
+
+            OS::setEnvVars($proxyEnv);
+        }
+
+        // $runArgs = $this->flags->getRawArgs(); // 会包含 arg: name
+        $runArgs = $this->flags->getRemainArgs();
+
         if (!$this->sr->isScriptName($name)) {
+            // - found script file
             if ($scriptFile = $this->sr->findScriptFile($name)) {
                 $this->sr->runScriptFile($scriptFile, $runArgs);
                 return;
@@ -107,7 +122,7 @@ class RunCommand extends Command
             // - is an plugin
             if (Kite::plugManager()->isPlugin($name)) {
                 $output->notice("input is an plugin name, will run plugin: $name");
-                Kite::plugManager()->run($name, $this->app);
+                Kite::plugManager()->run($name, $this->app, $runArgs);
                 return;
             }
 

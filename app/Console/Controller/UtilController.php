@@ -11,14 +11,13 @@ namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Kite;
 use Toolkit\PFlag\FlagsParser;
 use function date;
 use function explode;
 use function implode;
-use function strlen;
 use function strtotime;
-use function substr;
 use function time;
 use function trim;
 
@@ -77,8 +76,12 @@ class UtilController extends Controller
     {
         $text = trim($fs->getArg(0));
         if (!$text) {
-            $output->colored('empty text');
-            return;
+            $text = Clipboard::new()->read();
+
+            if (!$text) {
+                $output->colored('empty text');
+                return;
+            }
         }
 
         $lines = explode("\n", $text);

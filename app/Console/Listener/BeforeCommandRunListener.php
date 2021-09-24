@@ -55,22 +55,20 @@ class BeforeCommandRunListener extends AbstractObj
     public function __invoke(AbstractHandler $handler)
     {
         $input = $handler->getInput();
-        $alone = $handler->isAlone();
-
-        $this->autoSetProxyEnv($input, $alone, $handler::getName());
+        $this->autoSetProxyEnv($input, $handler);
     }
 
     /**
-     * @param Input  $input
-     * @param bool   $alone
-     * @param string $commandName
+     * @param Input $input
+     * @param AbstractHandler $handler
      */
-    protected function autoSetProxyEnv(Input $input, bool $alone, string $commandName): void
+    protected function autoSetProxyEnv(Input $input, AbstractHandler $handler): void
     {
         if (!$this->envSettings) {
             return;
         }
 
+        $alone = $handler->isAlone();
         $cmdId = $input->getCommandId();
 
         if ($this->commandIds && in_array($cmdId, $this->commandIds, true)) {
@@ -78,10 +76,8 @@ class BeforeCommandRunListener extends AbstractObj
             return;
         }
 
-        $groupName = $input->getCommand();
-        // vdump($groupName, $this);
+        $groupName = $handler->getGroupName();
         if (!$alone && isset($this->groupLimits[$groupName])) {
-            // vdump($commandName, $cmdId , $input);
             if (!$this->groupLimits[$groupName]) {
                 $this->setProxyEnv($this->envSettings, $cmdId);
                 return;

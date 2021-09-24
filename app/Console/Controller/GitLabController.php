@@ -151,21 +151,7 @@ class GitLabController extends Controller
             'cmdList' => $this->settings['redirectGit'] ?? [],
         ]);
 
-        return $h->handle($this->app, $action, $args);
-        // resolve alias
-        // $gitCtrl = $this->app->getController(GitController::getName());
-        // $command = $gitCtrl->resolveAlias($action);
-        //
-        // $redirectGitGroup = $this->settings['redirectGit'] ?? [];
-        // if (in_array($command, $redirectGitGroup, true)) {
-        //     $this->output->notice("will redirect to git group for run `git $command`");
-        //     // Console::app()->dispatch("git:$command");
-        //     // Console::app()->dispatch("git:$command", $this->flags->getRawArgs());
-        //     Console::app()->dispatch("git:$command", $args);
-        //     return true;
-        // }
-        //
-        // return false;
+        return $h->handle($this, $action, $args);
     }
 
     /**
@@ -586,19 +572,19 @@ class GitLabController extends Controller
      *  -t, --target        The target branch name
      *  -o, --open          Open the generated PR link on browser
      *  -d, --direct        bool;The PR is direct from fork to main repository
-     *      --new           Open new pr page on browser http://my.gitlab.com/group/repo/merge_requests/new
+     *      --new           bool;Open new pr page on browser. eg: http://my.gitlab.com/group/repo/merge_requests/new
      *
      * @argument
-     *  project   The project key in 'gitlab' config. eg: group-name, name
+     *  project     The project key in 'gitlab' config. eg: group-name, name
      *
      * @param FlagsParser $fs
      * @param Output $output
      *
      * @example
-     *  {binWithCmd}                       Will generate PR link for fork 'HEAD_BRANCH' to main 'HEAD_BRANCH'
-     *  {binWithCmd} -s 4_16 -t qa         Will generate PR link for main 'PREFIX_4_16' to main 'qa'
-     *  {binWithCmd} -t qa                 Will generate PR link for main 'HEAD_BRANCH' to main 'qa'
-     *  {binWithCmd} -t qa  --direct       Will generate PR link for fork 'HEAD_BRANCH' to main 'qa'
+     *   {binWithCmd}                       Will generate PR link for fork 'HEAD_BRANCH' to main 'HEAD_BRANCH'
+     *   {binWithCmd} -s 4_16 -t qa         Will generate PR link for main 'PREFIX_4_16' to main 'qa'
+     *   {binWithCmd} -t qa                 Will generate PR link for main 'HEAD_BRANCH' to main 'qa'
+     *   {binWithCmd} -t qa  --direct       Will generate PR link for fork 'HEAD_BRANCH' to main 'qa'
      */
     public function pullRequestCommand(FlagsParser $fs, Output $output): void
     {

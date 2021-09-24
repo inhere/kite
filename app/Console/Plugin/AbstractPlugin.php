@@ -4,6 +4,9 @@ namespace Inhere\Kite\Console\Plugin;
 
 use Inhere\Console\Application;
 use Inhere\Console\IO\Input;
+use Toolkit\PFlag\Flags;
+use Toolkit\PFlag\FlagsParser;
+use Toolkit\PFlag\SFlags;
 use function array_merge;
 
 /**
@@ -13,6 +16,11 @@ use function array_merge;
  */
 abstract class AbstractPlugin implements PluginInterface
 {
+    /**
+     * @var FlagsParser
+     */
+    protected $fs;
+
     /**
      * @var string
      */
@@ -44,6 +52,24 @@ abstract class AbstractPlugin implements PluginInterface
     }
 
     /**
+     * @return Flags
+     */
+    protected function createFlags(): Flags
+    {
+        $this->fs = new Flags();
+        return $this->fs;
+    }
+
+    /**
+     * @return SFlags
+     */
+    protected function createSFlags(): SFlags
+    {
+        $this->fs = new SFlags();
+        return $this->fs;
+    }
+
+    /**
      * Metadata for the plugin
      *
      * @return array
@@ -59,11 +85,23 @@ abstract class AbstractPlugin implements PluginInterface
     }
 
     /**
-     * options for the plugin
+     * flag options for the plugin
      *
      * @return array
      */
     public function options(): array
+    {
+        return [
+            // 'file' => 'string;the Idea Http Request file',
+        ];
+    }
+
+    /**
+     * flag arguments for the plugin
+     *
+     * @return array
+     */
+    public function arguments(): array
     {
         return [
             // 'file' => 'the Idea Http Request file',
@@ -120,9 +158,10 @@ abstract class AbstractPlugin implements PluginInterface
      * @param Application $app
      * @param Input       $input
      */
-    public function run(Application $app, Input $input): void
+    public function run(Application $app, array $args = []): void
     {
-        if (!$this->beforeRun($app, $input)) {
+        $input = $app->getInput();
+        if (!$this->beforeRun($app, $args)) {
             return;
         }
 
@@ -131,11 +170,11 @@ abstract class AbstractPlugin implements PluginInterface
 
     /**
      * @param Application $app
-     * @param Input       $input
+     * @param array $args
      *
      * @return bool
      */
-    protected function beforeRun(Application $app, Input $input): bool
+    protected function beforeRun(Application $app, array $args): bool
     {
         return true;
     }

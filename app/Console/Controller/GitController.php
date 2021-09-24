@@ -15,6 +15,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\Cmd;
 use Inhere\Kite\Common\CmdRunner;
+use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Console\Manage\GitBranchManage;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
@@ -146,7 +147,7 @@ class GitController extends Controller
      * update codes from origin by git pull
      *
      * @options
-     *  --dir   The want updated git repo dir. default is workdir
+     *  --dir       The want updated git repo dir. default is workdir
      *
      * @arguments
      *  gitArgs  Input more args or opts for run git
@@ -156,24 +157,20 @@ class GitController extends Controller
      * @param Output $output
      *
      * @example
-     * {binWithCmd} --all -f --unshallow
-     * {binWithCmd} --dir /path/to/mydir -- --all -f --unshallow
+     *   {binWithCmd} --all -f --unshallow
+     *   {binWithCmd} --all -f --unshallow
+     *   {binWithCmd} --dir /path/to/mydir -- --all -f --unshallow
      */
     public function updateCommand(FlagsParser $fs, Input $input, Output $output): void
     {
-        $repoDir = $fs->getOpt('dir') ?: $input->getWorkDir();
-
+        $dir  = $fs->getOpt('dir') ?: $input->getWorkDir();
         $args = $fs->getRawArgs();
+
         $c = Cmd::git('pull');
-        $c->setWorkDir($repoDir);
+        $c->setWorkDir($dir);
         $c->setDryRun($this->flags->getOpt('dry-run'));
         $c->addArgs(...$args);
         $c->run(true);
-
-        // $runner = CmdRunner::new();
-        // $runner->setDryRun($input->getBoolOpt('dry-run'));
-        // $runner->add('git pull');
-        // $runner->runAndPrint();
 
         $output->success('Complete');
     }
@@ -378,10 +375,11 @@ class GitController extends Controller
      * Clone an remote git repository to local
      *
      * @options
-     *  --gh        bool;Define the remote repository is on github
+     *  --gh             bool;Define the remote repository is on github
+     *  -w, --workdir    The clone work dir, default is current dir.
      *
      * @arguments
-     *  repo    The remote git repo URL or repository name
+     *  repo    string;The remote git repo URL or repository name;required
      *  name    The repository name at local, default is same `repo`
      *
      * @param FlagsParser $fs
@@ -394,7 +392,37 @@ class GitController extends Controller
      */
     public function cloneCommand(FlagsParser $fs, Output $output): void
     {
-        $output->success('TODO');
+        $repo = $fs->getArg('repo');
+        $name = $fs->getArg('name');
+        $args = $fs->getRawArgs();
+
+        $dir = $fs->getOpt('workdir');
+
+        $c = Cmd::git('clone');
+        $c->setWorkDir($dir);
+        $c->setDryRun($this->flags->getOpt('dry-run'));
+
+        if ($fs->getOpt('gh')) {
+            $gh = GitHub::new($output);
+
+            $repoUrl = $gh->parseRepoUrl($repo);
+            if (!$repoUrl) {
+                $output->error("invalid github 'repo' address: $repo");
+                return;
+            }
+        } else {
+            $repoUrl = $repo;
+        }
+
+        $c->add($repoUrl);
+        $c->addIf($name, $name);
+        if ($args) {
+            $c->addArgs(...$args);
+        }
+
+        $c->runAndPrint();
+
+        $output->success('Complete');
     }
 
     /**

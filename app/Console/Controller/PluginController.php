@@ -110,6 +110,6 @@ class PluginController extends Controller
             }
         }
 
-        $kpm->run($name, $this->app);
+        $kpm->run($name, $this->app, $fs->getRemainArgs());
     }
 }
