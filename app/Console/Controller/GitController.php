@@ -571,7 +571,11 @@ class GitController extends Controller
 
         $output->aList($info, 'Information', ['ucFirst' => false]);
 
-        if ($this->isInteractive() && $output->unConfirm('please ensure create and push new tag')) {
+        if (
+            $this->isInteractive() &&
+            !$this->flags->getOpt('yes') &&
+            $output->unConfirm('please ensure create and push new tag')
+        ) {
             $output->colored('  GoodBye!');
             return;
         }
@@ -660,7 +664,7 @@ class GitController extends Controller
      *      --sign-text     Custom setting the sign text.
      *
      * @arguments
-     *  files...   Only add special files
+     *  files...   array;Only add special files
      *
      * @help
      * commit types:

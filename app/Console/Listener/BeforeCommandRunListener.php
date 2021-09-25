@@ -70,7 +70,7 @@ class BeforeCommandRunListener extends AbstractObj
 
         $alone = $handler->isAlone();
         $cmdId = $input->getCommandId();
-
+// vdump($cmdId, $handler->getGroupName());
         if ($this->commandIds && in_array($cmdId, $this->commandIds, true)) {
             $this->setProxyEnv($this->envSettings, $cmdId);
             return;

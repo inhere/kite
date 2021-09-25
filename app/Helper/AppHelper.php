@@ -25,13 +25,13 @@ class AppHelper
     ];
 
     /**
-     * @param string $version eg: 2.0.8, v2.0.8.1
+     * @param string $version eg: 2.0.8, v2.0.8.1 v4.0.0beta1
      *
      * @return bool
      */
     public static function isVersion(string $version): bool
     {
-        return 1 === preg_match('#^v?\d{1,2}.\d{1,2}.\d{1,3}(.\d{1,3})?$#', $version);
+        return 1 === preg_match('#^v?\d{1,2}.\d{1,2}.\d{1,3}[.\w]*$#', $version);
     }
 
     /**

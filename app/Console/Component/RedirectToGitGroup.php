@@ -38,6 +38,7 @@ class RedirectToGitGroup extends AbstractObj
 
         if (in_array($command, $this->cmdList, true)) {
             Cli::info("NOTICE: will redirect to git group for run subcommand: $command");
+            $ctrl->debugf('command %s not found on %s, will redirect to the git group', $command, $ctrl->getGroupName());
 
             $newArgs = [];
             if ($ctrl->getFlags()->getOpt('dry-run')) {

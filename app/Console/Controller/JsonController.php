@@ -15,6 +15,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
 use InvalidArgumentException;
 use Toolkit\PFlag\FlagsParser;
+use function json_decode;
 
 /**
  * Class DemoController
@@ -28,7 +29,8 @@ class JsonController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'toText' => ['2kv', 'to-kv', '2text']
+            'toText' => ['2kv', 'to-kv', '2text'],
+            'pretty' => ['fmt', 'format'],
         ];
     }
 
@@ -70,6 +72,27 @@ class JsonController extends Controller
         if (!$json) {
             throw new InvalidArgumentException('');
         }
+    }
+
+    /**
+     * pretty and format JSON text.
+     *
+     * @arguments
+     * json     The json text line. if empty will try read text from clipboard
+     */
+    public function prettyCommand(FlagsParser $fs, Output $output): void
+    {
+        $json = $fs->getArg('json');
+        if (!$json) {
+            $json = Clipboard::new()->read();
+
+            if (!$json) {
+                throw new InvalidArgumentException('please input json text for pretty');
+            }
+        }
+
+        $data = json_decode($json, true);
+        $output->prettyJSON($data);
     }
 
     /**
