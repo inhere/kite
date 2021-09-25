@@ -27,22 +27,22 @@ class InitCommand extends Command
 
     /**
      * @options
-     *  -y, --yes           Not confirm anything
-     *      --dry-run       Dry run, not real execute any commands.
+     *  -y, --yes           bool;Not confirm anything
+     *      --dry-run       bool;Dry run, not real execute any commands.
      *
      * @param Input  $input
      * @param Output $output
      */
     protected function execute(Input $input, Output $output)
     {
-        $yes = $input->getSameBoolOpt('y,yes', false);
+        $yes = $this->flags->getOpt('yes');
 
         $logic = new KiteInitLogic([
             'workDir' => $input->getWorkDir(),
             'kiteDir' => Kite::basePath(),
         ]);
 
-        $dryRun = $input->getBoolOpt('dry-run');
+        $dryRun = $this->flags->getOpt('dry-run');
         $logic->setDryRun($dryRun);
 
         $output->info('init kite runtime config');

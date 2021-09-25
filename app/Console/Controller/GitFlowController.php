@@ -118,7 +118,6 @@ class GitFlowController extends Controller
     public function newBranchCommand(FlagsParser $fs, Output $output): void
     {
         // vdump($this->input->getArgs());
-        // $newBranch = $input->getRequiredArg('branch');
         $notToMain = $fs->getOpt('not-main');
         $newBranch = $fs->getArg('branch');
 
@@ -165,9 +164,9 @@ class GitFlowController extends Controller
         // git merge CUR_BRANCH
         // resolve conflicts
         // git add . && git ci
-        $branch = $input->getRequiredArg('branch');
+        // $branch = $input->getRequiredArg('branch');
 
-        $output->success('Complete for ' . $branch);
+        $output->success('TODO');
     }
 
     protected function syncConfigure(): void
@@ -182,9 +181,9 @@ class GitFlowController extends Controller
      * sync codes from remote main repo
      *
      * @options
-     *  -b, --branch  The sync code branch name, default is current branch(<info>{curBranchName}</info>)
-     *  -r, --remote  The main remote name, default: {mainRemote}
-     *      --push    Push to origin remote after update
+     *  -b, --branch    The sync code branch name, default is current branch(<info>{curBranchName}</info>)
+     *  -r, --remote    The main remote name, default: {mainRemote}
+     *      --push      bool;Push to origin remote after update
      *
      * @param Input  $input
      * @param Output $output
@@ -194,10 +193,10 @@ class GitFlowController extends Controller
      *  {binWithCmd} -b master   Sync code from the main repo remote master branch
      *
      */
-    public function syncCommand(Input $input, Output $output): void
+    public function syncCommand(FlagsParser $fs, Input $input, Output $output): void
     {
         $forkRemote = $this->forkRemote;
-        if (!$mainRemote = $input->getSameStringOpt(['r', 'remote'])) {
+        if (!$mainRemote = $fs->getOpt('remote')) {
             $mainRemote = $this->mainRemote;
         }
 

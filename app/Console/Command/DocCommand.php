@@ -127,12 +127,12 @@ TXT;
             return;
         }
 
-        $this->topName  = $input->getStringArg('top');
-        $this->subNames = $input->getArrayArg('subs', []);
+        $this->topName  = $this->flags->getArg('top');
+        $this->subNames = $this->flags->getArg('subs', []);
 
         $nameString = Document::names2string($this->topName, $this->subNames);
 
-        if ($input->getBoolOpt('list-topic')) {
+        if ($this->flags->getOpt('list-topic')) {
             $this->listTopicInfo($man, $nameString);
             return;
         }
@@ -144,7 +144,7 @@ TXT;
 
         $topic = $man->findTopic($this->topName, $this->subNames);
         if (!$topic) {
-            if ($input->getBoolOpt('create')) {
+            if ($this->flags->getOpt('create')) {
                 $this->createTopic($man, $output, $nameString);
                 return;
             }
@@ -159,14 +159,14 @@ TXT;
         }
 
         // edit document
-        if ($input->getSameOpt(['e', 'edit'], false)) {
+        if ($this->flags->getOpt('edit')) {
             $this->editTopic($file);
             return;
         }
 
         // read content
         $text = $file->getFileContent();
-        if ($input->getBoolOpt('cat')) {
+        if ($this->flags->getOpt('cat')) {
             $output->writeRaw($text);
             return;
         }

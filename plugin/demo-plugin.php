@@ -10,7 +10,7 @@ use Inhere\Kite\Console\Plugin\AbstractPlugin;
  */
 class DemoPlugin extends AbstractPlugin
 {
-    public function metadata(): array
+    protected function metadata(): array
     {
         return [
             'desc' => 'this is am demo plugin',

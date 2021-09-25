@@ -39,15 +39,14 @@ class MarkdownCommand extends Command
 
     /**
      * @arguments
-     *   mdfile     <red>*</red>The markdown file path.
+     *   mdfile     string;The markdown file path;required
      *
      * @param  Input $input
      * @param  Output $output
      */
     protected function execute(Input $input, Output $output)
     {
-        $input->bindArgument('mdfile', 0);
-        $filename = $input->getRequiredArg('mdfile');
+        $filename = $this->flags->getArg('mdfile');
 
         $text = file_get_contents($filename);
 

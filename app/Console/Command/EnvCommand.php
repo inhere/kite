@@ -41,7 +41,6 @@ class EnvCommand extends Command
      */
     protected function execute(Input $input, Output $output)
     {
-        // $keywords = $input->getSameStringOpt('s,search');
         $keywords = $this->flags->getOpt('search');
 
         $name = $this->flags->getFirstArg();

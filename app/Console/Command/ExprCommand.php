@@ -101,7 +101,7 @@ class ExprCommand extends Command
 
     /**
      * @options
-     *  -i, --interactive     Start an interactive shell environment
+     *  -i, --interactive     bool;Start an interactive shell environment
      *
      * @example
      *  <code>$ {binWithCmd} -i</code>
@@ -120,12 +120,12 @@ class ExprCommand extends Command
     {
         $this->createELObject();
 
-        if ($input->getBoolOpt('i')) {
+        if ($this->flags->getOpt('interactive')) {
             $this->runByShell();
             return 0;
         }
 
-        $args = $input->getArgs();
+        $args = $this->flags->getRawArgs();
         $expr = implode(' ', $args);
         Color::println('Input expr: ' . $expr);
 

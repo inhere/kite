@@ -3,10 +3,12 @@
 namespace Inhere\Kite\Console\Plugin;
 
 use Inhere\Console\Application;
+use Inhere\Console\GlobalOption;
 use Inhere\Console\IO\Input;
 use Toolkit\PFlag\Flags;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\SFlags;
+use Toolkit\Stdlib\Helper\DataHelper;
 use function array_merge;
 
 /**
@@ -47,40 +49,72 @@ abstract class AbstractPlugin implements PluginInterface
             'author'  => 'inhere',
             'version' => 'v0.0.1',
             'desc'    => '',
+            'help'    => '',
             'example' => '',
         ], $this->metadata());
+
+        $this->createAndInitFlags();
+    }
+
+    protected function createAndInitFlags(): void
+    {
+        $fs = $this->createFlags();
+
+        $fs->setDesc($this->metadata['desc']);
+        $fs->setMoreHelp($this->metadata['help']);
+        $fs->setExample($this->metadata['example']);
+        $fs->addOptsByRules(GlobalOption::getCommonOptions());
+
+        $loaded = false;
+        if ($optRules = $this->options()) {
+            $loaded = true;
+            $fs->addOptsByRules($optRules);
+        }
+
+        if ($argRules = $this->arguments()) {
+            $loaded = true;
+            $fs->addArgsByRules($argRules);
+        }
+
+        if ($loaded) {
+            $fs->lock();
+        }
     }
 
     /**
-     * @return Flags
+     * @return FlagsParser
      */
-    protected function createFlags(): Flags
+    protected function createFlags(): FlagsParser
     {
-        $this->fs = new Flags();
+        if (!$this->fs) {
+            $this->fs = new Flags();
+        }
+
         return $this->fs;
     }
 
     /**
      * @return SFlags
      */
-    protected function createSFlags(): SFlags
-    {
-        $this->fs = new SFlags();
-        return $this->fs;
-    }
+    // protected function createSFlags(): SFlags
+    // {
+    //     $this->fs = new SFlags();
+    //     return $this->fs;
+    // }
 
     /**
      * Metadata for the plugin
      *
      * @return array
      */
-    public function metadata(): array
+    protected function metadata(): array
     {
         return [
-            // 'author' => 'inhere',
+            // 'author'  => 'inhere',
             // 'version' => '',
-            // 'desc' => '',
-            // 'example' => '',
+            // 'desc'    => '',
+            // 'help'    => string|array,
+            // 'example' => 'string|array',
         ];
     }
 
@@ -89,7 +123,7 @@ abstract class AbstractPlugin implements PluginInterface
      *
      * @return array
      */
-    public function options(): array
+    protected function options(): array
     {
         return [
             // 'file' => 'string;the Idea Http Request file',
@@ -101,7 +135,7 @@ abstract class AbstractPlugin implements PluginInterface
      *
      * @return array
      */
-    public function arguments(): array
+    protected function arguments(): array
     {
         return [
             // 'file' => 'the Idea Http Request file',
@@ -132,16 +166,6 @@ abstract class AbstractPlugin implements PluginInterface
     /**
      * @return array
      */
-    public function getHelpInfo(): array
-    {
-        return [
-            'examples' => '', // allow: string, array<string>
-        ];
-    }
-
-    /**
-     * @return array
-     */
     public function getSimpleInfo(): array
     {
         // $meta = $this->metadata();
@@ -156,7 +180,7 @@ abstract class AbstractPlugin implements PluginInterface
 
     /**
      * @param Application $app
-     * @param Input       $input
+     * @param array $args
      */
     public function run(Application $app, array $args = []): void
     {
@@ -176,6 +200,15 @@ abstract class AbstractPlugin implements PluginInterface
      */
     protected function beforeRun(Application $app, array $args): bool
     {
+        if ($this->fs->isNotEmpty()) {
+            $app->debugf('parse plugin flags, args: %s', DataHelper::toString($args));
+            $ok = $this->fs->parse($args);
+
+            if (!$ok) {
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -198,7 +231,7 @@ abstract class AbstractPlugin implements PluginInterface
      */
     public function getDesc(): string
     {
-        return $this->metadata()['desc'] ?? 'no description';
+        return $this->metadata['desc'] ?? 'no description';
     }
 
     /**

@@ -391,7 +391,6 @@ class GitLabController extends Controller
      */
     public function deleteBranchCommand(FlagsParser $fs, Output $output): void
     {
-        // $names = $input->getArgs();
         $names = $fs->getArg('branches');
         if (!$names) {
             throw new PromptException('please input an branch name');

@@ -10,6 +10,14 @@ namespace Inhere\Kite\Console\Plugin;
 interface PluginInterface
 {
     public function init(): void;
-    public function metadata(): array;
-    public function options(): array;
+
+    /**
+     * @return array
+     */
+    public function getOptions(): array;
+
+    /**
+     * @return array
+     */
+    public function getMetadata(): array;
 }

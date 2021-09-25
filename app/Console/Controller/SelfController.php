@@ -316,7 +316,6 @@ class SelfController extends Controller
 
         $svrAddr = $fs->getOpt('addr', $this->webUi['addr']);
         $phpBin  = $fs->getOpt('php-bin', $this->webUi['php-bin']);
-        // $docRoot = $input->getSameStringOpt('t,doc-root', $conf['root']);
 
         $docRoot = $this->webUi['root'];
         // $pds = PhpDevServe::new($svrAddr, 'public', 'public/index.php');
