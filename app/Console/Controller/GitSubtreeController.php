@@ -12,13 +12,13 @@ namespace Inhere\Kite\Console\Controller;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use InvalidArgumentException;
 use RuntimeException;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Sys\Sys;
 use function array_filter;
 use function array_intersect;
 use function count;
-use function defined;
 use function implode;
 use function is_dir;
 use function is_file;
@@ -29,7 +29,6 @@ use const PHP_EOL;
 /**
  * Internal tool for toolkit development
  *
- * @package Toolkit\Dev\Console
  * @author inhere
  */
 class GitSubtreeController extends Controller
@@ -37,8 +36,8 @@ class GitSubtreeController extends Controller
     public const TYPE_SSL   = 'git@github.com:';
     public const TYPE_HTTPS = 'https://github.com/';
 
-    protected static $name = 'dev';
-    protected static $description = 'Internal tool for toolkit development';
+    protected static $name = 'git-sub';
+    protected static $description = 'quick the git subtree tool';
 
     /**
      * @var string
@@ -52,6 +51,11 @@ class GitSubtreeController extends Controller
 
     /** @var string */
     public $componentDir;
+
+    public static function aliases(): array
+    {
+        return ['git-subtree', 'gitsub', 'gitst'];
+    }
 
     /**
      * List all swoft component names in the php-toolkit/toolkit
@@ -96,8 +100,10 @@ class GitSubtreeController extends Controller
      * Add component directory code from git repo by 'git subtree add'
      *
      * @usage {fullCommand} [COMPONENTS ...] [--OPTION ...]
+     *
      * @arguments
      *  Component[s]   The existing component name[s], allow multi by space.
+     *
      * @options
      *  --squash        bool;Add option '--squash' in git subtree add command. default: <info>True</info>
      *  --dry-run       bool;Just print all the commands, but do not execute them. default: <info>False</info>
@@ -226,7 +232,8 @@ class GitSubtreeController extends Controller
         $output->writeln("<comment>Component Directory</comment>:\n $this->componentDir");
 
         $operate = $config['operate'];
-        $names   = array_filter($input->getArgs(), 'is_int', ARRAY_FILTER_USE_KEY);
+        // $names   = array_filter($input->getArgs(), 'is_int', ARRAY_FILTER_USE_KEY);
+        $names = array_filter($fs->getRawArgs(), 'is_int', ARRAY_FILTER_USE_KEY);
 
         if ($names) {
             $back  = $names;
@@ -235,7 +242,7 @@ class GitSubtreeController extends Controller
             if (!$names) {
                 throw new RuntimeException('Invalid component name entered: ' . implode(', ', $back));
             }
-        } elseif ($input->getSameOpt(['a', 'all'], false)) {
+        } elseif ($fs->getOpt('all', false)) {
             $names = $this->components;
         } else {
             throw new RuntimeException('Please enter the name of the component that needs to be operated');
@@ -300,11 +307,10 @@ class GitSubtreeController extends Controller
      *  --dry-run       bool;Just print all the commands, but do not execute them. default: <info>False</info>
      *  --show-result   bool;Display result for the docs generate. default: <info>False</info>
      *
-     * @param Input $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @return int
-     * @throws RuntimeException
      * @example
      *  {fullCommand} --sami ~/Workspace/php/tools/sami.phar --force --show-result
      *
@@ -369,19 +375,15 @@ class GitSubtreeController extends Controller
 
     private function checkEnv(): void
     {
-        if (!defined('TOOLKIT_DIR') || !TOOLKIT_DIR) {
-            $this->writeln('<error>Missing the TOOLKIT_DIR define</error>', true);
-        }
+        $this->componentDir = $this->input->getPwd();
 
-        $this->componentDir = TOOLKIT_DIR;
-
-        $file = TOOLKIT_DIR . '/components.inc';
+        $file = $this->componentDir . '/sub-libs.php';
 
         if (!is_file($file)) {
-            $this->writeln('<error>Missing the components config.</error>', true);
+            throw new InvalidArgumentException("Missing the components config, file: $file");
         }
 
-        $this->components = include $file;
+        $this->components = require $file;
     }
 }
 

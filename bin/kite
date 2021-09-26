@@ -9,13 +9,13 @@ define('BASE_PATH', dirname(__DIR__));
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 $app = new CliApplication([
-    'name'        => 'kite',
-    'rootPath'    => Kite::basePath(),
-    'version'     => Kite::VERSION,
-    'homepage'    => Kite::HOMEPAGE,
-    'publishAt'   => '2020.05.24',
-    'updateAt'    => date('Y.m.d'),
-    'description' => 'Kite is a tool for help development',
+    'name'      => 'kite',
+    'desc'      => 'Kite is a tool for help development',
+    'rootPath'  => Kite::basePath(),
+    'version'   => Kite::VERSION,
+    'homepage'  => Kite::HOMEPAGE,
+    'publishAt' => '2020.05.24',
+    'updateAt'  => date('Y.m.d'),
 ]);
 
 // register routes

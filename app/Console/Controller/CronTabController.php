@@ -38,11 +38,6 @@ class CronTabController extends Controller
         ];
     }
 
-    public function parseConfigure(Input $input): void
-    {
-        $input->bindArgument('statement', 0);
-    }
-
     /**
      * parse the human readable statement to an cron expression.
      *

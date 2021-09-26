@@ -114,21 +114,6 @@ class GitController extends Controller
     }
 
     /**
-     * @return bool
-     */
-    // protected function beforeAction(): bool
-    // {
-    //     if ($this->app) {
-    //         $proxyActions = $this->settings['loadEnvOn'] ?? [];
-    //         if ($proxyActions && in_array($this->getAction(), $proxyActions, true)) {
-    //             AppHelper::loadOsEnvInfo($this->app);
-    //         }
-    //     }
-    //
-    //     return true;
-    // }
-
-    /**
      * @param string $action
      * @param array $args
      *
@@ -138,8 +123,16 @@ class GitController extends Controller
     {
         $this->output->info("input command '$action' is not found, will exec git command: `git $action`");
 
-        $run = CmdRunner::new($this->input->getFullScript());
-        $run->do(true);
+        $c = Cmd::git($action);
+
+        if ($args) {
+            $c->addArgs(...$args);
+        }
+
+        $c->runAndPrint();
+
+        // $run = CmdRunner::new($this->input->getFullScript());
+        // $run->do(true);
         return true;
     }
 
@@ -186,13 +179,6 @@ class GitController extends Controller
      */
     public function pushCommand(FlagsParser $fs, Output $output): void
     {
-        // eg: {
-        //     [0]=> string(6) "github"
-        //     [1]=> string(4) "push"
-        //     [2]=> string(14) "--set-upstream"
-        //     [3]=> string(6) "origin"
-        //     [4]=> string(4) "main"
-        //   }
         $args = $fs->getRawArgs();
 
         $c = Cmd::git('push');

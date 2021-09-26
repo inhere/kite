@@ -20,6 +20,7 @@ use Inhere\Kite\Helper\AppHelper;
 use PhpComp\Http\Client\Client;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
+use function strpos;
 use function strtoupper;
 
 /**
@@ -225,7 +226,12 @@ class GitHubController extends Controller
      * Clone an github repository to local
      *
      * @options
+     *  -g, --git        use ssh url for clone.
      *  -w, --workdir    The clone work dir, default is current dir.
+     *  -m, --mirror     Clone from the mirror image host. eg: https://hub.fastgit.org/inhere/kite
+     *                   allow:
+     *                    fast        Clone from the https://hub.fastgit.org
+     *                    cnpmjs      Clone from the https://github.com.cnpmjs.org
      *
      * @arguments
      *  repo    string;The remote git repo URL or repository name;required
@@ -238,15 +244,28 @@ class GitHubController extends Controller
      *  {binWithCmd}  php-toolkit/cli-utils
      *  {binWithCmd}  php-toolkit/cli-utils my-repo
      *  {binWithCmd}  https://github.com/php-toolkit/cli-utils
+     *
+     * clone from hub.fastgit.org:
+     *  {binWithCmd} php-toolkit/cli-utils -m fast
      */
     public function cloneCommand(FlagsParser $fs, Output $output): void
     {
         $repo = $fs->getArg('repo');
         $name = $fs->getArg('name');
 
+        $mirror = $fs->getOpt('mirror');
+        $mirrors = [
+            'fast'   => 'https://hub.fastgit.org',
+            'cnpmjs' => 'https://github.com.cnpmjs.org',
+        ];
+
+        // use mirror
+        if ($mirror && isset($mirrors[$mirror]) && strpos($repo, '//') === false) {
+            $repo = $mirrors[$mirror] . '/' . $repo;
+        }
+
         $gh = $this->getGithub();
 
-        $workDir = $fs->getOpt('workdir');
         $repoUrl = $gh->parseRepoUrl($repo);
         if (!$repoUrl) {
             $output->error("invalid github 'repo' address: $repo");
@@ -260,6 +279,7 @@ class GitHubController extends Controller
 
         $run = CmdRunner::new($cmd);
 
+        $workDir = $fs->getOpt('workdir');
         if ($workDir) {
             $run->setWorkDir($workDir);
         }

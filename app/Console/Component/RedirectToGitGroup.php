@@ -30,13 +30,19 @@ class RedirectToGitGroup extends AbstractObj
      */
     public function handle(Controller $ctrl, string $action, array $args): bool
     {
+        if (!$this->cmdList) {
+            return false;
+        }
+
         $app = $ctrl->getApp();
 
         // resolve alias
         $gitCtrl = $app->getController(GitController::getName());
         $command = $gitCtrl->resolveAlias($action);
 
-        if (in_array($command, $this->cmdList, true)) {
+        // if $first = *, will redirect all command.
+        $first = $this->cmdList[0];
+        if ($first === '*' || in_array($command, $this->cmdList, true)) {
             Cli::info("NOTICE: will redirect to git group for run subcommand: $command");
             $ctrl->debugf('command %s not found on %s, will redirect to the git group', $command, $ctrl->getGroupName());
 

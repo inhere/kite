@@ -54,28 +54,6 @@ class JumpController extends Controller
         ];
     }
 
-    protected function configure(): void
-    {
-        parent::configure();
-
-        // simple binding arguments
-        switch ($this->getAction()) {
-            case 'shell':
-                $this->input->bindArgument('shellName', 0);
-                break;
-            case 'hint':
-                $this->input->bindArgument('keywords', 0);
-                break;
-            case 'get':
-                $this->input->bindArgument('name', 0);
-                break;
-            case 'set':
-                $this->input->bindArgument('name', 0);
-                $this->input->bindArgument('path', 1);
-                break;
-        }
-    }
-
     /**
      * list the jump storage data
      *
@@ -172,7 +150,7 @@ class JumpController extends Controller
      *  keywords   The jump target directory keywords for match.
      *
      * @options
-     *  --flag     The flag set for match paths.
+     *  --flag     int;The flag set for match paths.
      *              Allow:
      *              1   Only match name path list
      *              2   Only match history path list

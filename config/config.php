@@ -26,18 +26,7 @@ return [
         'defaultGroup'     => 'group',
         'defaultForkGroup' => 'inhere',
         'redirectGit'      => [
-            'ac',
-            'acp',
-            'log',
-            'diff',
-            'info',
-            'push',
-            'fetch',
-            'update',
-            'tagNew',
-            'tagList',
-            'tagDelete',
-            'changelog',
+            '*'
         ],
         // gitlab api config
         'baseUrl'          => '',
@@ -50,18 +39,7 @@ return [
         'defaultGroup'     => 'swoft',
         'defaultForkGroup' => 'ulue',
         'redirectGit'      => [
-            'ac',
-            'acp',
-            'log',
-            'diff',
-            'info',
-            'push',
-            'fetch',
-            'update',
-            'tagNew',
-            'tagList',
-            'tagDelete',
-            'changelog',
+           '*'
         ],
         // github api config
         // 'baseUrl' => '',

@@ -5,10 +5,10 @@ namespace Inhere\Kite\Console\Controller;
 use Exception;
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
-use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Lib\Template\TextTemplate;
+use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Proc\ProcWrapper;
 use function date;
@@ -17,8 +17,6 @@ use function file_get_contents;
 use function implode;
 use function is_string;
 use function parse_ini_string;
-use function random_int;
-use function strlen;
 use function strpos;
 use function strtr;
 use function trim;
@@ -49,20 +47,11 @@ class GenerateController extends Controller
     }
 
     /**
-     * @param Input  $input
      * @param Output $output
      */
     public function readmeCommand(Output $output): void
     {
         $output->success('Complete');
-    }
-
-    /**
-     * @param Input $input
-     */
-    protected function templateConfigure(Input $input): void
-    {
-        $input->bindArgument('filename', 0);
     }
 
     /**
@@ -74,12 +63,12 @@ class GenerateController extends Controller
      * @arguments
      *  filename     The template filename. If not set, will auto generate by datetime.
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function templateCommand(Input $input, Output $output): void
+    public function templateCommand(FlagsParser $fs, Output $output): void
     {
-        $editor   = $input->getStringOpt('editor', 'vim');
+        $editor   = $fs->getOpt('editor', 'vim');
         $filepath = 'tmp/' . date('Ymd_Hi') . '.tpl';
 
         ProcWrapper::runEditor($editor, $filepath);
@@ -88,25 +77,17 @@ class GenerateController extends Controller
     }
 
     /**
-     * @param Input $input
-     */
-    protected function parseConfigure(Input $input): void
-    {
-        $input->bindArgument('tpl', 0);
-    }
-
-    /**
      * parse and generate some codes by input template file
      *
      * @arguments
-     *  tpl         The template filepath
+     *  tpl         string;The template filepath;required
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function parseCommand(Input $input, Output $output): void
+    public function parseCommand(FlagsParser $fs, Output $output): void
     {
-        $tplFile = $input->getRequiredArg('tpl');
+        $tplFile = $fs->getArg('tpl');
         $content = file_get_contents($tplFile);
 
         [$varDefine, $template] = explode('###', $content);
@@ -132,25 +113,17 @@ class GenerateController extends Controller
     }
 
     /**
-     * @param Input $input
-     */
-    protected function repeatConfigure(Input $input): void
-    {
-        $input->bindArgument('tpl', 0);
-    }
-
-    /**
      * Repeat generate some codes by input vars
      *
      * @arguments
-     *  tpl         The template filepath
+     *  tpl         string;The template filepath;required
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function repeatCommand(Input $input, Output $output): void
+    public function repeatCommand(FlagsParser $fs, Output $output): void
     {
-        $tplFile = $input->getRequiredArg('tpl');
+        $tplFile = $fs->getArg('tpl');
         $content = file_get_contents($tplFile);
 
         [$varDefine, $template] = explode('###', $content);
@@ -190,16 +163,16 @@ class GenerateController extends Controller
      * generate an unique ID string.
      *
      * @options
-     *  -t, --type  The type. allow: number, string
+     *  -t, --type      The type. allow: number, string
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @throws Exception
      */
-    public function idCommand(Input $input, Output $output): void
+    public function idCommand(FlagsParser $fs, Output $output): void
     {
-        $type = $input->getSameStringOpt('t,type', 'number');
+        $type = $fs->getOpt('type', 'number');
 
         if ($type === 'number') {
             $id = Str::genNOV1();
@@ -214,25 +187,25 @@ class GenerateController extends Controller
      * generate an random string.
      *
      * @options
-     *  -l, --length    The string length. default: 12
-     *  -n, --number    The number of generated strings. default: 1
-     *  -t, --template  The sample template name. allow: alpha, alpha_num, alpha_num_c
+     *  -l, --length        The string length. default: 12
+     *  -n, --number        The number of generated strings. default: 1
+     *  -t, --template      The sample template name. allow: alpha, alpha_num, alpha_num_c
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @throws Exception
      */
-    public function randomCommand(Input $input, Output $output): void
+    public function randomCommand(FlagsParser $fs, Output $output): void
     {
-        $length  = $input->getSameIntOpt('l,length', 12);
-        $number  = $input->getSameIntOpt('n,number', 1);
+        $length = $fs->getOpt('length', 12);
+        $number = $fs->getOpt('number', 1);
 
         if ($number < 1 || $number > 20) {
             $number = 1;
         }
 
-        $sname = $input->getSameStringOpt('t,template', 'alpha_num');
+        $sname = $fs->getOpt('template', 'alpha_num');
 
         if ($number === 1) {
             $str = AppHelper::genRandomStr($sname, $length);

@@ -18,7 +18,6 @@ use Inhere\Kite\Kite;
 use Toolkit\Stdlib\OS;
 use function count;
 use function is_array;
-use function vdump;
 
 /**
  * Class RunCommand
@@ -78,7 +77,7 @@ class RunCommand extends Command
 
         // support search
         $kw = $this->flags->getOpt('search') ?: $name;
-        if ($input->hasOneOpt(['s', 'search'])) {
+        if ($this->flags->hasInputArg('search')) {
             $this->searchScripts($output, $kw);
             return;
         }

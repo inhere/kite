@@ -100,7 +100,7 @@ TXT;
         $info = $this->app->getArrayParam('manDocs');
 
         $paths = $info['paths'] ?? [];
-        $lang  = $this->input->getStringOpt('lang');
+        $lang  = $this->flags->getOpt('lang');
         if (!$lang) {
             $lang = $info['lang'] ?? AppHelper::getLangFromENV(Document::DEF_LANG);
         }
@@ -204,7 +204,7 @@ TXT;
 
         Helper::mkdir(dirname($filepath), 0755);
 
-        $editor = $this->input->getStringOpt('editor', 'vim');
+        $editor = $this->flags->getOpt('editor', 'vim');
         ProcWrapper::runEditor($editor, $filepath);
 
         $output->success('new document is created');
@@ -216,7 +216,7 @@ TXT;
     private function editTopic(DocTopic $topic): void
     {
         $filepath = $topic->getPath();
-        $editor   = $this->input->getStringOpt('editor', 'vim');
+        $editor   = $this->flags->getOpt('editor', 'vim');
 
         $this->output->title("will use '{$editor}' for edit the document");
 

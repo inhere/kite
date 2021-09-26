@@ -332,7 +332,7 @@ class ScriptRunner extends AbstractObj
      */
     public function getAllScriptFiles(string $keyword = ''): array
     {
-        $extMatch = implode('|', array_map(function ($ext) {
+        $extMatch = implode('|', array_map(static function ($ext) {
             return trim($ext, '.');
         }, $this->scriptExts));
 

@@ -101,21 +101,6 @@ class GitLabController extends Controller
         ];
     }
 
-    protected function configure(): void
-    {
-        parent::configure();
-
-        // simple binding arguments
-        switch ($this->getAction()) {
-            case 'open':
-                $this->input->bindArgument('remote', 0);
-                break;
-            case 'project':
-                $this->input->bindArgument('name', 0);
-                break;
-        }
-    }
-
     /**
      * @return GitLab
      */

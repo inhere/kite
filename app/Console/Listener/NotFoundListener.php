@@ -9,7 +9,6 @@ use Inhere\Kite\Kite;
 use Throwable;
 use Toolkit\Stdlib\Helper\DataHelper;
 use Toolkit\Sys\Sys;
-use function array_merge;
 use function array_shift;
 
 /**
@@ -44,7 +43,9 @@ final class NotFoundListener
 
         // - run custom scripts.
         if ($sr->isScriptName($cmd)) {
-            $this->runCustomScript($cmd, $app);
+            $args = $app->getInput()->getArgs();
+            $app->note("input is an script name, redirect to run script: $cmd, args: " . DataHelper::toString($args));
+            $sr->runCustomScript($cmd, $args);
 
         } elseif (Kite::plugManager()->isPlugin($cmd)) { // - is an plugin
             $args = $app->getInput()->getFlags();
@@ -85,23 +86,5 @@ final class NotFoundListener
 
         // call system command
         CmdRunner::new($cmdLine)->do(true);
-    }
-
-    /**
-     * @param string $cmd
-     * @param CliApplication $app
-     *
-     * @throws Throwable
-     */
-    private function runCustomScript(string $cmd, CliApplication $app): void
-    {
-        /** @see \Inhere\Kite\Console\Command\RunCommand::execute() */
-        $app->note("command not found, redirect to run script: $cmd");
-
-        $args = $app->getInput()->getArgs();
-        $args = array_merge([$cmd], $args);
-
-        $app->getInput()->setArgs($args, true);
-        $app->dispatch('run');
     }
 }
