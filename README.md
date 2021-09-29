@@ -46,11 +46,20 @@ chmod a+x bin/kite
 
 注意替换为最新的版本号:
 
-> https://github.com/inhere/kite/releases/latest/download/kite.phar
+```bash
+wget -c https://github.com/inhere/kite/releases/download/v2.0.0/kite.phar
+```
+
+总是使用最新版本：
 
 ```bash
-wget -c https://github.com/inhere/kite/releases/download/v1.0.5/kite-v1.0.5.phar
-mv kite-v1.0.5.phar /usr/local/bin/kite
+wget -c https://github.com/inhere/kite/releases/latest/download/kite.phar
+```
+
+重命名，移动到环境目录:
+
+```bash
+mv kite.phar /usr/local/bin/kite
 chmod a+x /usr/local/bin/kite
 ```
 

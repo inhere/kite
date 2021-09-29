@@ -49,7 +49,7 @@ jobs:
 
       - name: Build phar package
         run: |
-          php -d phar.readonly=0 bin/kite phar:pack -o kite-${RELEASE_TAG}.phar --no-progress
+          php -d phar.readonly=0 bin/kite phar:pack -o kite.phar --no-progress
           php kite-${RELEASE_TAG}.phar -V
 
       # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#steps-context
@@ -79,7 +79,7 @@ jobs:
           name: ${{ env.RELEASE_TAG }}
           tag_name: ${{ env.RELEASE_TAG }}
           body_path: tmp/changelog-${{ env.RELEASE_TAG }}.md
-          files: kite-${{ env.RELEASE_TAG }}.phar
+          files: kite.phar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #         GITHUB_REPOSITORY: my_gh_org/my_gh_repo

@@ -34,7 +34,7 @@ clean:  ## Clean all created artifacts
 	git clean --exclude=.idea/ -fdx
 
 phar:  ## build kite application to phar package
-	php -d phar.readonly=0 bin/kite phar:pack -o kite-latest.phar
+	php -d phar.readonly=0 bin/kite phar:pack -o kite.phar
 
 cs-fix:  ## Fix code style for all files
 	gofmt -w ./

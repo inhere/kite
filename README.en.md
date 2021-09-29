@@ -46,8 +46,19 @@ ln -s $PWD/bin/kite /usr/local/bin/kite
 eg:
 
 ```bash
-wget -c https://github.com/inhere/kite/releases/download/v1.0.5/kite-v1.0.5.phar
-mv kite-v1.0.5.phar /usr/local/bin/kite
+wget -c https://github.com/inhere/kite/releases/download/v2.0.0/kite.phar
+```
+
+Always use latest:
+
+```bash
+wget -c https://github.com/inhere/kite/releases/latest/download/kite.phar
+```
+
+Rename and move to the environment directory:
+
+```bash
+mv kite.phar /usr/local/bin/kite
 chmod a+x /usr/local/bin/kite
 ```
 
