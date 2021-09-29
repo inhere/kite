@@ -28,6 +28,7 @@ use function preg_match;
 use function stripos;
 use function strpos;
 use function trim;
+use function vdump;
 
 /**
  * class ScriptRunner
@@ -215,7 +216,9 @@ class ScriptRunner extends AbstractObj
 
         // like bash script, first var is '$1'
         foreach ($scriptArgs as $i => $arg) {
-            $pairs['$' . $i] = $arg;
+            $k = '$' . ($i + 1);
+            // add
+            $pairs[$k] = $arg;
         }
 
         return strtr($cmdString, $pairs);

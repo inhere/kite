@@ -30,6 +30,7 @@ use Throwable;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Obj\ConfigObject;
 use Toolkit\Stdlib\Str;
+use function abs;
 use function array_keys;
 use function implode;
 use function sprintf;
@@ -101,7 +102,7 @@ class GitController extends Controller
     {
         return [
             '--dry-run' => 'bool;Dry-run the workflow, dont real execute',
-            // '-y, --yes' => 'Direct execution without confirmation',
+            '-y, --yes' => 'Direct execution without confirmation',
             // '-i, --interactive' => 'Run in an interactive environment[TODO]',
         ];
     }
@@ -541,8 +542,11 @@ class GitController extends Controller
             return;
         }
 
+        // $remotes = Git::new($dir)->remote->getList();
+
         $info = [
             'Work Dir' => $dir,
+            // 'Origin'   => $remotes,
             'New Tag'  => $tag,
         ];
 
@@ -725,7 +729,7 @@ class GitController extends Controller
      * display recently git commits information by `git log`
      *
      * @arguments
-     *  maxCommit       Max display how many commits
+     *  maxCommit       int;Max display how many commits
      *
      * @options
      *  --abbrev-commit     Only display the abbrev commit ID
@@ -733,7 +737,7 @@ class GitController extends Controller
      *  --file              Export changelog message to file
      *  --format            The git log option `--pretty` value.
      *                      can be one of oneline, short, medium, full, fuller, reference, email, raw, format:<string> and tformat:<string>.
-     *  --max-commit        Max display how many commits
+     *  --max-commit        int;Max display how many commits
      *  --no-color          bool;Dont use color render git output
      *  --no-merges         bool;No contains merge request logs
      *
@@ -758,7 +762,7 @@ class GitController extends Controller
         $b->addIf("--exclude=$exclude", $exclude);
         $b->addIf('--abbrev-commit', $abbrevID);
         $b->addIf('--no-merges', $noMerges);
-        $b->add("-$maxCommit");
+        $b->add('-' . abs($maxCommit));
 
         $b->runAndPrint();
 

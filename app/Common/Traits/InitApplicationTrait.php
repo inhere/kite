@@ -11,7 +11,10 @@ use Toolkit\Stdlib\Arr\ArrayHelper;
 use Toolkit\Stdlib\Obj\ObjectBox;
 use Toolkit\Stdlib\OS;
 use Toolkit\Stdlib\Util\PhpDotEnv;
+use function defined;
 use function file_exists;
+use function is_dir;
+use function is_file;
 
 /**
  * Trait InitApplicationTrait
@@ -41,15 +44,20 @@ trait InitApplicationTrait
     protected function loadAppConfig(string $runMode, string $workDir = ''): void
     {
         $diskBasePath = Kite::basePath();
-
-        $baseFile = $diskBasePath . '/config/config.php';
-        $loaded   = [$baseFile];
+        $baseConfPath = $diskBasePath . '/config';
+        // no config dir in disk and in phar. use phar builtin config
+        if (defined('IN_PHAR') && IN_PHAR && !is_dir($baseConfPath)) {
+            $diskConfPath = Kite::getPath('config', false);
+        }
 
         // 基础配置
+        $baseFile = $baseConfPath . '/config.php';
+        // load config
         $config = require $baseFile;
+        $loaded = [$baseFile];
 
         // eg: config.web.php
-        $modeFile = $diskBasePath . "/config/config.$runMode.php";
+        $modeFile = $baseConfPath . "/config.$runMode.php";
         if (file_exists($modeFile)) {
             $loaded[]   = $modeFile;
             $modeConfig = require $modeFile;
