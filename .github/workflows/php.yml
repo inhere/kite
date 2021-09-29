@@ -66,5 +66,5 @@ jobs:
         run: |
           php -d phar.readonly=0 bin/kite --debug 4 phar:pack -o kite-latest.phar --no-progress
           php kite-latest.phar self info
-          mv kite-latest.phar /tmp/kite-latest.phar
-          cd /tmp && php kite-latest.phar self info
+          mv kite-latest.phar tmp/kite-latest.phar
+          cd tmp && php kite-latest.phar self info

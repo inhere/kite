@@ -47,7 +47,7 @@ trait InitApplicationTrait
         $baseConfPath = $diskBasePath . '/config';
         // no config dir in disk and in phar. use phar builtin config
         if (defined('IN_PHAR') && IN_PHAR && !is_dir($baseConfPath)) {
-            $diskConfPath = Kite::getPath('config', false);
+            $baseConfPath = Kite::getPath('config', false);
         }
 
         // 基础配置
