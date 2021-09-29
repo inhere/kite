@@ -861,7 +861,12 @@ class GitController extends Controller
 
         $output->info('repo URL: ' . $repoUrl);
 
-        $gcl = GitChangeLog::new($builder->getOutput());
+        if (!$gitLog = $builder->getOutput()) {
+            $output->warning('empty git log output, quit generate');
+            return;
+        }
+
+        $gcl = GitChangeLog::new($gitLog);
         $gcl->setLogFormat($logFmt);
         $gcl->setRepoUrl($repoUrl);
 
