@@ -62,7 +62,6 @@ class JsonController extends Controller
      *
      * @options
      * --type       The search type. allow: keys, path
-     *
      */
     public function searchCommand(): void
     {
@@ -119,6 +118,22 @@ class JsonController extends Controller
         if (!$json) {
             throw new InvalidArgumentException('');
         }
+    }
+
+    /**
+     * convert JSON object string to PHP class.
+     *
+     * @options
+     *  --cb            bool;read input from clipboard
+     *  -f,--file       The source markdown code
+     *  -o,--output     The output target. default is stdout.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function toClassCommand(FlagsParser $fs, Output $output): void
+    {
+        $output->success('Complete');
     }
 
     /**

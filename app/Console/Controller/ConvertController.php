@@ -12,6 +12,7 @@ namespace Inhere\Kite\Console\Controller;
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Console\Component\Clipboard;
 use Toolkit\PFlag\FlagsParser;
 use function base_convert;
 use function date;
@@ -51,10 +52,28 @@ class ConvertController extends Controller
     }
 
     /**
+     * convert input string to PHP array.
+     *
+     * @options
+     *  --cb            bool;read source code from clipboard
+     *  -f, --file      The source code file
+     *  -s, --sep       The sep char for split.
+     *  -o, --output    The output target. default is stdout.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function str2arrCommand(FlagsParser $fs, Output $output): void
+    {
+        $output->success('Complete');
+    }
+
+    /**
      * convert markdown table to create mysql table SQL
      *
      * @options
-     *  -f,--file      The source markdown code
+     *  --cb           bool;read source code from clipboard
+     *  -f,--file      The source code file
      *  -o,--output    The output target. default is stdout.
      *
      * @param FlagsParser $fs
@@ -69,6 +88,7 @@ class ConvertController extends Controller
      * convert create mysql table SQL to markdown table
      *
      * @options
+     *  --cb            bool;read input from clipboard
      *  -f,--file       The source markdown code
      *  -o,--output     The output target. default is stdout.
      *
@@ -81,7 +101,23 @@ class ConvertController extends Controller
     }
 
     /**
-     * convert an mysql insert SQL to php k-v array
+     * convert create mysql table SQL to PHP class
+     *
+     * @options
+     *  --cb            bool;read source code from clipboard
+     *  -f,--file       The source code file
+     *  -o,--output     The output target. default is stdout.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function sql2classCommand(FlagsParser $fs, Output $output): void
+    {
+        $output->success('Complete');
+    }
+
+    /**
+     * convert an mysql INSERT SQL to php k-v array
      *
      * @options
      *  -f,--file       The source markdown code
@@ -90,13 +126,29 @@ class ConvertController extends Controller
      * @param FlagsParser $fs
      * @param Output $output
      */
-    public function insertSql2arrCommand(FlagsParser $fs, Output $output): void
+    public function sql2arrCommand(FlagsParser $fs, Output $output): void
     {
         $output->success('Complete');
     }
 
     /**
-     * Number base conversion
+     * convert create mysql table SQL to markdown table
+     *
+     * @options
+     *  --cb            bool;read source code from clipboard
+     *  -f,--file       The source code file
+     *  -o,--output     The output target. default is stdout.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function json2classCommand(FlagsParser $fs, Output $output): void
+    {
+        $output->success('Complete');
+    }
+
+    /**
+     * Number base conversion.
      *
      * @arguments
      *  number      int;The want convert number;required;
@@ -125,7 +177,10 @@ class ConvertController extends Controller
      * convert timestamp to datetime
      *
      * @arguments
-     * times    array;The want convert timestamps;required
+     * times    array;The want convert timestamps
+     *
+     * @options
+     * --cb     bool;read input from clipboard
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -134,7 +189,14 @@ class ConvertController extends Controller
     {
         $args = $fs->getArg('times');
         if (!$args) {
-            throw new PromptException('missing arguments');
+            if ($fs->getOpt('cb')) {
+                $text = Clipboard::new()->read();
+                $args = $text ? [$text] : [];
+            }
+
+            if (!$args) {
+                throw new PromptException('missing arguments');
+            }
         }
 
         $data = [];
