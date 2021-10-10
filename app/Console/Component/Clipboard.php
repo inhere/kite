@@ -2,10 +2,13 @@
 
 namespace Inhere\Kite\Console\Component;
 
+use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Obj\AbstractObj;
 use Toolkit\Stdlib\OS;
 use Toolkit\Sys\Exec;
 use function addslashes;
+use function strpos;
+use function tempnam;
 
 /**
  * Class Clipboard
@@ -42,27 +45,41 @@ class Clipboard extends AbstractObj
 
     /**
      * @param string $contents
-     * @param bool   $addSlashes
+     * @param bool $addSlashes
      *
      * @return bool
      */
-    public function write(string $contents, bool $addSlashes = true): bool
+    public function write(string $contents, bool $addSlashes = false): bool
     {
         $program = $this->writerApp;
         if (!$program) {
             return false;
         }
 
+        // $contents = trim($contents);
         if ($addSlashes) {
             $contents = addslashes($contents);
         }
 
-        // linux:
-        // # Copy input to clipboard
-        // 	 echo -n "$input" | xclip -selection c
-        $command = "echo $contents | $program";
-        $result  = Exec::auto($command);
+        // $contents = str_replace("\n", " \\\n", $contents);
+        $multiLine = strpos($contents, "\n") !== false;
 
+        // linux:
+        //   # Copy input to clipboard
+        // 	 echo -n "$input" | xclip -selection c
+        // Mac:
+        //  echo hello | pbcopy
+        //  pbcopy < tempfile.txt
+        if ($multiLine) {
+            $file = tempnam(OS::tempDir(), "tmp_");
+
+            File::write($contents, $file);
+            $command = "$program < $file";
+        } else {
+            $command = "echo $contents | $program";
+        }
+
+        $result = Exec::auto($command);
         return (int)$result['status'] === 0;
     }
 
@@ -79,6 +96,24 @@ class Clipboard extends AbstractObj
         $result = Exec::auto($program);
 
         return $result['output'];
+    }
+
+    /**
+     * @param string $file
+     *
+     * @return bool
+     */
+    public function readToFile(string $file): bool
+    {
+        $program = $this->readerApp;
+        if (!$program) {
+            return false;
+        }
+
+        // Mac: pbpaste >> tasklist.txt
+        $result = Exec::auto("$program >> $file");
+
+        return (int)$result['status'] === 0;
     }
 
     /**

@@ -480,7 +480,7 @@ class GitLabController extends Controller
      * @options
      *  -m, --main   bool;Open the main repo page
      *
-     * @argument
+     * @arguments
      *  remote      The remote name. default: origin
      *
      * @param FlagsParser $fs
@@ -758,11 +758,10 @@ class GitLabController extends Controller
      * @param Output $output
      *
      * @example
-     *  {binWithCmd} new-project -r go-common/demo
-     *  {binWithCmd} new-project -r go-common/demo  -g new-group
      *  {binWithCmd} new-project -r common/yii2-demo
-     *  {binWithCmd} new-project -r common/yii2-demo-wzl -g wzl
-     *  {binWithCmd} new-project -r go-common/demo -o xiajianjun-go
+     *  {binWithCmd} new-project -r common/yii2-demo -g new-group
+     *  {binWithCmd} new-project -r go-common/demo
+     *  {binWithCmd} new-project -r go-common/demo -o new-group
      */
     public function createCommand(FlagsParser $fs, Output $output): void
     {
