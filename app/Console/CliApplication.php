@@ -22,6 +22,7 @@ use Inhere\Kite\Console\Plugin\PluginManager;
 use Inhere\Kite\Kite;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
+use Throwable;
 use Toolkit\Stdlib\Obj\ObjectBox;
 use function date_default_timezone_set;
 
@@ -58,6 +59,13 @@ class CliApplication extends Application
         $this->registerServices(Kite::box());
 
         $this->initAppRun();
+    }
+
+    public function handleException(Throwable $e): void
+    {
+        Kite::logger()->error((string)$e);
+
+        parent::handleException($e);
     }
 
     /**

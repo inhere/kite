@@ -648,6 +648,7 @@ class GitController extends Controller
      * run git add/commit/push at once command
      *
      * @options
+     *  -d, --dir           run command on the directory, default is workdir.
      *  -m, --message       string;The commit message;required
      *      --not-push      bool;Dont execute git push
      *      --auto-sign     bool;Auto add sign string after message.
@@ -686,7 +687,12 @@ class GitController extends Controller
             return;
         }
 
-        $output->info('Work Dir: ' . $this->input->getPwd());
+        $curDir = $this->input->getPwd();
+        if ($runDir = $fs->getOpt('dir')) {
+            $output->info("current dir: $curDir(run dir: $runDir)");
+        } else {
+            $output->info("current dir: $curDir");
+        }
 
         $added = '.';
         if ($args = $fs->getArg('files')) {
@@ -698,7 +704,7 @@ class GitController extends Controller
 
         // will auto fetch user info by git
         if ($autoSign && !$signText) {
-            $git       = Git::new();
+            $git       = Git::new($runDir);
             $username  = $git->config->get('user.name');
             $userEmail = $git->config->get('user.email');
             // eg "Signed-off-by: inhere <in.798@qq.com>"
@@ -711,7 +717,7 @@ class GitController extends Controller
             $message .= "\n\nSigned-off-by: $signText";
         }
 
-        $run = CmdRunner::new("git status $added");
+        $run = CmdRunner::new("git status $added", $runDir);
         $run->setDryRun($this->flags->getOpt('dry-run'));
 
         $run->do(true);

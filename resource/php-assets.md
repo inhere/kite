@@ -3,6 +3,9 @@
 - https://learnku.com
 - https://www.oschina.net
 - https://medium.com
+- https://segmentfault.com
+- https://www.cnblogs.com
+- https://juejin.cn/
 
 ## php
 

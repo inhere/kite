@@ -61,13 +61,13 @@ class UtilController extends Controller
     }
 
     /**
-     * join multi line text
+     * Join multi line text
      *
      * @arguments
-     * text     The multi line text
+     * text     The multi line text, if empty will read from clipboard
      *
      * @options
-     *  --sep    The separator char. Defaults to an empty string.
+     *  --sep    The join separator char. Defaults to an empty string.
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -79,7 +79,7 @@ class UtilController extends Controller
             $text = Clipboard::new()->read();
 
             if (!$text) {
-                $output->colored('empty text');
+                $output->colored('empty input text for join');
                 return;
             }
         }
@@ -88,6 +88,37 @@ class UtilController extends Controller
 
         $sep = $fs->getOpt('sep');
         echo implode($sep, $lines), "\n";
+    }
+
+    /**
+     * Split text to multi line
+     *
+     * @arguments
+     * text     The multi line text, if empty will read from clipboard
+     *
+     * @options
+     *  --sep    The separator char. Defaults to an empty string.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function splitCommand(FlagsParser $fs, Output $output): void
+    {
+        $text = trim($fs->getArg(0));
+        if (!$text) {
+            $text = Clipboard::new()->read();
+
+            if (!$text) {
+                $output->colored('empty input text for split');
+                return;
+            }
+        }
+
+        $sep = $fs->getOpt('sep');
+
+        $lines = explode($sep, $text);
+
+        echo implode("\n", $lines), "\n";
     }
 
     /**

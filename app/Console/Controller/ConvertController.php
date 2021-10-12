@@ -151,7 +151,7 @@ class ConvertController extends Controller
      * Number base conversion.
      *
      * @arguments
-     *  number      int;The want convert number;required;
+     *  number      string;The want convert number string;required;
      *
      * @options
      *  -f,--fbase      int;The from base value.
@@ -162,15 +162,16 @@ class ConvertController extends Controller
      */
     public function baseCommand(FlagsParser $fs, Output $output): void
     {
-        $num = $fs->getArg('num');
+        $num = $fs->getArg('number');
 
-        $fBase  = $fs->getOpt('f,fbase', 10);
-        $toBase = $fs->getOpt('t,tbase', 10);
+        $fBase  = $fs->getOpt('fbase', 10);
+        $toBase = $fs->getOpt('tbase', 10);
         if ($toBase > 36) {
-            throw new PromptException('to base value cannot be');
+            throw new PromptException('to base value cannot be > 36');
         }
 
-        $output->colored('Result: ' . base_convert($num, $fBase, $toBase));
+        $converted = base_convert($num, $fBase, $toBase);
+        $output->colored("Result: $converted, len: " . strlen($converted));
     }
 
     /**
