@@ -12,6 +12,7 @@ namespace Inhere\Kite;
 use BadMethodCallException;
 use Inhere\Kite\Component\ScriptRunner;
 use Inhere\Kite\Console\CliApplication;
+use Inhere\Kite\Console\Component\AutoSetProxyEnv;
 use Inhere\Kite\Console\Plugin\PluginManager;
 use Inhere\Kite\Http\WebApplication;
 use Inhere\Kite\Lib\Jump\QuickJump;
@@ -28,6 +29,7 @@ use const BASE_PATH;
  * @package Inhere\Kite
  *
  * @method static QuickJump jumper()
+ * @method static AutoSetProxyEnv autoProxy()
  * @method static Router webRouter()
  * @method static Dispatcher dispatcher()
  * @method static ScriptRunner scriptRunner()

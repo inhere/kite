@@ -13,6 +13,7 @@ use Inhere\Console\Application;
 use Inhere\Console\ConsoleEvent;
 use Inhere\Kite\Common\Log\CliLogProcessor;
 use Inhere\Kite\Component\ScriptRunner;
+use Inhere\Kite\Console\Component\AutoSetProxyEnv;
 use Inhere\Kite\Console\Listener\BeforeCommandRunListener;
 use Inhere\Kite\Console\Listener\BeforeRunListener;
 use Inhere\Kite\Lib\Jump\QuickJump;
@@ -109,6 +110,12 @@ class CliApplication extends Application
             return QuickJump::new($jumpConf);
         });
 
+        // auto proxy setting
+        $box->set('autoProxy', function () {
+            $autoProxy = $this->getArrayParam('autoProxy');
+            return AutoSetProxyEnv::new($autoProxy);
+        });
+
         // $box->set('envLoader', function () {
         //     $jumpConf = $this->getArrayParam('osEnv');
         //     return QuickJump::new($jumpConf);
@@ -123,8 +130,7 @@ class CliApplication extends Application
         $this->on(ConsoleEvent::ON_NOT_FOUND, new NotFoundListener());
 
         // auto proxy setting
-        $autoProxy = $this->getArrayParam('autoProxy');
-        $this->on(ConsoleEvent::COMMAND_RUN_BEFORE, BeforeCommandRunListener::new($autoProxy));
+        $this->on(ConsoleEvent::COMMAND_RUN_BEFORE, new BeforeCommandRunListener);
 
         Kite::logger()->info('console app init completed');
     }

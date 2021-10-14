@@ -2,12 +2,16 @@
 
 namespace Inhere\Kite\Helper;
 
+use ArrayAccess;
 use Inhere\Console\Util\Show;
 use Toolkit\Stdlib\OS;
 use Toolkit\Sys\Sys;
+use function array_shift;
 use function defined;
 use function explode;
 use function getenv;
+use function is_array;
+use function is_object;
 use function random_int;
 use function strlen;
 use function strpos;
@@ -160,4 +164,86 @@ class AppHelper
         return $str;
     }
 
+    /**
+     * Get data from array or object by path.
+     * Example: `DataCollector::getByPath($array, 'foo.bar.yoo')` equals to $array['foo']['bar']['yoo'].
+     *
+     * @param array|ArrayAccess $data      An array or object to get value.
+     * @param mixed             $path      The key path.
+     * @param mixed             $default
+     * @param string            $separator Separator of paths.
+     *
+     * @return mixed Found value, null if not exists.
+     */
+    public static function getByPath($data, string $path, $default = null, string $separator = '.')
+    {
+        if (isset($data[$path])) {
+            return $data[$path];
+        }
+
+        // Error: will clear '0'. eg 'some-key.0'
+        // if (!$nodes = array_filter(explode($separator, $path))) {
+        if (!$nodes = explode($separator, $path)) {
+            return $default;
+        }
+
+        if ($nodes[0] === '$') {
+            array_shift($nodes);
+        }
+
+        if ($nodes[0] === '*') {
+            array_shift($nodes);
+            $dataTmp = [];
+            foreach ($data as $item) {
+                $dataTmp[] = self::getValueByNodes($item, $nodes);
+            }
+            return $dataTmp;
+        }
+
+        $dataTmp = $data;
+        foreach ($nodes as $key) {
+            // data must an array list.
+            if ($key === '*' && isset($data[0])) {
+                $dataTmp = [];
+                foreach ($data as $item) {
+                    $dataTmp[] = self::getByPath($item, $key);
+                }
+                continue;
+            }
+
+            if (is_object($dataTmp) && isset($dataTmp->$key)) {
+                $dataTmp = $dataTmp->$key;
+            } elseif ((is_array($dataTmp) || $dataTmp instanceof ArrayAccess) && isset($dataTmp[$key])) {
+                $dataTmp = $dataTmp[$key];
+            } else {
+                return $default;
+            }
+        }
+
+        return $dataTmp;
+    }
+
+    /**
+     * findValueByNodes
+     *
+     * @param array $data
+     * @param array $nodes
+     * @param mixed $default
+     *
+     * @return mixed
+     */
+    public static function getValueByNodes(array $data, array $nodes, $default = null)
+    {
+        $temp = $data;
+        foreach ($nodes as $name) {
+            if (isset($temp[$name])) {
+                $temp = $temp[$name];
+            } else {
+                $temp = $default;
+                break;
+            }
+        }
+
+        return $temp;
+    }
 }

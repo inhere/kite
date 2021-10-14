@@ -26,7 +26,7 @@ return [
             'php'   => '~/Workspace/php',
         ],
     ],
-    /** @see \Inhere\Kite\Console\Listener\BeforeCommandRunListener */
+    /** @see \Inhere\Kite\Console\Component\AutoSetProxyEnv */
     'autoProxy'      => [
         'envSettings' => [
             // proxy settings

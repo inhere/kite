@@ -4,6 +4,7 @@ namespace Inhere\Kite\Console\Component;
 
 use Inhere\Console\Controller;
 use Inhere\Kite\Console\Controller\GitController;
+use Inhere\Kite\Kite;
 use Throwable;
 use Toolkit\Cli\Cli;
 use Toolkit\Stdlib\Obj\AbstractObj;
@@ -38,20 +39,25 @@ class RedirectToGitGroup extends AbstractObj
 
         // resolve alias
         $gitCtrl = $app->getController(GitController::getName());
-        $command = $gitCtrl->resolveAlias($action);
+        $action  = $gitCtrl->resolveAlias($action);
+
+        $group = $ctrl->getRealGName();
 
         // if $first = *, will redirect all command.
         $first = $this->cmdList[0];
-        if ($first === '*' || in_array($command, $this->cmdList, true)) {
-            Cli::info("NOTICE: will redirect to git group for run subcommand: $command");
-            $ctrl->debugf('command %s not found on %s, will redirect to the git group', $command, $ctrl->getGroupName());
+        if ($first === '*' || in_array($action, $this->cmdList, true)) {
+            // auto proxy env
+            Kite::autoProxy()->applyProxyEnv($action, $group);
+
+            Cli::info("NOTICE: will redirect to git group for run subcommand: $action");
+            $ctrl->debugf('command %s not found on %s, will redirect to the git group', $action, $group);
 
             $newArgs = [];
             if ($ctrl->getFlags()->getOpt('dry-run')) {
                 $newArgs[] = '--dry-run';
             }
 
-            $newArgs[] = $command;
+            $newArgs[] = $action;
             // append remaining args
             array_push($newArgs, ...$args);
 

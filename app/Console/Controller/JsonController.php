@@ -10,12 +10,19 @@
 namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
-use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
+use Inhere\Kite\Kite;
 use InvalidArgumentException;
+use JsonException;
+use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
+use Toolkit\Stdlib\Arr;
+use Toolkit\Stdlib\Helper\JsonHelper;
+use function is_file;
+use function is_scalar;
 use function json_decode;
+use function strpos;
 
 /**
  * Class DemoController
@@ -35,41 +42,107 @@ class JsonController extends Controller
     }
 
     /**
-     * run a php built-in server for development(is alias of the command 'server:dev')
+     * @var string
+     */
+    private $dumpfile = '';
+
+    /**
+     * @var array
+     */
+    private $data = [];
+
+    protected function init(): void
+    {
+        parent::init();
+
+        $this->dumpfile = Kite::getPath('tmp/json-load.json');
+    }
+
+    /**
+     * @throws JsonException
+     */
+    private function loadDumpfileJSON(): void
+    {
+        $dumpfile = $this->dumpfile;
+        if (!$dumpfile || !is_file($dumpfile)) {
+            throw new InvalidArgumentException("the json temp file '$dumpfile' is not exists");
+        }
+
+        $this->data = json_decode(File::readAll($dumpfile), true, 512, JSON_THROW_ON_ERROR);
+    }
+
+    /**
+     * load json string data from clipboard to an tmp file
      *
-     * @usage
-     *  {command} [-S HOST:PORT]
-     *  {command} [-H HOST] [-p PORT]
+     * @param Output $output
+     *
+     * @throws JsonException
+     */
+    public function loadCommand(Output $output): void
+    {
+        $json = Clipboard::new()->read();
+        if (!$json) {
+            throw new InvalidArgumentException('the clipboard data is empty');
+        }
+
+        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+
+        File::write(JsonHelper::prettyJSON($data), $this->dumpfile);
+
+        $output->success('Complete');
+    }
+
+    /**
+     * get data by path in the loaded JSON data.
+     *
+     * @arguments
+     * path     string;The key path for search get;required
      *
      * @options
-     *  -S          The server address. e.g 127.0.0.1:5577
-     *  -H,--host   The server host address. e.g 127.0.0.1
-     *  -p,--port   The server host address. e.g 5577
+     * --type       The search type. allow: keys, path
      *
-     * @param FlagsParser $fs
-     * @param Output $output
+     * @throws JsonException
      */
-    public function loadCommand(FlagsParser $fs, Output $output): void
+    public function getCommand(FlagsParser $fs, Output $output): void
     {
-        $output->success('Complete');
+        $this->loadDumpfileJSON();
+        $path = $fs->getArg('path');
+
+        $ret = Arr::getByPath($this->data, $path);
+
+        if (is_scalar($ret)) {
+            $output->println($ret);
+        } else {
+            $output->prettyJSON($ret);
+        }
     }
 
     /**
      * search keywords in the loaded JSON data.
      *
      * @arguments
-     * keywords     The keywords for search
+     *  keywords     The keywords for search
      *
      * @options
-     * --type       The search type. allow: keys, path
+     *  --type       The search type position, default: key. allow: key, value, both
+     * @throws JsonException
      */
-    public function searchCommand(): void
+    public function searchCommand(FlagsParser $fs, Output $output): void
     {
-        $cb = Clipboard::new();
+        $this->loadDumpfileJSON();
 
-        $json = $cb->read();
-        if (!$json) {
-            throw new InvalidArgumentException('');
+        $ret = [];
+        $kw  = $fs->getArg('keywords');
+        foreach ($this->data as $key => $val) {
+            if (strpos($key, $kw) !== false) {
+                $ret[$key] = $val;
+            }
+        }
+
+        if (is_scalar($ret)) {
+            $output->println($ret);
+        } else {
+            $output->prettyJSON($ret);
         }
     }
 
