@@ -1,0 +1,5 @@
+@ECHO OFF
+setlocal DISABLEDELAYEDEXPANSION
+
+SET BIN_TARGET=%~dp0/kite
+php "%BIN_TARGET%" %*
