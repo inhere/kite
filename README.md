@@ -5,7 +5,7 @@
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/inhere/kite)](https://github.com/inhere/kite)
 [![Actions Status](https://github.com/inhere/kite/workflows/Unit-Tests/badge.svg)](https://github.com/inhere/kite/actions)
 
-PHP编写的，方便本地开发和使用的一些CLI工具应用。
+PHP编写的，方便本地开发和使用的个人CLI工具应用。
 
 > [kite](https://github.com/inhere/kite) 是基于 [inhere/php-console](https://github.com/inhere/php-console) 命令行包编写的CLI应用
 
@@ -44,16 +44,16 @@ chmod a+x bin/kite
 
 - Release page: https://github.com/inhere/kite/releases
 
-注意替换为最新的版本号:
-
-```bash
-wget -c https://github.com/inhere/kite/releases/download/v2.0.0/kite.phar
-```
-
 总是使用最新版本：
 
 ```bash
 wget -c https://github.com/inhere/kite/releases/latest/download/kite.phar
+```
+
+使用指定版本的:
+
+```bash
+wget -c https://github.com/inhere/kite/releases/download/v2.0.0/kite.phar
 ```
 
 重命名，移动到环境目录:
@@ -114,6 +114,7 @@ kite --auto-completion \
 ## aliases for kite
 # NOTICE: zsh plugin support add aliases
 #alias kj="kite jump"
+alias kg="kite git"
 alias kgit="kite git"
 alias kgl="kite gitlab"
 alias kgh="kite github"
@@ -140,12 +141,14 @@ kite help
 
 ## Git 使用
 
-主要提供git使用中的一些常用命令封装
+主要提供git使用中的一些常用命令封装.
 
 ### 命令格式
 
 ```bash
 kite git {COMMAND} [arguments ...] [--options ...]
+# 配置了shell alias
+kg {COMMAND} [arguments ...] [--options ...]
 ```
 
 ### Git常用命令
@@ -285,7 +288,9 @@ kite gitlab {command} [arguments ...] [--options ...]
 会自动切到master分支，同时更新代码到最新，然后创建新分支
 
 ```bash
-kite gl nb fix_210423
+kite gl nbr fix_210423
+# 配置了shell alias
+kgl nbr fix_210423
 ```
 
 **更新本地仓库代码**
@@ -312,11 +317,13 @@ kite gl upp
 
 **向主仓库发PR**
 
+命令：`kite gitlab pullRequest` (使用命令简写 `kite gl pr` `kgl pr`)
+
 操作不会直接创建PR，只会打开浏览器并跳转到PR页面，并自会动选择好对应分支
 
 ```bash
-# -o 不跟分支，默认会从当前分支 发起到主仓库 对应的当前分支的PR
-kite gl pr -o
+# @ 默认会从当前分支 发起到主仓库 对应的当前分支的PR
+kite gl pr -o @
 # -o 跟分支，则会从当前分支 发起到主仓库 里给定分支的PR
 kite gl pr -o qa
 kite gl pr -o pre
