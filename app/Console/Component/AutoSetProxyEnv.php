@@ -93,6 +93,8 @@ class AutoSetProxyEnv extends AbstractObj
      */
     protected function setProxyEnv(array $settings, string $command): void
     {
+        $this->applyed = $command;
+
         Show::info('load and set proxy Env settings for commandID - ' . $command);
         Show::aList($settings, 'Set Proxy ENV From Config: "autoProxy"', [
             'ucFirst'      => false,
