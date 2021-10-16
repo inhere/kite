@@ -13,6 +13,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Common\Cmd;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
@@ -804,6 +805,7 @@ class GitController extends Controller
      *  --no-merges         bool;No contains merge request logs
      *  --unshallow         bool;Convert to a complete warehouse, useful on GitHub Action.
      *  --with-author       bool;Display commit author name
+     *  --to-clipboard      bool;Copy results to clipboard
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -899,6 +901,9 @@ class GitController extends Controller
             $output->info('export changelog to file: ' . $outFile);
             $gcl->export($outFile);
             $output->success('Completed');
+        } elseif ($fs->getOpt('to-clipboard')) {
+            $output->info('Will send results to clipboard');
+            Clipboard::new()->write($gcl->getChangelog());
         } else {
             $output->println($gcl->getChangelog());
         }
