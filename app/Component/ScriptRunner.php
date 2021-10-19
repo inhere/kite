@@ -27,6 +27,7 @@ use function json_encode;
 use function preg_match;
 use function stripos;
 use function strpos;
+use function substr;
 use function trim;
 use function vdump;
 
@@ -71,7 +72,7 @@ class ScriptRunner extends AbstractObj
     /**
      * @var array
      */
-    private $scriptExts = ['.sh', '.zsh', '.bash', '.php', '.go'];
+    private $scriptExts = ['.sh', '.zsh', '.bash', '.php', '.go', '.gop'];
 
     /**
      * @var array
@@ -254,9 +255,14 @@ class ScriptRunner extends AbstractObj
         } else {
             Cli::colored("will run the script file: $name (shebang: $line)", 'cyan');
 
-            // eg: '#!/usr/bin/env bash'
+            // eg:
+            // '#!/usr/bin/env bash'
+            // '#!/usr/bin/env -S gop run'
             if (strpos($line, ' ') > 0) {
                 [, $binName] = explode(' ', $line, 2);
+                if (strpos($binName, '-S ') === 0) {
+                    $binName = substr($binName, 3);
+                }
             } else { // eg: '#!/usr/bin/bash'
                 $binName = trim($line, '#!');
             }

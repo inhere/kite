@@ -736,7 +736,7 @@ class GitController extends Controller
      * display recently git commits information by `git log`
      *
      * @arguments
-     *  maxCommit       int;Max display how many commits
+     *  maxCommit       int;Max display how many commits;;15
      *
      * @options
      *  --abbrev-commit     Only display the abbrev commit ID
@@ -760,7 +760,7 @@ class GitController extends Controller
 
         $noMerges  = $fs->getOpt('no-merges');
         $abbrevID  = $fs->getOpt('abbrev-commit');
-        $maxCommit = $fs->getOpt('max-commit', $fs->getArg('maxCommit', 15));
+        $maxCommit = $fs->getOpt('max-commit', $fs->getArg('maxCommit'));
 
         // git log --color --graph --pretty=format:'%Cred%h%Creset:%C(ul yellow)%d%Creset %s (%Cgreen%cr%Creset, %C(bold blue)%an%Creset)' --abbrev-commit -10
         $b->add('--graph');
