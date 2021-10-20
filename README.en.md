@@ -1,7 +1,7 @@
 # Kite [中文说明](README.md)
 
 [![License](https://img.shields.io/packagist/l/inhere/console.svg?style=flat-square)](LICENSE)
-[![Php Version](https://img.shields.io/badge/php-%3E=7.2.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
+[![Php Version](https://img.shields.io/badge/php-%3E=7.4.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/inhere/kite)](https://github.com/inhere/kite)
 [![Actions Status](https://github.com/inhere/kite/workflows/Unit-Tests/badge.svg)](https://github.com/inhere/kite/actions)
 

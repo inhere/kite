@@ -28,12 +28,12 @@ class Clipboard extends AbstractObj
     /**
      * @var string
      */
-    private $writerApp;
+    private string $writerApp;
 
     /**
      * @var string
      */
-    private $readerApp;
+    private string $readerApp;
 
     public function __construct()
     {

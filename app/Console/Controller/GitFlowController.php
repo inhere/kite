@@ -36,17 +36,17 @@ class GitFlowController extends Controller
     /**
      * @var string
      */
-    private $curBranchName = '';
+    private string $curBranchName = '';
 
     /**
      * @var string
      */
-    private $forkRemote = '';
+    private string $forkRemote = '';
 
     /**
      * @var string
      */
-    private $mainRemote = '';
+    private string $mainRemote = '';
 
     public static function aliases(): array
     {

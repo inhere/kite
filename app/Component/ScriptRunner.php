@@ -42,56 +42,56 @@ class ScriptRunner extends AbstractObj
     /**
      * @var bool
      */
-    private $dryRun = false;
+    private bool $dryRun = false;
 
     /**
      * @var bool
      */
-    private $enable = true;
+    private bool $enable = true;
 
     /**
      * @var array
      */
-    private $envs = [];
+    private array $envs = [];
 
     /**
      * @var array
      */
-    private $vars = [];
+    private array $vars = [];
 
     /**
      * @var array
      */
-    private $scripts = [];
+    public array $scripts = [];
 
     /**
      * @var array
      */
-    private $scriptDirs = [];
+    public array $scriptDirs = [];
 
     /**
      * @var array
      */
-    private $scriptExts = ['.sh', '.zsh', '.bash', '.php', '.go', '.gop'];
+    private array $scriptExts = ['.sh', '.zsh', '.bash', '.php', '.go', '.gop'];
 
     /**
      * @var array
      */
-    private $scriptFiles = [];
+    private array $scriptFiles = [];
 
     /**
      * Whether allow auto match bin by ext name.
      *
      * @var bool
      */
-    private $autoScriptBin = true;
+    private bool $autoScriptBin = true;
 
     /**
      * If not set the shebang line, will find bin by ext
      *
      * @var string[]
      */
-    private $scriptExt2bin = [
+    private array $scriptExt2bin = [
         '.sh'   => 'sh',
         '.zsh'  => 'zsh',
         '.bash' => 'bash',
@@ -241,7 +241,7 @@ class ScriptRunner extends AbstractObj
         $name = basename($scriptFile);
 
         // must start withs '#!'
-        if (!$line || strpos($line, '#!') !== 0) {
+        if (!$line || !str_starts_with($line, '#!')) {
             Cli::colored("will direct run the script file: $name", 'cyan');
 
             $command = $scriptFile;
@@ -260,7 +260,7 @@ class ScriptRunner extends AbstractObj
             // '#!/usr/bin/env -S gop run'
             if (strpos($line, ' ') > 0) {
                 [, $binName] = explode(' ', $line, 2);
-                if (strpos($binName, '-S ') === 0) {
+                if (str_starts_with($binName, '-S ')) {
                     $binName = substr($binName, 3);
                 }
             } else { // eg: '#!/usr/bin/bash'
@@ -370,17 +370,18 @@ class ScriptRunner extends AbstractObj
      * @param string $kw
      *
      * @return array
+     * @throws \JsonException
      */
     public function searchScripts(string $kw): array
     {
         $matched = [];
         foreach ($this->scripts as $name => $item) {
-            if (strpos($name, $kw) !== false) {
+            if (str_contains($name, $kw)) {
                 $matched[$name] = $item;
             } else {
-                $itemString = is_scalar($item) ? (string)$item : json_encode($item);
+                $itemString = is_scalar($item) ? (string)$item : json_encode($item, JSON_THROW_ON_ERROR);
 
-                if (strpos($itemString, $kw) !== false) {
+                if (str_contains($itemString, $kw)) {
                     $matched[$name] = $item;
                 }
             }
@@ -394,9 +395,9 @@ class ScriptRunner extends AbstractObj
     /**
      * @param string $name
      *
-     * @return mixed|null
+     * @return mixed
      */
-    public function getScript(string $name)
+    public function getScript(string $name): mixed
     {
         return $this->scripts[$name] ?? null;
     }
@@ -455,22 +456,6 @@ class ScriptRunner extends AbstractObj
     public function isAllowedExt(string $ext): bool
     {
         return in_array($ext, $this->scriptExts, true);
-    }
-
-    /**
-     * @return array
-     */
-    public function getScriptDirs(): array
-    {
-        return $this->scriptDirs;
-    }
-
-    /**
-     * @param array $scriptDirs
-     */
-    public function setScriptDirs(array $scriptDirs): void
-    {
-        $this->scriptDirs = $scriptDirs;
     }
 
     /**
@@ -558,7 +543,7 @@ class ScriptRunner extends AbstractObj
     /**
      * @param bool|int $enable
      */
-    public function setEnable($enable): void
+    public function setEnable(bool|int $enable): void
     {
         $this->enable = (bool)$enable;
     }

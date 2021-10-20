@@ -99,8 +99,7 @@ class CliApplication extends Application
             // create object
             $sr = new ScriptRunner($config);
             $sr->setScripts($scripts);
-            $scriptDirs = $this->getArrayParam('scriptDirs');
-            $sr->setScriptDirs($scriptDirs);
+            $sr->scriptDirs = $this->getArrayParam('scriptDirs');
 
             return $sr;
         });

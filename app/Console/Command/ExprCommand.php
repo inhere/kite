@@ -52,7 +52,7 @@ class ExprCommand extends Command
     /**
      * @var ExpressionLanguage
      */
-    private $el;
+    private ExpressionLanguage $el;
 
     /**
      * @var bool
@@ -62,17 +62,17 @@ class ExprCommand extends Command
     /**
      * @var array
      */
-    private $vars = [];
+    private array $vars = [];
 
     /**
      * @var array
      */
-    private $histories = [];
+    private array $histories = [];
 
     /**
      * @var int
      */
-    private $historyNum = 100;
+    private int $historyNum = 100;
 
     public static function aliases(): array
     {
@@ -200,7 +200,7 @@ class ExprCommand extends Command
             $founded = [];
 
             // $line=$input completion for top command name prefix.
-            if (strpos($line, ' ') === false) {
+            if (Str::contains($line, ' ') === false) {
                 foreach ($commands as $name) {
                     if (stripos($name, $input) !== false) {
                         $founded[] = $name;
@@ -262,7 +262,7 @@ class ExprCommand extends Command
         }
 
         // history
-        if ($expr === 'history' || strpos($expr, 'history ') === 0) {
+        if ($expr === 'history' || Str::hasPrefix($expr, 'history ')) {
             Cli::writeln('Total: ' . count($this->histories));
             Cli::writeln('------------------------------');
             Cli::write($this->histories);
@@ -271,7 +271,7 @@ class ExprCommand extends Command
 
         // record history
         $var = self::RESULT_VAR;
-        if (isset($this->vars[$var]) && strpos($expr, $var) !== false) {
+        if (isset($this->vars[$var]) && Str::contains($expr, $var)) {
             $this->histories[] = str_replace($var, (string)$this->vars[$var], $expr);
         } else {
             $this->histories[] = $expr;
@@ -290,7 +290,7 @@ class ExprCommand extends Command
         }
 
         // set an var
-        if (strpos($expr, 'set ') === 0) {
+        if (Str::hasPrefix($expr, 'set ')) {
             $subExpr = trim(substr($expr, 4));
             if (!$this->setVarByExpr($subExpr)) {
                 Show::liteError("Define an var like: set name = inhere");
@@ -301,7 +301,7 @@ class ExprCommand extends Command
         }
 
         // get var value
-        if (strpos($expr, 'get ') === 0) {
+        if (Str::hasPrefix($expr, 'get ')) {
             [, $var] = Str::toArray($expr, ' ');
             if (!$this->showVarValue($var)) {
                 Show::liteError("Get an not defined var: $var");
@@ -310,7 +310,7 @@ class ExprCommand extends Command
         }
 
         // unset var
-        if (strpos($expr, 'unset ') === 0) {
+        if (Str::hasPrefix($expr, 'unset ')) {
             [, $var] = Str::toArray($expr, ' ');
 
             if (!$this->unsetVar($var)) {
@@ -329,7 +329,7 @@ class ExprCommand extends Command
         }
 
         // is an var name.
-        if (strpos($expr, ' ') === false && $this->showVarValue($expr)) {
+        if (Str::contains($expr, ' ') === false && $this->showVarValue($expr)) {
             return true;
         }
 

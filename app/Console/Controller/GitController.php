@@ -55,7 +55,7 @@ class GitController extends Controller
     /**
      * @var ConfigObject
      */
-    private $settings;
+    private ConfigObject $settings;
 
     public static function aliases(): array
     {
@@ -110,7 +110,7 @@ class GitController extends Controller
 
     protected function beforeRun(): void
     {
-        if ($this->app && !$this->settings) {
+        if ($this->app && !isset($this->settings)) {
             $this->settings = ConfigObject::new($this->app->getArrayParam('git'));
         }
     }

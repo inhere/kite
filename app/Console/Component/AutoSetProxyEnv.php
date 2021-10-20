@@ -26,7 +26,7 @@ class AutoSetProxyEnv extends AbstractObj
      *
      * @var array
      */
-    public $envSettings = [];
+    public array $envSettings = [];
 
     /**
      * ```ph
@@ -37,17 +37,17 @@ class AutoSetProxyEnv extends AbstractObj
      *
      * @var array[]
      */
-    public $groupLimits = [];
+    public array $groupLimits = [];
 
     /**
      * @var array
      */
-    public $commandIds = [];
+    public array $commandIds = [];
 
     /**
      * @var string
      */
-    private $applyed = '';
+    private string $applyed = '';
 
     /**
      * @param string $realCName

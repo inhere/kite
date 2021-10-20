@@ -144,7 +144,7 @@ class RunCommand extends Command
 
         $appendTitle = $name ? ", keyword:$name" : '';
 
-        $output->aList($this->sr->getScriptDirs(), "added script dirs");
+        $output->aList($this->sr->scriptDirs, "added script dirs");
         $output->aList($files, "founded script files(total:$count$appendTitle)");
     }
 

@@ -16,7 +16,6 @@ use function sprintf;
 use function str_pad;
 use function str_repeat;
 use function str_replace;
-use function strpos;
 use function substr;
 use function trim;
 use function ucwords;
@@ -55,12 +54,12 @@ class CliMarkdown extends GithubMarkdown
      *
      * @var string
      */
-    private $lang;
+    private string $lang;
 
     /**
      * @var array
      */
-    private $theme = self::THEME_DEFAULT;
+    private array $theme = self::THEME_DEFAULT;
 
     /**
      * Class constructor.
@@ -258,7 +257,7 @@ class CliMarkdown extends GithubMarkdown
         $tag = $this->theme['link'];
         $url = $text = $block[1];
 
-        if (strpos($url, self::GITHUB_HOST) !== false) {
+        if (str_contains($url, self::GITHUB_HOST)) {
             $text = substr($text, 19);
         }
 

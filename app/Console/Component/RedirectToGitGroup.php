@@ -19,7 +19,7 @@ class RedirectToGitGroup extends AbstractObj
     /**
      * @var array
      */
-    public $cmdList = [];
+    public array $cmdList = [];
 
     /**
      * @param Controller $ctrl
