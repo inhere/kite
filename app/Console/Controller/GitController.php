@@ -33,6 +33,7 @@ use Toolkit\Stdlib\Obj\ConfigObject;
 use Toolkit\Stdlib\Str;
 use function abs;
 use function array_keys;
+use function chdir;
 use function implode;
 use function sprintf;
 use function strlen;
@@ -104,6 +105,7 @@ class GitController extends Controller
         return [
             '--dry-run' => 'bool;Dry-run the workflow, dont real execute',
             '-y, --yes' => 'Direct execution without confirmation',
+            '-w, --workdir' => 'The command work dir, default is current dir.',
             // '-i, --interactive' => 'Run in an interactive environment[TODO]',
         ];
     }
@@ -112,6 +114,11 @@ class GitController extends Controller
     {
         if ($this->app && !isset($this->settings)) {
             $this->settings = ConfigObject::new($this->app->getArrayParam('git'));
+        }
+
+        if ($workdir = $this->flags->getOpt('workdir')) {
+            $this->output->info('Change workdir to: ' . $workdir);
+            chdir($workdir);
         }
     }
 

@@ -13,11 +13,20 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
+use Inhere\Kite\Lib\Convert\JavaProperties;
+use InvalidArgumentException;
+use Symfony\Component\Yaml\Dumper;
+use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\Yaml;
+use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
 use function base_convert;
 use function date;
+use function file_get_contents;
+use function is_file;
 use function strlen;
 use function substr;
+use function trim;
 
 /**
  * Class ConvertController
@@ -44,10 +53,12 @@ class ConvertController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'ts2date' => [
+            'ts2date'   => [
                 'tc',
                 'td',
             ],
+            'yaml2prop' => ['yml2prop', 'y2p'],
+            'prop2yaml' => ['prop2yml', 'p2y'],
         ];
     }
 
@@ -144,6 +155,109 @@ class ConvertController extends Controller
      */
     public function json2classCommand(FlagsParser $fs, Output $output): void
     {
+        $output->success('Complete');
+    }
+
+    /**
+     * convert YAML to java properties contents.
+     *
+     * @options
+     *  -f,--file       The source code file. if is empty, will try read from clipboard
+     *  -o,--output     string;The output target, allow: filepath, clipboard, stdout;;stdout
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function yaml2propCommand(FlagsParser $fs, Output $output): void
+    {
+        $file = $fs->getOpt('file');
+        if (!$file) {
+            $str = Clipboard::readAll();
+        } else {
+            if (!is_file($file)) {
+                throw new PromptException("input source file not exists, file: $file");
+            }
+
+            $str = file_get_contents($file);
+        }
+
+        if (!$str) {
+            throw new InvalidArgumentException('the source yaml contents is empty');
+        }
+
+        $parser = new Parser();
+        /** @var array $data */
+        $data = $parser->parse(trim($str));
+        if (!$data) {
+            $output->warning('empty data for convert');
+            return;
+        }
+
+        $jp = new JavaProperties();
+
+        $result  = $jp->encode($data);
+        $outFile = $fs->getOpt('output');
+        if (!$outFile || $outFile === 'stdout') {
+            $output->println($result);
+        } elseif ($outFile === 'clipboard') {
+            $output->info('will send result to Clipboard');
+            Clipboard::writeString($result);
+        } else {
+            $output->info("will write result to $outFile");
+            File::putContents($outFile, $result);
+        }
+
+        $output->success('Complete');
+    }
+
+    /**
+     * convert java properties to YAML contents.
+     *
+     * @options
+     *  -f,--file       The source code file. if is empty, will try read from clipboard
+     *  -o,--output     string;The output target, allow: filepath, clipboard, stdout;;stdout
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function prop2yamlCommand(FlagsParser $fs, Output $output): void
+    {
+        $file = $fs->getOpt('file');
+        if (!$file) {
+            $str = Clipboard::readAll();
+        } else {
+            if (!is_file($file)) {
+                throw new PromptException("input source file not exists, file: $file");
+            }
+
+            $str = file_get_contents($file);
+        }
+
+        if (!$str) {
+            throw new InvalidArgumentException('the source properties contents is empty');
+        }
+
+        $prop = new JavaProperties();
+        $data = $prop->decode($str);
+        if (!$data) {
+            $output->warning('empty data for convert');
+            return;
+        }
+
+        $dumper = new Dumper();
+        $result = $dumper->dump($data, 1, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK);
+
+        $outFile = $fs->getOpt('output');
+        if (!$outFile || $outFile === 'stdout') {
+            $output->println($result);
+        } elseif ($outFile === 'clipboard') {
+            $output->info('will send result to Clipboard');
+            Clipboard::writeString($result);
+        } else {
+            $output->info("will write result to $outFile");
+            File::putContents($outFile, $result);
+        }
+
         $output->success('Complete');
     }
 

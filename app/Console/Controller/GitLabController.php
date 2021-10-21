@@ -25,6 +25,7 @@ use Throwable;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
 use function array_merge;
+use function chdir;
 use function date;
 use function explode;
 use function http_build_query;
@@ -97,6 +98,7 @@ class GitLabController extends Controller
         return [
             '--dry-run' => 'bool;Dry-run the workflow, dont real execute',
             '-y, --yes' => 'bool;Direct execution without confirmation',
+            '-w, --workdir' => 'The command work dir, default is current dir.',
             // '-i, --interactive' => 'Run in an interactive environment[TODO]',
         ];
     }
@@ -116,6 +118,11 @@ class GitLabController extends Controller
     {
         if ($this->app && !$this->settings) {
             $this->settings = $this->app->getArrayParam('gitlab');
+        }
+
+        if ($workdir = $this->flags->getOpt('workdir')) {
+            $this->output->info('Change workdir to: ' . $workdir);
+            chdir($workdir);
         }
     }
 
@@ -269,7 +276,8 @@ class GitLabController extends Controller
      * Clone an gitlab repository to local
      *
      * @options
-     *  --git    bool;Use git protocol for git clone.
+     *  -g, --git       bool;Use git protocol for git clone.
+     *      --group     The group name.
      *
      * @arguments
      *  repo    string;The remote git repo URL or repository name;required;
@@ -285,7 +293,11 @@ class GitLabController extends Controller
      */
     public function cloneCommand(FlagsParser $fs, Output $output): void
     {
-        $repo = $fs->getArg('repo');
+        $repo  = $fs->getArg('repo');
+        $group = $fs->getOpt('group');
+        if ($group) {
+            $repo = "$group/$repo";
+        }
 
         $useGit  = $fs->getOpt('git');
         $repoUrl = $this->getGitlab()->parseRepoUrl($repo, $useGit);

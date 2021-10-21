@@ -7,7 +7,6 @@ use Toolkit\Stdlib\Obj\AbstractObj;
 use Toolkit\Stdlib\OS;
 use Toolkit\Sys\Exec;
 use function addslashes;
-use function strpos;
 use function tempnam;
 
 /**
@@ -34,6 +33,24 @@ class Clipboard extends AbstractObj
      * @var string
      */
     private string $readerApp;
+
+    /**
+     * @return string
+     */
+    public static function readAll(): string
+    {
+        return (new self())->read();
+    }
+
+    /**
+     * @param string $text
+     *
+     * @return bool
+     */
+    public static function writeString(string $text): bool
+    {
+        return (new self())->write($text);
+    }
 
     public function __construct()
     {
@@ -62,7 +79,7 @@ class Clipboard extends AbstractObj
         }
 
         // $contents = str_replace("\n", " \\\n", $contents);
-        $multiLine = strpos($contents, "\n") !== false;
+        $multiLine = str_contains($contents, "\n");
 
         // linux:
         //   # Copy input to clipboard

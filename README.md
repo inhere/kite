@@ -16,7 +16,7 @@ PHP编写的，方便本地开发和使用的个人CLI工具应用。
 **系统环境依赖**
 
 - git
-- php 7.3+
+- php 7.4+
 - composer
 
 > TIP: 支持windows 10
