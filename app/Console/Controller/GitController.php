@@ -371,7 +371,6 @@ class GitController extends Controller
      *
      * @options
      *  --gh             bool;Define the remote repository is on github
-     *  -w, --workdir    The clone work dir, default is current dir.
      *
      * @arguments
      *  repo    string;The remote git repo URL or repository name;required
@@ -391,10 +390,10 @@ class GitController extends Controller
         $name = $fs->getArg('name');
         $args = $fs->getRawArgs();
 
-        $dir = $fs->getOpt('workdir');
+        // $dir = $this->flags->getOpt('workdir');
 
         $c = Cmd::git('clone');
-        $c->setWorkDir($dir);
+        // $c->setWorkDir($dir);
         $c->setDryRun($this->flags->getOpt('dry-run'));
 
         if ($fs->getOpt('gh')) {
@@ -656,7 +655,6 @@ class GitController extends Controller
      * run git add/commit/push at once command
      *
      * @options
-     *  -d, --dir           run command on the directory, default is workdir.
      *  -m, --message       string;The commit message;required
      *      --not-push      bool;Dont execute git push
      *      --auto-sign     bool;Auto add sign string after message.
@@ -695,12 +693,12 @@ class GitController extends Controller
             return;
         }
 
-        $curDir = $this->input->getPwd();
-        if ($runDir = $fs->getOpt('dir')) {
-            $output->info("current dir: $curDir(run dir: $runDir)");
-        } else {
-            $output->info("current dir: $curDir");
-        }
+        // $curDir = $this->input->getPwd();
+        // if ($runDir = $fs->getOpt('dir')) {
+        //     $output->info("current dir: $curDir(run dir: $runDir)");
+        // } else {
+        //     $output->info("current dir: $curDir");
+        // }
 
         $added = '.';
         if ($args = $fs->getArg('files')) {
@@ -712,7 +710,9 @@ class GitController extends Controller
 
         // will auto fetch user info by git
         if ($autoSign && !$signText) {
-            $git       = Git::new($runDir);
+            // $git       = Git::new($runDir);
+            $git = Git::new();
+
             $username  = $git->config->get('user.name');
             $userEmail = $git->config->get('user.email');
             // eg "Signed-off-by: inhere <in.798@qq.com>"
@@ -725,7 +725,7 @@ class GitController extends Controller
             $message .= "\n\nSigned-off-by: $signText";
         }
 
-        $run = CmdRunner::new("git status $added", $runDir);
+        $run = CmdRunner::new("git status $added");
         $run->setDryRun($this->flags->getOpt('dry-run'));
 
         $run->do(true);

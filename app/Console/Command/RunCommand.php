@@ -125,12 +125,14 @@ class RunCommand extends Command
                 return;
             }
 
-            $output->liteError("please input an exists script name for run. ('$name' not exists)");
+            // as script expr and run.
+            $this->sr->runInputScript($name);
+            // $output->liteError("please input an exists script name for run. ('$name' not exists)");
             return;
         }
 
         // run script by name
-        $this->sr->runCustomScript($name, $runArgs);
+        $this->sr->runScriptByName($name, $runArgs);
     }
 
     /**

@@ -106,7 +106,7 @@ class ScriptRunner extends AbstractObj
     public function run(string $name, array $runArgs): void
     {
         if ($this->isScriptName($name)) {
-            $this->runCustomScript($name, $runArgs);
+            $this->runScriptByName($name, $runArgs);
         } elseif ($this->isScriptFile($name)) {
             $this->runScriptFile($name, $runArgs);
         } else {
@@ -115,12 +115,20 @@ class ScriptRunner extends AbstractObj
     }
 
     /**
+     * @param string $scriptExpr
+     */
+    public function runInputScript(string $scriptExpr): void
+    {
+        $this->executeScript($scriptExpr, true);
+    }
+
+    /**
      * run script by name
      *
      * @param string $name
      * @param array  $runArgs
      */
-    public function runCustomScript(string $name, array $runArgs): void
+    public function runScriptByName(string $name, array $runArgs): void
     {
         if (!isset($this->scripts[$name])) {
             throw new InvalidArgumentException("The script name:$name not exists");
