@@ -124,6 +124,17 @@ class Kite
 
     /**
      * @param string $path
+     *
+     * @return string
+     */
+    public static function getTmpPath(string $path): string
+    {
+        // TODO tmp path 不该跟着 kite 执行文件
+        return self::getPath("/tmp/$path");
+    }
+
+    /**
+     * @param string $path
      * @param bool   $rmPharMark Will clear prefix 'phar://', if on phar package.
      *
      * @return string

@@ -20,11 +20,13 @@ use PhpComp\Http\Client\ClientConst;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\Color;
 use Toolkit\FsUtil\Dir;
+use Toolkit\PFlag\FlagType;
 use function dirname;
 use function explode;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
+use function implode;
 use function strpos;
 use function substr;
 use function trim;
@@ -56,8 +58,9 @@ class CheatCommand extends Command
         $fs = $this->getFlags();
 
         $fs->addArg('topic', 'The language/topic for search. eg: go, php, java, lua, python, js ...');
-        $fs->addArg('question', 'The question search.');
+        $fs->addArg('question', 'The questions on the topic.', FlagType::ARRAY);
 
+        $fs->addOptByRule('refresh', 'bool;ignore cached result, re-request remote cheat server');
         $fs->addOpt('search', 's', 'search by the keywords');
         // $fs->addOpt('T', 't', 'query');
 
@@ -94,7 +97,9 @@ Other pages:
 HELP
         );
         $fs->setExampleHelp([
-            '{fullCmd} go reverse list'
+            '{binWithCmd} php strlen',
+            '{binWithCmd} go reverse list',
+            '{binWithCmd} java Optional',
         ]);
     }
 
@@ -135,12 +140,12 @@ HELP
         }
 
         $topic = $this->flags->getArg('topic');
-        $query = $this->flags->getArg('question');
         if (!$topic) {
             throw new InvalidArgumentException('please input an topic name for query.');
         }
 
-        $result = $this->queryResult($topic, $query);
+        $queries = $this->flags->getArg('question');
+        $result  = $this->queryResult($topic, $queries);
 
         $output->colored('RESULT:');
         $output->write($result);
@@ -150,23 +155,25 @@ HELP
 
     /**
      * @param string $topic
-     * @param string $query query question
+     * @param string[] $queries query questions
      * @param bool $refresh
      *
      * @return string
      */
-    protected function queryResult(string $topic, string $query, bool $refresh = false): string
+    protected function queryResult(string $topic, array $queries, bool $refresh = false): string
     {
         if (!$topic = trim($topic)) {
             throw new InvalidArgumentException('topic cannot be empty');
         }
 
-        $cacheDir = Kite::getPath('tmp/cheat');
+        $queryPath = implode('/', $queries);
+        $cacheDir = Kite::getTmpPath('cheat');
+
         if ($topic[0] === ':') {
             $cacheFile = $cacheDir . "/$topic.txt";
         } else {
             $cacheFile = $cacheDir . '/' . $topic;
-            $cacheFile .= $query ? "/$query.txt" : '/_topic.txt';
+            $cacheFile .= $queryPath ? "/$queryPath.txt" : '/_topic.txt';
         }
 
         if (!$refresh && file_exists($cacheFile)) {
@@ -175,8 +182,8 @@ HELP
         }
 
         $chtApiUrl = self::CHT_HOST . $topic;
-        if ($query) {
-            $chtApiUrl .= "/$query";
+        if ($queryPath) {
+            $chtApiUrl .= '/' . $queryPath;
         }
 
         Cli::info('will request remote URL: ' . $chtApiUrl);
@@ -191,7 +198,7 @@ HELP
         // not found
         if (
             $bodyLen < 300 &&
-            (strpos($result, 'Unknown topic.') !== false || strpos($result, 'Unknown cheat sheet') !== false)
+            (str_contains($result, 'Unknown topic.') || str_contains($result, 'Unknown cheat sheet'))
         ) {
             return $result;
         }
@@ -201,7 +208,7 @@ HELP
             [$firstLine,] = explode("\n", $result);
             // vdump($firstLine);
             $name = trim(Color::clearColor($firstLine), "#/ \t\n\r\0\x0B");
-            if (strpos($name, 'cheat:') === 0) {
+            if (str_starts_with($name, 'cheat:')) {
                 $name = substr($name, 6);
             }
 
