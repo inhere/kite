@@ -88,8 +88,8 @@ class CliApplication extends Application
         }, true);
 
         $box->set('plugManager', function () {
-            $plugDirs = $this->getArrayParam('pluginDirs');
-            return new PluginManager($plugDirs);
+            $config = $this->getArrayParam('pluginManager');
+            return new PluginManager($config);
         });
 
         $box->set('scriptRunner', function () {

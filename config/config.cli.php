@@ -22,10 +22,6 @@ return [
     'pluginManager' => [
         'enable'  => true,
     ],
-    /** @see \Inhere\Kite\Component\ScriptRunner */
-    'scriptRunner' => [
-        'enable'  => true,
-    ],
     // self:webui
     'webui'          => [
         'addr' => '127.0.0.1:8090',

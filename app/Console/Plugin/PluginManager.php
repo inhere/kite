@@ -8,6 +8,7 @@ use RuntimeException;
 use SplFileInfo;
 use Toolkit\Cli\Color;
 use Toolkit\FsUtil\Dir;
+use Toolkit\Stdlib\Obj;
 use Toolkit\Stdlib\Str;
 use function basename;
 use function class_exists;
@@ -46,7 +47,7 @@ class PluginManager
     /**
      * @var array
      */
-    private $pluginDirs;
+    private array $pluginDirs = [];
 
     /**
      * @var array
@@ -59,23 +60,23 @@ class PluginManager
     // private $classes = [];
 
     /**
-     * @param array $pluginDirs
+     * @param array $config
      *
      * @return static
      */
-    public static function new(array $pluginDirs = []): self
+    public static function new(array $config = []): self
     {
-        return new self($pluginDirs);
+        return new self($config);
     }
 
     /**
      * Class constructor.
      *
-     * @param array $pluginDirs
+     * @param array $config
      */
-    public function __construct(array $pluginDirs = [])
+    public function __construct(array $config = [])
     {
-        $this->pluginDirs = $pluginDirs;
+       Obj::init($this, $config);
     }
 
     /**
@@ -323,5 +324,13 @@ class PluginManager
     public function setEnable($enable): void
     {
         $this->enable = (bool)$enable;
+    }
+
+    /**
+     * @param array $pluginDirs
+     */
+    public function setPluginDirs(array $pluginDirs): void
+    {
+        $this->pluginDirs = $pluginDirs;
     }
 }

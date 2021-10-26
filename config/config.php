@@ -61,18 +61,26 @@ return [
             'root' => $basePath . '/resource/mandocs'
         ],
     ],
-    'pluginDirs' => [
-        // BASE_PATH . '/plugin'
-        $basePath . '/plugin',
-        $basePath . '/custom/plugin',
+    /** @see \Inhere\Kite\Console\Plugin\PluginManager */
+    'pluginManager' => [
+        'enable'     => true,
+        'pluginDirs' => [
+            // BASE_PATH . '/plugin'
+            $basePath . '/plugin',
+            $basePath . '/custom/plugin',
+        ],
+    ],
+    /** @see \Inhere\Kite\Component\ScriptRunner */
+    'scriptRunner' => [
+        'enable'  => true,
     ],
     'scriptDirs' => [
         // BASE_PATH . '/script',
         $basePath . '/script',
         $basePath . '/custom/script',
     ],
-    // command aliases. element is: alias command => real command
-    'aliases'    => require 'aliases.php',
     // custom scripts for quick run an command
     'scripts'    => require 'scripts.php',
+    // command aliases. element is: alias command => real command
+    'aliases'    => require 'aliases.php',
 ];

@@ -104,7 +104,7 @@ class GitController extends Controller
     {
         return [
             '--dry-run' => 'bool;Dry-run the workflow, dont real execute',
-            '-y, --yes' => 'Direct execution without confirmation',
+            '-y, --yes' => 'bool;Direct execution without confirmation',
             '-w, --workdir' => 'The command work dir, default is current dir.',
             // '-i, --interactive' => 'Run in an interactive environment[TODO]',
         ];

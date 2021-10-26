@@ -16,12 +16,26 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Util\PhpDevServe;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
+use Inhere\Kite\Console\Component\Clipboard;
+use Inhere\Kite\Helper\AppHelper;
+use InvalidArgumentException;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Json;
+use Toolkit\Stdlib\Php;
 use Toolkit\Sys\Sys;
+use function addslashes;
 use function array_filter;
 use function array_merge;
+use function function_exists;
+use function implode;
 use function is_dir;
+use function is_numeric;
+use function ob_get_clean;
+use function ob_start;
+use function preg_quote;
+use function sprintf;
+use function str_contains;
+use function trim;
 
 /**
  * Class GitGroup
@@ -38,9 +52,12 @@ class PhpController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'csfix'  => 'csFix',
-            'cs-fix' => 'csFix',
-            'ghpkg'  => 'ghPkg'
+            'csFix'   => ['csfix', 'cs-fix'],
+            'ghPkg'   => ['ghpkg'],
+            'pkgNew'  => ['pkgnew', 'pkg-new', 'create'],
+            'pkgOpen' => ['open', 'pkg-open'],
+            'runCode' => ['eval', 'run-code', 'run-codes'],
+            'runFunc' => ['run', 'exec', 'run-func'],
         ];
     }
 
@@ -62,7 +79,6 @@ class PhpController extends Controller
     public function csFixCommand(FlagsParser $fs, Output $output): void
     {
         $dir = $fs->getArg('directory');
-
         if (!is_dir($dir)) {
             $output->error('please input an exists directory. current: ' . $dir);
             return;
@@ -177,14 +193,123 @@ class PhpController extends Controller
     }
 
     /**
+     * exec php code snippets and dump results.
+     *
+     * @arguments
+     *  funcName       string;The php function name;true
+     *  funcArgs       array;the function args, allow multi args
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     *
+     * @example
+     *  {binWithCmd} strlen "inhere" # output: 6
+     *
+     */
+    public function runFuncCommand(FlagsParser $fs, Output $output): void
+    {
+        $funcName = $fs->getArg('funcName');
+        $funcAlias = [
+            'len' => 'strlen',
+        ];
+
+        $funcName = $funcAlias[$funcName] ?? $funcName;
+        if (!$funcName || !function_exists($funcName)) {
+            throw new InvalidArgumentException("input '$funcName' is not exists");
+        }
+
+        /** @var array $args */
+        if ($args = $fs->getArg('funcArgs')) {
+            $fmtArgs = [];
+            foreach ($args as $k => $arg) {
+                if (is_numeric($arg)) {
+                    $fmtArgs[] = $arg;
+                    $args[$k]  = (int)$arg;
+                } else {
+                    $fmtArgs[] = str_contains($arg, '"') ? "'$arg'" : '"' . $arg . '"';
+                }
+            }
+
+            $ret = $funcName(...$args);
+            $str = sprintf('%s(%s);', $funcName, implode(', ', $fmtArgs));
+        } else {
+            $ret = $funcName();
+            $str = $funcName . '();';
+        }
+
+        $output->colored('Code:');
+        $output->colored("  $str", 'code');
+        $output->colored('RESULT:');
+        echo Php::dumpVars($ret);
+    }
+
+    /**
+     * exec php code snippets and dump results.
+     *
+     * @arguments
+     *  codes       The php codes. if empty, will read from clipboard.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     *
+     * @example
+     *  {binWithCmd} 'echo strlen("inhere")' # output: 6
+     *
+     */
+    public function runCodeCommand(FlagsParser $fs, Output $output): void
+    {
+        $codes = $fs->getArg('codes');
+        if (!$codes) {
+            $codes = Clipboard::readAll();
+            if (!$codes) {
+                throw new InvalidArgumentException('input codes and clipboard is empty');
+            }
+        }
+
+        // echo Php::dumpVars($box->get($objName));
+        $output->info('TODO');
+    }
+
+    private function evalCodes(string $codes): string
+    {
+        $codes = trim($codes);
+        $codes = trim($codes, ';') . ';';
+
+        ob_start();
+        eval($codes);
+        return ob_get_clean();
+    }
+
+    /**
      * Search php package from packagist.org
      *
      * @param FlagsParser $fs
      * @param Output $output
      */
-    public function pkgSearch(FlagsParser $fs, Output $output): void
+    public function pkgSearchCommand(FlagsParser $fs, Output $output): void
     {
+        $output->info('TODO');
+    }
 
+    /**
+     * open php package page on packagist.org
+     *
+     * @arguments
+     *  name        string;The package name, eg: inhere/console;required
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     *
+     * @example
+     * {binWithCmd} inhere/console # will open https://packagist.org/packages/inhere/console
+     */
+    public function pkgOpenCommand(FlagsParser $fs, Output $output): void
+    {
+        $pkgName = $fs->getArg('name');
+        $pageUrl = "https://packagist.org/packages/$pkgName";
+
+        AppHelper::openBrowser($pageUrl);
+        $output->info('TODO');
     }
 
     /**
@@ -194,18 +319,19 @@ class PhpController extends Controller
      *  name        string;The new package name;required
      *
      * @options
-     *  --tpl-repo      The template repo remote github repo path or url.
+     *  --tpl-repo      The template repo path or url on the github. default: inherelab/php-pkg-template
      *
      * @param FlagsParser $fs
      * @param Output $output
      */
-    public function pkgNew(FlagsParser $fs, Output $output): void
+    public function pkgNewCommand(FlagsParser $fs, Output $output): void
     {
         $pkgName  = $fs->getArg('name');
-        $repoPath = 'inherelab/php-pkg-template';
+        $repoPath = $fs->getOpt('tpl-repo', 'inherelab/php-pkg-template');
 
         $run = CmdRunner::new();
         $run->addf('git clone %s/%s %s', GitHub::GITHUB_HOST, $repoPath, $pkgName);
+        $run->runAndPrint();
 
         $output->success('Completed');
     }
