@@ -6,17 +6,24 @@ use Inhere\Console\Application;
 use Inhere\Console\Util\Show;
 use RuntimeException;
 use SplFileInfo;
+use Toolkit\Cli\Cli;
 use Toolkit\Cli\Color;
 use Toolkit\FsUtil\Dir;
 use Toolkit\Stdlib\Obj;
 use Toolkit\Stdlib\Str;
+use function array_keys;
+use function array_search;
 use function basename;
 use function class_exists;
+use function count;
 use function is_dir;
 use function is_file;
+use function key;
 use function rtrim;
+use function str_contains;
 use function strlen;
 use function strpos;
+use function strtolower;
 use function substr;
 use function trim;
 
@@ -42,7 +49,7 @@ class PluginManager
      *
      * @var AbstractPlugin[]
      */
-    private $plugins = [];
+    private array $plugins = [];
 
     /**
      * @var array
@@ -50,9 +57,9 @@ class PluginManager
     private array $pluginDirs = [];
 
     /**
-     * @var array
+     * @var array<string, string>
      */
-    private $pluginFiles = [];
+    private array $pluginFiles = [];
 
     /**
      * @var array
@@ -88,7 +95,25 @@ class PluginManager
     {
         $plugin = $this->getPlugin($name);
         if (!$plugin) {
-            throw new RuntimeException("the plugin '$name' is not exists. plugin: ");
+            $this->loadPluginFiles();
+
+            $matched = [];
+            foreach ($this->pluginFiles as $plugName => $pluginFile) {
+                // if (str_contains(strtolower($plugName), strtolower($name))) {
+                if (Str::ihas($plugName, $name)) {
+                    $matched[$plugName] = $pluginFile;
+                }
+            }
+
+            // if can match only one, run it.
+            if (count($matched) === 1) {
+                $pluginName = (string)key($matched);
+                Cli::info("[Tips] auto match and run the plugin: $pluginName");
+
+                $plugin = $this->getPlugin($pluginName);
+            } else {
+                throw new RuntimeException("the plugin '$name' is not exists.");
+            }
         }
 
         $plugin->run($app, $args);
@@ -142,7 +167,7 @@ class PluginManager
         $name = trim($name);
         $name = trim($name, '/');
 
-        if (!$name || strpos($name, ' ') !== false) {
+        if (!$name || str_contains($name, ' ')) {
             return false;
         }
 

@@ -13,6 +13,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Kite;
 use InvalidArgumentException;
+use Toolkit\Cli\Util\LineParser;
 use Toolkit\PFlag\FlagsParser;
 use function array_keys;
 
@@ -31,6 +32,13 @@ class PluginController extends Controller
     public static function aliases(): array
     {
         return ['plugins', 'plug'];
+    }
+
+    protected static function commandAliases(): array
+    {
+        return [
+            'info' => ['show'],
+        ];
     }
 
     /**
@@ -87,7 +95,7 @@ class PluginController extends Controller
      *  name    The plugin name for run
      *
      * @options
-     *  -i, --select    bool;Run plugin by select
+     *  -i, -s, --select    bool;select a plugin in plugin list for run
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -100,16 +108,25 @@ class PluginController extends Controller
             $files = $kpm->loadPluginFiles()->getPluginFiles();
 
             $list = array_keys($files);
-            $name = $output->select('select an plugin', $list, null, true, [
+            $name = $output->select('select an plugin for run', $list, null, true, [
                 'returnVal' => true,
+            ]);
+
+            $line = $output->ask("please provide args for the plugin '$name'", '-h');
+            $args = LineParser::parseIt($line);
+
+            $output->title("Run the plugin $name", [
+                'ucWords' => false,
             ]);
         } else {
             $name = $fs->getArg('name');
             if (!$name) {
                 throw new InvalidArgumentException('must provide plugin name for run');
             }
+
+            $args = $fs->getRemainArgs();
         }
 
-        $kpm->run($name, $this->app, $fs->getRemainArgs());
+        $kpm->run($name, $this->app, $args);
     }
 }
