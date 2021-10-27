@@ -11,15 +11,11 @@ namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Kite;
 use Toolkit\PFlag\FlagsParser;
 use function date;
-use function explode;
-use function implode;
 use function strtotime;
 use function time;
-use function trim;
 
 /**
  * Class UtilController
@@ -55,70 +51,8 @@ class UtilController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'fjb'  => 'findJetBrains',
-            'join' => ['implode'],
+            'fjb' => 'findJetBrains',
         ];
-    }
-
-    /**
-     * Join multi line text
-     *
-     * @arguments
-     * text     The multi line text, if empty will read from clipboard
-     *
-     * @options
-     *  --sep    The join separator char. Defaults to an empty string.
-     *
-     * @param FlagsParser $fs
-     * @param Output $output
-     */
-    public function joinCommand(FlagsParser $fs, Output $output): void
-    {
-        $text = trim($fs->getArg(0));
-        if (!$text) {
-            $text = Clipboard::new()->read();
-
-            if (!$text) {
-                $output->colored('empty input text for join');
-                return;
-            }
-        }
-
-        $lines = explode("\n", $text);
-
-        $sep = $fs->getOpt('sep');
-        echo implode($sep, $lines), "\n";
-    }
-
-    /**
-     * Split text to multi line
-     *
-     * @arguments
-     * text     The multi line text, if empty will read from clipboard
-     *
-     * @options
-     *  --sep    The separator char. Defaults to an empty string.
-     *
-     * @param FlagsParser $fs
-     * @param Output $output
-     */
-    public function splitCommand(FlagsParser $fs, Output $output): void
-    {
-        $text = trim($fs->getArg(0));
-        if (!$text) {
-            $text = Clipboard::new()->read();
-
-            if (!$text) {
-                $output->colored('empty input text for split');
-                return;
-            }
-        }
-
-        $sep = $fs->getOpt('sep');
-
-        $lines = explode($sep, $text);
-
-        echo implode("\n", $lines), "\n";
     }
 
     /**
@@ -126,7 +60,7 @@ class UtilController extends Controller
      *
      * @param Output $output
      */
-    public function dateCommand( Output $output): void
+    public function dateCommand(Output $output): void
     {
         $time = time();
 
@@ -183,7 +117,7 @@ class UtilController extends Controller
      */
     public function logCommand(FlagsParser $fs): void
     {
-        $msg = $fs->getFirstArg();
+        $msg  = $fs->getFirstArg();
         $type = $fs->getOpt('type');
 
         if (!$msg && !$type) {

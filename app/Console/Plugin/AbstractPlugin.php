@@ -171,10 +171,12 @@ abstract class AbstractPlugin implements PluginInterface
         // $meta = $this->metadata();
 
         return [
-            'name'  => $this->name,
+            'name'   => $this->name,
             // 'desc'     => $meta['desc'] ?? '',
-            'class' => $this->classname,
-            'path'  => $this->filepath,
+            'class'  => $this->classname,
+            'author' => $this->metadata['author'],
+            'version' => $this->metadata['version'],
+            'path'   => $this->filepath,
         ];
     }
 
@@ -214,7 +216,7 @@ abstract class AbstractPlugin implements PluginInterface
 
     /**
      * @param Application $app
-     * @param Input       $input
+     * @param Input $input
      */
     abstract public function exec(Application $app, Input $input): void;
 

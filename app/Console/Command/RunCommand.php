@@ -57,7 +57,7 @@ class RunCommand extends Command
      *      --proxy         bool;Enable proxy ENV setting
      *
      * @arguments
-     *  name        The script name for execute
+     *  name        The script/plugin name for execute.
      *
      * @param Input  $input
      * @param Output $output

@@ -4,6 +4,10 @@ namespace Inhere\Kite\Helper;
 
 use ArrayAccess;
 use Inhere\Console\Util\Show;
+use Inhere\Kite\Console\Component\Clipboard;
+use Inhere\Kite\Kite;
+use Toolkit\Cli\Cli;
+use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\OS;
 use Toolkit\Sys\Sys;
 use function array_shift;
@@ -11,11 +15,15 @@ use function defined;
 use function explode;
 use function getenv;
 use function is_array;
+use function is_file;
 use function is_object;
 use function random_int;
 use function strlen;
 use function strpos;
+use function substr;
 use function trim;
+use function vdump;
+use const STDIN;
 
 /**
  * Class AppHelper
@@ -245,5 +253,51 @@ class AppHelper
         }
 
         return $temp;
+    }
+
+    /**
+     * try read contents
+     *
+     * - input '@' or empty     - will read from Clipboard
+     * - input '@i' or '@stdin' - will read from STDIN
+     * - input '@FILEPATH'      - will read from the filepath.
+     *
+     * @param string $input the input text
+     * @param string $loadedFile
+     *
+     * @return string
+     */
+    public static function tryReadContents(string $input, string $loadedFile = ''): string
+    {
+        $str = $input;
+        if (!$input) {
+            $str = Clipboard::new()->read();
+
+            // is one line text
+        } elseif (!str_contains($input, "\n") && str_starts_with($input, '@')) {
+            if ($input === '@') {
+                Cli::info('try read contents from Clipboard');
+                $str = Clipboard::new()->read();
+            } elseif ($input === '@i' || $input === '@stdin') {
+                Cli::info('try read contents from STDIN');
+                $str = Kite::cliApp()->getInput()->readAll();
+                // $str = File::streamReadAll(STDIN);
+                // $str = File::readAll('php://stdin');
+                // vdump($str);
+                // Cli::info('try read contents from STDOUT'); // error
+                // $str = Kite::cliApp()->getOutput()->readAll();
+            } elseif (($input === '@l' || $input === '@load') && is_file($loadedFile)) {
+                Cli::info('try read contents from file: ' . $loadedFile);
+                $str = File::readAll($loadedFile);
+            } else {
+                $filepath = substr($input, 1);
+                if (is_file($filepath)) {
+                    Cli::info('try read contents from file: ' . $filepath);
+                    $str = File::readAll($filepath);
+                }
+            }
+        }
+
+        return $str;
     }
 }
