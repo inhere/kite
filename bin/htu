@@ -16,18 +16,21 @@ $conf = [
 ];
 
 // create input
-// $in  = new Input();
-$in = new Input\AloneInput();
+$in = new Input();
 $in->setCommand(DocCommand::getName());
 
 // create output
 $out = new Output();
 
-// man command
-$htc = new DocCommand($in, $out);
-
 // create an application
 $app = new CliApplication($conf, $in, $out);
 
-$htc->setApp($app);
-$htc->run();
+// man command
+$htc = new DocCommand($in, $out);
+
+try {
+    $htc->setApp($app);
+    $htc->run($in->getFlags());
+} catch (Throwable $e) {
+    $app->getErrorHandler()->handle($e);
+}
