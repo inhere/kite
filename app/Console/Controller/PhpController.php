@@ -62,6 +62,53 @@ class PhpController extends Controller
     }
 
     /**
+     * convert create mysql table SQL to PHP class
+     *
+     * @options
+     *  --cb            bool;read source code from clipboard
+     *  -f,--file       The source code file
+     *  -o,--output     The output target. default is stdout.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function json2classCommand(FlagsParser $fs, Output $output): void
+    {
+        $output->success('Complete');
+    }
+
+    /**
+     * convert create mysql table SQL to PHP class
+     *
+     * @options
+     *  --cb            bool;read source code from clipboard
+     *  -f,--file       The source code file
+     *  -o,--output     The output target. default is stdout.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function sql2classCommand(FlagsParser $fs, Output $output): void
+    {
+        $output->success('Complete');
+    }
+
+    /**
+     * convert an mysql INSERT SQL to php k-v array
+     *
+     * @options
+     *  -f,--file       The source markdown code
+     *  -o,--output     The output target. default is stdout.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function sql2arrCommand(FlagsParser $fs, Output $output): void
+    {
+        $output->success('Complete');
+    }
+
+    /**
      * run php-cs-fixer for an dir, and auto add git commit message
      *
      * @options
