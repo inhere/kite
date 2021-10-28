@@ -4,9 +4,7 @@
 use Inhere\Kite\Console\CliApplication;
 use Inhere\Kite\Kite;
 
-define('BASE_PATH', dirname(__DIR__));
-
-require dirname(__DIR__) . '/vendor/autoload.php';
+require dirname(__DIR__) . '/app/boot.php';
 
 $app = new CliApplication([
     'name'      => 'kite',

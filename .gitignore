@@ -7,7 +7,7 @@
 tmp/
 custom/
 vendor/
-*.lock
+#*.lock
 *.phar
 *.log
 *.tgz
