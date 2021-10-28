@@ -58,7 +58,7 @@
     "packagist": {
       "type": "composer",
       "url": "https://mirrors.aliyun.com/composer/"
-    },
+    }
   },
   "scripts": {
     "test": "php vender/bin/phpunit"
