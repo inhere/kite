@@ -46,8 +46,7 @@
       "Inhere\\Kite\\": "app/"
     },
     "files": [
-      "app/func.php",
-      "app/boot.php"
+      "app/func.php"
     ]
   },
   "bin": [
