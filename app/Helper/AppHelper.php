@@ -264,11 +264,14 @@ class AppHelper
      *
      * @param string $input the input text
      * @param string $loadedFile
+     * @param array{print: bool} $opts
      *
      * @return string
      */
-    public static function tryReadContents(string $input, string $loadedFile = ''): string
+    public static function tryReadContents(string $input, string $loadedFile = '', array $opts = []): string
     {
+        $print = $opts['print'] ?? true;
+
         $str = $input;
         if (!$input) {
             $str = Clipboard::new()->read();
@@ -276,10 +279,10 @@ class AppHelper
             // is one line text
         } elseif (!str_contains($input, "\n") && str_starts_with($input, '@')) {
             if ($input === '@') {
-                Cli::info('try read contents from Clipboard');
+                $print && Cli::info('try read contents from Clipboard');
                 $str = Clipboard::new()->read();
             } elseif ($input === '@i' || $input === '@stdin') {
-                Cli::info('try read contents from STDIN');
+                $print &&  Cli::info('try read contents from STDIN');
                 $str = Kite::cliApp()->getInput()->readAll();
                 // $str = File::streamReadAll(STDIN);
                 // $str = File::readAll('php://stdin');
@@ -287,12 +290,12 @@ class AppHelper
                 // Cli::info('try read contents from STDOUT'); // error
                 // $str = Kite::cliApp()->getOutput()->readAll();
             } elseif (($input === '@l' || $input === '@load') && is_file($loadedFile)) {
-                Cli::info('try read contents from file: ' . $loadedFile);
+                $print && Cli::info('try read contents from file: ' . $loadedFile);
                 $str = File::readAll($loadedFile);
             } else {
                 $filepath = substr($input, 1);
                 if (is_file($filepath)) {
-                    Cli::info('try read contents from file: ' . $filepath);
+                    $print && Cli::info('try read contents from file: ' . $filepath);
                     $str = File::readAll($filepath);
                 }
             }

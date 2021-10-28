@@ -10,7 +10,6 @@
 namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
-use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Helper\AppHelper;
@@ -18,14 +17,10 @@ use Inhere\Kite\Kite;
 use InvalidArgumentException;
 use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
-use Toolkit\Stdlib\Helper\JsonHelper;
+use Toolkit\Stdlib\Str;
 use function explode;
 use function implode;
 use function is_file;
-use function json_decode;
-use function str_contains;
-use function str_starts_with;
-use function substr;
 use function trim;
 
 /**
@@ -55,7 +50,9 @@ class StringController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'join' => ['implode'],
+            'join'   => ['implode', 'j'],
+            'split'  => ['s'],
+            'filter' => ['f'],
         ];
     }
 
@@ -112,6 +109,7 @@ class StringController extends Controller
      *
      * @arguments
      * text     The source text for handle.
+     *          Special:
      *          input '@' or empty     - will read from Clipboard
      *          input '@i' or '@stdin' - will read from STDIN
      *          input '@l' or '@load'  - will read from loaded file
@@ -134,7 +132,7 @@ class StringController extends Controller
         }
 
         $lines = explode("\n", $text);
-        $sep = $fs->getOpt('sep');
+        $sep   = $fs->getOpt('sep');
 
         echo implode($sep, $lines), "\n";
     }
@@ -144,6 +142,7 @@ class StringController extends Controller
      *
      * @arguments
      * text     The source text for handle.
+     *          Special:
      *          input '@' or empty     - will read from Clipboard
      *          input '@i' or '@stdin' - will read from STDIN
      *          input '@l' or '@load'  - will read from loaded file
@@ -168,7 +167,6 @@ class StringController extends Controller
         $sep = $fs->getOpt('sep', ' ');
 
         $lines = explode($sep, $text);
-
         echo implode("\n", $lines), "\n";
     }
 
@@ -177,14 +175,17 @@ class StringController extends Controller
      *
      * @arguments
      * text     The source text for handle.
-     *          input '@' or empty     - will read from Clipboard
-     *          input '@i' or '@stdin' - will read from STDIN
-     *          input '@l' or '@load'  - will read from loaded file
-     *          input '@FILEPATH'      - will read from the filepath.
+     *          Special:
+     *          input '@c' or '@cb' or '@clipboard' - will read from Clipboard
+     *          input empty or '@i' or '@stdin'     - will read from STDIN
+     *          input '@l' or '@load'               - will read from loaded file
+     *          input '@FILEPATH'                   - will read from the filepath.
      *
      * @options
-     *  -e, --exclude   exclude lines on contains keywords.
-     *  -m, --match     include lines on contains keywords.
+     *  -e, --exclude   array;exclude lines on contains keywords.
+     *  -m, --match     array;include lines on contains keywords.
+     *  -t, --trim      trim the input contents.
+     *  -s, --sep       The separator char. defaults is newline(\n).
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -192,17 +193,33 @@ class StringController extends Controller
     public function filterCommand(FlagsParser $fs, Output $output): void
     {
         $text = $fs->getArg('text');
-        $text = AppHelper::tryReadContents($text, $this->dumpfile);
-
+        $text = AppHelper::tryReadContents($text, $this->dumpfile, ['print' => false]);
         if (!$text) {
             $output->warning('empty source contents for handle');
             return;
         }
 
-        $sep = $fs->getOpt('sep', ' ');
+        $ex  = $fs->getOpt('exclude');
+        $in  = $fs->getOpt('match');
+        $sep = $fs->getOpt('sep', "\n");
 
         $lines = explode($sep, $text);
 
-        echo implode("\n", $lines), "\n";
+        $filtered = [];
+        foreach ($lines as $line) {
+            if ($in) {
+                if (Str::has($line, $in)) {
+                    $filtered[] = $line;
+                }
+                continue;
+            }
+
+            if ($ex && Str::has($line, $ex)) {
+                continue;
+            }
+            $filtered[] = $line;
+        }
+
+        echo implode($sep, $filtered), "\n";
     }
 }
