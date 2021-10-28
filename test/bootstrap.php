@@ -11,8 +11,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 date_default_timezone_set('Asia/Shanghai');
 
-define('BASE_PATH', dirname(__DIR__));
-
 /** @var Composer\Autoload\ClassLoader $loader */
-$loader = require dirname(__DIR__) . '/vendor/autoload.php';
+$loader = require dirname(__DIR__) . '/app/boot.php';
 $loader->setPsr4("Inhere\\KiteTest\\", __DIR__ . '/unittest/');

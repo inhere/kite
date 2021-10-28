@@ -1,8 +1,6 @@
 <?php
 
-define('BASE_PATH', dirname(__DIR__));
-
-require dirname(__DIR__) . '/vendor/autoload.php';
+require dirname(__DIR__) . '/app/boot.php';
 
 $app = new Inhere\Kite\Http\WebApplication(BASE_PATH);
 
@@ -10,4 +8,3 @@ $app = new Inhere\Kite\Http\WebApplication(BASE_PATH);
 require dirname(__DIR__) . '/app/Http/routes.php';
 
 $app->run();
-

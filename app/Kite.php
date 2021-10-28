@@ -130,7 +130,7 @@ class Kite
     public static function getTmpPath(string $path): string
     {
         // TODO tmp path 不该跟着 kite 执行文件
-        return self::getPath("/tmp/$path");
+        return self::getPath("tmp/$path");
     }
 
     /**

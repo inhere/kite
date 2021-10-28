@@ -40,6 +40,11 @@ class StringController extends Controller
     /**
      * @var string
      */
+    private string $str;
+
+    /**
+     * @var string
+     */
     private string $dumpfile;
 
     public static function aliases(): array
@@ -58,26 +63,48 @@ class StringController extends Controller
     {
         parent::init();
 
-        $this->dumpfile = Kite::getTmpPath('string-loaded.json');
+        $this->dumpfile = Kite::getTmpPath('string-loaded.txt');
+    }
+
+    /**
+     * @throws JsonException
+     */
+    private function loadDumpContents(): void
+    {
+        $dumpfile = $this->dumpfile;
+        if (!$dumpfile || !is_file($dumpfile)) {
+            throw new InvalidArgumentException("the temp file '$dumpfile' is not exists");
+        }
+
+        $this->str = File::readAll($dumpfile);
     }
 
     /**
      * load string data from clipboard to an tmp file
      *
-     * @param Output $output
+     * @options
+     *   --show       bool;show the loaded data contents
      *
-     * @throws JsonException
+     * @param FlagsParser $fs
+     * @param Output $output
      */
-    public function loadCommand(Output $output): void
+    public function loadCommand(FlagsParser $fs, Output $output): void
     {
+        if ($fs->getOpt('show')) {
+            $this->loadDumpContents();
+            $output->println($this->str);
+            return;
+        }
+
         $str = Clipboard::new()->read();
         if (!$str) {
             throw new InvalidArgumentException('the clipboard data is empty');
         }
 
-        File::write(JsonHelper::prettyJSON($data), $this->dumpfile);
-
-        $output->success('Complete');
+        $len = File::putContents($this->dumpfile, $str);
+        $output->success('Complete.');
+        $output->colored('- loaded length: ' . $len);
+        $output->colored('- dumpfile path: ' . $this->dumpfile);
     }
 
     /**
@@ -87,6 +114,7 @@ class StringController extends Controller
      * text     The source text for handle.
      *          input '@' or empty     - will read from Clipboard
      *          input '@i' or '@stdin' - will read from STDIN
+     *          input '@l' or '@load'  - will read from loaded file
      *          input '@FILEPATH'      - will read from the filepath.
      *
      * @options
@@ -98,7 +126,7 @@ class StringController extends Controller
     public function joinCommand(FlagsParser $fs, Output $output): void
     {
         $text = trim($fs->getArg('text'));
-        $text = AppHelper::tryReadContents($text);
+        $text = AppHelper::tryReadContents($text, $this->dumpfile);
 
         if (!$text) {
             $output->warning('empty input contents for handle');
@@ -118,6 +146,7 @@ class StringController extends Controller
      * text     The source text for handle.
      *          input '@' or empty     - will read from Clipboard
      *          input '@i' or '@stdin' - will read from STDIN
+     *          input '@l' or '@load'  - will read from loaded file
      *          input '@FILEPATH'      - will read from the filepath.
      *
      * @options
@@ -150,6 +179,7 @@ class StringController extends Controller
      * text     The source text for handle.
      *          input '@' or empty     - will read from Clipboard
      *          input '@i' or '@stdin' - will read from STDIN
+     *          input '@l' or '@load'  - will read from loaded file
      *          input '@FILEPATH'      - will read from the filepath.
      *
      * @options
@@ -161,11 +191,11 @@ class StringController extends Controller
      */
     public function filterCommand(FlagsParser $fs, Output $output): void
     {
-        $text = trim($fs->getArg('text'));
+        $text = $fs->getArg('text');
         $text = AppHelper::tryReadContents($text, $this->dumpfile);
 
         if (!$text) {
-            $output->warning('empty input contents for handle');
+            $output->warning('empty source contents for handle');
             return;
         }
 
