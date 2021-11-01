@@ -14,10 +14,12 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
+use Inhere\Kite\Lib\Stream\StringsStream;
 use InvalidArgumentException;
 use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
+use function count;
 use function explode;
 use function implode;
 use function is_file;
@@ -50,9 +52,9 @@ class StringController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'join'   => ['implode', 'j'],
-            'split'  => ['s'],
-            'filter' => ['f'],
+            'join'    => ['implode', 'j'],
+            'split'   => ['s'],
+            'process' => ['p', 'filter', 'f'],
         ];
     }
 
@@ -110,10 +112,10 @@ class StringController extends Controller
      * @arguments
      * text     The source text for handle.
      *          Special:
-     *          input '@' or empty     - will read from Clipboard
-     *          input '@i' or '@stdin' - will read from STDIN
-     *          input '@l' or '@load'  - will read from loaded file
-     *          input '@FILEPATH'      - will read from the filepath.
+     *          input '@c' or '@cb' or '@clipboard' - will read from Clipboard
+     *          input empty or '@i' or '@stdin'     - will read from STDIN
+     *          input '@l' or '@load'               - will read from loaded file
+     *          input '@FILEPATH'                   - will read from the filepath
      *
      * @options
      *  -s, --sep    The join separator char. Defaults to an empty string.
@@ -143,10 +145,10 @@ class StringController extends Controller
      * @arguments
      * text     The source text for handle.
      *          Special:
-     *          input '@' or empty     - will read from Clipboard
-     *          input '@i' or '@stdin' - will read from STDIN
-     *          input '@l' or '@load'  - will read from loaded file
-     *          input '@FILEPATH'      - will read from the filepath.
+     *          input '@c' or '@cb' or '@clipboard' - will read from Clipboard
+     *          input empty or '@i' or '@stdin'     - will read from STDIN
+     *          input '@l' or '@load'               - will read from loaded file
+     *          input '@FILEPATH'                   - will read from the filepath
      *
      * @options
      *  -s, --sep    The separator char. defaults is an space string.
@@ -175,22 +177,34 @@ class StringController extends Controller
      *
      * @arguments
      * text     The source text for handle.
+     *
      *          Special:
      *          input '@c' or '@cb' or '@clipboard' - will read from Clipboard
      *          input empty or '@i' or '@stdin'     - will read from STDIN
      *          input '@l' or '@load'               - will read from loaded file
-     *          input '@FILEPATH'                   - will read from the filepath.
+     *          input '@FILEPATH'                   - will read from the filepath
      *
      * @options
-     *  -e, --exclude   array;exclude lines on contains keywords.
-     *  -m, --match     array;include lines on contains keywords.
-     *  -t, --trim      trim the input contents.
-     *  -s, --sep       The separator char. defaults is newline(\n).
+     *  -e, --exclude   array;exclude line on contains keywords.
+     *  -m, --match     array;include line on contains keywords.
+     *  -t, --trim      trim the each line.
+     *      --wrap      wrap the each line by the separator
+     *  -j, --join      join the each line by the separator
+     *  -s, --sep       The separator char for split contents. defaults is newline(\n).
+     *  -f, --filter    array;apply more filter for handle text.
+     *                  allow filters:
+     *                  - notEmpty      filter empty line
+     *                  - min           limit min length
+     *                  - wrap          wrap each line. wrap:'
      *
      * @param FlagsParser $fs
      * @param Output $output
+     *
+     * @example
+     * {binWithCmd} -f "wrap:'"
+     *
      */
-    public function filterCommand(FlagsParser $fs, Output $output): void
+    public function processCommand(FlagsParser $fs, Output $output): void
     {
         $text = $fs->getArg('text');
         $text = AppHelper::tryReadContents($text, $this->dumpfile, ['print' => false]);
@@ -199,27 +213,22 @@ class StringController extends Controller
             return;
         }
 
-        $ex  = $fs->getOpt('exclude');
-        $in  = $fs->getOpt('match');
-        $sep = $fs->getOpt('sep', "\n");
+        $ex = $fs->getOpt('exclude');
+        $in = $fs->getOpt('match');
 
-        $lines = explode($sep, $text);
+        $trim = $fs->getOpt('trim');
+        $sep  = $fs->getOpt('sep', "\n");
 
-        $filtered = [];
-        foreach ($lines as $line) {
-            if ($in) {
-                if (Str::has($line, $in)) {
-                    $filtered[] = $line;
-                }
-                continue;
-            }
+        $newStr = StringsStream::new(explode($sep, $text))
+            ->eachIf('trim', $trim)
+            ->filterIf(function (string $line) use ($ex) {
+                return !Str::has($line, $ex);
+            }, count($ex) > 0)
+            ->filterIf(function (string $line) use ($in) {
+                return Str::has($line, $in);
+            }, count($in) > 0)
+            ->implode($sep);
 
-            if ($ex && Str::has($line, $ex)) {
-                continue;
-            }
-            $filtered[] = $line;
-        }
-
-        echo implode($sep, $filtered), "\n";
+        echo $newStr, "\n";
     }
 }

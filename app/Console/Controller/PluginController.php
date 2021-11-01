@@ -92,10 +92,19 @@ class PluginController extends Controller
      * run an plugin by input name
      *
      * @arguments
-     *  name    The plugin name for run
+     *  name    The plugin name for run, allow find by keywords
      *
      * @options
      *  -i, -s, --select    bool;select a plugin in plugin list for run
+     *
+     * @example
+     *
+     * Auto match:
+     * if has plugin name is 'MyFirstPlugin'
+     *
+     * - match by substr
+     * {binWithCmd} myf     # will auto match the 'MyFirstPlugin' and run it.
+     * {binWithCmd} myf     # will auto match the 'MyFirstPlugin' and run it.
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -112,7 +121,7 @@ class PluginController extends Controller
                 'returnVal' => true,
             ]);
 
-            $line = $output->ask("please provide args for the plugin '$name'", '-h');
+            $line = $output->ask("please provide args for run '$name'", '-h');
             $args = LineParser::parseIt($line);
 
             $output->title("Run the plugin $name", [

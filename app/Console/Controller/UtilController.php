@@ -11,9 +11,12 @@ namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Kite;
+use Toolkit\Cli\Color;
 use Toolkit\PFlag\FlagsParser;
 use function date;
+use function printf;
 use function strtotime;
 use function time;
 
@@ -51,7 +54,11 @@ class UtilController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'fjb' => 'findJetBrains',
+            'fjb'       => 'findJetBrains',
+            'clipboard' => [
+                'clip',
+                'cb'
+            ],
         ];
     }
 
@@ -102,8 +109,44 @@ class UtilController extends Controller
 
         $ideName = $fs->getArg('name', 'all');
         // rm -rf ~/Library/Application\ Support/${NAME}*/eval
-
         vdump($dirs);
+    }
+
+    /**
+     * @options
+     * -r, -s, --read       bool;read and show clipboard contents.
+     *   -w, --write        write input contents to clipboard.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function clipboardCommand(FlagsParser $fs, Output $output): void
+    {
+        if ($fs->getOpt('read')) {
+            echo Clipboard::readAll();
+            return;
+        }
+
+        $str = $fs->getMustOpt('write');
+        $ok  = Clipboard::writeString($str);
+
+        if ($ok) {
+            $output->success('contents sent to clipboard');
+        } else {
+            $output->error('contents send fail to clipboard');
+        }
+    }
+
+    /**
+     * @param Output $output
+     */
+    public function colorCommand(Output $output): void
+    {
+        $output->colored('All color tags:');
+
+        foreach (Color::getStyles() as $style) {
+            printf("    %s: %s\n", $style, Color::apply($style, 'This is a message'));
+        }
     }
 
     /**

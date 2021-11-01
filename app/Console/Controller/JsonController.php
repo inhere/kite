@@ -13,10 +13,11 @@ use Inhere\Console\Component\Formatter\JSONPretty;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
-use Inhere\Kite\Console\Component\CliPrettyJSON;
+use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
 use InvalidArgumentException;
 use JsonException;
+use Toolkit\Cli\App;
 use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Arr;
@@ -24,8 +25,6 @@ use Toolkit\Stdlib\Helper\JsonHelper;
 use function is_file;
 use function is_scalar;
 use function json_decode;
-use function strpos;
-use function vdump;
 
 /**
  * Class DemoController
@@ -64,6 +63,13 @@ class JsonController extends Controller
         $this->dumpfile = Kite::getPath('tmp/json-load.json');
     }
 
+    protected function jsonRender(): JSONPretty
+    {
+        return JSONPretty::new([
+            // 'theme' => JSONPretty::THEME_ONE
+        ]);
+    }
+
     /**
      * @throws JsonException
      */
@@ -79,17 +85,36 @@ class JsonController extends Controller
     }
 
     /**
+     * @param string $source
+     *
+     * @throws JsonException
+     */
+    private function autoReadJSON(string $source): void
+    {
+        $this->json = AppHelper::tryReadContents($source, $this->dumpfile);
+        if (!$this->json) {
+            throw new InvalidArgumentException('the source json data is empty');
+        }
+
+        $this->data = json_decode($this->json, true, 512, JSON_THROW_ON_ERROR);
+    }
+
+    /**
      * load json string data from clipboard to an tmp file
      *
+     * @arguments
+     * source   The source. allow: @clipboard, @stdin
+     *
+     * @param FlagsParser $fs
      * @param Output $output
      *
      * @throws JsonException
      */
-    public function loadCommand(Output $output): void
+    public function loadCommand(FlagsParser $fs, Output $output): void
     {
-        $json = Clipboard::new()->read();
+        $json = AppHelper::tryReadContents($fs->getArg('source'));
         if (!$json) {
-            throw new InvalidArgumentException('the clipboard data is empty');
+            throw new InvalidArgumentException('the input data is empty');
         }
 
         $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
@@ -106,21 +131,24 @@ class JsonController extends Controller
      * path     string;The key path for search get;required
      *
      * @options
-     * --type       The search type. allow: keys, path
+     *     --type        The search type. allow: keys, path
+     * -s, --source      The json data source, default read stdin, allow: @load, @clipboard, @stdin
      *
      * @throws JsonException
      */
     public function getCommand(FlagsParser $fs, Output $output): void
     {
-        $this->loadDumpfileJSON();
-        $path = $fs->getArg('path');
+        $source = $fs->getOpt('source');
+        $this->autoReadJSON($source);
 
-        $ret = Arr::getByPath($this->data, $path);
+        $path = $fs->getArg('path');
+        $ret  = Arr::getByPath($this->data, $path);
 
         if (is_scalar($ret)) {
             $output->println($ret);
         } else {
-            $output->prettyJSON($ret);
+            // $output->prettyJSON($ret);
+            $output->write($this->jsonRender()->renderData($ret));
         }
     }
 
@@ -150,7 +178,7 @@ class JsonController extends Controller
             $output->println($ret);
         } else {
             // $output->prettyJSON($ret);
-            $output->write(JSONPretty::new()->renderData($ret));
+            $output->write($this->jsonRender()->renderData($ret));
         }
     }
 
@@ -165,20 +193,16 @@ class JsonController extends Controller
     public function prettyCommand(FlagsParser $fs, Output $output): void
     {
         $json = $fs->getArg('json');
-        if (!$json) {
-            $json = Clipboard::new()->read();
-        } elseif ($json === '@load') {
-            $this->loadDumpfileJSON();
-            $json = $this->json;
-        }
+        $json = AppHelper::tryReadContents($json, $this->dumpfile);
 
         if (!$json) {
             throw new InvalidArgumentException('please input json text for pretty');
         }
+
         // $data = json_decode($json, true);
         // $output->prettyJSON($data);
         // $output->colored('PRETTY JSON:');
-        $output->write(JSONPretty::new()->render($json));
+        $output->write($this->jsonRender()->render($json));
     }
 
     /**

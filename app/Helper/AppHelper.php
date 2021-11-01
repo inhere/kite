@@ -258,9 +258,10 @@ class AppHelper
     /**
      * try read contents
      *
-     * - input '@' or empty     - will read from Clipboard
-     * - input '@i' or '@stdin' - will read from STDIN
-     * - input '@FILEPATH'      - will read from the filepath.
+     * - input empty or '@i' or '@stdin'     - will read from STDIN
+     * - input '@c' or '@cb' or '@clipboard' - will read from Clipboard
+     * - input '@l' or '@load'               - will read from loaded file
+     * - input '@FILEPATH'                   - will read from the filepath.
      *
      * @param string $input the input text
      * @param string $loadedFile
@@ -274,11 +275,12 @@ class AppHelper
 
         $str = $input;
         if (!$input) {
-            $str = Clipboard::new()->read();
+            $print &&  Cli::info('try read contents from STDIN');
+            $str = Kite::cliApp()->getInput()->readAll();
 
             // is one line text
         } elseif (!str_contains($input, "\n") && str_starts_with($input, '@')) {
-            if ($input === '@') {
+            if ($input === '@c' || $input === '@cb' || $input === '@clipboard') {
                 $print && Cli::info('try read contents from Clipboard');
                 $str = Clipboard::new()->read();
             } elseif ($input === '@i' || $input === '@stdin') {

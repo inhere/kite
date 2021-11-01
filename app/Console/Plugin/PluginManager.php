@@ -97,7 +97,13 @@ class PluginManager
         if (!$plugin) {
             $this->loadPluginFiles();
 
-            $matched = [];
+            $matched = $words = [];
+            // input is multi words for match.
+            // $isMulti = str_contains($name, ' ');
+            if (str_contains($name, ' ')) {
+                $words = Str::explode($name, ' ');
+            }
+
             foreach ($this->pluginFiles as $plugName => $pluginFile) {
                 // if (str_contains(strtolower($plugName), strtolower($name))) {
                 if (Str::ihas($plugName, $name)) {

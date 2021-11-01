@@ -21,6 +21,10 @@ composer require knplabs/github-api:^3.0 guzzlehttp/guzzle:^7.0.1 http-interop/h
 - `cebe/markdown`
 - `league/commonmark`
 
+**html to markdown**
+
+- `league/html-to-markdown` https://github.com/thephpleague/html-to-markdown
+
 **JSON**
 
 > https://github.com/json-next/awesome-json-next
@@ -37,3 +41,5 @@ composer require knplabs/github-api:^3.0 guzzlehttp/guzzle:^7.0.1 http-interop/h
 
 - bulmaswatch
 - https://unpkg.com/json5@2.2.0/dist/index.min.js
+- https://github.com/mixmark-io/turndown Convert HTML into Markdown with JavaScript.
+  - https://unpkg.com/turndown/dist/turndown.js
