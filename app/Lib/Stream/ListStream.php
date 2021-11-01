@@ -5,9 +5,9 @@ namespace Inhere\Kite\Lib\Stream;
 use function implode;
 
 /**
- * class StringsStream
+ * class ListStream
  */
-class StringsStream extends BaseStream
+class ListStream extends BaseStream
 {
     /**
      * @param string[] $strings
@@ -20,7 +20,7 @@ class StringsStream extends BaseStream
     }
 
     /**
-     * @param callable(string): string $func
+     * @param callable(array): string $func
      * @param bool|mixed $apply
      *
      * @return $this
@@ -35,7 +35,7 @@ class StringsStream extends BaseStream
     }
 
     /**
-     * @param callable(string): string $func
+     * @param callable(array): string $func
      *
      * @return $this
      */
@@ -50,7 +50,22 @@ class StringsStream extends BaseStream
     }
 
     /**
-     * @param callable(string): bool $func
+     * @param callable(array): string $func
+     *
+     * @return $this
+     */
+    public function eachTo(callable $func, BaseStream $new): BaseStream
+    {
+        foreach ($this as $str) {
+            $new->append($func($str));
+            // $new->offsetSet($key, $func($str));
+        }
+
+        return $new;
+    }
+
+    /**
+     * @param callable(array): bool $func
      * @param bool|mixed $apply
      *
      * @return $this
@@ -65,7 +80,7 @@ class StringsStream extends BaseStream
     }
 
     /**
-     * @param callable(string): bool $func
+     * @param callable(array): bool $func
      *
      * @return $this
      */

@@ -264,14 +264,14 @@ class AppHelper
      * - input '@FILEPATH'                   - will read from the filepath.
      *
      * @param string $input the input text
-     * @param string $loadedFile
-     * @param array{print: bool} $opts
+     * @param array{print: bool, loadedFile: string} $opts
      *
      * @return string
      */
-    public static function tryReadContents(string $input, string $loadedFile = '', array $opts = []): string
+    public static function tryReadContents(string $input, array $opts = []): string
     {
-        $print = $opts['print'] ?? true;
+        $print = $opts['print'] ?? false;
+        $lFile = $opts['loadedFile'] ?? '';
 
         $str = $input;
         if (!$input) {
@@ -279,27 +279,32 @@ class AppHelper
             $str = Kite::cliApp()->getInput()->readAll();
 
             // is one line text
-        } elseif (!str_contains($input, "\n") && str_starts_with($input, '@')) {
-            if ($input === '@c' || $input === '@cb' || $input === '@clipboard') {
-                $print && Cli::info('try read contents from Clipboard');
-                $str = Clipboard::new()->read();
-            } elseif ($input === '@i' || $input === '@stdin') {
-                $print &&  Cli::info('try read contents from STDIN');
-                $str = Kite::cliApp()->getInput()->readAll();
-                // $str = File::streamReadAll(STDIN);
-                // $str = File::readAll('php://stdin');
-                // vdump($str);
-                // Cli::info('try read contents from STDOUT'); // error
-                // $str = Kite::cliApp()->getOutput()->readAll();
-            } elseif (($input === '@l' || $input === '@load') && is_file($loadedFile)) {
-                $print && Cli::info('try read contents from file: ' . $loadedFile);
-                $str = File::readAll($loadedFile);
-            } else {
-                $filepath = substr($input, 1);
-                if (is_file($filepath)) {
-                    $print && Cli::info('try read contents from file: ' . $filepath);
-                    $str = File::readAll($filepath);
+        } elseif (!str_contains($input, "\n")) {
+            if (str_starts_with($input, '@')) {
+                if ($input === '@c' || $input === '@cb' || $input === '@clipboard') {
+                    $print && Cli::info('try read contents from Clipboard');
+                    $str = Clipboard::new()->read();
+                } elseif ($input === '@i' || $input === '@stdin') {
+                    $print &&  Cli::info('try read contents from STDIN');
+                    $str = Kite::cliApp()->getInput()->readAll();
+                    // $str = File::streamReadAll(STDIN);
+                    // $str = File::readAll('php://stdin');
+                    // vdump($str);
+                    // Cli::info('try read contents from STDOUT'); // error
+                    // $str = Kite::cliApp()->getOutput()->readAll();
+                } elseif (($input === '@l' || $input === '@load') && ($lFile && is_file($lFile))) {
+                    $print && Cli::info('try read contents from file: ' . $lFile);
+                    $str = File::readAll($lFile);
+                } else {
+                    $filepath = substr($input, 1);
+                    if (is_file($filepath)) {
+                        $print && Cli::info('try read contents from file: ' . $filepath);
+                        $str = File::readAll($filepath);
+                    }
                 }
+            } elseif (is_file($input)) {
+                $print && Cli::info('try read contents from file: ' . $input);
+                $str = File::readAll($input);
             }
         }
 

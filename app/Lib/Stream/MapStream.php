@@ -5,9 +5,9 @@ namespace Inhere\Kite\Lib\Stream;
 use function implode;
 
 /**
- * class StringsStream
+ * class ListStream
  */
-class StringsStream extends BaseStream
+class MapStream extends BaseStream
 {
     /**
      * @param string[] $strings
@@ -20,7 +20,7 @@ class StringsStream extends BaseStream
     }
 
     /**
-     * @param callable(string): string $func
+     * @param callable(array): string $func
      * @param bool|mixed $apply
      *
      * @return $this
@@ -35,22 +35,38 @@ class StringsStream extends BaseStream
     }
 
     /**
-     * @param callable(string): string $func
+     * @param callable(array): string $func
      *
      * @return $this
      */
     public function each(callable $func): self
     {
         $new = new self();
-        foreach ($this as $str) {
-            $new->append($func($str));
+        foreach ($this as $key => $str) {
+            // $new->append($func($str));
+            $new->offsetSet($key, $func($str));
         }
 
         return $new;
     }
 
     /**
-     * @param callable(string): bool $func
+     * @param callable(array): string $func
+     *
+     * @return $this
+     */
+    public function eachTo(callable $func, BaseStream $new): BaseStream
+    {
+        foreach ($this as $key => $str) {
+            // $new->append($func($str));
+            $new->offsetSet($key, $func($str));
+        }
+
+        return $new;
+    }
+
+    /**
+     * @param callable(array): bool $func
      * @param bool|mixed $apply
      *
      * @return $this
@@ -65,16 +81,17 @@ class StringsStream extends BaseStream
     }
 
     /**
-     * @param callable(string): bool $func
+     * @param callable(array): bool $func
      *
      * @return $this
      */
     public function filter(callable $func): self
     {
         $new = new self();
-        foreach ($this as $str) {
+        foreach ($this as $key => $str) {
             if ($func($str)) {
-                $new->append($str);
+                // $new->append($str);
+                $new->offsetSet($key, $func($str));
             }
         }
 
@@ -86,9 +103,9 @@ class StringsStream extends BaseStream
      *
      * @return string
      */
-    public function join(string $sep = ','): string
+    public function joinValues(string $sep = ','): string
     {
-        return $this->implode($sep);
+        return $this->implodeValues($sep);
     }
 
     /**
@@ -96,20 +113,9 @@ class StringsStream extends BaseStream
      *
      * @return string
      */
-    public function implode(string $sep = ','): string
+    public function implodeValues(string $sep = ','): string
     {
         return implode($sep, $this->getArrayCopy());
-    }
-
-    // public function prepend(string $value): self
-    // {
-    //     return $this;
-    // }
-
-    public function append($value): self
-    {
-        parent::append((string)$value);
-        return $this;
     }
 
     /**

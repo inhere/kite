@@ -99,6 +99,23 @@ class FileController extends Controller
     }
 
     /**
+     * create ln
+     *
+     * @options
+     *  -s, --src   The server address. e.g 127.0.0.1:5577
+     *  -d, --dst   The server host address. e.g 127.0.0.1
+     *
+     * @param Output $output
+     */
+    public function findCommand(Output $output): void
+    {
+        // ln -s "$PWD"/bin/htu /usr/local/bin/htu
+
+        Show::success('ddd');
+        // $output->success('hello');
+    }
+
+    /**
      * use vim edit an input file
      *
      * @arguments

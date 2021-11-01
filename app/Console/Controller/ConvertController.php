@@ -13,7 +13,10 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
+use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Lib\Convert\JavaProperties;
+use Inhere\Kite\Lib\Convert\SQLMarkdown;
+use Inhere\Kite\Lib\Parser\DBCreateSQL;
 use InvalidArgumentException;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Parser;
@@ -63,28 +66,10 @@ class ConvertController extends Controller
     }
 
     /**
-     * convert input string to PHP array.
-     *
-     * @options
-     *  --cb            bool;read source code from clipboard
-     *  -f, --file      The source code file
-     *  -s, --sep       The sep char for split.
-     *  -o, --output    The output target. default is stdout.
-     *
-     * @param FlagsParser $fs
-     * @param Output $output
-     */
-    public function str2arrCommand(FlagsParser $fs, Output $output): void
-    {
-        $output->success('Complete');
-    }
-
-    /**
      * convert markdown table to create mysql table SQL
      *
      * @options
-     *  --cb           bool;read source code from clipboard
-     *  -f,--file      The source code file
+     *  -s,--source     string;The source code for convert. allow: FILEPATH, @clipboard;true
      *  -o,--output    The output target. default is stdout.
      *
      * @param FlagsParser $fs
@@ -92,15 +77,24 @@ class ConvertController extends Controller
      */
     public function md2sqlCommand(FlagsParser $fs, Output $output): void
     {
-        $output->success('Complete');
+        $source = $fs->getOpt('source');
+        $source = AppHelper::tryReadContents($source);
+
+        if (!$source) {
+            throw new InvalidArgumentException('empty source code for convert');
+        }
+
+        $obj = new SQLMarkdown();
+        $sql = $obj->toCreateSQL($source);
+
+        $output->writeRaw($sql);
     }
 
     /**
      * convert create mysql table SQL to markdown table
      *
      * @options
-     *  --cb            bool;read input from clipboard
-     *  -f,--file       The source markdown code
+     *  -s,--source     string;The source code for convert. allow: FILEPATH, @clipboard;true
      *  -o,--output     The output target. default is stdout.
      *
      * @param FlagsParser $fs
@@ -108,7 +102,21 @@ class ConvertController extends Controller
      */
     public function sql2mdCommand(FlagsParser $fs, Output $output): void
     {
-        $output->success('Complete');
+        $source = $fs->getOpt('source');
+        $source = AppHelper::tryReadContents($source);
+
+        if (!$source) {
+            throw new InvalidArgumentException('empty source code for convert');
+        }
+
+        // $obj = new SQLMarkdown();
+        // $sql = $obj->toMdTable($source);
+
+        $p = new DBCreateSQL();
+        $p->parse($source);
+
+        $sql = $p->genMDTable();
+        $output->writeRaw($sql);
     }
 
     /**

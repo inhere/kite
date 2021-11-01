@@ -23,6 +23,7 @@ use function count;
 use function explode;
 use function implode;
 use function is_file;
+use function preg_match;
 use function trim;
 
 /**
@@ -126,7 +127,9 @@ class StringController extends Controller
     public function joinCommand(FlagsParser $fs, Output $output): void
     {
         $text = trim($fs->getArg('text'));
-        $text = AppHelper::tryReadContents($text, $this->dumpfile);
+        $text = AppHelper::tryReadContents($text, [
+            'loadedFile' => $this->dumpfile,
+        ]);
 
         if (!$text) {
             $output->warning('empty input contents for handle');
@@ -207,7 +210,9 @@ class StringController extends Controller
     public function processCommand(FlagsParser $fs, Output $output): void
     {
         $text = $fs->getArg('text');
-        $text = AppHelper::tryReadContents($text, $this->dumpfile, ['print' => false]);
+        $text = AppHelper::tryReadContents($text, [
+            'loadedFile' => $this->dumpfile,
+        ]);
         if (!$text) {
             $output->warning('empty source contents for handle');
             return;
@@ -230,5 +235,64 @@ class StringController extends Controller
             ->implode($sep);
 
         echo $newStr, "\n";
+    }
+
+    /**
+     * collect field and comments from multi line contents
+     *
+     * @arguments
+     * text     The source text contents.
+     *
+     */
+    public function fieldsCommand(FlagsParser $fs, Output $output): void
+    {
+        $text = $fs->getArg('text');
+        $text = AppHelper::tryReadContents($text, [
+            'loadedFile' => $this->dumpfile,
+        ]);
+
+        if (!$text) {
+            throw new InvalidArgumentException('please input text for handle');
+        }
+
+        $fields = [];
+        foreach (explode("\n", $text) as $line) {
+            if (!str_contains($line, '//')) {
+                continue;
+            }
+
+            [$jsonLine, $comments] = Str::explode($line, '//', 2);
+            if (!preg_match('/[a-zA-Z][\w_]+/', $jsonLine, $matches)) {
+                continue;
+            }
+
+            // vdump($matches);
+            $fields[$matches[0]] = $comments;
+        }
+
+        $output->aList($fields);
+    }
+
+    /**
+     * Change case for input string.
+     *
+     * @options
+     *  -s, --source        string;The source code for convert. allow: string, @clipboard;true
+     *  -o, --output        The output target. default is stdout.
+     *      --case          The target case. allow: _,-, ,snake,camel,upper,lower
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function caseCommand(FlagsParser $fs, Output $output): void
+    {
+        $source = $fs->getOpt('source');
+        $source = AppHelper::tryReadContents($source);
+
+        if (!$source) {
+            throw new InvalidArgumentException('empty source code for convert');
+        }
+
+        $output->info('TODO');
     }
 }

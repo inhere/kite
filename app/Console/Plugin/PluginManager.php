@@ -105,8 +105,9 @@ class PluginManager
             }
 
             foreach ($this->pluginFiles as $plugName => $pluginFile) {
-                // if (str_contains(strtolower($plugName), strtolower($name))) {
-                if (Str::ihas($plugName, $name)) {
+                if ($words && Str::iHasAll($plugName, $words)) {
+                    $matched[$plugName] = $pluginFile;
+                } elseif (Str::ihas($plugName, $name)) {
                     $matched[$plugName] = $pluginFile;
                 }
             }

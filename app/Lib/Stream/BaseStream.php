@@ -2,10 +2,12 @@
 
 namespace Inhere\Kite\Lib\Stream;
 
+use ArrayIterator;
+
 /**
  * class BaseStream
  */
-abstract class BaseStream
+abstract class BaseStream extends ArrayIterator
 {
 
 }

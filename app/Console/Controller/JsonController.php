@@ -17,14 +17,20 @@ use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
 use InvalidArgumentException;
 use JsonException;
-use Toolkit\Cli\App;
 use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Arr;
 use Toolkit\Stdlib\Helper\JsonHelper;
+use Toolkit\Stdlib\Str;
+use function explode;
 use function is_file;
 use function is_scalar;
 use function json_decode;
+use function preg_match;
+use function preg_replace;
+use function str_contains;
+use function trim;
+use function vdump;
 
 /**
  * Class DemoController
@@ -91,7 +97,9 @@ class JsonController extends Controller
      */
     private function autoReadJSON(string $source): void
     {
-        $this->json = AppHelper::tryReadContents($source, $this->dumpfile);
+        $this->json = AppHelper::tryReadContents($source, [
+            'loadedFile' => $this->dumpfile,
+        ]);
         if (!$this->json) {
             throw new InvalidArgumentException('the source json data is empty');
         }
@@ -193,7 +201,9 @@ class JsonController extends Controller
     public function prettyCommand(FlagsParser $fs, Output $output): void
     {
         $json = $fs->getArg('json');
-        $json = AppHelper::tryReadContents($json, $this->dumpfile);
+        $json = AppHelper::tryReadContents($json, [
+            'loadedFile' => $this->dumpfile,
+        ]);
 
         if (!$json) {
             throw new InvalidArgumentException('please input json text for pretty');
@@ -203,6 +213,55 @@ class JsonController extends Controller
         // $output->prettyJSON($data);
         // $output->colored('PRETTY JSON:');
         $output->write($this->jsonRender()->render($json));
+    }
+
+    /**
+     * collect field and comments from JSON5 contents
+     *
+     * @arguments
+     * json5     The json text line. if empty will try read text from clipboard
+     *
+     */
+    public function fieldsCommand(FlagsParser $fs, Output $output): void
+    {
+        $json = $fs->getArg('json5');
+        $json = AppHelper::tryReadContents($json, [
+            'loadedFile' => $this->dumpfile,
+        ]);
+
+        if (!$json) {
+            throw new InvalidArgumentException('please input json(5) text for handle');
+        }
+
+        $fields = [];
+        foreach (explode("\n", $json) as $line) {
+            if (!str_contains($line, ':') || !str_contains($line, '//')) {
+                continue;
+            }
+
+            // is comments line
+            $trimmed = trim($line);
+            if (str_starts_with($trimmed, '#') || str_starts_with($trimmed, '//')) {
+                continue;
+            }
+
+            if (str_contains($trimmed, '://')) {
+                $trimmed = preg_replace('/https?:\/\//', 'XX', $trimmed);
+                if (!str_contains($trimmed, '//')) {
+                    continue;
+                }
+            }
+
+            [$jsonLine, $comments] = Str::explode($trimmed, '//', 2);
+            if (!preg_match('/[a-zA-Z][\w_]+/', $jsonLine, $matches)) {
+                continue;
+            }
+
+            // vdump($matches);
+            $fields[$matches[0]] = $comments;
+        }
+
+        $output->aList($fields);
     }
 
     /**

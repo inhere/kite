@@ -62,6 +62,23 @@ class PhpController extends Controller
     }
 
     /**
+     * convert input string to PHP array.
+     *
+     * @options
+     *  --cb            bool;read source code from clipboard
+     *  -f, --file      The source code file
+     *  -s, --sep       The sep char for split.
+     *  -o, --output    The output target. default is stdout.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function str2arrCommand(FlagsParser $fs, Output $output): void
+    {
+        $output->success('Complete');
+    }
+
+    /**
      * convert create mysql table SQL to PHP class
      *
      * @options

@@ -28,5 +28,8 @@ complete -o dirnames -o plusdirs -F _complete_for_{{fmtBinName}} {{binName}}
 alias kg="kite git"
 alias cht="kite cheat"
 alias kgit="kite git"
+alias kjson="kite json"
+alias kplug="kite plugin"
+alias kstr="kite string"
 alias kgl="kite gitlab"
 alias kgh="kite github"
