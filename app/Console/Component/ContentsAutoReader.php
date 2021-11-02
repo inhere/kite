@@ -8,6 +8,7 @@ use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Obj\AbstractObj;
 use function is_file;
 use function substr;
+use function vdump;
 
 /**
  * class ContentsAutoReader
@@ -81,7 +82,11 @@ class ContentsAutoReader extends AbstractObj
                     $print && Cli::info('try read contents from file: ' . $lFile);
                     $str = File::readAll($lFile);
                 } else {
-                    $filepath = substr($source, 1);
+                    $filepath = Kite::alias($source);
+                    if ($filepath[0] === '@') {
+                        $filepath = substr($filepath, 1);
+                    }
+
                     if (is_file($filepath)) {
                         $this->srcType = self::TYPE_FILE;
                         $print && Cli::info('try read contents from file: ' . $filepath);

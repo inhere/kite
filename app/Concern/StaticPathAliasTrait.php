@@ -23,7 +23,7 @@ trait StaticPathAliasTrait
      * @param string $alias
      * @return string
      */
-    public static function alias(string $alias): string
+    public static function alias(string $alias, bool $throwEx = false): string
     {
         // Not an alias
         if (!$alias || $alias[0] !== '@') {
@@ -40,7 +40,11 @@ trait StaticPathAliasTrait
         }
 
         if (!isset(self::$aliases[$alias])) {
-            throw new InvalidArgumentException("The alias name '$alias' is not registered!");
+            if ($throwEx) {
+                throw new InvalidArgumentException("The alias '$alias' is not registered!");
+            }
+
+            return $alias;
         }
 
         return self::$aliases[$alias] . ($other ? $sep . $other : '');

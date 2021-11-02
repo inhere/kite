@@ -1,8 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Common;
+namespace Inhere\Kite\Lib\Parser;
 
+use Closure;
+use Toolkit\Stdlib\Str;
 use function array_filter;
+use function array_slice;
 use function count;
 use function explode;
 use function implode;
@@ -10,8 +13,6 @@ use function trim;
 
 /**
  * Class TextParser
- *
- * @package Inhere\Kite\Common
  */
 class TextParser
 {
@@ -21,59 +22,68 @@ class TextParser
     /**
      * @var string
      */
-    private $text;
+    private string $text;
 
     /**
      * @var array
      */
-    private $rows = [];
+    private array $options = [];
 
     /**
-     * @var callable
+     * @var string
+     */
+    private string $headerSep = "\n###\n";
+
+    /**
+     * @var array
+     */
+    private array $rows = [];
+
+    /**
+     * @var string
+     */
+    private string $lineSep = "\n";
+
+    /**
+     * field number of each line.
+     *
+     * @var int
+     */
+    private int $fieldNum = 3;
+
+    /**
+     * @var string
+     */
+    private string $fieldSep = ' ';
+
+    /**
+     * @var callable(string): string
      */
     private $filterFn;
 
     /**
      * handler for parse one line text
      *
-     * @var callable
+     * @var callable(string): array
      * @example function (string $rawLine, int $rawIndex): array {}
      */
     private $parserFn;
 
     /**
-     * @var string
-     */
-    private $rowChar = "\n";
-
-    /**
-     * @var int
-     */
-    private $fieldNum = 3;
-
-    /**
-     * @var string
-     */
-    private $valueChar = ' ';
-
-    /**
-     * @var int
-     */
-    private $valueLtFieldNum = self::PREPEND;
-
-    public static function new(string $text): self
-    {
-        return new self($text);
-    }
-
-    /**
-     * Class constructor.
+     * on field values num < filedNum
      *
-     * @param string $text
+     * @var int
      */
-    public function __construct(string $text)
+    private int $valueLtFieldNum = self::PREPEND;
+
+    /**
+     * @var array
+     */
+    private array $fieldNames = [];
+
+    public static function new(): self
     {
-        $this->text = $text;
+        return new self();
     }
 
     /**
@@ -84,7 +94,6 @@ class TextParser
     public function withFilter(callable $filterFn): self
     {
         $this->filterFn = $filterFn;
-
         return $this;
     }
 
@@ -103,16 +112,32 @@ class TextParser
     /**
      * @return $this
      */
-    public function parse(): self
+    public function parse(string $text): self
     {
-        $rawLines = explode($this->rowChar, trim($this->text, $this->rowChar));
+        $this->text = $text;
+
+        $text = trim($text, $this->lineSep);
+
+        if (str_contains($text, $this->headerSep)) {
+            [$header, $text] = explode($this->headerSep, $text);
+
+            $this->parseHeader($header);
+        }
+
+        $rawLines = explode($this->lineSep, $text);
 
         $filterFn = $this->filterFn;
         $parserFn = $this->parserFn;
         $fieldNum = $this->fieldNum;
 
         $this->rows = [];
-        foreach ($rawLines as $index => $line) {
+        foreach ($rawLines as $line) {
+            $line = trim($line);
+            // is comments line
+            if (self::isCommentsLine($line)) {
+                continue;
+            }
+
             // do filtering line text
             if ($filterFn && !($line = $filterFn($line))) {
                 continue;
@@ -120,7 +145,7 @@ class TextParser
 
             // custom parser func
             if ($parserFn) {
-                $values = $parserFn($line, $index);
+                $values = $parserFn($line, $fieldNum);
             } else { // default parser func
                 $values = $this->applyParser($line);
             }
@@ -129,6 +154,31 @@ class TextParser
         }
 
         return $this;
+    }
+
+    protected function parseHeader(string $header): void
+    {
+        foreach (explode("\n", $header) as $line) {
+            if (!$line = trim($line)) {
+                continue;
+            }
+
+            // not and k-v format OR is comments line
+            if (!str_contains($line, '=') || self::isCommentsLine($line)) {
+                continue;
+            }
+
+            [$key, $value] = Str::explode($line, '=');
+            switch ($key) {
+                case 'fields':
+                    $this->fieldNames = Str::explode($value, ',');
+                    break;
+            }
+        }
+
+        if ($this->fieldNames) {
+            $this->fieldNum = count($this->fieldNames);
+        }
     }
 
     /**
@@ -150,11 +200,12 @@ class TextParser
                 $prevRow = $this->rows[$prevIdx];
 
                 // append to prev row's last value.
-                $prevRow[$fieldNum - 1] .= implode('', $values);
+                $prevRow[$fieldNum - 1] .= implode($this->fieldSep, $values);
+
                 $this->rows[$prevIdx]   = $prevRow;
                 return;
             }
-        } else {
+        } else { // merge to last node
             $last = '';
             foreach ($values as $i => $value) {
                 if ($i < $fieldNum) {
@@ -170,6 +221,16 @@ class TextParser
     }
 
     /**
+     * @param string $line
+     *
+     * @return bool
+     */
+    public static function isCommentsLine(string $line): bool
+    {
+        return str_starts_with($line, '#') || str_starts_with($line, '//');
+    }
+
+    /**
      * @param callable $handlerFn
      */
     public function each(callable $handlerFn): void
@@ -179,6 +240,24 @@ class TextParser
         }
     }
 
+    public static function spaceSplitParser(): Closure
+    {
+        return static function (string $line, int $fieldNum) {
+            $nodes = array_filter(explode(' ', $line), 'strlen');
+            $count = count($nodes);
+            if ($count <= $fieldNum) {
+                return $nodes;
+            }
+
+            $values = array_slice($nodes, 0, $fieldNum - 1);
+            $others = array_slice($nodes, $fieldNum - 1);
+
+            // merge others as last ele
+            $values[] = implode(' ', $others);
+            return $values;
+        };
+    }
+
     /**
      * @param string $rawLine
      *
@@ -186,9 +265,9 @@ class TextParser
      */
     public function applyParser(string $rawLine): array
     {
-        $values = explode($this->valueChar, $rawLine);
+        $values = explode($this->fieldSep, $rawLine, $this->fieldNum);
 
-        return array_filter($values);
+        return array_filter($values, 'strlen');
     }
 
     /**

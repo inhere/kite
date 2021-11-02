@@ -6,9 +6,9 @@ use Inhere\Kite\Lib\Stream\MapStream;
 use Toolkit\Stdlib\Str;
 use function array_merge;
 use function implode;
-use function in_array;
 use function sprintf;
 use function str_contains;
+use function strtoupper;
 
 /**
  * class DBTable
@@ -17,7 +17,7 @@ class DBTable
 {
     public const FIELD_META = [
         'name'     => '',
-        'type'     => '', // INT
+        'type'     => '', // int
         'typeLen'  => '', // eg: 10
         'typeExt'  => '', // eg: UNSIGNED
         'nullable' => true,
@@ -178,12 +178,16 @@ TXT;
 
         $fieldLines = [];
         foreach ($this->fields as $field => $meta) {
+            $type  = $meta['type'];
             $nodes = [
                 "`$field`",
             ];
 
-            $type     = $meta['type'];
-            $typeNode = $type . ($meta['typeLen'] > 0 ? "({$meta['typeLen']})" : '');
+            $typeNode = strtoupper($type);
+            if ($meta['typeLen'] > 0) {
+                $typeNode .= '(' . $meta['typeLen'] . ')';
+            }
+
             if ($meta['typeExt']) {
                 $typeNode .= ' ' . $meta['typeExt'];
             }
@@ -202,7 +206,7 @@ TXT;
                 }
                 // if ($this->isNoDefault($type)) {
                 // } else {
-            } elseif (!$meta['nullable'] && self::isStringType($type) ) {
+            } elseif (!$meta['nullable'] && self::isStringType($type)) {
                 $nodes[] = "DEFAULT ''";
             }
 
@@ -346,11 +350,11 @@ TXT;
     public static function isStringType(string $upperType): bool
     {
         if (str_contains($upperType, 'TEXT')) {
-            return  true;
+            return true;
         }
 
         if (str_contains($upperType, 'CHAR')) {
-            return  true;
+            return true;
         }
 
         return false;

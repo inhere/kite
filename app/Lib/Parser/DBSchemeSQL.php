@@ -8,6 +8,7 @@ use function explode;
 use function str_replace;
 use function stripos;
 use function strpos;
+use function strtolower;
 use function strtoupper;
 use function substr;
 use function trim;
@@ -67,13 +68,6 @@ class DBSchemeSQL
         [$field, $other] = explode(' ', $row, 2);
         [$type, $other] = explode(' ', trim($other), 2);
 
-        if (($pos = stripos($other, 'comment ')) !== false) {
-            $comment = trim(substr($other, $pos + 9), '\'"');
-            $other   = substr($other, 0, $pos);
-        } else {
-            $comment = ucfirst(str_replace('_', ' ', $field));
-        }
-
         $field = trim($field, '`');
         $isInt = stripos($type, 'int') !== false;
 
@@ -83,7 +77,12 @@ class DBSchemeSQL
             $typeLen = (int)$len;
         }
 
-        $upType = strtoupper($type);
+        if (($pos = stripos($other, 'comment ')) !== false) {
+            $comment = trim(substr($other, $pos + 9), '\'"');
+            $other   = substr($other, 0, $pos);
+        } else {
+            $comment = ucfirst(str_replace('_', ' ', $field));
+        }
 
         $typeExt = '';
         $upOther = strtoupper($other);
@@ -103,7 +102,7 @@ class DBSchemeSQL
 
         return [
             'name'     => $field,
-            'type'     => $upType,
+            'type'     => strtolower($type),
             'typeLen'  => $typeLen,
             'typeExt'  => $typeExt,
             'nullable' => $allowNull,

@@ -144,7 +144,7 @@ class DBMdTable
 
         return [
             'name'     => $field,
-            'type'     => $upType,
+            'type'     => strtolower($upType),
             'typeLen'  => $typeLen,
             'typeExt'  => $typeExt,
             'nullable' => $allowNull === '',
@@ -152,5 +152,4 @@ class DBMdTable
             'comment'  => $fieldComment,
         ];
     }
-
 }

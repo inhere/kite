@@ -10,13 +10,13 @@ use function implode;
 class ListStream extends BaseStream
 {
     /**
-     * @param string[] $strings
+     * @param array $data
      *
      * @return static
      */
-    public static function new(array $strings): self
+    public static function new(array $data): self
     {
-        return new self($strings);
+        return new self($data);
     }
 
     /**
@@ -42,8 +42,8 @@ class ListStream extends BaseStream
     public function each(callable $func): self
     {
         $new = new self();
-        foreach ($this as $str) {
-            $new->append($func($str));
+        foreach ($this as $item) {
+            $new->append($func($item));
         }
 
         return $new;
@@ -51,14 +51,31 @@ class ListStream extends BaseStream
 
     /**
      * @param callable(array): string $func
+     * @param BaseStream $new
      *
-     * @return $this
+     * @return BaseStream
      */
     public function eachTo(callable $func, BaseStream $new): BaseStream
     {
-        foreach ($this as $str) {
-            $new->append($func($str));
-            // $new->offsetSet($key, $func($str));
+        foreach ($this as $item) {
+            $new->append($func($item));
+            // $new->offsetSet($key, $func($item));
+        }
+
+        return $new;
+    }
+
+    /**
+     * @param callable(array): string $func
+     * @param MapStream $new
+     *
+     * @return MapStream
+     */
+    public function eachToMap(callable $func, MapStream $new): MapStream
+    {
+        foreach ($this as $item) {
+            [$key, $val] = $func($item);
+            $new->offsetSet($key, $val);
         }
 
         return $new;
@@ -87,9 +104,9 @@ class ListStream extends BaseStream
     public function filter(callable $func): self
     {
         $new = new self();
-        foreach ($this as $str) {
-            if ($func($str)) {
-                $new->append($str);
+        foreach ($this as $item) {
+            if ($func($item)) {
+                $new->append($item);
             }
         }
 
@@ -123,7 +140,7 @@ class ListStream extends BaseStream
 
     public function append($value): self
     {
-        parent::append((string)$value);
+        parent::append($value);
         return $this;
     }
 

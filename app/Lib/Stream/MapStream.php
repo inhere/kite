@@ -10,13 +10,13 @@ use function implode;
 class MapStream extends BaseStream
 {
     /**
-     * @param string[] $strings
+     * @param array[] $data
      *
      * @return static
      */
-    public static function new(array $strings): self
+    public static function new(array $data): self
     {
-        return new self($strings);
+        return new self($data);
     }
 
     /**
