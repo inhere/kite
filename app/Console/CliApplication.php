@@ -17,7 +17,7 @@ use Inhere\Kite\Console\Component\AutoSetProxyEnv;
 use Inhere\Kite\Console\Listener\BeforeCommandRunListener;
 use Inhere\Kite\Console\Listener\BeforeRunListener;
 use Inhere\Kite\Lib\Jump\QuickJump;
-use Inhere\Kite\Common\Traits\InitApplicationTrait;
+use Inhere\Kite\Concern\InitApplicationTrait;
 use Inhere\Kite\Console\Listener\NotFoundListener;
 use Inhere\Kite\Console\Plugin\PluginManager;
 use Inhere\Kite\Kite;

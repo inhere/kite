@@ -57,9 +57,10 @@ class MapStream extends BaseStream
      */
     public function eachTo(callable $func, BaseStream $new): BaseStream
     {
-        foreach ($this as $key => $str) {
+        foreach ($this as $key => $item) {
             // $new->append($func($str));
-            $new->offsetSet($key, $func($str));
+            $item = $func($item, $key);
+            $new->offsetSet($key, $item);
         }
 
         return $new;

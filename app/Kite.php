@@ -11,6 +11,7 @@ namespace Inhere\Kite;
 
 use BadMethodCallException;
 use Inhere\Kite\Component\ScriptRunner;
+use Inhere\Kite\Concern\StaticPathAliasTrait;
 use Inhere\Kite\Console\CliApplication;
 use Inhere\Kite\Console\Component\AutoSetProxyEnv;
 use Inhere\Kite\Console\Plugin\PluginManager;
@@ -38,6 +39,8 @@ use const BASE_PATH;
  */
 class Kite
 {
+    use StaticPathAliasTrait;
+
     public const VERSION  = '2.0.0';
     public const HOMEPAGE = 'https://github.com/inhere/kite';
 

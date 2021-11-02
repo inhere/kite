@@ -114,8 +114,8 @@ class UtilController extends Controller
 
     /**
      * @options
-     * -r, -s, --read       bool;read and show clipboard contents.
-     *   -w, --write        write input contents to clipboard.
+     * -r, --read       bool;read and show clipboard contents.
+     * -w, --write      write input contents to clipboard.
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -128,6 +128,10 @@ class UtilController extends Controller
         }
 
         $str = $fs->getMustOpt('write');
+        if ($str === '@i' || $str === '@stdin') {
+            $str = $this->input->readAll();
+        }
+
         $ok  = Clipboard::writeString($str);
 
         if ($ok) {

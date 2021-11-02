@@ -10,9 +10,9 @@ use function is_file;
 use function substr;
 
 /**
- * class ContentsTryReader
+ * class ContentsAutoReader
  */
-class ContentsTryReader extends AbstractObj
+class ContentsAutoReader extends AbstractObj
 {
     public const TYPE_CLIPBOARD = 'clipboard';
 
@@ -24,6 +24,17 @@ class ContentsTryReader extends AbstractObj
      * @var string
      */
     protected string $srcType = self::TYPE_STRING;
+
+    /**
+     * @param string $source
+     * @param array $opts
+     *
+     * @return string
+     */
+    public static function readFrom(string $source, array $opts = []): string
+    {
+        return (new self())->read($source, $opts);
+    }
 
     /**
      * try read contents

@@ -1,10 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Common\Traits;
+namespace Inhere\Kite\Concern;
 
 use Inhere\Kite\Common\GitAPI\GitHubV3API;
 use Inhere\Kite\Common\GitAPI\GitLabV4API;
 use Inhere\Kite\Kite;
+use Leuffen\TextTemplate\TextTemplate;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Toolkit\Stdlib\Arr\ArrayHelper;
@@ -14,7 +15,6 @@ use Toolkit\Stdlib\Util\PhpDotEnv;
 use function defined;
 use function file_exists;
 use function is_dir;
-use function is_file;
 
 /**
  * Trait InitApplicationTrait
@@ -101,6 +101,10 @@ trait InitApplicationTrait
             $handler = new RotatingFileHandler($config['logfile']);
             $logger->pushHandler($handler);
             return $logger;
+        });
+
+        $box->set('txtRender', function () {
+            return new TextTemplate();
         });
 
         $box->set('glApi', function () {

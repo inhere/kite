@@ -13,10 +13,9 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
-use Inhere\Kite\Helper\AppHelper;
+use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Lib\Convert\JavaProperties;
-use Inhere\Kite\Lib\Convert\SQLMarkdown;
-use Inhere\Kite\Lib\Parser\DBCreateSQL;
+use Inhere\Kite\Lib\Parser\DBTable;
 use InvalidArgumentException;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Parser;
@@ -78,15 +77,13 @@ class ConvertController extends Controller
     public function md2sqlCommand(FlagsParser $fs, Output $output): void
     {
         $source = $fs->getOpt('source');
-        $source = AppHelper::tryReadContents($source);
+        $source = ContentsAutoReader::readFrom($source);
 
         if (!$source) {
             throw new InvalidArgumentException('empty source code for convert');
         }
 
-        $obj = new SQLMarkdown();
-        $sql = $obj->toCreateSQL($source);
-
+        $sql = DBTable::fromMdTable($source)->toCreateSQL();
         $output->writeRaw($sql);
     }
 
@@ -103,20 +100,16 @@ class ConvertController extends Controller
     public function sql2mdCommand(FlagsParser $fs, Output $output): void
     {
         $source = $fs->getOpt('source');
-        $source = AppHelper::tryReadContents($source);
+        $source = ContentsAutoReader::readFrom($source);
 
         if (!$source) {
             throw new InvalidArgumentException('empty source code for convert');
         }
 
-        // $obj = new SQLMarkdown();
-        // $sql = $obj->toMdTable($source);
-
-        $p = new DBCreateSQL();
-        $p->parse($source);
-
-        $sql = $p->genMDTable();
-        $output->writeRaw($sql);
+        $md = DBTable::fromSchemeSQL($source)->toMDTable();
+        $output->writeRaw($md);
+        // $cm = new CliMarkdown();
+        // $output->println($cm->parse($md));
     }
 
     /**

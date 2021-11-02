@@ -5,6 +5,7 @@ namespace Inhere\Kite\Helper;
 use ArrayAccess;
 use Inhere\Console\Util\Show;
 use Inhere\Kite\Console\Component\Clipboard;
+use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Kite;
 use Toolkit\Cli\Cli;
 use Toolkit\FsUtil\File;
@@ -270,44 +271,6 @@ class AppHelper
      */
     public static function tryReadContents(string $input, array $opts = []): string
     {
-        $print = $opts['print'] ?? false;
-        $lFile = $opts['loadedFile'] ?? '';
-
-        $str = $input;
-        if (!$input) {
-            $print &&  Cli::info('try read contents from STDIN');
-            $str = Kite::cliApp()->getInput()->readAll();
-
-            // is one line text
-        } elseif (!str_contains($input, "\n")) {
-            if (str_starts_with($input, '@')) {
-                if ($input === '@c' || $input === '@cb' || $input === '@clipboard') {
-                    $print && Cli::info('try read contents from Clipboard');
-                    $str = Clipboard::new()->read();
-                } elseif ($input === '@i' || $input === '@stdin') {
-                    $print &&  Cli::info('try read contents from STDIN');
-                    $str = Kite::cliApp()->getInput()->readAll();
-                    // $str = File::streamReadAll(STDIN);
-                    // $str = File::readAll('php://stdin');
-                    // vdump($str);
-                    // Cli::info('try read contents from STDOUT'); // error
-                    // $str = Kite::cliApp()->getOutput()->readAll();
-                } elseif (($input === '@l' || $input === '@load') && ($lFile && is_file($lFile))) {
-                    $print && Cli::info('try read contents from file: ' . $lFile);
-                    $str = File::readAll($lFile);
-                } else {
-                    $filepath = substr($input, 1);
-                    if (is_file($filepath)) {
-                        $print && Cli::info('try read contents from file: ' . $filepath);
-                        $str = File::readAll($filepath);
-                    }
-                }
-            } elseif (is_file($input)) {
-                $print && Cli::info('try read contents from file: ' . $input);
-                $str = File::readAll($input);
-            }
-        }
-
-        return $str;
+        return ContentsAutoReader::readFrom($input, $opts);
     }
 }

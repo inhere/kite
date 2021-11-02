@@ -12,6 +12,7 @@ namespace Inhere\Kite\Console\Controller;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
+use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Stream\StringsStream;
@@ -24,7 +25,12 @@ use function explode;
 use function implode;
 use function is_file;
 use function preg_match;
+use function str_contains;
+use function str_replace;
+use function strlen;
+use function substr;
 use function trim;
+use function vdump;
 
 /**
  * Class StringController
@@ -56,6 +62,7 @@ class StringController extends Controller
             'join'    => ['implode', 'j'],
             'split'   => ['s'],
             'process' => ['p', 'filter', 'f'],
+            'replace' => ['r'],
         ];
     }
 
@@ -162,7 +169,7 @@ class StringController extends Controller
     public function splitCommand(FlagsParser $fs, Output $output): void
     {
         $text = trim($fs->getArg('text'));
-        $text = AppHelper::tryReadContents($text);
+        $text = ContentsAutoReader::readFrom($text);
 
         if (!$text) {
             $output->warning('empty input contents for handle');
@@ -176,7 +183,44 @@ class StringController extends Controller
     }
 
     /**
-     * Filtering the input text contents
+     * Split text to multi line
+     *
+     * @arguments
+     * text     The source text for handle.
+     *          Special:
+     *          input '@c' or '@cb' or '@clipboard' - will read from Clipboard
+     *          input empty or '@i' or '@stdin'     - will read from STDIN
+     *          input '@l' or '@load'               - will read from loaded file
+     *          input '@FILEPATH'                   - will read from the filepath
+     *
+     * @options
+     *  -f, --from    The replace from char
+     *  -t, --to      The replace to chars
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function replaceCommand(FlagsParser $fs, Output $output): void
+    {
+        $text = trim($fs->getArg('text'));
+        $text = ContentsAutoReader::readFrom($text);
+        if (!$text) {
+            $output->warning('empty input contents for handle');
+            return;
+        }
+
+        $from = $fs->getOpt('from');
+        $to   = $fs->getOpt('to');
+        if (!$from && !$to) {
+            $output->warning('the from and to cannot all empty');
+            return;
+        }
+
+        $output->writeRaw(str_replace($from, $to, $text));
+    }
+
+    /**
+     * Filtering the input multi line text contents
      *
      * @arguments
      * text     The source text for handle.
@@ -190,9 +234,11 @@ class StringController extends Controller
      * @options
      *  -e, --exclude   array;exclude line on contains keywords.
      *  -m, --match     array;include line on contains keywords.
-     *  -t, --trim      trim the each line.
+     *  -t, --trim      bool;trim the each line text.
      *      --wrap      wrap the each line by the separator
      *  -j, --join      join the each line by the separator
+     *  -c, --cut       cut each line by the separator. cut position: L R, eg: 'L='
+     *  -r, --replace   array;replace chars for each line
      *  -s, --sep       The separator char for split contents. defaults is newline(\n).
      *  -f, --filter    array;apply more filter for handle text.
      *                  allow filters:
@@ -204,13 +250,15 @@ class StringController extends Controller
      * @param Output $output
      *
      * @example
-     * {binWithCmd} -f "wrap:'"
+     *  {binWithCmd} --cut 'L,' # cut by = and remove left
+     *  {binWithCmd} --replace 'A/a' # replace A to a for each line
+     *  {binWithCmd} -f "wrap:'"
      *
      */
     public function processCommand(FlagsParser $fs, Output $output): void
     {
         $text = $fs->getArg('text');
-        $text = AppHelper::tryReadContents($text, [
+        $text = ContentsAutoReader::readFrom($text, [
             'loadedFile' => $this->dumpfile,
         ]);
         if (!$text) {
@@ -222,19 +270,52 @@ class StringController extends Controller
         $in = $fs->getOpt('match');
 
         $trim = $fs->getOpt('trim');
+        $cut  = $fs->getOpt('cut');
         $sep  = $fs->getOpt('sep', "\n");
+        //
+        $replaces = $fs->getOpt('replace');
 
-        $newStr = StringsStream::new(explode($sep, $text))
+        $cutPos = 'L';
+        $cutChar = $cut;
+        if (strlen($cut) > 1) {
+            if ($cut[0] === 'L') {
+                $cutPos = 'L';
+                $cutChar= substr($cut, 1);
+            } elseif ($cut[0] === 'R') {
+                $cutPos = 'R';
+                $cutChar= substr($cut, 1);
+            }
+        }
+
+        $s = StringsStream::new(explode($sep, $text))
             ->eachIf('trim', $trim)
-            ->filterIf(function (string $line) use ($ex) {
+            ->eachIf(function (string $line) use ($cutPos, $cutChar) {
+                if (!str_contains($line, $cutChar)) {
+                    return $line;
+                }
+
+                [$left, $right] = explode($cutChar, $line, 2);
+                return $cutPos === 'L' ? $right : $left;
+            }, $cut)
+            ->filterIf(function (string $line) use ($ex) { // exclude
                 return !Str::has($line, $ex);
             }, count($ex) > 0)
-            ->filterIf(function (string $line) use ($in) {
+            ->filterIf(function (string $line) use ($in) { // include
                 return Str::has($line, $in);
             }, count($in) > 0)
-            ->implode($sep);
+            ->eachIf(function (string $line) use ($replaces) { // replace
+                $froms = $tos = [];
+                foreach ($replaces as $replace) {
+                    [$from, $to] = explode('/', $replace, 2);
+                    $froms[] = $from;
+                    $tos[]   = $to;
+                }
 
-        echo $newStr, "\n";
+                // vdump($line);
+                return str_replace($froms, $tos, $line);
+            }, $replaces);
+
+        echo $s->implode($sep), "\n";
     }
 
     /**
@@ -247,7 +328,7 @@ class StringController extends Controller
     public function fieldsCommand(FlagsParser $fs, Output $output): void
     {
         $text = $fs->getArg('text');
-        $text = AppHelper::tryReadContents($text, [
+        $text = ContentsAutoReader::readFrom($text, [
             'loadedFile' => $this->dumpfile,
         ]);
 

@@ -13,6 +13,7 @@ use Inhere\Console\Component\Formatter\JSONPretty;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
+use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
 use InvalidArgumentException;
@@ -97,7 +98,7 @@ class JsonController extends Controller
      */
     private function autoReadJSON(string $source): void
     {
-        $this->json = AppHelper::tryReadContents($source, [
+        $this->json = ContentsAutoReader::readFrom($source, [
             'loadedFile' => $this->dumpfile,
         ]);
         if (!$this->json) {
