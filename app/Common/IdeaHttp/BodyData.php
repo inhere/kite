@@ -4,7 +4,7 @@ namespace Inhere\Kite\Common\IdeaHttp;
 
 use Inhere\Kite\Http\ContentType;
 use RuntimeException;
-use Toolkit\Stdlib\Obj\ConfigObject;
+use Toolkit\Stdlib\Obj\DataObject;
 use Toolkit\Stdlib\Str\UrlHelper;
 use Toolkit\Stdlib\Type;
 use function count;
@@ -19,7 +19,7 @@ use function strtolower;
  *
  * @package Inhere\Kite\Common\IdeaHttp
  */
-class BodyData extends ConfigObject
+class BodyData extends DataObject
 {
     /**
      * @var string
@@ -188,22 +188,6 @@ class BodyData extends ConfigObject
 
         $params[] = 'array $params = []';
         return implode(', ', $params);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEmpty(): bool
-    {
-        return $this->count() === 0;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return $this->toString();
     }
 
     /**

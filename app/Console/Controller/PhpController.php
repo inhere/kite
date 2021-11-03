@@ -14,10 +14,12 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\PhpDevServe;
+use Inhere\Kite\Common\Cmd;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Helper\AppHelper;
+use Inhere\Kite\Helper\KiteUtil;
 use InvalidArgumentException;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Json;
@@ -26,9 +28,11 @@ use Toolkit\Sys\Sys;
 use function addslashes;
 use function array_filter;
 use function array_merge;
+use function dirname;
 use function function_exists;
 use function implode;
 use function is_dir;
+use function is_file;
 use function is_numeric;
 use function ob_get_clean;
 use function ob_start;
@@ -58,6 +62,7 @@ class PhpController extends Controller
             'pkgOpen' => ['open', 'pkg-open'],
             'runCode' => ['eval', 'run-code', 'run-codes'],
             'runFunc' => ['run', 'exec', 'run-func'],
+            'runUnit' => ['run-unit', 'unit', 'run-test', 'phpunit'],
         ];
     }
 
@@ -82,8 +87,37 @@ class PhpController extends Controller
      * convert create mysql table SQL to PHP class
      *
      * @options
-     *  --cb            bool;read source code from clipboard
-     *  -f,--file       The source code file
+     *  -s,--source     The source code string or file
+     *  -o,--output     The output target. default is stdout.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function text2classCommand(FlagsParser $fs, Output $output): void
+    {
+        $output->success('Complete');
+    }
+
+    /**
+     * convert create mysql table SQL to PHP class
+     *
+     * @options
+     *  -s,--source     The source code string or file
+     *  -o,--output     The output target. default is stdout.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function arr2classCommand(FlagsParser $fs, Output $output): void
+    {
+        $output->success('Complete');
+    }
+
+    /**
+     * convert create mysql table SQL to PHP class
+     *
+     * @options
+     *  -s,--source     The source code string or file
      *  -o,--output     The output target. default is stdout.
      *
      * @param FlagsParser $fs
@@ -98,8 +132,7 @@ class PhpController extends Controller
      * convert create mysql table SQL to PHP class
      *
      * @options
-     *  --cb            bool;read source code from clipboard
-     *  -f,--file       The source code file
+     *  -s,--source     The source code string or file
      *  -o,--output     The output target. default is stdout.
      *
      * @param FlagsParser $fs
@@ -114,7 +147,7 @@ class PhpController extends Controller
      * convert an mysql INSERT SQL to php k-v array
      *
      * @options
-     *  -f,--file       The source markdown code
+     *  -s,--source     The source code string or file
      *  -o,--output     The output target. default is stdout.
      *
      * @param FlagsParser $fs
@@ -122,6 +155,46 @@ class PhpController extends Controller
      */
     public function sql2arrCommand(FlagsParser $fs, Output $output): void
     {
+        $output->success('Complete');
+    }
+
+    /**
+     * auto find the phpunit.xml dir and run phpunit tests
+     *
+     * @arguments
+     *  dir         The php unit tests code dir or file path
+     *
+     * @options
+     *      --no-debug    bool;not set the --debug option on run test
+     *  -f, --filter      Set the --filter option for phpunit
+     *      --php-bin     manual set the php bin  file path.
+     *      --phpunit     manual set the phpunit(.phar)  file path.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function runUnitCommand(FlagsParser $fs, Output $output): void
+    {
+        $dir = $fs->getOpt('dir', $this->getInput()->getWorkDir());
+        if (is_file($dir)) {
+            $dir = dirname($dir);
+        }
+
+        $runDir = KiteUtil::findPhpUnitConfigFile($dir);
+        if (!$runDir) {
+            throw new InvalidArgumentException("not found the phpunit.xml(.dist) in $dir or any parent dir");
+        }
+
+        // phpunit --debug --filter KEYWORDS
+        $cmd = Cmd::new('phpunit');
+        $cmd->addIf('--debug', !$fs->getOpt('no-debug'));
+
+        if ($filter = $fs->getOpt('filter')) {
+            $cmd->addArgs('--filter', $filter);
+        }
+
+        $cmd->runAndPrint();
+
         $output->success('Complete');
     }
 
@@ -268,6 +341,7 @@ class PhpController extends Controller
      *
      * @example
      *  {binWithCmd} strlen "inhere" # output: 6
+     *  {binWithCmd} basename refs/heads/master # output: master
      *
      */
     public function runFuncCommand(FlagsParser $fs, Output $output): void

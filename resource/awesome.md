@@ -7,4 +7,5 @@
 
 **theme**
 
+- https://bschwarz.github.io/puml-themes/gallery.html
 - https://the-lum.github.io/puml-themes-gallery/#bluegray

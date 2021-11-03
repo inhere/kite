@@ -6,7 +6,11 @@ use Inhere\Kite\Kite;
 use Toolkit\Cli\Cli;
 use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Obj\AbstractObj;
+use function fclose;
+use function fopen;
 use function is_file;
+use function stream_get_contents;
+use function stream_set_blocking;
 use function substr;
 use function vdump;
 
@@ -101,6 +105,22 @@ class ContentsAutoReader extends AbstractObj
         }
 
         return $str;
+    }
+
+    /**
+     * @return string
+     */
+    protected function readFromStdin(): string
+    {
+        $text  = '';
+        $stdin = fopen('php://stdin', 'r');
+
+        if (stream_set_blocking($stdin, false)) {
+            $text = stream_get_contents($stdin);
+        }
+
+        fclose($stdin);
+        return $text;
     }
 
     /**

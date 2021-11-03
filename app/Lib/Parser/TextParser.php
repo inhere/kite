@@ -117,7 +117,6 @@ class TextParser
         $this->text = $text;
 
         $text = trim($text, $this->lineSep);
-
         if (str_contains($text, $this->headerSep)) {
             [$header, $text] = explode($this->headerSep, $text);
 
@@ -138,6 +137,11 @@ class TextParser
                 continue;
             }
 
+            // is not contains fieldSep
+            // if (!str_contains($line, $this->fieldSep)) {
+            //     continue;
+            // }
+
             // do filtering line text
             if ($filterFn && !($line = $filterFn($line))) {
                 continue;
@@ -147,7 +151,7 @@ class TextParser
             if ($parserFn) {
                 $values = $parserFn($line, $fieldNum);
             } else { // default parser func
-                $values = $this->applyParser($line);
+                $values = $this->applyDefaultParser($line);
             }
 
             $this->collectRow($fieldNum, $values);
@@ -170,6 +174,9 @@ class TextParser
 
             [$key, $value] = Str::explode($line, '=');
             switch ($key) {
+                case 'fieldNum':
+                    $this->fieldNum = (int)$value;
+                    break;
                 case 'fields':
                     $this->fieldNames = Str::explode($value, ',');
                     break;
@@ -240,6 +247,9 @@ class TextParser
         }
     }
 
+    /**
+     * @return Closure
+     */
     public static function spaceSplitParser(): Closure
     {
         return static function (string $line, int $fieldNum) {
@@ -252,7 +262,7 @@ class TextParser
             $values = array_slice($nodes, 0, $fieldNum - 1);
             $others = array_slice($nodes, $fieldNum - 1);
 
-            // merge others as last ele
+            // merge others as last elem
             $values[] = implode(' ', $others);
             return $values;
         };
@@ -263,7 +273,7 @@ class TextParser
      *
      * @return array
      */
-    public function applyParser(string $rawLine): array
+    public function applyDefaultParser(string $rawLine): array
     {
         $values = explode($this->fieldSep, $rawLine, $this->fieldNum);
 

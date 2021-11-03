@@ -29,7 +29,7 @@ use PhpGit\Info\TagsInfo;
 use PhpGit\Repo;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
-use Toolkit\Stdlib\Obj\ConfigObject;
+use Toolkit\Stdlib\Obj\DataObject;
 use Toolkit\Stdlib\Str;
 use function abs;
 use function array_keys;
@@ -54,9 +54,9 @@ class GitController extends Controller
     protected static $description = 'Provide useful tool commands for quick use git';
 
     /**
-     * @var ConfigObject
+     * @var DataObject
      */
-    private ConfigObject $settings;
+    private DataObject $settings;
 
     public static function aliases(): array
     {
@@ -113,7 +113,7 @@ class GitController extends Controller
     protected function beforeRun(): void
     {
         if ($this->app && !isset($this->settings)) {
-            $this->settings = ConfigObject::new($this->app->getArrayParam('git'));
+            $this->settings = DataObject::new($this->app->getArrayParam('git'));
         }
 
         if ($workdir = $this->flags->getOpt('workdir')) {

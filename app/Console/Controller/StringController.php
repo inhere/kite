@@ -24,6 +24,7 @@ use function count;
 use function explode;
 use function implode;
 use function is_file;
+use function parse_str;
 use function preg_match;
 use function str_contains;
 use function str_replace;
@@ -352,6 +353,21 @@ class StringController extends Controller
         }
 
         $output->aList($fields);
+    }
+
+    /**
+     * decode query string and print data.
+     *
+     * @arguments
+     * query    The URI query string.
+     */
+    public function dequeryCommand(FlagsParser $fs, Output $output): void
+    {
+        $str = $fs->getArg('query');
+
+        parse_str($str, $ret);
+
+        $output->aList($ret);
     }
 
     /**

@@ -7,6 +7,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Helper\AppHelper;
+use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Template\TextTemplate;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
@@ -88,6 +89,7 @@ class GenerateController extends Controller
     public function parseCommand(FlagsParser $fs, Output $output): void
     {
         $tplFile = $fs->getArg('tpl');
+        $tplFile = Kite::alias($tplFile);
         $content = file_get_contents($tplFile);
 
         [$varDefine, $template] = explode('###', $content);
@@ -97,7 +99,7 @@ class GenerateController extends Controller
             if (is_string($var)) {
                 $str = trim($var);
                 // is array
-                if (strpos($str, '[') === 0) {
+                if (str_starts_with($str, '[')) {
                     $vars[$k] = Str::explode(trim($str, '[]'), ',');
                 }
             }

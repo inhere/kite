@@ -62,7 +62,6 @@ class JsonController extends Controller
         ];
     }
 
-
     protected function init(): void
     {
         parent::init();
@@ -292,18 +291,36 @@ class JsonController extends Controller
     }
 
     /**
-     * convert JSON object string to PHP class.
+     * convert JSON object string to PHP/JAVA DTO class.
      *
      * @options
-     *  --cb            bool;read input from clipboard
-     *  -f,--file       The source markdown code
-     *  -o,--output     The output target. default is stdout.
+     *  -s, --source     The source json contents
+     *  -o, --output     The output target. default is STDOUT.
+     *  -t, --type       string;the generate code language type, allow: java, php;;php
      *
      * @param FlagsParser $fs
      * @param Output $output
+     *
+     * @throws JsonException
      */
     public function toClassCommand(FlagsParser $fs, Output $output): void
     {
+        $json = $fs->getArg('json');
+        $json = ContentsAutoReader::readFrom($json, [
+            'loadedFile' => $this->dumpfile,
+        ]);
+
+        if (!$json = trim($json)) {
+            throw new InvalidArgumentException('empty input json(5) text for handle');
+        }
+
+        if ($json[0] !== '{') {
+            $json = '{' . $json . '}';
+        }
+
+        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+
+
         $output->success('Complete');
     }
 
