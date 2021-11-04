@@ -5,6 +5,7 @@ namespace Inhere\Kite\Lib\Parser;
 use Closure;
 use Toolkit\Stdlib\Str;
 use function array_filter;
+use function array_merge;
 use function array_slice;
 use function count;
 use function explode;
@@ -25,14 +26,19 @@ class TextParser
     private string $text;
 
     /**
+     * the custom settings
+     * - parsed from text header
+     *
      * @var array
      */
-    private array $options = [];
+    private array $settings = [];
 
     /**
+     * split the settings header and body
+     *
      * @var string
      */
-    private string $headerSep = "\n###\n";
+    public string $headerSep = "\n###\n";
 
     /**
      * @var array
@@ -42,19 +48,24 @@ class TextParser
     /**
      * @var string
      */
-    private string $lineSep = "\n";
+    public string $lineSep = "\n";
 
     /**
      * field number of each line.
      *
      * @var int
      */
-    private int $fieldNum = 3;
+    public int $fieldNum = 3;
 
     /**
      * @var string
      */
-    private string $fieldSep = ' ';
+    public string $fieldSep = ' ';
+
+    /**
+     * @var array
+     */
+    public array $fields = [];
 
     /**
      * @var callable(string): string
@@ -75,11 +86,6 @@ class TextParser
      * @var int
      */
     private int $valueLtFieldNum = self::PREPEND;
-
-    /**
-     * @var array
-     */
-    private array $fieldNames = [];
 
     public static function new(): self
     {
@@ -178,13 +184,22 @@ class TextParser
                     $this->fieldNum = (int)$value;
                     break;
                 case 'fields':
-                    $this->fieldNames = Str::explode($value, ',');
+                    $this->fields = Str::explode($value, ',');
                     break;
             }
         }
 
-        if ($this->fieldNames) {
-            $this->fieldNum = count($this->fieldNames);
+        $allowSettings  = ['fieldNum', 'fields'];
+        $this->settings = IniParser::parseString($header);
+
+        foreach ($allowSettings as $prop) {
+            if (isset($this->settings[$prop])) {
+                $this->$prop = $this->settings[$prop];
+            }
+        }
+
+        if ($this->fields) {
+            $this->fieldNum = count($this->fields);
         }
     }
 
@@ -297,5 +312,37 @@ class TextParser
     {
         $this->valueLtFieldNum = $valueLtFieldNum;
         return $this;
+    }
+
+    /**
+     * @param callable $filterFn
+     */
+    public function setFilterFn(callable $filterFn): void
+    {
+        $this->filterFn = $filterFn;
+    }
+
+    /**
+     * @param callable $parserFn
+     */
+    public function setParserFn(callable $parserFn): void
+    {
+        $this->parserFn = $parserFn;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSettings(): array
+    {
+        return $this->settings;
+    }
+
+    /**
+     * @param array $settings
+     */
+    public function setSettings(array $settings): void
+    {
+        $this->settings = array_merge($this->settings, $settings);
     }
 }

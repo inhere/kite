@@ -3,14 +3,14 @@
 namespace Inhere\KiteTest\Common;
 
 use Inhere\Kite\Common\IdeaHttp\RequestSet;
-use Inhere\KiteTest\BaseTestCase;
+use Inhere\KiteTest\BaseKiteTestCase;
 
 /**
  * Class ContentParserTest
  *
  * @package Inhere\KiteTest\Common
  */
-class ContentParserTest extends BaseTestCase
+class ContentParserTest extends BaseKiteTestCase
 {
     public const oneRequest = <<<HTTP
 ### post example

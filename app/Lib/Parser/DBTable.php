@@ -2,6 +2,7 @@
 
 namespace Inhere\Kite\Lib\Parser;
 
+use Inhere\Kite\Lib\Parser\MySQL\TypeMap;
 use Inhere\Kite\Lib\Stream\MapStream;
 use Toolkit\Stdlib\Str;
 use function array_merge;
@@ -206,7 +207,7 @@ TXT;
                 }
                 // if ($this->isNoDefault($type)) {
                 // } else {
-            } elseif (!$meta['nullable'] && self::isStringType($type)) {
+            } elseif (!$meta['nullable'] && TypeMap::isStringType($type)) {
                 $nodes[] = "DEFAULT ''";
             }
 
@@ -340,37 +341,5 @@ TXT;
     public function setTableComment(string $tableComment): void
     {
         $this->tableComment = $tableComment;
-    }
-
-    /**
-     * @param string $upperType
-     *
-     * @return bool
-     */
-    public static function isStringType(string $upperType): bool
-    {
-        if (str_contains($upperType, 'TEXT')) {
-            return true;
-        }
-
-        if (str_contains($upperType, 'CHAR')) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param string $upperType
-     *
-     * @return bool
-     */
-    public static function isNoDefault(string $upperType): bool
-    {
-        if ($upperType === 'JSON') {
-            return true;
-        }
-
-        return false;
     }
 }

@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace unittest\Lib\Parser;
+namespace Inhere\KiteTest\Lib\Parser;
 
 use Inhere\Kite\Lib\Parser\DBMdTable;
 use Inhere\Kite\Lib\Parser\DBTable;
-use Inhere\KiteTest\BaseTestCase;
-use function vdump;
+use Inhere\Kite\Lib\Parser\MySQL\TypeMap;
+use Inhere\KiteTest\BaseKiteTestCase;
 
 /**
  * class DBTableTest
  */
-class DBTableTest extends BaseTestCase
+class DBTableTest extends BaseKiteTestCase
 {
     private $mdTable1 = <<<MD
 ### 用户的订单记录表 `user_order`
@@ -48,6 +48,11 @@ SQL;
         $this->assertNotEmpty($dbt->getIndexes());
         $this->assertEquals('user_order', $dbt->getTableName());
         $this->assertEquals('用户的订单记录表', $dbt->getTableComment());
+
+        $field = $dbt->getField('orderno');
+        $this->assertNotEmpty($field);
+        $this->assertEquals(TypeMap::VARCHAR, $field['type']);
+        $this->assertEquals(48, $field['typeLen']);
 
         $this->assertNotEmpty($genSql = $dbt->toString());
         $this->assertEquals($this->createSql1, $genSql);

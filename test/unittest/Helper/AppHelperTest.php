@@ -1,15 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace unittest\Helper;
+namespace Inhere\KiteTest\Helper;
 
-use Inhere\Kite\Common\Clipboard;
+use Inhere\Kite\Console\Component\Clipboard;
 use PHPUnit\Framework\TestCase;
-use function vdump;
 
 /**
  * Class AppHelperTest
  *
- * @package unittest\Helper
+ * @package Inhere\KiteTest\Helper
  */
 class AppHelperTest extends TestCase
 {
@@ -19,11 +18,11 @@ class AppHelperTest extends TestCase
         self::assertNotEmpty($clip);
 
         $current = __METHOD__;
-        vdump($current);
-        $clip->write($current);
+        // vdump($current);
+        $clip->write($current, true);
 
         $text = $clip->read();
-        vdump($text);
+        // vdump($text);
 
         self::assertNotEmpty($text);
         self::assertSame($current, $text);

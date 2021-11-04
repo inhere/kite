@@ -53,6 +53,20 @@ class TypeMap
     }
 
     /**
+     * @param string $type
+     *
+     * @return bool
+     */
+    public static function isNoDefault(string $type): bool
+    {
+        if ($type === self::JSON) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * @param string $dbType
      *
      * @return string

@@ -3,14 +3,14 @@
 namespace Inhere\KiteTest\Common;
 
 use Inhere\Kite\Common\IdeaHttp\ClientEnvReader;
-use Inhere\KiteTest\BaseTestCase;
+use Inhere\KiteTest\BaseKiteTestCase;
 
 /**
  * Class ClientEnvReaderTest
  *
  * @package Inhere\KiteTest\Common
  */
-class ClientEnvReaderTest extends BaseTestCase
+class ClientEnvReaderTest extends BaseKiteTestCase
 {
     public function testLoad(): void
     {
