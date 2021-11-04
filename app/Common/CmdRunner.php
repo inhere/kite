@@ -260,7 +260,7 @@ class CmdRunner extends AbstractCmdBuilder
             // stop on error
             $code = $this->code;
             if (0 !== $code && false === $this->ignoreError) {
-                Color::println("\nCommand exit code not equal to 0(code: $code), stop run.", 'red');
+                Color::println("\nCommand exit code is equals $code, stop run.", 'red');
                 return $this;
             }
         }
@@ -311,7 +311,7 @@ class CmdRunner extends AbstractCmdBuilder
             // stop on error
             $code = $this->code;
             if (0 !== $code && false === $this->ignoreError) {
-                Color::println("\nCommand exit code not equal to 0(code: $code), stop run.", 'red');
+                Color::println("\nCommand exit code is equals $code, stop run.", 'red');
                 break;
             }
         }

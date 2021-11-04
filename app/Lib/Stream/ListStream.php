@@ -66,12 +66,12 @@ class ListStream extends BaseStream
     }
 
     /**
-     * @param callable(array): string $func
+     * @param callable(array): array $func
      * @param MapStream $new
      *
      * @return MapStream
      */
-    public function eachToMap(callable $func, MapStream $new): MapStream
+    public function eachToMapStream(callable $func, MapStream $new): MapStream
     {
         foreach ($this as $item) {
             [$key, $val] = $func($item);
@@ -79,6 +79,22 @@ class ListStream extends BaseStream
         }
 
         return $new;
+    }
+
+    /**
+     * @param callable(array): array $func
+     *
+     * @return array<string, mixed>
+     */
+    public function eachToMapArray(callable $func): array
+    {
+        $map = [];
+        foreach ($this as $item) {
+            [$key, $val] = $func($item);
+            $map[$key] = $val;
+        }
+
+        return $map;
     }
 
     /**

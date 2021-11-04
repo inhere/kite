@@ -3,6 +3,7 @@
 namespace Inhere\Kite\Helper;
 
 use ArrayAccess;
+use Closure;
 use Inhere\Console\Util\Show;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
@@ -11,10 +12,14 @@ use Toolkit\Cli\Cli;
 use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\OS;
 use Toolkit\Sys\Sys;
+use function array_filter;
 use function array_shift;
+use function array_slice;
+use function count;
 use function defined;
 use function explode;
 use function getenv;
+use function implode;
 use function is_array;
 use function is_file;
 use function is_object;
@@ -48,16 +53,6 @@ class AppHelper
     }
 
     /**
-     * @param string $pkgName 'inhere/console'
-     *
-     * @return bool
-     */
-    public static function isPhpPkgName(string $pkgName): bool
-    {
-        return true;
-    }
-
-    /**
      * @return bool
      */
     public static function isInPhar(): bool
@@ -66,21 +61,6 @@ class AppHelper
             return IN_PHAR;
         }
         return false;
-    }
-
-    /**
-     * @param string $tag
-     *
-     * @return string
-     */
-    public static function formatTag(string $tag): string
-    {
-        $tag = trim($tag, 'v ');
-        if (!$tag) {
-            return '';
-        }
-
-        return 'v' . $tag;
     }
 
     /**
@@ -133,16 +113,6 @@ class AppHelper
 
         // Show::writeln("> $cmd");
         Sys::execute($cmd);
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return string eg: ~/.config/kite.php
-     */
-    public static function userConfigDir(string $path = ''): string
-    {
-        return OS::getUserHomeDir() . '/.config' . ($path ? "/$path" : '');
     }
 
     /**
@@ -272,5 +242,26 @@ class AppHelper
     public static function tryReadContents(string $input, array $opts = []): string
     {
         return ContentsAutoReader::readFrom($input, $opts);
+    }
+
+    /**
+     * @return Closure
+     */
+    public static function json5lineParser(): Closure
+    {
+        return static function (string $line, int $fieldNum) {
+            $nodes = array_filter(explode(' ', $line), 'strlen');
+            $count = count($nodes);
+            if ($count <= $fieldNum) {
+                return $nodes;
+            }
+
+            $values = array_slice($nodes, 0, $fieldNum - 1);
+            $others = array_slice($nodes, $fieldNum - 1);
+
+            // merge others as last elem
+            $values[] = implode(' ', $others);
+            return $values;
+        };
     }
 }

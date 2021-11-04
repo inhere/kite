@@ -36,19 +36,34 @@ class GitUtil
      */
     public static function isFullUrl(string $str): bool
     {
-        if (strpos($str, 'http:') === 0) {
+        if (str_starts_with($str, 'http:')) {
             return true;
         }
 
-        if (strpos($str, 'https:') === 0) {
+        if (str_starts_with($str, 'https:')) {
             return true;
         }
 
-        if (strpos($str, 'git@') === 0) {
+        if (str_starts_with($str, 'git@')) {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * @param string $tag
+     *
+     * @return string
+     */
+    public static function formatTag(string $tag): string
+    {
+        $tag = trim($tag, 'v ');
+        if (!$tag) {
+            return '';
+        }
+
+        return 'v' . $tag;
     }
 
     /**

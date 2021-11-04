@@ -14,6 +14,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Show;
 use Toolkit\Cli\Util\Download;
+use Toolkit\FsUtil\Dir;
 use Toolkit\PFlag\FlagsParser;
 use function basename;
 use function glob;
@@ -21,17 +22,17 @@ use function preg_match;
 use const GLOB_MARK;
 
 /**
- * Class FileController
+ * Class FsController
  */
-class FileController extends Controller
+class FsController extends Controller
 {
-    protected static $name = 'file';
+    protected static $name = 'fs';
 
     protected static $description = 'Some useful development tool commands';
 
     public static function aliases(): array
     {
-        return ['fs'];
+        return ['fs', 'file', 'dir'];
     }
 
     protected static function commandAliases(): array
@@ -39,6 +40,8 @@ class FileController extends Controller
         return [
             'ls' => 'list',
             'rn' => 'rename',
+            'mkdir' => ['create-dir'],
+            'mkSubDirs' => ['mk-subDirs', 'mk-subs'],
         ];
     }
 
@@ -113,6 +116,46 @@ class FileController extends Controller
 
         Show::success('ddd');
         // $output->success('hello');
+    }
+
+    /**
+     * create directories
+     *
+     * @arguments
+     *  dirPaths         array;The sub directory names/paths;required
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function mkdirCommand(FlagsParser $fs, Output $output): void
+    {
+        $dirPaths = $fs->getArg('dirPaths');
+
+        foreach ($dirPaths as $dirPath) {
+            Dir::create($dirPath);
+        }
+
+        $output->colored('OK');
+    }
+
+    /**
+     * create sub directories in the parent dir.
+     *
+     * @arguments
+     *  parentDir       The parent directory path;required
+     *  subDirs         array;The sub directory names/paths.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function mkSubDirsCommand(FlagsParser $fs, Output $output): void
+    {
+        $parentDir = $fs->getArg('parentDir');
+        $subDirs   = $fs->getArg('subDirs');
+
+        Dir::mkSubDirs($parentDir, $subDirs, 0776);
+
+        $output->colored('OK');
     }
 
     /**

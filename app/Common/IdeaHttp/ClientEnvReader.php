@@ -16,17 +16,17 @@ class ClientEnvReader
     /**
      * @var string
      */
-    private $envFile;
+    private string $envFile;
 
     /**
      * @var array
      */
-    private $envs = [];
+    private array $envs = [];
 
     /**
      * @var string
      */
-    private $curEnv = '';
+    private string $curEnv = '';
 
     /**
      * @param string $envFile
@@ -134,5 +134,13 @@ class ClientEnvReader
     public function getEnvs(): array
     {
         return $this->envs;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurEnv(): string
+    {
+        return $this->curEnv;
     }
 }
