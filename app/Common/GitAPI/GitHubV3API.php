@@ -19,7 +19,7 @@ class GitHubV3API extends AbstractGitAPI
     /**
      * @var string
      */
-    protected $baseUrl = self::BASE_API_URL;
+    protected string $baseUrl = self::BASE_API_URL;
 
     /**
      * @param int    $issueId

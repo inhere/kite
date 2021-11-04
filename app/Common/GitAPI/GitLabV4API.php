@@ -14,9 +14,9 @@ class GitLabV4API extends AbstractGitAPI
      *
      * @return array
      */
-    public function getGroupMembers($groupId): array
+    public function getGroupMembers(int|string $groupId): array
     {
-
+        return [];
     }
 
     /**
@@ -26,8 +26,8 @@ class GitLabV4API extends AbstractGitAPI
      *
      * @return array
      */
-    public function getProjectMembers($projectId): array
+    public function getProjectMembers(int|string $projectId): array
     {
-
+        return [];
     }
 }

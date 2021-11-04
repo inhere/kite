@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\KiteTest\Common;
+namespace Inhere\KiteTest\Common\IdeaHttp;
 
 use Inhere\Kite\Common\IdeaHttp\Request;
 use Inhere\Kite\Common\IdeaHttp\RequestSet;
@@ -9,7 +9,7 @@ use Inhere\KiteTest\BaseKiteTestCase;
 /**
  * Class RequestTest
  *
- * @package Inhere\KiteTest\Common
+ * @package Inhere\KiteTest\Common\IdeaHttp
  */
 class RequestTest extends BaseKiteTestCase
 {

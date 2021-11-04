@@ -26,81 +26,81 @@ abstract class AbstractGitLocal
     /**
      * @var Repo
      */
-    protected $repo;
+    protected Repo $repo;
 
     /**
      * @var string
      */
-    protected $host = '';
+    protected string $host = '';
 
     /**
      * eg. git@gitlab.gongzl.com
      *
      * @var string
      */
-    protected $gitUrl = '';
+    protected string $gitUrl = '';
 
     /**
      * @var string
      */
-    protected $workDir = '';
+    protected string $workDir = '';
 
     /**
      * @var array
      */
-    protected $config;
+    protected array $config;
 
     /**
      * @var Output
      */
-    protected $output;
+    protected Output $output;
 
     /**
      * default remote name
      *
      * @var string
      */
-    protected $remote = 'origin';
+    protected string $remote = 'origin';
 
     /**
      * @var string
      */
-    protected $mainRemote = 'main';
+    protected string $mainRemote = 'main';
 
     /**
      * @var string
      */
-    protected $forkRemote = 'origin';
+    protected string $forkRemote = 'origin';
 
     /**
      * @var array
      */
-    protected $projects;
+    protected array $projects;
 
     /**
      * @var array
      */
-    protected $remoteInfo = [];
+    protected array $remoteInfo = [];
 
     /**
      * @var string
      */
-    protected $curMainGroup = '';
+    protected string $curMainGroup = '';
 
     /**
      * @var string
      */
-    protected $curForkGroup = '';
+    protected string $curForkGroup = '';
 
     /**
      * @var string
      */
-    protected $curRepo = '';
+    protected string $curRepo = '';
 
     /**
      * @var string
      */
-    protected $defaultBranch = 'master';
+    protected string $defaultBranch = 'master';
 
     /**
      * @var string
@@ -112,12 +112,12 @@ abstract class AbstractGitLocal
      *
      * @var string
      */
-    protected $curPjName = '';
+    protected string $curPjName = '';
 
     /**
      * @var array
      */
-    protected $curPjInfo = [];
+    protected array $curPjInfo = [];
 
     /**
      * @param Output|null $output
@@ -240,7 +240,7 @@ abstract class AbstractGitLocal
     public function getRepoUrl(bool $toMain = false): string
     {
         $group = $toMain ? $this->getGroupName() : $this->getForkGroupName();
-        $path  = "$group/{$this->curRepo}";
+        $path  = $group . '/' . $this->curRepo;
 
         return $this->host . '/' . $path . '.git';
     }
@@ -428,22 +428,22 @@ abstract class AbstractGitLocal
 
     /**
      * @param string $key
-     * @param mixed  $default
+     * @param mixed|null $default
      *
      * @return mixed
      */
-    public function getValue(string $key, $default = null)
+    public function getValue(string $key, mixed $default = null): mixed
     {
         return $this->config[$key] ?? $default;
     }
 
     /**
      * @param string $key
-     * @param mixed  $default
+     * @param mixed|null $default
      *
      * @return mixed
      */
-    public function getParam(string $key, $default = null)
+    public function getParam(string $key, mixed $default = null): mixed
     {
         return $this->config[$key] ?? $default;
     }

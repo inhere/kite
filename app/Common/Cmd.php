@@ -13,7 +13,7 @@ class Cmd extends CmdBuilder
     /**
      * @var string
      */
-    protected $cmdline  = '';
+    protected string $cmdline  = '';
 
     /**
      * @param string $cmdline

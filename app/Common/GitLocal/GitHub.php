@@ -16,17 +16,17 @@ class GitHub extends AbstractGitLocal
      *
      * @var string
      */
-    private $curGroup = '';
+    private string $curGroup = '';
 
     /**
      * @var string
      */
-    private $srcBranch = '';
+    private string $srcBranch = '';
 
     /**
      * @var string
      */
-    private $dstBranch = '';
+    private string $dstBranch = '';
 
     protected function init(array $config): void
     {

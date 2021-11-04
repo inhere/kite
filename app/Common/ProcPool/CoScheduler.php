@@ -17,7 +17,7 @@ class CoScheduler
     /**
      * @var array
      */
-    private $handlers = [];
+    private array $handlers = [];
 
     /**
      * @param mixed ...$handlers

@@ -27,15 +27,15 @@ class CmdRunner extends AbstractCmdBuilder
      *
      * @var array[]|array
      */
-    private $commands = [];
+    private array $commands = [];
 
     /**
-     * @param string|array $cmd
+     * @param array|string $cmd
      * @param string       $workDir
      *
      * @return static
      */
-    public static function new($cmd = '', string $workDir = ''): self
+    public static function new(array|string $cmd = '', string $workDir = ''): self
     {
         return new self($cmd, $workDir);
     }

@@ -2,6 +2,7 @@
 
 namespace Inhere\Kite\Common\GitAPI;
 
+use JsonException;
 use PhpComp\Http\Client\AbstractClient;
 use PhpComp\Http\Client\Client;
 use PhpComp\Http\Client\ClientInterface;
@@ -21,21 +22,21 @@ abstract class AbstractGitAPI extends AbstractObj
     /**
      * @var string
      */
-    protected $baseUrl = 'https://gitlab.example.com/api/v4';
+    protected string $baseUrl = 'https://gitlab.example.com/api/v4';
 
     /**
      * The repository owner user/group
      *
      * @var string
      */
-    protected $group = '';
+    protected string $group = '';
 
     /**
      * The repository name
      *
      * @var string
      */
-    protected $repo = '';
+    protected string $repo = '';
 
     /**
      * Gitlab/Github person access token
@@ -44,7 +45,7 @@ abstract class AbstractGitAPI extends AbstractObj
      * @see https://HOST/profile/personal_access_tokens on Gitlab
      * @var string
      */
-    protected $token = '';
+    protected string $token = '';
 
     /**
      * @param string $group "gookit"
@@ -180,7 +181,7 @@ abstract class AbstractGitAPI extends AbstractObj
      * @param array  $data
      *
      * @return array
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function sendPOST(string $uriPath, array $data): array
     {

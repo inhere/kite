@@ -9,10 +9,10 @@ namespace Inhere\Kite\Common\Creator;
  */
 class PhpPkgCreator extends AbstractCreator
 {
-
     public function validate(): bool
     {
         // TODO: Implement validate() method.
+        return true;
     }
 
     public function create(): void

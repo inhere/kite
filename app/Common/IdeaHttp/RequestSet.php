@@ -22,12 +22,12 @@ class RequestSet implements Countable
     /**
      * @var string
      */
-    private $rawContents = '';
+    private string $rawContents = '';
 
     /**
      * @var Request[]
      */
-    private $requests = [];
+    private array $requests = [];
 
     /**
      * @return static

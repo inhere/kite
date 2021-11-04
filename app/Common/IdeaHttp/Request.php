@@ -17,7 +17,7 @@ use function json_decode;
 use function method_exists;
 use function parse_str;
 use function parse_url;
-use function strpos;
+use function sprintf;
 use function strtolower;
 use function strtoupper;
 use function trim;
@@ -52,43 +52,43 @@ class Request
     /**
      * @var string
      */
-    private $title = '';
+    private string $title = '';
 
     /**
      * @var string
      */
-    private $method = 'GET';
+    private string $method = 'GET';
 
     /**
      * @var string
      */
-    private $url = '';
+    private string $url = '';
 
     /**
      * @var UrlInfo
      * @see \parse_url()
      */
-    private $urlInfo;
+    private UrlInfo $urlInfo;
 
     /**
      * @var string
      */
-    private $headerRaw = '';
+    private string $headerRaw = '';
 
     /**
      * @var array
      */
-    private $headers = [];
+    private array $headers = [];
 
     /**
      * @var string
      */
-    private $bodyRaw = '';
+    private string $bodyRaw = '';
 
     /**
      * @var BodyData
      */
-    private $bodyData;
+    private BodyData $bodyData;
 
     /**
      * @param array $data
@@ -116,7 +116,7 @@ class Request
         $title = '';
 
         // - parse title
-        if (strpos($str, '###') === 0) {
+        if (str_starts_with($str, '###')) {
             $nodes = explode("\n", $str, 2);
             $title = trim($nodes[0], " \t\n\r\0\x0B#");
             $str   = $nodes[1] ? trim($nodes[1]) : '';
@@ -126,36 +126,32 @@ class Request
             throw new RuntimeException('invalid request string, not found url line');
         }
 
-        // \vdump($str);
         // split meta and body
         $mbNodes = Str::explode($str, self::BODY_SPLIT, 2);
         // assign
         $meta = $mbNodes[0];
         $body = $mbNodes[1] ?? '';
-        // \vdump(\parse_str($body));
-        // \vdump($meta);
 
-        // split murl and headers
+        // split mthUrl and headers
         // $nodes = explode("\n", $meta, 2);
         // - will filter comments line
         if (!$nodes = self::explodeMeta($meta)) {
             return null;
         }
 
-        $murl = trim($nodes[0]);
+        $mthUrl = trim($nodes[0]);
 
         // - parse method and url
-        $muNodes = Str::explode($murl, ' ', 2);
+        $muNodes = Str::explode($mthUrl, ' ', 2);
         if (count($muNodes) !== 2) {
-            throw new RuntimeException("invalid request string, error url line: '{$murl}'");
+            throw new RuntimeException("invalid request string, error url line: '$mthUrl'");
         }
 
         [$method, $url] = $muNodes;
-        // \vdump(parse_url($url));
 
         $method = strtoupper($method);
         if (!in_array($method, Router::METHODS_ARRAY, true)) {
-            throw new InvalidArgumentException("the request method:{$method} is invalid or not suppprted");
+            throw new InvalidArgumentException("the request method:{$method} is invalid or not supported");
         }
 
         $head = $nodes[1] ?? '';
@@ -179,23 +175,23 @@ class Request
      */
     private static function explodeMeta(string $meta): array
     {
-        $murl = '';
+        $mthUrl = '';
         $headers = [];
         foreach (explode("\n", $meta) as $line) {
             // is comments line
-            if (strpos($line, '#') === 0) {
+            if (str_starts_with($line, '#')) {
                 continue;
             }
 
-            if ($murl) {
+            if ($mthUrl) {
                 $headers[] = $line;
             } else {
-                $murl = $line;
+                $mthUrl = $line;
             }
         }
 
-        if ($murl) {
-            return [$murl, implode("\n", $headers)];
+        if ($mthUrl) {
+            return [$mthUrl, implode("\n", $headers)];
         }
         return [];
     }
@@ -248,11 +244,11 @@ class Request
      */
     public function match(string $keywords, string $matchTpye = self::MATCH_BOTH): bool
     {
-        if ($this->title && strpos($this->title, $keywords) !== false) {
+        if ($this->title && str_contains($this->title, $keywords)) {
             return true;
         }
 
-        if ($this->url && strpos($this->url, $keywords) !== false) {
+        if ($this->url && str_contains($this->url, $keywords)) {
             return true;
         }
 
@@ -301,11 +297,11 @@ class Request
     public function toHTTPString(): string
     {
         $str = '';
-        if ($this->title) {
-            $str = "### {$this->title}\n";
+        if ($title = $this->title) {
+            $str = "### $title\n";
         }
 
-        $str .= "{$this->method} {$this->url}\n";
+        $str .= sprintf("%s %s\n", $this->method, $this->url);
 
         // append header data
         if ($headerRaw = $this->getHeaderRaw()) {
@@ -358,7 +354,7 @@ class Request
                 $valueString = is_array($value) ? implode('; ', $value) : (string)$value;
 
                 // build inline
-                $this->headerRaw .= "{$name}:{$valueString}\n";
+                $this->headerRaw .= "$name:$valueString\n";
             }
         }
 
@@ -399,7 +395,7 @@ class Request
             $nodes = Str::explode($line, ':', 2);
             $name  = strtolower($nodes[0]);
             $value = $nodes[1] ?? '';
-            if ($value && strpos($value, ';') !== false) {
+            if ($value && str_contains($value, ';')) {
                 $headerMap[$name] = Str::explode($value, ';');
             } else {
                 $headerMap[$name] = [$value];
@@ -477,7 +473,7 @@ class Request
             return BodyData::new($result)->withContentType($cType);
         }
 
-        throw new RuntimeException("content type '{$cType}' is not supported for parse body");
+        throw new RuntimeException("content type '$cType' is not supported for parse body");
     }
 
     /**
@@ -489,7 +485,7 @@ class Request
         if ($this->bodyData) {
             $this->bodyData->load($bodyData, $override);
         } else {
-            $this->bodyData = JsonBody::new($bodyData);
+            $this->bodyData = BodyData::new($bodyData);
         }
 
         // reset raw string.

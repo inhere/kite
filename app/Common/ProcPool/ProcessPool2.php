@@ -15,48 +15,48 @@ class ProcessPool2 extends AbstractPool
     /**
      * @var int
      */
-    private $workerId = 0;
+    private int $workerId = 0;
 
     /**
      * @var array [pid => wid]
      */
-    private $pidMap = [];
+    private array $pidMap = [];
 
     /**
      * @var int
      */
-    private $workerNum;
+    private int $workerNum;
 
     /**
      * @var bool
      */
-    private $coroutine;
+    private bool $coroutine;
 
     /**
      * @var bool
      */
-    private $redirectIO;
+    private bool $redirectIO;
 
     /**
      * @link https://wiki.swoole.com/wiki/page/289.html
      * @var int
      */
-    private $msgQueueKey;
+    private int $msgQueueKey;
 
     /**
      * @var bool
      */
-    private $keepalive = false;
+    private bool $keepalive = false;
 
     /**
      * @var bool
      */
-    private $blockWait = true;
+    private bool $blockWait = true;
 
     /**
      * @var Process[]
      */
-    private $workers;
+    private array $workers;
 
     /**
      * @param int  $workerNum

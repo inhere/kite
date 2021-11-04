@@ -14,12 +14,12 @@ class GitLab extends AbstractGitLocal
     /**
      * @var string
      */
-    private $srcBranch = '';
+    private string $srcBranch = '';
 
     /**
      * @var string
      */
-    private $dstBranch = '';
+    private string $dstBranch = '';
 
 
     public function createPRLink(string $srcBranch, string $dstBranch, bool $direct = false): string

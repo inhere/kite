@@ -16,35 +16,35 @@ class GitProject extends AbstractMap
      *
      * @var string
      */
-    public $name;
+    public string $name;
 
     /**
      * The main group
      *
      * @var string
      */
-    public $group;
+    public string $group;
 
     /**
      * The repository name
      *
      * @var string
      */
-    public $repo;
+    public string $repo;
 
     /**
      * The forked group
      *
      * @var string
      */
-    public $forkGroup;
+    public string $forkGroup;
 
     /**
      * 是否是根据当前工作目录信息自动加载的信息
      *
      * @var bool
      */
-    private $dynamic = false;
+    private bool $dynamic = false;
 
     /**
      * @param bool $forked

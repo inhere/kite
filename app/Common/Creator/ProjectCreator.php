@@ -36,35 +36,40 @@ class ProjectCreator extends AbstractCreator
      *
      * @var string
      */
-    private $type = '';
+    private string $type = '';
 
     /**
      * Repository name or repository url
      *
      * @var string
      */
-    private $repo = '';
+    private string $repo = '';
 
     /**
      * Repository github url
      *
      * @var string
      */
-    private $repoUrl = '';
+    private string $repoUrl = '';
 
     /**
      * Project path
      *
      * @var string
      */
-    private $projectPath = '';
+    private string $projectPath = '';
 
     /**
      * @var bool
      */
-    private $refresh = false;
+    private bool $refresh = false;
 
-    public static function new(array $config = [])
+    /**
+     * @param array $config
+     *
+     * @return static
+     */
+    public static function new(array $config = []): self
     {
         return new self($config);
     }
@@ -176,15 +181,15 @@ class ProjectCreator extends AbstractCreator
      */
     public function isFullUrl(string $str): bool
     {
-        if (strpos($str, 'http:') === 0) {
+        if (str_starts_with($str, 'http:')) {
             return true;
         }
 
-        if (strpos($str, 'https:') === 0) {
+        if (str_starts_with($str, 'https:')) {
             return true;
         }
 
-        if (strpos($str, 'git@') === 0) {
+        if (str_starts_with($str, 'git@')) {
             return true;
         }
 

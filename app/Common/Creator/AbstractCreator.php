@@ -17,21 +17,21 @@ abstract class AbstractCreator
      *
      * @var string
      */
-    protected $error = '';
+    protected string $error = '';
 
     /**
      * new project/component/library name
      *
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * Current work dir
      *
      * @var string
      */
-    protected $workDir = '';
+    protected string $workDir = '';
 
     /**
      * @var callable
@@ -43,7 +43,7 @@ abstract class AbstractCreator
      *
      * @return static
      */
-    public static function new(array $config = [])
+    public static function new(array $config = []): self
     {
         return new static($config);
     }

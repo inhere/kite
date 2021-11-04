@@ -16,7 +16,7 @@ class ProcessPool extends AbstractPool
     /**
      * @var Pool
      */
-    private $pool;
+    private Pool $pool;
 
     /**
      * @param int  $workerNum

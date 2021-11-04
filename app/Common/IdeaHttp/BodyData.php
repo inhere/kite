@@ -24,7 +24,7 @@ class BodyData extends DataObject
     /**
      * @var string
      */
-    protected $contentType = '';
+    protected string $contentType = '';
 
     /**
      * @param string $key
@@ -47,7 +47,7 @@ class BodyData extends DataObject
      *
      * @return string
      */
-    public function getValType($val): string
+    public function getValType(mixed $val): string
     {
         return Type::get($val);
     }
@@ -209,7 +209,7 @@ class BodyData extends DataObject
             return UrlHelper::build("", $this->getArrayCopy());
         }
 
-        throw new RuntimeException("content type '{$cType}' is not supported");
+        throw new RuntimeException("content type '$cType' is not supported");
     }
 
     /**

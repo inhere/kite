@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\KiteTest\Common;
+namespace Inhere\KiteTest\Common\IdeaHttp;
 
 use Inhere\Kite\Common\IdeaHttp\ClientEnvReader;
 use Inhere\KiteTest\BaseKiteTestCase;
@@ -8,7 +8,7 @@ use Inhere\KiteTest\BaseKiteTestCase;
 /**
  * Class ClientEnvReaderTest
  *
- * @package Inhere\KiteTest\Common
+ * @package Inhere\KiteTest\Common\IdeaHttp
  */
 class ClientEnvReaderTest extends BaseKiteTestCase
 {

@@ -21,7 +21,7 @@ class GlProject extends GitProject
      *
      * @var string
      */
-    private $mainPid;
+    private string $mainPid;
 
     /**
      * Project Id for forked-group/repo
@@ -30,14 +30,14 @@ class GlProject extends GitProject
      *
      * @var string
      */
-    private $forkPid;
+    private string $forkPid;
 
     /**
-     * @param string|int $mainPid
+     * @param int|string $mainPid
      *
      * @return GlProject
      */
-    public function setMainPid($mainPid): GlProject
+    public function setMainPid(int|string $mainPid): GlProject
     {
         $this->mainPid = (string)$mainPid;
         return $this;
@@ -89,11 +89,11 @@ class GlProject extends GitProject
     }
 
     /**
-     * @param string|int $forkPid
+     * @param int|string $forkPid
      *
      * @return GlProject
      */
-    public function setForkPid($forkPid): GlProject
+    public function setForkPid(int|string $forkPid): GlProject
     {
         $this->forkPid = (string)$forkPid;
         return $this;

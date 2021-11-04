@@ -5,7 +5,6 @@ namespace Inhere\Kite\Common\IdeaHttp;
 use Toolkit\Stdlib\Obj\DataObject;
 use Toolkit\Stdlib\Str;
 use function basename;
-use function strpos;
 use const PHP_EOL;
 
 /**
@@ -38,7 +37,7 @@ class UrlInfo extends DataObject
         $changeKeys = ['save', 'add', 'create', 'insert', 'update', 'edit', 'del', 'remove', 'bind'];
 
         foreach ($changeKeys as $key) {
-            if (strpos($path, $key) !== false) {
+            if (str_contains($path, $key)) {
                 return true;
             }
         }
@@ -69,7 +68,7 @@ class UrlInfo extends DataObject
         $path = $this->getString('path');
         $name = Str::camelCase($path, $upFirst, '/');
 
-        if (strpos($name, '-') !== false) {
+        if (str_contains($name, '-')) {
             $name = Str::camelCase($name, $upFirst);
         }
         return    $name;
