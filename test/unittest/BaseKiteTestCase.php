@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @package Inhere\KiteTest
  */
-abstract class BaseTestCase extends TestCase
+abstract class BaseKiteTestCase extends TestCase
 {
 
 }
