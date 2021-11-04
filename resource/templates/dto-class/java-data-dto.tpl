@@ -1,6 +1,6 @@
-package com.kezhilian.wzl.service.provider.order.dto;
+package {= ctx.pkgName | default:org.example.entity};
 
-import com.alibaba.fastjson.annotation.JSONField;
+// import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import javax.validation.constraints.Min;
@@ -8,28 +8,14 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
- * @author inhere
+ * @author {= ctx.user | default:inhere}
  */
 @Data
 public class PayQueryReqDTO {
-
-    /**
-     * 店铺id
-     */
-    @NotNull
-    @Min(1)
-    private Long sid;
 
     /**
      * 订单号
      */
     @NotBlank
     private String orderno;
-
-    /**
-     * 发起支付后得到的三方支付单号
-     */
-    @NotBlank
-    @JSONField(name = "payOrderno")
-    private String payOrderno;
 }

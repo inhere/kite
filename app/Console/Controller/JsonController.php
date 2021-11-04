@@ -27,12 +27,14 @@ use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Arr;
 use Toolkit\Stdlib\Helper\JsonHelper;
+use Toolkit\Stdlib\OS;
 use function gettype;
 use function is_file;
 use function is_scalar;
 use function json_decode;
 use function str_contains;
 use function trim;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * Class DemoController
@@ -307,8 +309,11 @@ class JsonController extends Controller
 
         $comments = [];
         if (str_contains($json, '//')) {
-            $p = TextParser::newWithParser($json, new Json5LineParser());
-            $p->parse();
+            $p = TextParser::newWithParser($json, new Json5LineParser())
+                ->withConfig(function (TextParser $p) {
+                    $p->headerSep = "\n//###\n";
+                })
+                ->parse();
 
             $comments = $p->getStringMap('field', 'comment');
             // $output->aList($comments);
@@ -340,15 +345,17 @@ class JsonController extends Controller
         //
         // }
 
-        $settings = [];
+        $settings = [
+            'user' => OS::getUserName(),
+        ];
         $tplVars  = [
-            'settings' => $settings,
-            'fields'   => $fields,
+            'ctx'    => $settings,
+            'fields' => $fields,
         ];
         $contents = $tplEng->apply($tplVars);
 
+        $output->colored('------------------ Generated Codes -------------------');
         $output->writeRaw($contents);
-        $output->success('Complete');
     }
 
     /**

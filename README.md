@@ -16,12 +16,12 @@ PHP编写的，方便本地开发和使用的个人CLI工具应用。
 **系统环境依赖**
 
 - git
-- php 7.4+
+- php 8.0+
 - composer
 
 > TIP: 支持windows 10
 
-**脚本安装**
+**脚本安装(推荐)**
 
 > file: [install.sh](./install.sh)
 
@@ -29,7 +29,7 @@ PHP编写的，方便本地开发和使用的个人CLI工具应用。
 curl https://raw.githubusercontent.com/inhere/kite/master/install.sh | bash
 ```
 
-**手动安装**
+**手动安装(推荐)**
 
 ```bash
 cd ~

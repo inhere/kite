@@ -158,7 +158,7 @@ abstract class AbstractPlugin implements PluginInterface
     /**
      * @return array
      */
-    public function getOptions(): array
+    final public function getOptions(): array
     {
         return $this->options();
     }

@@ -173,6 +173,17 @@ class TextParser
     }
 
     /**
+     * @param Closure $fn
+     *
+     * @return TextParser
+     */
+    public function withConfig(Closure $fn): self
+    {
+        $fn($this);
+        return $this;
+    }
+
+    /**
      * @param callable $lineFilter
      *
      * @return $this

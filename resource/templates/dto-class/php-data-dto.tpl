@@ -1,23 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace {= };
+namespace {= ctx.namespace | default:YourNamespace};
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
- * @author inhere
+ * @author {= ctx.user | default:inhere}
  */
-@Data
-public class PayQueryReqDTO {
-
-    /**
-     * 店铺id
-     */
-    @NotNull
-    @Min(1)
-    private Long sid;
+class {= ctx.className | default:YourClass} {
 
     /**
      * 订单号

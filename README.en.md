@@ -17,7 +17,7 @@ Kite is a tool for help development.
 **Required:**
 
 - git
-- php 7.4+
+- php 8.0+
 - composer
 
 ### Install by script
