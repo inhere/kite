@@ -9,29 +9,30 @@
 
 namespace Inhere\Kite\Console\Controller;
 
+use ColinODell\Json5\Json5Decoder;
 use Inhere\Console\Component\Formatter\JSONPretty;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Helper\AppHelper;
+use Inhere\Kite\Helper\KiteUtil;
 use Inhere\Kite\Kite;
+use Inhere\Kite\Lib\Parser\Text\Json5LineParser;
+use Inhere\Kite\Lib\Parser\Text\TextParser;
 use InvalidArgumentException;
 use JsonException;
+use Throwable;
 use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Arr;
 use Toolkit\Stdlib\Helper\JsonHelper;
-use Toolkit\Stdlib\Str;
-use function explode;
+use function gettype;
 use function is_file;
 use function is_scalar;
 use function json_decode;
-use function preg_match;
-use function preg_replace;
 use function str_contains;
 use function trim;
-use function vdump;
 
 /**
  * Class DemoController
@@ -57,8 +58,10 @@ class JsonController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'toText' => ['2kv', 'to-kv', '2text'],
-            'pretty' => ['fmt', 'format'],
+            'toText'  => ['2kv', 'to-kv', '2text'],
+            'pretty'  => ['fmt', 'format'],
+            'fields'  => ['field', 'comment', 'comments'],
+            'toClass' => ['class', 'dto', 'todto', 'to-dto'],
         ];
     }
 
@@ -77,7 +80,7 @@ class JsonController extends Controller
     }
 
     /**
-     * @throws JsonException
+     * @throws Throwable
      */
     private function loadDumpfileJSON(): void
     {
@@ -93,7 +96,7 @@ class JsonController extends Controller
     /**
      * @param string $source
      *
-     * @throws JsonException
+     * @throws Throwable
      */
     private function autoReadJSON(string $source): void
     {
@@ -116,7 +119,7 @@ class JsonController extends Controller
      * @param FlagsParser $fs
      * @param Output $output
      *
-     * @throws JsonException
+     * @throws Throwable
      */
     public function loadCommand(FlagsParser $fs, Output $output): void
     {
@@ -142,7 +145,7 @@ class JsonController extends Controller
      *     --type        The search type. allow: keys, path
      * -s, --source      The json data source, default read stdin, allow: @load, @clipboard, @stdin
      *
-     * @throws JsonException
+     * @throws Throwable
      */
     public function getCommand(FlagsParser $fs, Output $output): void
     {
@@ -168,7 +171,7 @@ class JsonController extends Controller
      *
      * @options
      *  --type       The search type position, default: key. allow: key, value, both
-     * @throws JsonException
+     * @throws Throwable
      */
     public function searchCommand(FlagsParser $fs, Output $output): void
     {
@@ -196,7 +199,7 @@ class JsonController extends Controller
      * @arguments
      * json     The json text line. if empty will try read text from clipboard
      *
-     * @throws JsonException
+     * @throws Throwable
      */
     public function prettyCommand(FlagsParser $fs, Output $output): void
     {
@@ -233,33 +236,10 @@ class JsonController extends Controller
             throw new InvalidArgumentException('please input json(5) text for handle');
         }
 
-        $fields = [];
-        foreach (explode("\n", $json) as $line) {
-            if (!str_contains($line, ':') || !str_contains($line, '//')) {
-                continue;
-            }
-
-            // is comments line
-            $trimmed = trim($line);
-            if (str_starts_with($trimmed, '#') || str_starts_with($trimmed, '//')) {
-                continue;
-            }
-
-            if (str_contains($trimmed, '://')) {
-                $trimmed = preg_replace('/https?:\/\//', 'XX', $trimmed);
-                if (!str_contains($trimmed, '//')) {
-                    continue;
-                }
-            }
-
-            [$jsonLine, $comments] = Str::explode($trimmed, '//', 2);
-            if (!preg_match('/[a-zA-Z][\w_]+/', $jsonLine, $matches)) {
-                continue;
-            }
-
-            // vdump($matches);
-            $fields[$matches[0]] = $comments;
-        }
+        $parser = TextParser::emptyWithParser(new Json5LineParser());
+        $fields = $parser
+            ->parse($json)
+            ->getStringMap('field', 'comment');
 
         $output->aList($fields);
     }
@@ -291,21 +271,25 @@ class JsonController extends Controller
     }
 
     /**
-     * convert JSON object string to PHP/JAVA DTO class.
+     * convert JSON(5) object string to PHP/JAVA DTO class.
+     *
+     * @arguments
+     *  source     The source json contents
      *
      * @options
-     *  -s, --source     The source json contents
-     *  -o, --output     The output target. default is STDOUT.
-     *  -t, --type       string;the generate code language type, allow: java, php;;php
+     *  -o, --output        The output target. default is STDOUT.
+     *      --tpl-dir       The custom template file dir.
+     *      --tpl-file      The custom template file path.
+     *  -t, --type          string;the generate code language type, allow: java, php;;php
      *
      * @param FlagsParser $fs
      * @param Output $output
      *
-     * @throws JsonException
+     * @throws Throwable
      */
     public function toClassCommand(FlagsParser $fs, Output $output): void
     {
-        $json = $fs->getArg('json');
+        $json = $fs->getArg('source');
         $json = ContentsAutoReader::readFrom($json, [
             'loadedFile' => $this->dumpfile,
         ]);
@@ -315,12 +299,55 @@ class JsonController extends Controller
         }
 
         if ($json[0] !== '{') {
-            $json = '{' . $json . '}';
+            $json = '{' . $json . "\n}";
         }
 
-        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $type = $fs->getOpt('type');
+        $data = Json5Decoder::decode($json, true);
 
+        $comments = [];
+        if (str_contains($json, '//')) {
+            $p = TextParser::newWithParser($json, new Json5LineParser());
+            $p->parse();
 
+            $comments = $p->getStringMap('field', 'comment');
+            // $output->aList($comments);
+        }
+
+        $fields = [];
+        foreach ($data as $key => $value) {
+            $fields[$key] = [
+                'name' => $key,
+                'type' => gettype($value),
+                'desc' => $comments[$key] ?? $key,
+            ];
+        }
+
+        $output->aList($fields, 'field list');
+
+        $tplFile = $fs->getOpt('tpl-file');
+        if (!$tplFile) {
+            $tplFile = "@kite-res-tpl/dto-class/$type-data-dto.tpl";
+        }
+
+        $tplFile = Kite::alias($tplFile);
+
+        $tplBody = File::readAll($tplFile);
+        $tplEng  = KiteUtil::newTplEngine($tplBody);
+        // if ($type === 'php') {
+        //     $output->info('HI');
+        // } elseif ($type === 'java') {
+        //
+        // }
+
+        $settings = [];
+        $tplVars  = [
+            'settings' => $settings,
+            'fields'   => $fields,
+        ];
+        $contents = $tplEng->apply($tplVars);
+
+        $output->writeRaw($contents);
         $output->success('Complete');
     }
 

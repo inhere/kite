@@ -6,7 +6,8 @@ use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Console\Plugin\AbstractPlugin;
 use Inhere\Kite\Kite;
-use Inhere\Kite\Lib\Parser\IniParser;
+use Inhere\Kite\Lib\Parser\Text\TextParser;
+use Inhere\Kite\Lib\Stream\ListStream;
 use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Str;
 
@@ -73,13 +74,13 @@ if equals @source will write to the source FILEPATH'
         $fmtLines = [];
         foreach (explode("\n", $srcText) as $line) {
             $trimmed = trim($line);
+            // empty or exists comments
             if (!$trimmed || str_contains($trimmed, '//')) {
                 $fmtLines[] = $line;
                 continue;
             }
 
             if (preg_match('/[a-zA-Z][\w_]+/', $trimmed, $matches)) {
-                // vdump($matches);
                 $field = $matches[0];
 
                 // add comments
@@ -103,43 +104,21 @@ if equals @source will write to the source FILEPATH'
 
     protected function loadMapData(string $mapFile): void
     {
-        $header = '';
         $mapText  = File::readAll(Kite::alias($mapFile));
 
-        if (str_contains($mapText, "\n###")) {
-            [$header, $mapText] = explode("\n###", $mapText);
-        } else {
-            $mapText = trim($mapText);
-        }
+        $p = TextParser::new($mapText);
+        $p->parse();
 
-        if ($header) {
-            $settings = IniParser::parseString($header);
-            if (isset($settings['exclude'])) {
-                $this->exclude = (array)$settings['exclude'];
-            }
-        }
-
-        // load fields
-        foreach (explode("\n", $mapText) as $line) {
-            if (!$line = trim($line)) {
-                continue;
-            }
-
-            if (!str_contains($line, ' ')) {
-                continue;
-            }
-
-            // is comments line
-            if (str_starts_with($line, '#') || str_starts_with($line, '//')) {
-                continue;
-            }
-
-            [$field, $desc] = Str::explode($line, ' ', 2);
-            if ($field && $desc) {
+        $this->mapData = ListStream::new($p->getData())
+            ->filter(function (array $item) {
+                return count($item) >= 2;
+            })
+            ->eachToMapArray(function (array $item) {
+                $field = $item[0];
                 $field = str_contains($field, '_') ? Str::toCamelCase($field) : $field;
-                // add
-                $this->mapData[$field] = $desc;
-            }
-        }
+
+                $desc = $item[2] ?? $item[1];
+                return [$field, $desc];
+            });
     }
 }

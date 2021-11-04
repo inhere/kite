@@ -17,6 +17,7 @@ use InvalidArgumentException;
 use function file_get_contents;
 use function file_put_contents;
 use function is_file;
+use function json_encode;
 use const JSON_PRETTY_PRINT;
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
@@ -57,11 +58,12 @@ class Json5Command extends Command
 
         $encFlag = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
         $outFile = $this->flags->getOpt('output');
+        $jsonStr = json_encode($decoded, $encFlag);
         if ($outFile) {
-            file_put_contents($outFile, json_encode($decoded, $encFlag));
+            file_put_contents($outFile, $jsonStr);
             $output->success('write contents to output file');
         }
 
-        echo json_encode($decoded, $encFlag), "\n";
+        echo $jsonStr, "\n";
     }
 }
