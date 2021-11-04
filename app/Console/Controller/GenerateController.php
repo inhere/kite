@@ -8,6 +8,7 @@ use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
+use Inhere\Kite\Lib\Parser\IniParser;
 use Inhere\Kite\Lib\Template\TextTemplate;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
@@ -94,17 +95,8 @@ class GenerateController extends Controller
 
         [$varDefine, $template] = explode('###', $content);
 
-        $vars = (array)parse_ini_string(trim($varDefine), true);
-        foreach ($vars as $k => $var) {
-            if (is_string($var)) {
-                $str = trim($var);
-                // is array
-                if (str_starts_with($str, '[')) {
-                    $vars[$k] = Str::explode(trim($str, '[]'), ',');
-                }
-            }
-        }
-
+        // $vars = (array)parse_ini_string(trim($varDefine), true);
+        $vars = IniParser::parseString(trim($varDefine));
         $output->aList($vars, 'template vars', ['ucFirst' => false]);
 
         $logic  = new TextTemplate();

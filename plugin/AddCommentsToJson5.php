@@ -6,6 +6,7 @@ use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Console\Plugin\AbstractPlugin;
 use Inhere\Kite\Kite;
+use Inhere\Kite\Lib\Parser\IniParser;
 use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Str;
 
@@ -102,36 +103,19 @@ if equals @source will write to the source FILEPATH'
 
     protected function loadMapData(string $mapFile): void
     {
-        $settings = '';
+        $header = '';
         $mapText  = File::readAll(Kite::alias($mapFile));
 
         if (str_contains($mapText, "\n###")) {
-            [$settings, $mapText] = explode("\n###", $mapText);
+            [$header, $mapText] = explode("\n###", $mapText);
         } else {
             $mapText = trim($mapText);
         }
 
-        if ($settings) {
-            foreach (explode("\n", $settings) as $line) {
-                if (!$line = trim($line)) {
-                    continue;
-                }
-
-                if (!str_contains($line, '=')) {
-                    continue;
-                }
-
-                // is comments line
-                if (str_starts_with($line, '#') || str_starts_with($line, '//')) {
-                    continue;
-                }
-
-                [$key, $value] = Str::explode($line, '=');
-                switch ($key) {
-                    case 'exclude':
-                        $this->exclude = Str::explode($value, ',');
-                        break;
-                }
+        if ($header) {
+            $settings = IniParser::parseString($header);
+            if (isset($settings['exclude'])) {
+                $this->exclude = (array)$settings['exclude'];
             }
         }
 

@@ -49,6 +49,11 @@
       "app/func.php"
     ]
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Inhere\\KiteTest\\": "test/unittest"
+    }
+  },
   "bin": [
     "bin/kite",
     "bin/htu"

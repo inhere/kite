@@ -175,7 +175,7 @@ class PhpController extends Controller
      */
     public function runUnitCommand(FlagsParser $fs, Output $output): void
     {
-        $dir = $fs->getOpt('dir', $this->getInput()->getWorkDir());
+        $dir = $fs->getArg('dir', $this->getInput()->getWorkDir());
         if (is_file($dir)) {
             $dir = dirname($dir);
         }
@@ -185,8 +185,10 @@ class PhpController extends Controller
             throw new InvalidArgumentException("not found the phpunit.xml(.dist) in $dir or any parent dir");
         }
 
+        $output->info('found the phpunit config dir: ' . $runDir);
+
         // phpunit --debug --filter KEYWORDS
-        $cmd = Cmd::new('phpunit');
+        $cmd = Cmd::new('phpunit')->setWorkDir($runDir);
         $cmd->addIf('--debug', !$fs->getOpt('no-debug'));
 
         if ($filter = $fs->getOpt('filter')) {
