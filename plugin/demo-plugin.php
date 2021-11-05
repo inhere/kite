@@ -1,7 +1,7 @@
 <?php
 
 use Inhere\Console\Application;
-use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\CliApplication;
 use Inhere\Kite\Console\Plugin\AbstractPlugin;
 
@@ -19,9 +19,9 @@ class DemoPlugin extends AbstractPlugin
 
     /**
      * @param Application $app
-     * @param Input          $input
+     * @param Output          $output
      */
-    public function exec(Application $app, Input $input): void
+    public function exec(Application $app, Output $output): void
     {
         vdump(__METHOD__);
     }

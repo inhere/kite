@@ -4,10 +4,9 @@ namespace Inhere\Kite\Console\Plugin;
 
 use Inhere\Console\Application;
 use Inhere\Console\GlobalOption;
-use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
 use Toolkit\PFlag\Flags;
 use Toolkit\PFlag\FlagsParser;
-use Toolkit\PFlag\SFlags;
 use Toolkit\Stdlib\Helper\DataHelper;
 use function array_merge;
 
@@ -26,22 +25,22 @@ abstract class AbstractPlugin implements PluginInterface
     /**
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * @var string
      */
-    protected $filepath = '';
+    protected string $filepath = '';
 
     /**
      * @var string
      */
-    protected $classname = '';
+    protected string $classname = '';
 
     /**
      * @var array
      */
-    protected $metadata = [];
+    protected array $metadata = [];
 
     public function init(): void
     {
@@ -92,15 +91,6 @@ abstract class AbstractPlugin implements PluginInterface
 
         return $this->fs;
     }
-
-    /**
-     * @return SFlags
-     */
-    // protected function createSFlags(): SFlags
-    // {
-    //     $this->fs = new SFlags();
-    //     return $this->fs;
-    // }
 
     /**
      * Metadata for the plugin
@@ -169,7 +159,6 @@ abstract class AbstractPlugin implements PluginInterface
     public function getSimpleInfo(): array
     {
         // $meta = $this->metadata();
-
         return [
             'name'   => $this->name,
             // 'desc'     => $meta['desc'] ?? '',
@@ -178,20 +167,6 @@ abstract class AbstractPlugin implements PluginInterface
             'version' => $this->metadata['version'],
             'path'   => $this->filepath,
         ];
-    }
-
-    /**
-     * @param Application $app
-     * @param array $args
-     */
-    public function run(Application $app, array $args = []): void
-    {
-        $input = $app->getInput();
-        if (!$this->beforeRun($app, $args)) {
-            return;
-        }
-
-        $this->exec($app, $input);
     }
 
     /**
@@ -216,9 +191,22 @@ abstract class AbstractPlugin implements PluginInterface
 
     /**
      * @param Application $app
-     * @param Input $input
+     * @param array $args
      */
-    abstract public function exec(Application $app, Input $input): void;
+    public function run(Application $app, array $args = []): void
+    {
+        if (!$this->beforeRun($app, $args)) {
+            return;
+        }
+
+        $this->exec($app, $app->getOutput());
+    }
+
+    /**
+     * @param Application $app
+     * @param Output $output
+     */
+    abstract public function exec(Application $app, Output $output): void;
 
     /**
      * @return string

@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 use Inhere\Console\Application;
-use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Console\Plugin\AbstractPlugin;
@@ -52,9 +52,9 @@ if equals @source will write to the source FILEPATH'
 
     /**
      * @param Application $app
-     * @param Input $input
+     * @param Output $output
      */
-    public function exec(Application $app, Input $input): void
+    public function exec(Application $app, Output $output): void
     {
         $mapFile = $this->fs->getOpt('map-file');
         $this->loadMapData($mapFile);
