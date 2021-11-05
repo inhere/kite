@@ -2,8 +2,8 @@
 
 use Inhere\Console\Application;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
+use Inhere\Kite\Console\Component\ContentsAutoWriter;
 use Inhere\Kite\Console\Plugin\AbstractPlugin;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Parser\Text\TextParser;
@@ -93,13 +93,9 @@ if equals @source will write to the source FILEPATH'
         }
 
         $result = implode("\n", $fmtLines);
-        $output = $this->fs->getOpt('output');
+        $outFile = $this->fs->getOpt('output');
 
-        if ($output === '@c' || $output === '@cb' || $output === '@clipboard') {
-            Clipboard::writeString($result);
-        } else {
-            $app->getOutput()->writeRaw($result);
-        }
+        ContentsAutoWriter::writeTo($outFile, $result);
     }
 
     protected function loadMapData(string $mapFile): void

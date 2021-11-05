@@ -18,6 +18,7 @@ use Inhere\Kite\Common\Cmd;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Console\Component\Clipboard;
+use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\KiteUtil;
 use InvalidArgumentException;
@@ -25,7 +26,6 @@ use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\Php;
 use Toolkit\Sys\Sys;
-use function addslashes;
 use function array_filter;
 use function array_merge;
 use function dirname;
@@ -387,36 +387,43 @@ class PhpController extends Controller
      * exec php code snippets and dump results.
      *
      * @arguments
-     *  codes       The php codes. if empty, will read from clipboard.
+     *  code       The php codes, not need php start tag.
      *
      * @param FlagsParser $fs
      * @param Output $output
      *
      * @example
-     *  {binWithCmd} 'echo strlen("inhere")' # output: 6
+     *  {binWithCmd} 'strlen("inhere")' # output: 6
      *
      */
     public function runCodeCommand(FlagsParser $fs, Output $output): void
     {
-        $codes = $fs->getArg('codes');
-        if (!$codes) {
-            $codes = Clipboard::readAll();
-            if (!$codes) {
-                throw new InvalidArgumentException('input codes and clipboard is empty');
-            }
+        $code = $fs->getArg('code');
+        $code = ContentsAutoReader::readFrom($code);
+
+        if (!$code) {
+            throw new InvalidArgumentException('empty input codes for run');
         }
+
+        $ret = $this->evalCode($code);
 
         // echo Php::dumpVars($box->get($objName));
         $output->info('TODO');
     }
 
-    private function evalCodes(string $codes): string
+    private function evalCode(string $code): string
     {
-        $codes = trim($codes);
-        $codes = trim($codes, ';') . ';';
+        $code = trim($code);
+        $code = trim($code, ';') . ';';
+
+        $phpCode = <<<CODE
+<?php
+// print
+echo Php::dumpVars($code);
+CODE;
 
         ob_start();
-        eval($codes);
+        eval($phpCode);
         return ob_get_clean();
     }
 
@@ -469,9 +476,11 @@ class PhpController extends Controller
         $pkgName  = $fs->getArg('name');
         $repoPath = $fs->getOpt('tpl-repo', 'inherelab/php-pkg-template');
 
-        $run = CmdRunner::new();
-        $run->addf('git clone %s/%s %s', GitHub::GITHUB_HOST, $repoPath, $pkgName);
-        $run->runAndPrint();
+        Cmd::new('git')
+            ->add('clone')
+            ->addf('%s/%s', GitHub::GITHUB_HOST, $repoPath)
+            ->add($pkgName)
+            ->runAndPrint();
 
         $output->success('Completed');
     }

@@ -639,4 +639,12 @@ class TextParser
     {
         return $this->textBody;
     }
+
+    /**
+     * @return int
+     */
+    public function getCount(): int
+    {
+        return count($this->data);
+    }
 }

@@ -32,6 +32,7 @@ use function is_scalar;
 use function json_decode;
 use function str_contains;
 use function trim;
+use function vdump;
 use const JSON_THROW_ON_ERROR;
 
 /**
@@ -236,10 +237,8 @@ class JsonController extends Controller
             throw new InvalidArgumentException('please input json(5) text for handle');
         }
 
-        $parser = TextParser::emptyWithParser(new Json5LineParser());
-        $fields = $parser
-            ->parse($json)
-            ->getStringMap('field', 'comment');
+        $parser = TextParser::newWithParser($json, new Json5LineParser());
+        $fields = $parser->getStringMap('field', 'comment');
 
         $output->aList($fields);
     }
@@ -304,16 +303,16 @@ class JsonController extends Controller
         $tplDir  = $fs->getOpt('tpl-dir');
         $tplFile = $fs->getOpt('tpl-file');
         if (!$tplFile) {
-            // $tplFile = "@kite-res-tpl/dto-class/$type-data-dto.tpl";
-            $tplFile = "@kite-u-custom/template/$type-code-tpl/req-resp-dto.tpl";
+            // $tplFile = "@resource-tpl/dto-class/$type-data-dto.tpl";
+            $tplFile = "@user-custom/template/$type-code-tpl/req-resp-dto.tpl";
         }
 
         $config = array_merge($config, array_filter([
             'tplDir'  => $tplDir,
             'tplFile' => $tplFile,
         ]));
-
-        // @kite-u-custom/template/java-service-tpl/req-resp-dto.tpl
+vdump($config);
+        // @user-custom/template/java-service-tpl/req-resp-dto.tpl
         $gen = JsonToCode::create($type)
             ->setSource($json)
             ->configObj($config)

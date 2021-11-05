@@ -25,6 +25,12 @@ composer require knplabs/github-api:^3.0 guzzlehttp/guzzle:^7.0.1 http-interop/h
 
 - `league/html-to-markdown` https://github.com/thephpleague/html-to-markdown
 
+**NEON**
+
+like Yaml, json but simple.
+
+- `nette/neon` https://github.com/nette/neon NEON: encodes and decodes NEON file format.
+
 **JSON**
 
 > https://github.com/json-next/awesome-json-next
@@ -36,6 +42,10 @@ composer require knplabs/github-api:^3.0 guzzlehttp/guzzle:^7.0.1 http-interop/h
 
 - `dragonmantank/cron-expression` https://github.com/dragonmantank/cron-expression
 - `phpcom-lab/hucron` https://github.com/phpcom-lab/hucron
+
+**parser&lexer**
+
+- `doctrine/lexer` https://github.com/doctrine/lexer
 
 ## Frontend Packages
 
