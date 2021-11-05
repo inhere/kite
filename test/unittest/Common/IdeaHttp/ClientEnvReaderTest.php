@@ -14,7 +14,7 @@ class ClientEnvReaderTest extends BaseKiteTestCase
 {
     public function testLoad(): void
     {
-        $efile = \BASE_PATH . '/test/clienttest/http-client.env.json';
+        $efile = \BASE_PATH . '/test/httptest/http-client.env.json';
         $r = ClientEnvReader::new($efile);
 
         self::assertTrue($r->load());
