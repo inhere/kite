@@ -9,26 +9,24 @@
 
 namespace Inhere\Kite\Console\Controller;
 
-use ColinODell\Json5\Json5Decoder;
 use Inhere\Console\Component\Formatter\JSONPretty;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Helper\AppHelper;
-use Inhere\Kite\Helper\KiteUtil;
 use Inhere\Kite\Kite;
+use Inhere\Kite\Lib\Generate\JsonToCode;
 use Inhere\Kite\Lib\Parser\Text\Json5LineParser;
 use Inhere\Kite\Lib\Parser\Text\TextParser;
 use InvalidArgumentException;
-use JsonException;
 use Throwable;
 use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Arr;
 use Toolkit\Stdlib\Helper\JsonHelper;
-use Toolkit\Stdlib\OS;
-use function gettype;
+use function array_filter;
+use function array_merge;
 use function is_file;
 use function is_scalar;
 use function json_decode;
@@ -291,6 +289,9 @@ class JsonController extends Controller
      */
     public function toClassCommand(FlagsParser $fs, Output $output): void
     {
+        $config = Kite::cliApp()->getArrayParam('json_toClass');
+
+        $type = $fs->getOpt('type');
         $json = $fs->getArg('source');
         $json = ContentsAutoReader::readFrom($json, [
             'loadedFile' => $this->dumpfile,
@@ -300,59 +301,28 @@ class JsonController extends Controller
             throw new InvalidArgumentException('empty input json(5) text for handle');
         }
 
-        if ($json[0] !== '{') {
-            $json = '{' . $json . "\n}";
-        }
-
-        $type = $fs->getOpt('type');
-        $data = Json5Decoder::decode($json, true);
-
-        $comments = [];
-        if (str_contains($json, '//')) {
-            $p = TextParser::newWithParser($json, new Json5LineParser())
-                ->withConfig(function (TextParser $p) {
-                    $p->headerSep = "\n//###\n";
-                })
-                ->parse();
-
-            $comments = $p->getStringMap('field', 'comment');
-            // $output->aList($comments);
-        }
-
-        $fields = [];
-        foreach ($data as $key => $value) {
-            $fields[$key] = [
-                'name' => $key,
-                'type' => gettype($value),
-                'desc' => $comments[$key] ?? $key,
-            ];
-        }
-
-        $output->aList($fields, 'field list');
-
+        $tplDir  = $fs->getOpt('tpl-dir');
         $tplFile = $fs->getOpt('tpl-file');
         if (!$tplFile) {
-            $tplFile = "@kite-res-tpl/dto-class/$type-data-dto.tpl";
+            // $tplFile = "@kite-res-tpl/dto-class/$type-data-dto.tpl";
+            $tplFile = "@kite-u-custom/template/$type-code-tpl/req-resp-dto.tpl";
         }
 
-        $tplFile = Kite::alias($tplFile);
+        $config = array_merge($config, array_filter([
+            'tplDir'  => $tplDir,
+            'tplFile' => $tplFile,
+        ]));
 
-        $tplBody = File::readAll($tplFile);
-        $tplEng  = KiteUtil::newTplEngine($tplBody);
-        // if ($type === 'php') {
-        //     $output->info('HI');
-        // } elseif ($type === 'java') {
-        //
-        // }
+        // @kite-u-custom/template/java-service-tpl/req-resp-dto.tpl
+        $gen = JsonToCode::create($type)
+            ->setSource($json)
+            ->configObj($config)
+            ->setPathResolver([Kite::class, 'alias'])
+            ->prepare();
 
-        $settings = [
-            'user' => OS::getUserName(),
-        ];
-        $tplVars  = [
-            'ctx'    => $settings,
-            'fields' => $fields,
-        ];
-        $contents = $tplEng->apply($tplVars);
+        $output->aList($gen->getFields(), 'field list');
+
+        $contents = $gen->generate();
 
         $output->colored('------------------ Generated Codes -------------------');
         $output->writeRaw($contents);

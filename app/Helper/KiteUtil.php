@@ -3,12 +3,11 @@
 namespace Inhere\Kite\Helper;
 
 use Leuffen\TextTemplate\TextTemplate;
-use Toolkit\FsUtil\File;
 use Toolkit\FsUtil\FS;
 use Toolkit\Stdlib\OS;
+use Toolkit\Stdlib\Str;
 use function dirname;
 use function is_file;
-use function is_string;
 
 /**
  * class KiteUtil
@@ -34,12 +33,36 @@ class KiteUtil
     public static function newTplEngine(string $text): TextTemplate
     {
         $tplEng = new TextTemplate($text);
+        // default value on empty. usage: {= ctx.user | default:inhere}
         $tplEng->addFilter('default', function ($value, $default) {
-            if (is_string($value) && $value === '') {
+            if ($value === '') {
                 return $default;
             }
-
             return empty($value) ? $default : $value;
+        });
+
+        // upper first char. usage: {= ctx.user | upFirst}
+        $tplEng->addFilter('upFirst', function ($value) {
+            if ($value === '') {
+                return '';
+            }
+            return Str::upFirst($value);
+        });
+
+        // snake to camel. usage: {= ctx.user | toCamel}
+        $tplEng->addFilter('toCamel', function ($value) {
+            if ($value === '') {
+                return '';
+            }
+            return Str::toCamel($value);
+        });
+
+        // camel to snake. usage: {= ctx.user | toSnake}
+        $tplEng->addFilter('toSnake', function ($value) {
+            if ($value === '') {
+                return '';
+            }
+            return Str::toSnake($value);
         });
 
         return $tplEng;

@@ -67,6 +67,11 @@ class TextParser
     public bool $parseHeader = true;
 
     /**
+     * @var callable(string): string
+     */
+    private $beforeParseHeader;
+
+    /**
      * @var string
      */
     public string $lineSep = "\n";
@@ -290,6 +295,10 @@ class TextParser
      */
     protected function parseHeaderSettings(string $header): void
     {
+        if ($beforeFn = $this->beforeParseHeader) {
+            $header = $beforeFn($header);
+        }
+
         $this->settings = IniParser::parseString($header);
 
         $allowConfig = ['fieldNum', 'fields'];
@@ -523,6 +532,17 @@ class TextParser
     public function setErrItemHandleType(int $errItemHandleType): self
     {
         $this->errItemHandleType = $errItemHandleType;
+        return $this;
+    }
+
+    /**
+     * @param callable $beforeParseHeader
+     *
+     * @return self
+     */
+    public function setBeforeParseHeader(callable $beforeParseHeader): self
+    {
+        $this->beforeParseHeader = $beforeParseHeader;
         return $this;
     }
 

@@ -13,9 +13,11 @@ import javax.validation.constraints.NotNull;
 @Data
 public class PayQueryReqDTO {
 
+{for field in fields}
     /**
      * 订单号
      */
     @NotBlank
-    private String orderno;
+    private String {= field.name};
+{/for}
 }

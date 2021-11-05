@@ -13,6 +13,9 @@ use function substr;
  */
 class Json5LineParser
 {
+    public const KEY_FIELD  = 'field';
+    public const KEY_COMMENT = 'comment';
+
     /**
      * exclude fields
      *
