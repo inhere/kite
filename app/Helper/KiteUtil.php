@@ -27,7 +27,17 @@ class KiteUtil
      */
     public static function isStdinAlias(string $str): bool
     {
-        return in_array($str, self::CLIPBOARD_ALIAS, true);
+        return in_array($str, self::STDIN_ALIAS, true);
+    }
+
+    /**
+     * @param string $str
+     *
+     * @return bool
+     */
+    public static function isStdoutAlias(string $str): bool
+    {
+        return in_array($str, self::STDOUT_ALIAS, true);
     }
 
     /**

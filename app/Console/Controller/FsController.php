@@ -10,7 +10,6 @@
 namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
-use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Show;
 use Toolkit\Cli\Util\Download;
@@ -198,7 +197,7 @@ class FsController extends Controller
      *  --driver      The path match driver.
      *                 allow: fn - fnmatch, reg - preg_match. (default: <cyan>fn</cyan>)
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
     public function renameCommand(FlagsParser $fs, Output $output): void
