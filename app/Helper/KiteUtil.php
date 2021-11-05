@@ -7,6 +7,7 @@ use Toolkit\FsUtil\FS;
 use Toolkit\Stdlib\OS;
 use Toolkit\Stdlib\Str;
 use function dirname;
+use function in_array;
 use function is_file;
 
 /**
@@ -14,6 +15,30 @@ use function is_file;
  */
 class KiteUtil
 {
+    public const STDIN_ALIAS = ['@i','@stdin',];
+    public const STDOUT_ALIAS = ['@o','@stdout',];
+
+    public const CLIPBOARD_ALIAS = ['@c','@cb','@clip','@clipboard',];
+
+    /**
+     * @param string $str
+     *
+     * @return bool
+     */
+    public static function isStdinAlias(string $str): bool
+    {
+        return in_array($str, self::CLIPBOARD_ALIAS, true);
+    }
+
+    /**
+     * @param string $str
+     *
+     * @return bool
+     */
+    public static function isClipboardAlias(string $str): bool
+    {
+        return in_array($str, self::CLIPBOARD_ALIAS, true);
+    }
 
     /**
      * @param string $path

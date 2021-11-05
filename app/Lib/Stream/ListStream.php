@@ -67,6 +67,21 @@ class ListStream extends BaseStream
 
     /**
      * @param callable(array): array $func
+     *
+     * @return array
+     */
+    public function eachToArray(callable $func): array
+    {
+        $arr = [];
+        foreach ($this as $item) {
+            $arr[] = $func($item);
+        }
+
+        return $arr;
+    }
+
+    /**
+     * @param callable(array): array $func
      * @param MapStream $new
      *
      * @return MapStream

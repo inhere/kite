@@ -234,9 +234,13 @@ abstract class AbstractJsonToCode
         // check from tplDir
         if ($this->tplDir && !is_file($tplFile)) {
             $tplDir  = $this->resolvePath($this->tplDir);
-            $tplFile = File::joinPath($tplDir, $tplFile);
+            $dirFile = File::joinPath($tplDir, $tplFile);
 
-            File::assertIsFile($tplFile);
+            if (!is_file($dirFile)) {
+                throw new InvalidArgumentException("No such file: $tplFile");
+            }
+
+            $tplFile = $dirFile;
         }
 
         return File::readAll($tplFile);

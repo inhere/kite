@@ -103,6 +103,11 @@ class ExprCommand extends Command
      * @options
      *  -i, --interactive     bool;Start an interactive shell environment
      *
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @return int
+     * @throws Throwable
      * @example
      *  <code>$ {binWithCmd} -i</code>
      *  Expr > 45 + 45
@@ -110,11 +115,6 @@ class ExprCommand extends Command
      *  Expr > ret * 2
      *  180
      *
-     * @param Input  $input
-     * @param Output $output
-     *
-     * @return int
-     * @throws Throwable
      */
     protected function execute(Input $input, Output $output): int
     {
