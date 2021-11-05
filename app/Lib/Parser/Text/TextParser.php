@@ -77,7 +77,9 @@ class TextParser
     public string $lineSep = "\n";
 
     /**
-     * @var array
+     * Field names
+     *
+     * @var string[]
      */
     public array $fields = [];
 
@@ -226,6 +228,10 @@ class TextParser
         $this->prepared = true;
 
         $text = trim($this->text, $this->lineSep);
+        if (!$text) {
+            throw new InvalidArgumentException('empty text for parse');
+        }
+
         if (str_contains($text, $this->headerSep)) {
             [$header, $text] = explode($this->headerSep, $text);
 
@@ -240,12 +246,8 @@ class TextParser
     /**
      * @return $this
      */
-    public function parse(string $text = ''): self
+    public function parse(): self
     {
-        if (!$this->prepared) {
-            $this->setText($text);
-        }
-
         // prepare
         $this->prepare();
 
@@ -556,10 +558,25 @@ class TextParser
 
     /**
      * @param callable $lineParser
+     *
+     * @return TextParser
      */
-    public function setLineParser(callable $lineParser): void
+    public function setLineParser(callable $lineParser): self
     {
         $this->lineParser = $lineParser;
+        return $this;
+    }
+
+
+    /**
+     * @param string[] $fields
+     *
+     * @return TextParser
+     */
+    public function setFields(array $fields): self
+    {
+        $this->fields = $fields;
+        return $this;
     }
 
     /**
@@ -572,10 +589,13 @@ class TextParser
 
     /**
      * @param array $settings
+     *
+     * @return TextParser
      */
-    public function setSettings(array $settings): void
+    public function setSettings(array $settings): self
     {
         $this->settings = array_merge($this->settings, $settings);
+        return $this;
     }
 
     /**

@@ -55,8 +55,8 @@ invalid
  name string  名称
  status  string  状态 1=待付款 2=待配送 3=配送中 8=待评价
 TXT;
-        $p = TextParser::new();
-        $p->parse($text);
+        $p = TextParser::new($text);
+        $p->parse();
 
         $this->assertCount(3, $p->fields);
         $this->assertEquals(3, $p->fieldNum);
