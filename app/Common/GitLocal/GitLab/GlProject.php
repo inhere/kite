@@ -21,7 +21,7 @@ class GlProject extends GitProject
      *
      * @var string
      */
-    private string $mainPid;
+    private string $mainPid = '';
 
     /**
      * Project Id for forked-group/repo
@@ -30,7 +30,7 @@ class GlProject extends GitProject
      *
      * @var string
      */
-    private string $forkPid;
+    private string $forkPid = '';
 
     /**
      * @param int|string $mainPid
