@@ -502,7 +502,7 @@ kite markdown FILE
 
 ```php
     'php:serve'     => [
-        'hce-file' => 'test/clienttest/http-client.env.json',
+        'hce-file' => 'test/httptest/http-client.env.json',
         'hce-env'  => getenv('APP_ENV') ?: 'dev',
         // document root
         'root'     => 'public',
@@ -518,7 +518,7 @@ kite markdown FILE
 
 这时 `hce-file`, `hce-env` 就可以排上用场，可以在每个项目里添加一份http-client环境文件，并且规划好每个服务的端口
 
-示例文件 [test/clienttest/http-client.env.json](test/clienttest/http-client.env.json)
+示例文件 [test/httptest/http-client.env.json](test/httptest/http-client.env.json)
 
 ```json
 {
@@ -706,7 +706,7 @@ kite 里除了提供 `scripts` 访问执行外部命令，还可以编写自定�
 ```php
 <?php
 
-use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\CliApplication;
 use Inhere\Kite\Console\Plugin\AbstractPlugin;
 
@@ -722,7 +722,7 @@ class DemoPlugin extends AbstractPlugin
         ];
     }
 
-    public function exec(CliApplication $app, Input $input): void
+    public function exec(CliApplication $app, Output $output): void
     {
         vdump(__METHOD__);
     }
