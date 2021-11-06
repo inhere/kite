@@ -2,7 +2,9 @@
 
 namespace Inhere\Kite\Console\Component;
 
+use Inhere\Kite\Helper\KiteUtil;
 use Inhere\Kite\Kite;
+use InvalidArgumentException;
 use Toolkit\Cli\Cli;
 use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Obj\AbstractObj;
@@ -50,7 +52,7 @@ class ContentsAutoReader extends AbstractObj
      * - input '@FILEPATH' or FILEPATH       - will read from the filepath.
      *
      * @param string $source the input text
-     * @param array{print: bool, loadedFile: string} $opts
+     * @param array{print: bool, loadedFile: string, throwOnEmpty: true} $opts
      *
      * @return string
      */
@@ -67,41 +69,39 @@ class ContentsAutoReader extends AbstractObj
 
             // is one line text
         } elseif (!str_contains($source, "\n")) {
-            if (str_starts_with($source, '@')) {
-                if ($source === '@c' || $source === '@cb' || $source === '@clipboard') {
-                    $this->srcType = self::TYPE_CLIPBOARD;
-                    $print && Cli::info('try read contents from Clipboard');
-                    $str = Clipboard::new()->read();
-                } elseif ($source === '@i' || $source === '@stdin') {
-                    $this->srcType = self::TYPE_STDIN;
-                    $print && Cli::info('try read contents from STDIN');
-                    $str = Kite::cliApp()->getInput()->readAll();
-                    // $str = File::streamReadAll(STDIN);
-                    // $str = File::readAll('php://stdin');
-                    // vdump($str);
-                    // Cli::info('try read contents from STDOUT'); // error
-                    // $str = Kite::cliApp()->getOutput()->readAll();
-                } elseif (($source === '@l' || $source === '@load') && ($lFile && is_file($lFile))) {
-                    $this->srcType = self::TYPE_FILE;
-                    $print && Cli::info('try read contents from file: ' . $lFile);
-                    $str = File::readAll($lFile);
-                } else {
-                    $filepath = Kite::alias($source);
-                    if ($filepath[0] === '@') {
-                        $filepath = substr($filepath, 1);
-                    }
-
-                    if (is_file($filepath)) {
-                        $this->srcType = self::TYPE_FILE;
-                        $print && Cli::info('try read contents from file: ' . $filepath);
-                        $str = File::readAll($filepath);
-                    }
-                }
-            } elseif (is_file($source)) {
+            if (KiteUtil::isStdinAlias($source)) {
+                $this->srcType = self::TYPE_STDIN;
+                $print && Cli::info('try read contents from STDIN');
+                $str = Kite::cliApp()->getInput()->readAll();
+                // $str = File::streamReadAll(STDIN);
+                // $str = File::readAll('php://stdin');
+                // vdump($str);
+                // Cli::info('try read contents from STDOUT'); // error
+                // $str = Kite::cliApp()->getOutput()->readAll();
+            } elseif (KiteUtil::isClipboardAlias($source)) {
+                $this->srcType = self::TYPE_CLIPBOARD;
+                $print && Cli::info('try read contents from Clipboard');
+                $str = Clipboard::new()->read();
+            } elseif (($source === '@l' || $source === '@load') && ($lFile && is_file($lFile))) {
                 $this->srcType = self::TYPE_FILE;
-                $print && Cli::info('try read contents from file: ' . $source);
-                $str = File::readAll($source);
+                $print && Cli::info('try read contents from file: ' . $lFile);
+                $str = File::readAll($lFile);
+            } else {
+                $filepath = Kite::alias($source);
+                if ($filepath[0] === '@') {
+                    $filepath = substr($filepath, 1);
+                }
+
+                if (is_file($filepath)) {
+                    $this->srcType = self::TYPE_FILE;
+                    $print && Cli::info('try read contents from file: ' . $filepath);
+                    $str = File::readAll($filepath);
+                }
             }
+        }
+
+        if (($opts['throwOnEmpty'] ?? true) && !$str) {
+            throw new InvalidArgumentException('Nothing contents was read');
         }
 
         return $str;

@@ -96,7 +96,7 @@ class GenerateController extends Controller
         [$varDefine, $template] = explode('###', $content);
 
         // $vars = (array)parse_ini_string(trim($varDefine), true);
-        $vars = IniParser::parseString(trim($varDefine));
+        $vars = IniParser::decode(trim($varDefine));
         $output->aList($vars, 'template vars', ['ucFirst' => false]);
 
         $logic  = new TextTemplate();

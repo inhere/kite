@@ -103,9 +103,10 @@ class AppHelper
         if (Sys::isMac()) {
             $cmd = "open \"$pageUrl\"";
         } elseif (Sys::isWin()) {
-            // $cmd = 'cmd /c start';
+            // $cmd = 'cmd /c start URL';
             $cmd = "start $pageUrl";
         } else {
+            // $cmd = 'xdg-open URL';
             $cmd = "x-www-browser \"$pageUrl\"";
         }
 

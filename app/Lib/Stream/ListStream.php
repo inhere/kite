@@ -66,17 +66,16 @@ class ListStream extends BaseStream
     }
 
     /**
-     * @param callable(array): array $func
+     * @param callable(array, int): array $func
      *
      * @return array
      */
     public function eachToArray(callable $func): array
     {
         $arr = [];
-        foreach ($this as $item) {
-            $arr[] = $func($item);
+        foreach ($this as $idx => $item) {
+            $arr[] = $func($item, $idx);
         }
-
         return $arr;
     }
 
@@ -101,7 +100,7 @@ class ListStream extends BaseStream
      *
      * @return array<string, mixed>
      */
-    public function eachToMapArray(callable $func): array
+    public function eachToMap(callable $func): array
     {
         $map = [];
         foreach ($this as $item) {

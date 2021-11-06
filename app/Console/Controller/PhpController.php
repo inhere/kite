@@ -40,6 +40,7 @@ use function preg_quote;
 use function sprintf;
 use function str_contains;
 use function trim;
+use function vdump;
 
 /**
  * Class GitGroup
@@ -166,7 +167,7 @@ class PhpController extends Controller
      *
      * @options
      *      --no-debug    bool;not set the --debug option on run test
-     *  -f, --filter      Set the --filter option for phpunit
+     *  -f, --filter      Set keywords for the --filter option
      *      --php-bin     manual set the php bin  file path.
      *      --phpunit     manual set the phpunit(.phar)  file path.
      *
@@ -407,24 +408,40 @@ class PhpController extends Controller
 
         $ret = $this->evalCode($code);
 
-        // echo Php::dumpVars($box->get($objName));
-        $output->info('TODO');
+        $output->info('RESULT:');
+        $output->writeRaw($ret);
     }
 
+    /**
+     * @param string $code
+     *
+     * @return string
+     */
     private function evalCode(string $code): string
     {
-        $code = trim($code);
-        $code = trim($code, ';') . ';';
+        $code = rtrim(trim($code), ';');
 
         $phpCode = <<<CODE
-<?php
-// print
+use Toolkit\Stdlib\Php;
+
+// run
 echo Php::dumpVars($code);
 CODE;
 
         ob_start();
         eval($phpCode);
         return ob_get_clean();
+    }
+
+    /**
+     * open the php doc sites
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function docOpenCommand(FlagsParser $fs, Output $output): void
+    {
+        $output->info('TODO');
     }
 
     /**

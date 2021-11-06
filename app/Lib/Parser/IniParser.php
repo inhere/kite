@@ -87,9 +87,19 @@ class IniParser
      *
      * @return array
      */
-    public static function parseString(string $str): array
+    public static function decode(string $str): array
     {
         return (new self($str))->parse();
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return string
+     */
+    public static function encode(array $data): string
+    {
+        return '';
     }
 
     /**
