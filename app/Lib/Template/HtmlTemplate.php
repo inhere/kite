@@ -17,12 +17,12 @@ class HtmlTemplate extends TextTemplate
     /**
      * @var string
      */
-    protected $viewsDir;
+    protected string $viewsDir = '';
 
     /**
      * @var string[]
      */
-    protected $allowExt = ['.html', '.phtml', '.php'];
+    protected array $allowExt = ['.html', '.phtml', '.php'];
 
     /**
      * manual set view files

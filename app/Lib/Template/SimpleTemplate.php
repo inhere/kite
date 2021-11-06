@@ -20,7 +20,7 @@ class SimpleTemplate extends AbstractTemplate
     /**
      * @var string
      */
-    protected $varTpl = '{{%s}}';
+    protected string $varTpl = '{{%s}}';
 
     /**
      * Class constructor.
@@ -33,36 +33,36 @@ class SimpleTemplate extends AbstractTemplate
     }
 
     /**
-     * @param string $tempFile
-     * @param array  $vars
+     * @param string $tplFile
+     * @param array  $tplVars
      *
      * @return string
      */
-    public function renderFile(string $tempFile, array $vars): string
+    public function renderFile(string $tplFile, array $tplVars): string
     {
-        if (!file_exists($tempFile)) {
-            throw new InvalidArgumentException('the template file is not exist. file:' . $tempFile);
+        if (!file_exists($tplFile)) {
+            throw new InvalidArgumentException('the template file is not exist. file:' . $tplFile);
         }
 
-        $tplCode = file_get_contents($tempFile);
+        $tplCode = file_get_contents($tplFile);
 
-        return $this->renderString($tplCode, $vars);
+        return $this->renderString($tplCode, $tplVars);
     }
 
     /**
      * @param string $tplCode
-     * @param array  $vars
+     * @param array  $tplVars
      *
      * @return string
      */
-    public function renderString(string $tplCode, array $vars): string
+    public function renderString(string $tplCode, array $tplVars): string
     {
         if ($this->globalVars) {
-            $vars = array_merge($this->globalVars, $vars);
+            $tplVars = array_merge($this->globalVars, $tplVars);
         }
 
         $fmtVars = [];
-        foreach ($vars as $name => $var) {
+        foreach ($tplVars as $name => $var) {
             $name = sprintf($this->varTpl, (string)$name);
             // add
             $fmtVars[$name] = $var;

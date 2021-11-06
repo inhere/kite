@@ -10,18 +10,18 @@ namespace Inhere\Kite\Lib\Template;
 interface TemplateInterface
 {
     /**
-     * @param string $tempFile
-     * @param array  $vars
+     * @param string $tplFile
+     * @param array  $tplVars
      *
      * @return string
      */
-    public function renderFile(string $tempFile, array $vars): string;
+    public function renderFile(string $tplFile, array $tplVars): string;
 
     /**
      * @param string $tplCode
-     * @param array  $vars
+     * @param array  $tplVars
      *
      * @return string
      */
-    public function renderString(string $tplCode, array $vars): string;
+    public function renderString(string $tplCode, array $tplVars): string;
 }

@@ -15,6 +15,8 @@ use function file_put_contents;
 use function md5;
 use function ob_get_clean;
 use function ob_start;
+use function sprintf;
+use const EXTR_OVERWRITE;
 use const PHP_EOL;
 
 /**
@@ -27,7 +29,21 @@ class TextTemplate extends AbstractTemplate
     /**
      * @var string[]
      */
-    protected $allowExt = ['.php'];
+    protected array $allowExt = ['.php'];
+
+    /**
+     * The dir for auto generated temp php file
+     *
+     * @var string
+     */
+    public string $tmpDir = '';
+
+    /**
+     * The auto generated temp php file
+     *
+     * @var string
+     */
+    private string $tmpPhpFile = '';
 
     /**
      * Class constructor.
@@ -40,67 +56,91 @@ class TextTemplate extends AbstractTemplate
     }
 
     /**
-     * @param string $tempFile
-     * @param array  $vars
+     * @param string $tplCode
+     * @param array  $tplVars
      *
      * @return string
      */
-    public function renderFile(string $tempFile, array $vars): string
+    public function renderString(string $tplCode, array $tplVars): string
     {
-        if (!file_exists($tempFile)) {
-            throw new InvalidArgumentException('the template file is not exist. file:' . $tempFile);
+        $tempFile = $this->genTempPhpFile($tplCode);
+
+        return $this->doRenderFile($tempFile, $tplVars);
+    }
+
+    /**
+     * @param string $tplFile
+     * @param array  $tplVars
+     *
+     * @return string
+     */
+    public function renderFile(string $tplFile, array $tplVars): string
+    {
+        return $this->doRenderFile($tplFile, $tplVars);
+    }
+
+    /**
+     * @param string $tplFile
+     * @param array  $tplVars
+     *
+     * @return string
+     */
+    protected function doRenderFile(string $tplFile, array $tplVars): string
+    {
+        if (!file_exists($tplFile)) {
+            throw new InvalidArgumentException('no such template file:' . $tplFile);
         }
 
         if ($this->globalVars) {
-            $vars = array_merge($this->globalVars, $vars);
+            $tplVars = array_merge($this->globalVars, $tplVars);
         }
 
         ob_start();
-        extract($vars, \EXTR_OVERWRITE);
-        // eval($tplCode . "\n");
+        extract($tplVars, EXTR_OVERWRITE);
         // require \BASE_PATH . '/runtime/go-snippets-0709.tpl.php';
-        /** @noinspection PhpIncludeInspection */
-        require $tempFile;
+        require $tplFile;
         return ob_get_clean();
     }
 
     /**
+     * generate temp php file
+     *
      * @param string $tplCode
-     * @param array  $vars
      *
      * @return string
      */
-    public function renderString(string $tplCode, array $vars): string
+    protected function genTempPhpFile(string $tplCode): string
     {
-        $tempDir  = Sys::getTempDir() . '/kitegen';
-        $fileHash = md5($tplCode);
-        $tempFile = $tempDir . '/' . date('ymd') . "-{$fileHash}.php";
+        $tmpDir  = $this->tmpDir ?: Sys::getTempDir() . '/php-tpl-gen';
+        $tmpFile = sprintf('%s/%s-%s.php', $tmpDir, date('ymd'), md5($tplCode));
 
-        if (!file_exists($tempFile)) {
-            Dir::create($tempDir);
+        if (!file_exists($tmpFile)) {
+            Dir::create($tmpDir);
 
             // write contents
-            $num = file_put_contents($tempFile, $tplCode . PHP_EOL);
+            $num = file_put_contents($tmpFile, $tplCode . PHP_EOL);
             if ($num < 1) {
                 throw new RuntimeException('write template contents to temp file error');
             }
         }
 
-        return $this->renderFile($tempFile, $vars);
+        $this->tmpPhpFile = $tmpFile;
+        return $tmpFile;
     }
 
     /**
+     * TIP: must be all php codes
+     *
      * @param string $tplCode
      * @param array  $vars
      *
      * @return string
      */
-    private function renderByEval(string $tplCode, array $vars): string
+    public function renderByEval(string $tplCode, array $vars): string
     {
-        \vdump($tplCode);
         ob_start();
-        extract($vars, \EXTR_OVERWRITE);
-        // eval($tplCode . "\n");
+        extract($vars, EXTR_OVERWRITE);
+        eval($tplCode . "\n");
         // require \BASE_PATH . '/runtime/go-snippets-0709.tpl.php';
         return ob_get_clean();
     }
@@ -119,6 +159,14 @@ class TextTemplate extends AbstractTemplate
     public function setAllowExt(array $allowExt): void
     {
         $this->allowExt = $allowExt;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTmpPhpFile(): string
+    {
+        return $this->tmpPhpFile;
     }
 
 }
