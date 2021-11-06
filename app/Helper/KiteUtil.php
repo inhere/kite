@@ -9,12 +9,17 @@ use Toolkit\Stdlib\Str;
 use function dirname;
 use function in_array;
 use function is_file;
+use function str_replace;
 
 /**
  * class KiteUtil
  */
 class KiteUtil
 {
+
+    public const NL_CHAR = 'NL';
+    public const SPACE_CHAR = 'SPACE';
+
     public const STDIN_ALIAS  = [
         '@i',
         '@stdin',
@@ -34,6 +39,16 @@ class KiteUtil
         '@clipboard',
         'clipboard',
     ];
+
+    /**
+     * @param string $sep
+     *
+     * @return string
+     */
+    public static function resolveSep(string $sep): string
+    {
+        return str_replace([self::NL_CHAR, self::SPACE_CHAR], ["\n", ' '], $sep);
+    }
 
     /**
      * @param string $str

@@ -21,9 +21,24 @@ trait StaticPathAliasTrait
      * get real value by alias
      *
      * @param string $alias
+     * @param bool $throwEx
+     *
      * @return string
      */
     public static function alias(string $alias, bool $throwEx = false): string
+    {
+        return self::resolve($alias, $throwEx);
+    }
+
+    /**
+     * resolve path alias to real value
+     *
+     * @param string $alias
+     * @param bool $throwEx
+     *
+     * @return string
+     */
+    public static function resolve(string $alias, bool $throwEx = false): string
     {
         // Not an alias
         if (!$alias || $alias[0] !== '@') {
@@ -66,7 +81,7 @@ trait StaticPathAliasTrait
      */
     public static function setAlias(string $alias, string $value): void
     {
-        self::$aliases[$alias] = self::alias($value);
+        self::$aliases[$alias] = self::resolve($value);
     }
 
     /**
@@ -81,7 +96,7 @@ trait StaticPathAliasTrait
                 continue;
             }
 
-            self::$aliases[$alias] = self::alias($realPath);
+            self::$aliases[$alias] = self::resolve($realPath);
         }
     }
 

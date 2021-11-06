@@ -18,8 +18,11 @@ composer require knplabs/github-api:^3.0 guzzlehttp/guzzle:^7.0.1 http-interop/h
 
 **markdown**
 
-- `cebe/markdown`
-- `league/commonmark`
+- `cebe/markdown` https://github.com/michelf/php-markdown
+- `erusev/parsedown` https://github.com/erusev/parsedown
+- `league/commonmark` https://github.com/thephpleague/commonmark
+  - docs https://commonmark.thephpleague.com
+- `michelf/php-markdown` https://github.com/michelf/php-markdown
 
 **html to markdown**
 

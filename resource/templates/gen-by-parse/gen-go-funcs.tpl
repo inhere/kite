@@ -1,5 +1,5 @@
 #
-# usage: kite gen parse @kite/resource/example/gen-go-funcs.tpl
+# usage: kite gen parse @resource-tpl/gen-by-parse/gen-go-funcs.tpl
 #
 vars=[Info, Error, Warn]
 

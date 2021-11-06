@@ -14,6 +14,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Helper\AppHelper;
+use Inhere\Kite\Helper\KiteUtil;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Stream\StringsStream;
 use InvalidArgumentException;
@@ -130,19 +131,13 @@ class StringController extends Controller
      *  -s, --sep    The join separator char. Defaults to an empty string.
      *
      * @param FlagsParser $fs
-     * @param Output $output
      */
-    public function joinCommand(FlagsParser $fs, Output $output): void
+    public function joinCommand(FlagsParser $fs): void
     {
         $text = trim($fs->getArg('text'));
         $text = AppHelper::tryReadContents($text, [
             'loadedFile' => $this->dumpfile,
         ]);
-
-        if (!$text) {
-            $output->warning('empty input contents for handle');
-            return;
-        }
 
         $lines = explode("\n", $text);
         $sep   = $fs->getOpt('sep');
@@ -162,29 +157,78 @@ class StringController extends Controller
      *          input '@FILEPATH'                   - will read from the filepath
      *
      * @options
-     *  -s, --sep    The separator char. defaults is an space string.
+     *  -s, --sep        The separator char. defaults is an SPACE.
+     *  --join-sep       The sep char for join all items for output. defaults: NL
+     *  -f, --filter     array;apply there filters for each substr.
+     *                   allow:
+     *                   - wrap eg `wrap:'` wrap char(') for each item
      *
      * @param FlagsParser $fs
-     * @param Output $output
+     *
+     * @example
+     *
+     * {binWithCmd} --sep ',' --join-sep ',' -f "wrap:' " 'tom,john' # Output: 'tom', 'john'
      */
-    public function splitCommand(FlagsParser $fs, Output $output): void
+    public function splitCommand(FlagsParser $fs): void
     {
         $text = trim($fs->getArg('text'));
         $text = ContentsAutoReader::readFrom($text);
 
-        if (!$text) {
-            $output->warning('empty input contents for handle');
-            return;
+        $sep = $fs->getOpt('sep', ' ');
+        $sep = KiteUtil::resolveSep($sep);
+
+        $items = explode($sep, $text);
+        if ($filters = $fs->getOpt('filter')) {
+            foreach ($items as &$item) {
+                $item = $this->applyFilters($item, $filters);
+            }
+            unset($item);
         }
 
-        $sep = $fs->getOpt('sep', ' ');
-
-        $lines = explode($sep, $text);
-        echo implode("\n", $lines), "\n";
+        $joinSep = $fs->getOpt('join-sep', "\n");
+        echo implode(KiteUtil::resolveSep($joinSep), $items), "\n";
     }
 
     /**
-     * Split text to multi line
+     * apply some simple built in string filters
+     *
+     * @param string $str
+     * @param array $filters
+     *
+     * @return string
+     */
+    protected function applyFilters(string $str, array $filters): string
+    {
+        foreach ($filters as $filter) {
+            $args = [];
+            $argStr = '';
+
+            // eg 'wrap:,'
+            if (str_contains($filter, ':')) {
+                [$filter, $argStr] = explode(':', $filter, 2);
+                if (strlen($argStr) > 1 && str_contains($argStr, ',')) {
+                    $args = Str::toTypedList($argStr);
+                } else {
+                    $args = [$argStr];
+                }
+            }
+
+            if ($filter === 'wrap') {
+                $str = Str::wrap($str, ...$args);
+            } elseif ($filter === 'append') {
+                $str .= $argStr;
+            } elseif ($filter === 'prepend') {
+                $str = $argStr . $str;
+            } else {
+                throw new InvalidArgumentException("unsupported filter: $filter");
+            }
+        }
+
+        return $str;
+    }
+
+    /**
+     * Replace all occurrences of the search string with the replacement string
      *
      * @arguments
      * text     The source text for handle.
@@ -205,10 +249,6 @@ class StringController extends Controller
     {
         $text = trim($fs->getArg('text'));
         $text = ContentsAutoReader::readFrom($text);
-        if (!$text) {
-            $output->warning('empty input contents for handle');
-            return;
-        }
 
         $from = $fs->getOpt('from');
         $to   = $fs->getOpt('to');
@@ -236,6 +276,7 @@ class StringController extends Controller
      *  -e, --exclude   array;exclude line on contains keywords.
      *  -m, --match     array;include line on contains keywords.
      *  -t, --trim      bool;trim the each line text.
+     *      --each      bool;Operate on each substr after split.
      *      --wrap      wrap the each line by the separator
      *  -j, --join      join the each line by the separator
      *  -c, --cut       cut each line by the separator. cut position: L R, eg: 'L='
@@ -305,6 +346,9 @@ class StringController extends Controller
                 return Str::has($line, $in);
             }, count($in) > 0)
             ->eachIf(function (string $line) use ($replaces) { // replace
+                // TODO
+                // $this->applyFilters($line, $filters);
+
                 $froms = $tos = [];
                 foreach ($replaces as $replace) {
                     [$from, $to] = explode('/', $replace, 2);
