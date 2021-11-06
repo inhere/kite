@@ -5,15 +5,15 @@ namespace Inhere\Kite\Lib\Parser\Text;
 use Closure;
 use Inhere\Kite\Lib\Parser\IniParser;
 use InvalidArgumentException;
+use Toolkit\Stdlib\Str;
 use function array_combine;
-use function array_filter;
 use function array_merge;
 use function array_pad;
-use function array_slice;
-use function array_values;
 use function count;
 use function explode;
 use function implode;
+use function str_contains;
+use function str_replace;
 use function trim;
 
 /**
@@ -25,6 +25,12 @@ class TextParser
     public const PREPEND = 1;
     public const APPEND  = 2;
     public const DISCARD = 3;
+
+    public const NL_CHAR = 'NL';
+    public const SPACE_CHAR = 'SPACE';
+
+    public const NL = "\n";
+    public const SPACE = ' ';
 
     /**
      * @var string
@@ -74,7 +80,7 @@ class TextParser
     /**
      * @var string
      */
-    public string $lineSep = "\n";
+    public string $itemSep = "\n";
 
     /**
      * Field names
@@ -84,7 +90,7 @@ class TextParser
     public array $fields = [];
 
     /**
-     * field number of each line.
+     * field number of each item.
      *
      * @var int
      */
@@ -99,24 +105,30 @@ class TextParser
     public int $errItemHandleType = self::DISCARD;
 
     /**
-     * collected data list
+     * @var callable(string): string
+     */
+    private $itemFilter;
+
+    /**
+     * parse one item text to data item
+     * - default item text parser {@see spaceSplitParser}
+     *
+     * @var callable(string): array
+     */
+    private $itemParser;
+
+    /**
+     * collected data item list
+     *
+     * data = [
+     *  {
+     *    {value, ...} // item
+     *  }
+     * ]
      *
      * @var array[]
      */
     private array $data = [];
-
-    /**
-     * @var callable(string): string
-     */
-    private $lineFilter;
-
-    /**
-     * parse one line to data item
-     * - default line parser {@see spaceSplitParser}
-     *
-     * @var callable(string): array
-     */
-    private $lineParser;
 
     /**
      * @param string $text
@@ -137,23 +149,23 @@ class TextParser
     }
 
     /**
-     * @param callable(string):array $lineParser
+     * @param callable(string):array $itemParser
      *
      * @return static
      */
-    public static function emptyWithParser(callable $lineParser): self
+    public static function emptyWithParser(callable $itemParser): self
     {
-        return (new self())->withParser($lineParser);
+        return (new self())->withParser($itemParser);
     }
 
     /**
-     * @param callable(string):array $lineParser
+     * @param callable(string):array $itemParser
      *
      * @return static
      */
-    public static function newWithParser(string $text, callable $lineParser): self
+    public static function newWithParser(string $text, callable $itemParser): self
     {
-        return (new self($text))->withParser($lineParser);
+        return (new self($text))->withParser($itemParser);
     }
 
     /**
@@ -191,24 +203,24 @@ class TextParser
     }
 
     /**
-     * @param callable $lineFilter
+     * @param callable $itemFilter
      *
      * @return $this
      */
-    public function withFilter(callable $lineFilter): self
+    public function withFilter(callable $itemFilter): self
     {
-        $this->lineFilter = $lineFilter;
+        $this->itemFilter = $itemFilter;
         return $this;
     }
 
     /**
-     * @param callable(string):array $lineParser
+     * @param callable(string):array $itemParser
      *
      * @return $this
      */
-    public function withParser(callable $lineParser): self
+    public function withParser(callable $itemParser): self
     {
-        $this->lineParser = $lineParser;
+        $this->itemParser = $itemParser;
         return $this;
     }
 
@@ -227,14 +239,13 @@ class TextParser
 
         $this->prepared = true;
 
-        $text = trim($this->text, $this->lineSep);
+        $text = trim($this->text, $this->itemSep);
         if (!$text) {
             throw new InvalidArgumentException('empty text for parse');
         }
 
         if (str_contains($text, $this->headerSep)) {
             [$header, $text] = explode($this->headerSep, $text);
-
             $this->textHeader = $header;
             $this->parseHeaderSettings($header);
         }
@@ -251,13 +262,13 @@ class TextParser
         // prepare
         $this->prepare();
 
-        $lfFn = $this->lineFilter;
-        $lpFn = $this->lineParser ?: self::spaceSplitParser();
+        $lfFn = $this->itemFilter;
+        $lpFn = $this->itemParser ?: self::spaceSplitParser();
 
         $this->data = [];
         $fieldNum   = $this->fieldNum;
 
-        foreach (explode($this->lineSep, $this->textBody) as $line) {
+        foreach (explode($this->itemSep, $this->textBody) as $line) {
             // empty line
             if (!$line = trim($line)) {
                 continue;
@@ -297,13 +308,12 @@ class TextParser
      */
     protected function parseHeaderSettings(string $header): void
     {
+        $allowConfig = ['fieldNum', 'fields'];
         if ($beforeFn = $this->beforeParseHeader) {
             $header = $beforeFn($header);
         }
 
-        $this->settings = IniParser::parseString($header);
-
-        $allowConfig = ['fieldNum', 'fields'];
+        $this->settings = IniParser::decode($header);
         foreach ($allowConfig as $prop) {
             if (!isset($this->settings[$prop])) {
                 continue;
@@ -326,7 +336,7 @@ class TextParser
     }
 
     /**
-     * @param int   $fieldNum
+     * @param int $fieldNum
      * @param array $values
      */
     private function collectDataItem(int $fieldNum, array $values): void
@@ -358,7 +368,7 @@ class TextParser
                 }
 
                 // append to prev item's last value.
-                $prevRow[$lastIdx] .= ' ' . implode(' ', $values);
+                $prevRow[$lastIdx]    .= ' ' . implode(' ', $values);
                 $this->data[$prevIdx] = $prevRow;
                 return;
             }
@@ -403,30 +413,7 @@ class TextParser
     }
 
     /**
-     * this is default line parser
-     *
-     * @return Closure
-     */
-    public static function spaceSplitParser(): Closure
-    {
-        return static function (string $line, int $fieldNum) {
-            $nodes = array_filter(explode(' ', $line), 'strlen');
-            $count = count($nodes);
-            if ($count <= $fieldNum) {
-                return array_values($nodes);
-            }
-
-            $values = array_slice($nodes, 0, $fieldNum - 1);
-            $others = array_slice($nodes, $fieldNum - 1);
-
-            // merge others as last elem
-            $values[] = implode(' ', $others);
-            return array_values($values);
-        };
-    }
-
-    /**
-     * @param bool $indexToField  replace item value index to field name, require the {@see $fields}
+     * @param bool $indexToField replace item value index to field name, require the {@see $fields}
      *
      * @return array[]
      */
@@ -451,7 +438,7 @@ class TextParser
 
     /**
      * @param int|string $keyIdxOrName
-     * @param bool $indexToField  replace item value index to field name, require the {@see $fields}
+     * @param bool $indexToField replace item value index to field name, require the {@see $fields}
      *
      * @return array<string, array>
      */
@@ -503,6 +490,44 @@ class TextParser
     }
 
     /**
+     * this is default item parser
+     *
+     * @return Closure
+     */
+    public static function spaceSplitParser(): Closure
+    {
+        return static function (string $str, int $fieldNum) {
+            return Str::toNoEmptyArray($str, ' ', $fieldNum);
+        };
+    }
+
+    /**
+     * char split item parser
+     *
+     * @param string $sep value sep
+     *
+     * @return Closure
+     */
+    public static function charSplitParser(string $sep = ','): Closure
+    {
+        $sep = self::replaceSep($sep);
+
+        return static function (string $str, int $fieldNum) use ($sep) {
+            return Str::toNoEmptyArray($str, $sep, $fieldNum);
+        };
+    }
+
+    /**
+     * @param string $sep
+     *
+     * @return string
+     */
+    public static function replaceSep(string $sep): string
+    {
+        return str_replace([self::NL_CHAR, self::SPACE_CHAR], ["\n", ' '], $sep);
+    }
+
+    /**
      * @return self
      */
     public function prependOnErrItem(): self
@@ -549,24 +574,23 @@ class TextParser
     }
 
     /**
-     * @param callable $lineFilter
+     * @param callable $itemFilter
      */
-    public function setLineFilter(callable $lineFilter): void
+    public function setItemFilter(callable $itemFilter): void
     {
-        $this->lineFilter = $lineFilter;
+        $this->itemFilter = $itemFilter;
     }
 
     /**
-     * @param callable $lineParser
+     * @param callable $itemParser
      *
      * @return TextParser
      */
-    public function setLineParser(callable $lineParser): self
+    public function setItemParser(callable $itemParser): self
     {
-        $this->lineParser = $lineParser;
+        $this->itemParser = $itemParser;
         return $this;
     }
-
 
     /**
      * @param string[] $fields
@@ -599,13 +623,44 @@ class TextParser
     }
 
     /**
-     * @param string $text
+     * @param string $headerSep
+     *
+     * @return TextParser
      */
-    public function setText(string $text): void
+    public function setHeaderSep(string $headerSep): self
+    {
+        if ($headerSep) {
+            $this->headerSep = self::replaceSep($headerSep);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $itemSep
+     *
+     * @return TextParser
+     */
+    public function setItemSep(string $itemSep): self
+    {
+        if ($itemSep) {
+            $this->itemSep = self::replaceSep($itemSep);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $text
+     *
+     * @return TextParser
+     */
+    public function setText(string $text): self
     {
         if ($text) {
             $this->text = $text;
         }
+        return $this;
     }
 
     /**

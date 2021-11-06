@@ -60,7 +60,7 @@ arr_sub_key[] = "arr_elem_three"
 val_arr_two[6] = "key_6"
 val_arr_two[some_key] = "some_key_value"
 INI;
-        $data = IniParser::parseString($ini);
+        $data = IniParser::decode($ini);
         vdump($data);
         $this->assertNotEmpty($data);
         $this->assertArrayHasKey('inlineArr', $data);
@@ -88,7 +88,7 @@ INI;
 [] = 567
 [] = "some value"
 ';
-        $data = IniParser::parseString($ini);
+        $data = IniParser::decode($ini);
         // vdump($data);
         $this->assertNotEmpty($data);
         $this->assertArrayHasKey('simpleList', $data);

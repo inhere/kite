@@ -14,21 +14,28 @@ use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
+use Inhere\Kite\Console\Component\ContentsAutoWriter;
 use Inhere\Kite\Lib\Convert\JavaProperties;
 use Inhere\Kite\Lib\Parser\DBTable;
+use Inhere\Kite\Lib\Parser\Text\TextParser;
+use Inhere\Kite\Lib\Stream\ListStream;
 use InvalidArgumentException;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Yaml;
 use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
+use function array_pad;
+use function array_shift;
 use function base_convert;
 use function date;
 use function file_get_contents;
+use function implode;
 use function is_file;
 use function strlen;
 use function substr;
 use function trim;
+use function vdump;
 
 /**
  * Class ConvertController
@@ -113,6 +120,58 @@ class ConvertController extends Controller
     }
 
     /**
+     * convert create mysql table SQL to markdown table
+     *
+     * @arguments
+     * type     The target text doc type, allow: raw, md-table,
+     *
+     * @options
+     *  -s,--source     string;The source code for convert. allow: FILEPATH, @clipboard;true
+     *  -o,--output     The output target. default is stdout.
+     *     --item-sep   The item sep char. default is NL.
+     *     --value-sep   The item value sep char. default is SPACE
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function textCommand(FlagsParser $fs, Output $output): void
+    {
+        $text = $fs->getOpt('source');
+        $text = ContentsAutoReader::readFrom($text);
+
+        $p = TextParser::new($text);
+        $p->setItemSep($fs->getOpt('item-sep'));
+
+        if ($vSep = $fs->getOpt('value-sep')) {
+            $p->setItemParser(TextParser::charSplitParser($vSep));
+        }
+
+        $p->parse();
+
+        switch ($fs->getArg('type')) {
+            case 'mdtable':
+            case 'mdTable':
+            case 'md-table':
+                $rows = ListStream::new($p->getData())
+                    ->eachToArray(function (array $item) {
+                        return implode(' | ', $item);
+                    });
+                $head = array_shift($rows);
+                $line = implode('|', array_pad(['-----'], $p->fieldNum, '-----'));
+
+                $result = $head . "\n" . $line . "\n". implode("\n", $rows);
+                break;
+            case 'raw':
+            default:
+                $result = $text;
+                break;
+        }
+
+        $outFile = $fs->getOpt('output');
+        ContentsAutoWriter::writeTo($outFile, $result);
+    }
+
+    /**
      * convert YAML to java properties contents.
      *
      * @options
@@ -125,16 +184,8 @@ class ConvertController extends Controller
     public function yaml2propCommand(FlagsParser $fs, Output $output): void
     {
         $file = $fs->getOpt('file');
-        if (!$file) {
-            $str = Clipboard::readAll();
-        } else {
-            if (!is_file($file)) {
-                throw new PromptException("input source file not exists, file: $file");
-            }
 
-            $str = file_get_contents($file);
-        }
-
+        $str = ContentsAutoReader::readFrom($file);
         if (!$str) {
             throw new InvalidArgumentException('the source yaml contents is empty');
         }
@@ -151,16 +202,8 @@ class ConvertController extends Controller
 
         $result  = $jp->encode($data);
         $outFile = $fs->getOpt('output');
-        if (!$outFile || $outFile === 'stdout') {
-            $output->println($result);
-        } elseif ($outFile === 'clipboard') {
-            $output->info('will send result to Clipboard');
-            Clipboard::writeString($result);
-        } else {
-            $output->info("will write result to $outFile");
-            File::putContents($outFile, $result);
-        }
 
+        ContentsAutoWriter::writeTo($outFile, $result);
         $output->success('Complete');
     }
 

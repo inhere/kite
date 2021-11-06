@@ -15,10 +15,25 @@ use function is_file;
  */
 class KiteUtil
 {
-    public const STDIN_ALIAS = ['@i','@stdin',];
-    public const STDOUT_ALIAS = ['@o','@stdout',];
+    public const STDIN_ALIAS  = [
+        '@i',
+        '@stdin',
+        'stdin',
+    ];
 
-    public const CLIPBOARD_ALIAS = ['@c','@cb','@clip','@clipboard',];
+    public const STDOUT_ALIAS = [
+        '@o',
+        '@stdout',
+        'stdout',
+    ];
+
+    public const CLIPBOARD_ALIAS = [
+        '@c',
+        '@cb',
+        '@clip',
+        '@clipboard',
+        'clipboard',
+    ];
 
     /**
      * @param string $str

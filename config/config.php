@@ -47,6 +47,10 @@ return [
     'osEnv'      => [
         // env settings
     ],
+    'osPathEnv'      => [
+        // os path env settings
+        // '/path/to/my-tool/bin',
+    ],
     'proxyEnv'      => [
         // proxy settings
         // 'http_proxy'  => 'http://127.0.0.1:1081',

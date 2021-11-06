@@ -3,14 +3,14 @@
 use Inhere\Kite\Kite;
 use Toolkit\Stdlib\OS;
 
-define('BASE_PATH', dirname(__DIR__));
+define('BASE_PATH', $baseDir = dirname(__DIR__));
 defined('IN_PHAR') || define('IN_PHAR', false);
 
 /** @var Composer\Autoload\ClassLoader $loader */
-$loader = require dirname(__DIR__) . '/vendor/autoload.php';
+$loader = require $baseDir . '/vendor/autoload.php';
 
-// $loader->addPsr4("Toolkit\\PFlag\\", __DIR__ . '/toolkit/pflag/src/');
-// $loader->addPsr4("Symfony\\Component\\Yaml\\", __DIR__ . '/symfony/yaml/');
+$loader->addPsr4("PhpPkg\\EasyTpl\\", $baseDir . '/vendor/phppkg/easytpl/src/');
+$loader->addPsr4("PhpPkg\\Ini\\", $baseDir . '/vendor/phppkg/ini/src/');
 
 // user kite dirs
 Kite::setAliases([

@@ -109,7 +109,7 @@ if equals @source will write to the source FILEPATH'
             ->filter(function (array $item) {
                 return count($item) >= 2;
             })
-            ->eachToMapArray(function (array $item) {
+            ->eachToMap(function (array $item) {
                 $field = $item[0];
                 $field = str_contains($field, '_') ? Str::toCamelCase($field) : $field;
 

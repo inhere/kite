@@ -4,6 +4,7 @@ namespace Inhere\KiteTest\Lib\Parser;
 
 use Inhere\Kite\Lib\Parser\Text\TextParser;
 use Inhere\KiteTest\BaseKiteTestCase;
+use function preg_split;
 use function vdump;
 
 /**
@@ -32,12 +33,14 @@ TXT;
 
         $this->assertEquals(2, $p->fieldNum);
         $this->assertNotEmpty($data = $p->getData());
-        vdump($data);
+        $this->assertEquals(['id', 'The ID'], $data[0]);
+        // vdump($data);
         $this->assertCount(3, $data);
 
         $this->assertNotEmpty($smp = $p->getStringMap(0, 1));
-        vdump($smp);
+        // vdump($smp);
         $this->assertCount(3, $smp);
+        $this->assertEquals('The ID', $smp['id']);
         $this->assertEquals('名称', $smp['name']);
     }
 
@@ -67,28 +70,30 @@ TXT;
         $this->assertNotEmpty($data = $p->getData(true));
         $this->assertCount(3, $data);
         $this->assertEquals(['field' => 'name', 'type' => 'string', 'desc' => '名称'], $data[1]);
-        vdump($data);
+        // vdump($data);
 
         $this->assertNotEmpty($mp = $p->getDataMap());
         $this->assertCount(3, $mp);
         $this->assertEquals(['name', 'string', '名称'], $mp['name']);
-        vdump($mp);
+        // vdump($mp);
         $this->assertNotEmpty($mp = $p->getDataMap(0, true));
         $this->assertCount(3, $mp);
         $this->assertEquals(['field' => 'name', 'type' => 'string', 'desc' => '名称'], $mp['name']);
-        vdump($mp);
+        // vdump($mp);
     }
 
     public function testSpaceSplitParser(): void
     {
+        $str = ' fieldName   some  field desc';
+
         $p = TextParser::spaceSplitParser();
-        $vs = $p(' fieldName   some field desc', 2);
+        $vs = $p($str, 2);
 
         $this->assertNotEmpty($vs);
-        $this->assertEquals(['fieldName', 'some field desc'], $vs);
+        $this->assertEquals(['fieldName', 'some  field desc'], $vs);
         // vdump($vs);
 
-        $vs = $p(' fieldName   some field desc', 3);
+        $vs = $p($str, 3);
         $this->assertNotEmpty($vs);
         $this->assertEquals(['fieldName', 'some',  'field desc'], $vs);
         // vdump($vs);
