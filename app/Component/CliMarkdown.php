@@ -320,6 +320,8 @@ class CliMarkdown extends GithubMarkdown
     {
         $text = $this->renderAbsy($block[1]);
 
+        return ColorTag::add("**$text**", $this->theme['strong']);
+
         return self::NL . ColorTag::add("**$text**", $this->theme['strong']) . self::NL;
     }
 

@@ -510,7 +510,7 @@ class TextParser
      */
     public static function charSplitParser(string $sep = ','): Closure
     {
-        $sep = self::replaceSep($sep);
+        $sep = self::resolveSep($sep);
 
         return static function (string $str, int $fieldNum) use ($sep) {
             return Str::toNoEmptyArray($str, $sep, $fieldNum);
@@ -522,7 +522,7 @@ class TextParser
      *
      * @return string
      */
-    public static function replaceSep(string $sep): string
+    public static function resolveSep(string $sep): string
     {
         return str_replace([self::NL_CHAR, self::SPACE_CHAR], ["\n", ' '], $sep);
     }
@@ -630,7 +630,7 @@ class TextParser
     public function setHeaderSep(string $headerSep): self
     {
         if ($headerSep) {
-            $this->headerSep = self::replaceSep($headerSep);
+            $this->headerSep = self::resolveSep($headerSep);
         }
 
         return $this;
@@ -644,7 +644,7 @@ class TextParser
     public function setItemSep(string $itemSep): self
     {
         if ($itemSep) {
-            $this->itemSep = self::replaceSep($itemSep);
+            $this->itemSep = self::resolveSep($itemSep);
         }
 
         return $this;
