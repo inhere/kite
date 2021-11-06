@@ -4,8 +4,12 @@ namespace Inhere\KiteTest\Lib\Parser;
 
 use Inhere\Kite\Lib\Parser\IniParser;
 use Inhere\KiteTest\BaseKiteTestCase;
+use function strtoupper;
 use function vdump;
 
+/**
+ * class IniParserTest
+ */
 class IniParserTest extends BaseKiteTestCase
 {
     public function testParseIni_full(): void
@@ -14,6 +18,18 @@ class IniParserTest extends BaseKiteTestCase
 ; comments line
 // comments line
 # comments line
+
+int = 23
+float = 34.5
+str=ab cd
+bool=true
+empty-str = 
+# support multi-line
+multi-line = '''
+this is
+  a multi
+ line string
+ '''
 
 # simple inline array
 inlineArr = [ab, 23, 34.5]
@@ -48,6 +64,13 @@ INI;
         vdump($data);
         $this->assertNotEmpty($data);
         $this->assertArrayHasKey('inlineArr', $data);
+        $this->assertEquals(23, $data['int']);
+        $this->assertEquals(34.5, $data['float']);
+        $this->assertEquals('', $data['empty-str']);
+        $this->assertEquals("this is
+  a multi
+ line string", $data['multi-line']);
+
         $this->assertEquals(['ab', 23, 34.5], $data['inlineArr']);
 
         $this->assertArrayHasKey('simpleList', $data);
@@ -66,9 +89,37 @@ INI;
 [] = "some value"
 ';
         $data = IniParser::parseString($ini);
-        vdump($data);
+        // vdump($data);
         $this->assertNotEmpty($data);
         $this->assertArrayHasKey('simpleList', $data);
         $this->assertEquals([567, 'some value'], $data['simpleList']);
+    }
+
+    public function testParseIni_setInterceptors(): void
+    {
+        $ini = '
+# comments
+someKey = value
+someKey2 = value2
+';
+        $p = IniParser::new($ini);
+        $data = $p->parse();
+        $this->assertNotEmpty($data);
+        $this->assertEquals('value', $data['someKey']);
+        $this->assertEquals('value2', $data['someKey2']);
+
+        // use interceptor
+        $p->setInterceptors(function ($val) {
+            if ($val === 'value') {
+                return strtoupper($val);
+            }
+            return $val;
+        });
+        $data = $p->parse();
+
+        // vdump($data);
+        $this->assertNotEmpty($data);
+        $this->assertEquals('VALUE', $data['someKey']);
+        $this->assertEquals('value2', $data['someKey2']);
     }
 }
