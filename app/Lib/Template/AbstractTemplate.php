@@ -2,6 +2,8 @@
 
 namespace Inhere\Kite\Lib\Template;
 
+use Inhere\Kite\Lib\Template\Contract\TemplateInterface;
+
 /**
  * Class AbstractTemplate
  *

@@ -24,9 +24,9 @@ use const PREG_SPLIT_NO_EMPTY;
  */
 class EasyTemplate extends TextTemplate
 {
-    public const PHP_TAG_OPEN = '<?php';
+    public const PHP_TAG_OPEN  = '<?php';
     public const PHP_TAG_ECHO  = '<?';
-    public const PHP_TAG_ECHO1  = '<?=';
+    public const PHP_TAG_ECHO1 = '<?=';
     public const PHP_TAG_CLOSE = '?>';
 
     /**
@@ -141,11 +141,12 @@ class EasyTemplate extends TextTemplate
         );
     }
 
-    public const T_ECHO = 'echo';
-    public const T_IF = 'if';
-    public const T_FOR = 'for';
+    public const T_ECHO    = 'echo';
+    public const T_IF      = 'if';
+    public const T_FOR     = 'for';
     public const T_FOREACH = 'foreach';
-    public const T_SWITCH = 'switch';
+    public const T_SWITCH  = 'switch';
+    public const T_DEFINE  = 'define';
 
     public const BLOCK_TOKENS = [
         'foreach',
@@ -178,16 +179,16 @@ class EasyTemplate extends TextTemplate
             return $block;
         }
 
-        $type = $trimmed[0];
-        $left = self::PHP_TAG_OPEN . ' ';
+        $left  = self::PHP_TAG_OPEN . ' ';
         $right = self::PHP_TAG_CLOSE;
 
-        $isInline = !str_contains($block, "\n");
+        $isInline = !str_contains($trimmed, "\n");
         // ~^(if|elseif|else|endif|for|endfor|foreach|endforeach)~
         $kwPattern = '~^(' . implode('|', self::BLOCK_TOKENS) . ')~';
 
-        // echo
-        if ($type === '=' ) {
+        // default is define statement.
+        $type = self::T_DEFINE;
+        if ($trimmed[0] === '=') {  // echo
             $type = self::T_ECHO;
             $left = self::PHP_TAG_ECHO;
         } elseif (preg_match($kwPattern, $trimmed, $matches)) { // other: if, for, foreach, define vars, etc
@@ -196,13 +197,13 @@ class EasyTemplate extends TextTemplate
             // auto add echo
             $type = self::T_ECHO;
             $left = self::PHP_TAG_ECHO1;
-         }
-vdump($type);
+        }
+        vdump($type);
         // else code is define block
 
         $pattern = '~(' . implode(')|(', [
-            '\$[\w.]+\w', // array key path.
-        ]) . ')~';
+                '\$[\w.]+\w', // array key path.
+            ]) . ')~';
 
         // https://www.php.net/manual/zh/reference.pcre.pattern.modifiers.php
         $block = preg_replace_callback($pattern, static function (array $matches) {

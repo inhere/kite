@@ -13,20 +13,7 @@ use function vdump;
  */
 class TextTemplateTest extends BaseKiteTestCase
 {
-    public function testRenderByEval():void
-    {
-        $t = new TextTemplate();
-
-        $tplCode = File::readAll(Kite::alias('@resource-tpl/gen-by-parse/gen-go-funcs.tpl'));
-        $tplVars = ['vars' => ['Info', 'Error', 'Warn']];
-        \vdump($tplCode);
-
-        $result = $t->renderByEval($tplCode, $tplVars);
-
-        vdump($result);
-    }
-
-    public function testRenderByRequire():void
+    public function testRenderFile():void
     {
         $t = new TextTemplate();
 

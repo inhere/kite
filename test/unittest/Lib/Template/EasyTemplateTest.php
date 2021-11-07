@@ -21,9 +21,9 @@ class EasyTemplateTest extends BaseKiteTestCase
 
         $tplFile = Kite::resolve('@testdata/use_echo_foreach.tpl');
         $tplVars = ['vars' => ['Info', 'Error', 'Warn']];
-        \vdump($tplFile);
 
         $result = $t->renderFile($tplFile, $tplVars);
+        $this->assertNotEmpty($result);
 
         vdump($result);
     }

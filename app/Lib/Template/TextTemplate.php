@@ -20,7 +20,7 @@ use const EXTR_OVERWRITE;
 use const PHP_EOL;
 
 /**
- * Class TextTemplateLogic
+ * Class TextTemplate
  *
  * @package Inhere\Kite\Model\Logic
  */
@@ -126,23 +126,6 @@ class TextTemplate extends AbstractTemplate
 
         $this->tmpPhpFile = $tmpFile;
         return $tmpFile;
-    }
-
-    /**
-     * TIP: must be all php codes
-     *
-     * @param string $tplCode
-     * @param array  $vars
-     *
-     * @return string
-     */
-    public function renderByEval(string $tplCode, array $vars): string
-    {
-        ob_start();
-        extract($vars, EXTR_OVERWRITE);
-        eval($tplCode . "\n");
-        // require \BASE_PATH . '/runtime/go-snippets-0709.tpl.php';
-        return ob_get_clean();
     }
 
     /**
