@@ -66,47 +66,6 @@ class EasyTemplateTest extends BaseKiteTestCase
         $this->assertStringNotContainsString('}}', $genCode);
     }
 
-    public function testToken_getBlockNamePattern():void
-    {
-        $tests = [
-            // if
-            ['if ', 'if'],
-            ['if(', 'if'],
-            // - error
-            ['if', ''],
-            ['if3', ''],
-            ['ifa', ''],
-            ['ifA', ''],
-            ['if_', ''],
-            ['if-', ''],
-            // foreach
-            ['foreach ', 'foreach'],
-            ['foreach(', 'foreach'],
-            // - error
-            ['foreach', ''],
-            ['foreachA', ''],
-            // special
-            ['break ', 'break'],
-            ['default ', Token::T_DEFAULT],
-            ['continue ', Token::T_CONTINUE],
-            // - error
-            ['break', ''],
-            ['default', ''],
-            ['continue', ''],
-        ];
-
-        $pattern = Token::getBlockNamePattern();
-        foreach ($tests as [$in, $out]) {
-            $ret = preg_match($pattern, $in, $matches);
-            if ($out) {
-                $this->assertEquals(1, $ret);
-                $this->assertEquals($out, $matches[1]);
-            } else {
-                $this->assertEquals(0, $ret);
-            }
-        }
-    }
-
     public function testCompileCode_check():void
     {
         $t2 = new EasyTemplate();
@@ -130,66 +89,6 @@ class EasyTemplateTest extends BaseKiteTestCase
             'key1' => 'map-val1',
         ],
     ];
-
-    public function testCompileCode_inline_echo():void
-    {
-        $t2 = new EasyTemplate();
-
-        $simpleTests = [
-            ['{{ "a" . "b" }}', '<?= "a" . "b" ?>'],
-            ['{{ $name }}', '<?= $name ?>'],
-            ['{{ $name ?: "inhere" }}', '<?= $name ?: "inhere" ?>'],
-            ['{{ $name ?? "inhere" }}', '<?= $name ?? "inhere" ?>'],
-        ];
-        foreach ($simpleTests as [$in, $out]) {
-            $this->assertEquals($out, $t2->compileCode($in));
-        }
-
-        $tplCode = <<<'TPL'
-
-{{= $ctx.pkgName ?? "org.example.entity" }}
-
-TPL;
-        $compiled = $t2->compileCode($tplCode);
-        // vdump($tplCode, $compiled);
-        $this->assertNotEmpty($compiled);
-        $this->assertEquals(<<<'CODE'
-
-<?= $ctx['pkgName'] ?? "org.example.entity" ?>
-
-CODE
-,$compiled);
-
-        $tplCode = <<<'TPL'
-{{= $ctx->pkgName ?? "org.example.entity" }}
-TPL;
-        $compiled = $t2->compileCode($tplCode);
-        // vdump($tplCode, $compiled);
-        $this->assertNotEmpty($compiled);
-        $this->assertEquals(<<<'CODE'
-<?= $ctx->pkgName ?? "org.example.entity" ?>
-CODE
-,$compiled);
-
-    }
-
-    public function testCompileCode_ml_block():void
-    {
-        $t2 = new EasyTemplate();
-
-        $code = <<<'CODE'
-{{
-
-$a = random_int(1, 10);
-}}
-CODE;
-        $compiled = $t2->compileCode($code);
-        $this->assertEquals(<<<'CODE'
-<?php $a = random_int(1, 10);
-?>
-CODE
-            ,$compiled);
-    }
 
     public function testV2Render_vars():void
     {

@@ -11,6 +11,11 @@ use Inhere\Kite\Lib\Template\Contract\CompilerInterface;
  */
 abstract class AbstractCompiler implements CompilerInterface
 {
+    public const PHP_TAG_OPEN  = '<?php';
+    public const PHP_TAG_ECHO  = '<?';
+    public const PHP_TAG_ECHO1 = '<?=';
+    public const PHP_TAG_CLOSE = '?>';
+
     public string $openTag = '{{';
     public string $closeTag = '}}';
 
