@@ -2,6 +2,9 @@
 
 namespace Inhere\Kite\Lib\Template;
 
+use Inhere\Kite\Lib\Template\Compiler\PregCompiler;
+use Inhere\Kite\Lib\Template\Compiler\Token;
+use Inhere\Kite\Lib\Template\Contract\CompilerInterface;
 use Inhere\Kite\Lib\Template\Contract\EasyTemplateInterface;
 use InvalidArgumentException;
 use Toolkit\FsUtil\File;
@@ -9,14 +12,15 @@ use function addslashes;
 use function explode;
 use function file_exists;
 use function implode;
+use function in_array;
 use function is_numeric;
 use function preg_match;
 use function preg_replace_callback;
-use function preg_split;
 use function str_contains;
+use function str_starts_with;
+use function strlen;
 use function trim;
 use function vdump;
-use const PREG_SPLIT_NO_EMPTY;
 
 /**
  * Class EasyTemplate
@@ -35,12 +39,26 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
      */
     protected array $allowExt = ['.php', '.tpl'];
 
+    /**
+     * @var CompilerInterface
+     */
+    private CompilerInterface $compiler;
+
     public string $openTag = '{{';
     public string $closeTag = '}}';
 
     // add slashes tag name
     private string $openTagE = '\{\{';
     private string $closeTagE = '\}\}';
+
+    /**
+     * custom directive, control statement token.
+     *
+     * eg: implement include()
+     *
+     * @var array
+     */
+    public array $customTokens = [];
 
     /**
      * @param string $open
@@ -118,6 +136,9 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
             return $code;
         }
 
+        // $compiler = $this->getCompiler();
+        // $compiler->compile($code);
+
         $openTagE  = $this->openTagE;
         $closeTagE = $this->closeTagE;
 
@@ -139,24 +160,6 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
         );
     }
 
-    public const T_ECHO    = 'echo';
-    public const T_IF      = 'if';
-    public const T_FOR     = 'for';
-    public const T_FOREACH = 'foreach';
-    public const T_SWITCH  = 'switch';
-    public const T_DEFINE  = 'define';
-
-    public const BLOCK_TOKENS = [
-        'foreach',
-        'endforeach',
-        'for',
-        'endfor',
-        'if',
-        'elseif',
-        'else',
-        'endif',
-    ];
-
     /**
      * parse code block string.
      *
@@ -177,34 +180,55 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
             return $block;
         }
 
-        $left  = self::PHP_TAG_OPEN . ' ';
-        $right = self::PHP_TAG_CLOSE;
-
         $isInline = !str_contains($trimmed, "\n");
         // ~^(if|elseif|else|endif|for|endfor|foreach|endforeach)~
-        $kwPattern = '~^(' . implode('|', self::BLOCK_TOKENS) . ')~';
+        $kwPattern = Token::getBlockNamePattern();
 
         // default is define statement.
-        $type = self::T_DEFINE;
-        if ($trimmed[0] === '=') {  // echo
-            $type = self::T_ECHO;
-            $left = self::PHP_TAG_ECHO;
-        } elseif (preg_match($kwPattern, $trimmed, $matches)) { // other: if, for, foreach, define vars, etc
-            $type = $matches[1];
-        } elseif ($isInline && !str_contains($block, '=')) {
-            // auto add echo
-            $type = self::T_ECHO;
-            $left = self::PHP_TAG_ECHO1;
-        }
-        vdump($type);
-        // else code is define block
+        $type = Token::T_DEFINE;
+        $open = self::PHP_TAG_OPEN . "\n";
+        $close = ($isInline ? ' ' : "\n" ) . self::PHP_TAG_CLOSE;
 
+        // echo statement
+        if ($trimmed[0] === '=') {
+            $type = Token::T_ECHO;
+            $open = self::PHP_TAG_ECHO;
+        } elseif (str_starts_with($trimmed, 'echo')) { // echo statement
+            $type = Token::T_ECHO;
+            $open = self::PHP_TAG_OPEN . ' ';
+        } elseif ($isInline && ($tryType = Token::tryAloneToken($trimmed))) {
+            // special alone token: break, default, continue
+            $type = $tryType;
+            $open = self::PHP_TAG_OPEN . ' ';
+            // auto append end char ':'
+            $close = ': ' . self::PHP_TAG_CLOSE;
+        } elseif (preg_match($kwPattern, $trimmed, $matches)) {
+            // control block: if, for, foreach, define vars, etc
+            $type = $matches[1];
+            $open = self::PHP_TAG_OPEN . ' ';
+
+            // auto fix pad some chars.
+            if (Token::canAutoFixed($type)) {
+                $endChar = $trimmed[strlen($trimmed)-1];
+
+                if ($endChar !== '}' && $endChar !== ':') {
+                    $close = ': ' . self::PHP_TAG_CLOSE;
+                }
+            }
+        } elseif ($isInline && !str_contains($block, '=')) {
+            // inline and not define expr, as echo expr.
+            $type = Token::T_ECHO;
+            $open = self::PHP_TAG_ECHO1;
+        }
+
+        // handle
+        // - convert $ctx.top.sub to $ctx[top][sub]
         $pattern = '~(' . implode(')|(', [
                 '\$[\w.]+\w', // array key path.
             ]) . ')~';
 
         // https://www.php.net/manual/zh/reference.pcre.pattern.modifiers.php
-        $block = preg_replace_callback($pattern, static function (array $matches) {
+        $trimmed = preg_replace_callback($pattern, static function (array $matches) {
             $varName = $matches[0];
             // convert $ctx.top.sub to $ctx[top][sub]
             if (str_contains($varName, '.')) {
@@ -221,78 +245,32 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
             }
 
             return $varName;
-        }, $block);
+        }, $trimmed);
 
-        return $left . $block . $right;
-    }
-
-
-    /**
-     * inside the if/elseif/else/for/foreach
-     *
-     * @var bool
-     */
-    private bool $insideIfFor = false;
-
-    /**
-     * inside the php tag
-     *
-     * @var bool
-     */
-    private bool $insideTag = false;
-
-    /**
-     * compile contents
-     *
-     * @param string $code
-     *
-     * @return string
-     */
-    public function compileCodeV2(string $code): string
-    {
-        // Not contains open tag
-        if (!str_contains($code, $this->openTag)) {
-            return $code;
-        }
-
-        $compiled = [];
-        foreach (explode("\n", $code) as $line) {
-            // empty line
-            if (!$line || !trim($line)) {
-                $compiled[] = $line;
-                continue;
-            }
-
-            if (
-                !$this->insideTag
-                && (!str_contains($line, $this->openTag) || !str_contains($line, $this->closeTag))
-            ) {
-                $compiled[] = $line;
-                continue;
-            }
-
-            // parse line
-            $compiled[] = $this->analyzeLineChars($line);
-        }
-
-        return implode("\n", $compiled);
+        return $open . $trimmed . $close;
     }
 
     /**
-     * @param string $line
+     * @param CompilerInterface $compiler
      *
-     * @return string
+     * @return EasyTemplate
      */
-    public function analyzeLineChars(string $line): string
+    public function setCompiler(CompilerInterface $compiler): self
     {
-        $chars = preg_split('//u', $line, -1, PREG_SPLIT_NO_EMPTY);
+        $this->compiler = $compiler;
+        return $this;
+    }
 
-        $prev = $next = 0;
-        foreach ($chars as $i => $char) {
-
+    /**
+     * @return CompilerInterface
+     */
+    public function getCompiler(): CompilerInterface
+    {
+        if (!$this->compiler) {
+            $this->compiler = new PregCompiler();
         }
 
-        return '';
+        return $this->compiler;
     }
 
 }

@@ -10,4 +10,20 @@ namespace Inhere\Kite\Lib\Template\Contract;
 interface CompilerInterface
 {
 
+    /**
+     * @param string $open
+     * @param string $close
+     *
+     * @return $this
+     */
+    public function setOpenCloseTag(string $open, string $close): self;
+
+    /**
+     * compile template contents to raw PHP template codes
+     *
+     * @param string $tplCode
+     *
+     * @return string
+     */
+    public function compile(string $tplCode): string;
 }

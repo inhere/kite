@@ -1,34 +1,44 @@
 <?php
 /**
- * usage:
- *   kite IdeaHttpFile2phpCode --file test/httptest/api-test.http --tpl full-demo.tpl.php
+ * comments
  *
- * @var $ctx Toolkit\Stdlib\Obj\DataObject
- * @var $req Inhere\Kite\Common\IdeaHttp\Request
- * @var $url Inhere\Kite\Common\IdeaHttp\UrlInfo
- * @var $body Inhere\Kite\Common\IdeaHttp\BodyData
+ * @var array $arr
+ * @var object $obj
  */
 ?>
-    /**
-     * <?= $req->getTitle(true) ?>
-     *
-     * @throws Throwable
-     * @api <?= $req->getUrlInfo()->getPath(true) ?>
-     */
-    public function action<?= $req->getUrlInfo()->getShortName(true)?>(): void
-    {
-        $post = Yii::$app->request->post();
 
-<?php foreach ($body->getArrayCopy() as $key => $val) : ?>
-        $<?= $key?> = Validate::validate<?php
-    $typ = $body->getValType($val); echo ucfirst($typ === 'array' ? 'arrayValue' : $typ)
-?>($post, '<?= $key?>');
+echo vars:
+
+<?= $arr['name'] ?>
+<?php echo $arr['name'] ?>
+
+foreach example:
+
+<?php foreach ($arr as $key => $val) : ?>
+        KEY:<?= $key?> => VALUE:<?php
+    $typ = gettype($val);
+    echo ucfirst($typ === 'array' ? 'arrayValue' : $typ)
+?>
+
+in foreach
 <?php endforeach ?>
 
 <?php
-
+// define var
 $a = random_int(1, 10);
 ?>
+
+if example1:
+
+<?php if ($a < 2): ?>
+  at if
+<?php endif ?>
+
+if example2:
+
+<?php if ($a < 2) { echo "at if\n"; }?>
+
+if-elseif-else example1:
 
 <?php if ($a < 3): ?>
   at if
@@ -38,8 +48,25 @@ $a = random_int(1, 10);
   at else
 <?php endif ?>
 
-        $logic = new <?= ucfirst($ctx->getString('resName'))?>Logic();
+if-elseif-else example2:
 
-        $result = $logic-><?= $url->getShortName()?>($id, $params);
-        ResponseHelper::outputJson($result);
-    }
+<?php if ($a < 3) {
+  echo "at if\n";
+} elseif ($a > 5) {
+  echo "at elseif\n";
+} else {
+    echo "at else\n";
+}
+?>
+
+switch example:
+
+<?php switch ($a): ?>
+<?php case 3:
+        break;
+  ?>
+
+<?php case 5: ?>
+    <?php break ?>
+<?php endswitch; ?>
+

@@ -3,10 +3,12 @@
 namespace Inhere\KiteTest\Lib\Template;
 
 use Inhere\Kite\Kite;
+use Inhere\Kite\Lib\Template\Compiler\Token;
 use Inhere\Kite\Lib\Template\EasyTemplate;
 use Inhere\KiteTest\BaseKiteTestCase;
 use PhpToken;
 use Toolkit\FsUtil\File;
+use function preg_match;
 use function random_int;
 use function vdump;
 
@@ -44,6 +46,65 @@ class EasyTemplateTest extends BaseKiteTestCase
         $this->assertStringNotContainsString('{{', $genCode);
         $this->assertStringNotContainsString('}}', $genCode);
         // vdump($genCode);
+    }
+
+    public function testCompileFile_use_all_token():void
+    {
+        $t = new EasyTemplate();
+
+        $tplFile = Kite::resolve('@testdata/use_all_token.tpl');
+        $phpFile = $t->compileFile($tplFile);
+
+        $this->assertNotEmpty($phpFile);
+
+        $genCode = File::readAll($phpFile);
+        vdump($genCode);
+
+        $this->assertStringContainsString('<?php', $genCode);
+        $this->assertStringContainsString('<?=', $genCode);
+        $this->assertStringNotContainsString('{{', $genCode);
+        $this->assertStringNotContainsString('}}', $genCode);
+    }
+
+    public function testToken_getBlockNamePattern():void
+    {
+        $tests = [
+            // if
+            ['if ', 'if'],
+            ['if(', 'if'],
+            // - error
+            ['if', ''],
+            ['if3', ''],
+            ['ifa', ''],
+            ['ifA', ''],
+            ['if_', ''],
+            ['if-', ''],
+            // foreach
+            ['foreach ', 'foreach'],
+            ['foreach(', 'foreach'],
+            // - error
+            ['foreach', ''],
+            ['foreachA', ''],
+            // special
+            ['break ', 'break'],
+            ['default ', Token::T_DEFAULT],
+            ['continue ', Token::T_CONTINUE],
+            // - error
+            ['break', ''],
+            ['default', ''],
+            ['continue', ''],
+        ];
+
+        $pattern = Token::getBlockNamePattern();
+        foreach ($tests as [$in, $out]) {
+            $ret = preg_match($pattern, $in, $matches);
+            if ($out) {
+                $this->assertEquals(1, $ret);
+                $this->assertEquals($out, $matches[1]);
+            } else {
+                $this->assertEquals(0, $ret);
+            }
+        }
     }
 
     public function testCompileCode_check():void
