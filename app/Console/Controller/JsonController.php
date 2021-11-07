@@ -311,20 +311,19 @@ class JsonController extends Controller
             'tplDir'  => $tplDir,
             'tplFile' => $tplFile,
         ]));
-vdump($config);
+// vdump($config);
         // @user-custom/template/java-service-tpl/req-resp-dto.tpl
         $gen = JsonToCode::create($type)
             ->setSource($json)
-            ->configObj($config)
-            ->setPathResolver([Kite::class, 'alias'])
+            ->configThis($config)
+            ->setPathResolver([Kite::class, 'resolve'])
             ->prepare();
 
         $output->aList($gen->getFields(), 'field list');
 
-        $contents = $gen->generate();
-
+        $result = $gen->generate();
         $output->colored('------------------ Generated Codes -------------------');
-        $output->writeRaw($contents);
+        $output->writeRaw($result);
     }
 
     /**

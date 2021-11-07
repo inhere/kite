@@ -2,6 +2,8 @@
 
 namespace Inhere\Kite\Helper;
 
+use Inhere\Kite\Kite;
+use Inhere\Kite\Lib\Template\EasyTemplate;
 use Leuffen\TextTemplate\TextTemplate;
 use Toolkit\FsUtil\FS;
 use Toolkit\Stdlib\OS;
@@ -91,45 +93,15 @@ class KiteUtil
     }
 
     /**
-     * @param string $text
-     *
-     * @return TextTemplate
+     * @return EasyTemplate
      */
-    public static function newTplEngine(string $text): TextTemplate
+    public static function newTplEngine(): EasyTemplate
     {
-        $tplEng = new TextTemplate($text);
-        // default value on empty. usage: {= ctx.user | default:inhere}
-        $tplEng->addFilter('default', function ($value, $default) {
-            if ($value === '') {
-                return $default;
-            }
-            return empty($value) ? $default : $value;
-        });
+        // $tplEng = new TextTemplate($text);
+        $tplEng = new EasyTemplate();
 
-        // upper first char. usage: {= ctx.user | upFirst}
-        $tplEng->addFilter('upFirst', function ($value) {
-            if ($value === '') {
-                return '';
-            }
-            return Str::upFirst($value);
-        });
-
-        // snake to camel. usage: {= ctx.user | toCamel}
-        $tplEng->addFilter('toCamel', function ($value) {
-            if ($value === '') {
-                return '';
-            }
-            return Str::toCamel($value);
-        });
-
-        // camel to snake. usage: {= ctx.user | toSnake}
-        $tplEng->addFilter('toSnake', function ($value) {
-            if ($value === '') {
-                return '';
-            }
-            return Str::toSnake($value);
-        });
-
+        $tplEng->tmpDir = Kite::getTmpPath('tplCache');
+        // some config
         return $tplEng;
     }
 

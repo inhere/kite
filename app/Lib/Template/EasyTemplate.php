@@ -96,6 +96,19 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
     }
 
     /**
+     * @param string $name
+     * @param callable $handler
+     *
+     * @return $this
+     */
+    public function addFilter(string $name, callable $handler): self
+    {
+        //
+        // $this->compiler->addFilter();
+        return $this;
+    }
+
+    /**
      * @param string $open
      * @param string $close
      *

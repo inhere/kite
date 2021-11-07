@@ -4,6 +4,7 @@ namespace Inhere\Kite\Lib\Template;
 
 use InvalidArgumentException;
 use RuntimeException;
+use Throwable;
 use Toolkit\FsUtil\Dir;
 use Toolkit\Stdlib\Obj;
 use Toolkit\Sys\Sys;
@@ -12,7 +13,9 @@ use function date;
 use function extract;
 use function file_exists;
 use function file_put_contents;
+use function hash;
 use function md5;
+use function ob_clean;
 use function ob_get_clean;
 use function ob_start;
 use function sprintf;
@@ -98,9 +101,14 @@ class TextTemplate extends AbstractTemplate
 
         ob_start();
         extract($tplVars, EXTR_OVERWRITE);
-        // require \BASE_PATH . '/runtime/go-snippets-0709.tpl.php';
-        require $tplFile;
-        return ob_get_clean();
+        try {
+            // require \BASE_PATH . '/runtime/go-snippets-0709.tpl.php';
+            require $tplFile;
+            return ob_get_clean();
+        } catch (Throwable $e) {
+            ob_clean();
+            throw $e;
+        }
     }
 
     /**
@@ -113,7 +121,7 @@ class TextTemplate extends AbstractTemplate
     protected function genTempPhpFile(string $tplCode): string
     {
         $tmpDir  = $this->tmpDir ?: Sys::getTempDir() . '/php-tpl-gen';
-        $tmpFile = sprintf('%s/%s-%s.php', $tmpDir, date('ymd'), md5($tplCode));
+        $tmpFile = sprintf('%s/%s-%s.php', $tmpDir, date('ymd_his'), md5($tplCode));
 
         if (!file_exists($tmpFile)) {
             Dir::create($tmpDir);

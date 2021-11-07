@@ -26,6 +26,7 @@ use function str_replace;
 use function strpos;
 use function substr;
 use function trim;
+use function vdump;
 
 /**
  * class AbstractJsonToCode
@@ -78,7 +79,6 @@ abstract class AbstractJsonToCode
 
     /**
      * @return string
-     * @throws Throwable
      */
     public function generate(): string
     {
@@ -142,55 +142,22 @@ abstract class AbstractJsonToCode
 
     /**
      * @return string
-     * @throws Throwable
      */
     protected function renderTplText(): string
     {
         $tplText = $this->readSourceFromFile();
-        $tplEng  = KiteUtil::newTplEngine($tplText);
-
-        $tplEng->addFunction(
-            'needToSnake',
-            function ($paramArr) {
-                $name = $paramArr['name'];
-                if (str_contains($name, '_')) {
-                    return true;
-                }
-
-                if (preg_match('/[A-Z]/', $name)) {
-                    return true;
-                }
-
-                return false;
-            });
-
-        // {toJavaType type=field.type name=field.name}
-        $tplEng->addFunction(
-            'toJavaType',
-            function ($paramArr, $command, $context, $cmdParam, $self) {
-                $type = $paramArr['type'];
-                $name = $paramArr['name'];
-                if ($type === Type::ARRAY) {
-                    return JavaType::OBJECT;
-                }
-
-                if (str_ends_with($name, 'id') || str_ends_with($name, 'Id')) {
-                    return JavaType::LONG;
-                }
-
-                return Str::upFirst($type);
-            });
+        $tplEng  = KiteUtil::newTplEngine();
 
         $settings = array_merge([
             'user' => OS::getUserName(),
         ], $this->contexts);
-
+vdump($settings);
         $tplVars = [
             'ctx'    => $settings,
             'fields' => $this->fields,
         ];
 
-        return $tplEng->apply($tplVars, false);
+        return $tplEng->renderString($tplText, $tplVars);
     }
 
     /**
@@ -212,7 +179,7 @@ abstract class AbstractJsonToCode
      *
      * @return self
      */
-    public function configObj(array $config): self
+    public function configThis(array $config): self
     {
         Obj::init($this, $config);
 

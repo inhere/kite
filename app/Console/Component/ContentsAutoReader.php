@@ -87,7 +87,7 @@ class ContentsAutoReader extends AbstractObj
                 $print && Cli::info('try read contents from file: ' . $lFile);
                 $str = File::readAll($lFile);
             } else {
-                $filepath = Kite::alias($source);
+                $filepath = Kite::resolve($source);
                 if ($filepath[0] === '@') {
                     $filepath = substr($filepath, 1);
                 }

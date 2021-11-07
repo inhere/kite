@@ -73,7 +73,7 @@ class ContentsAutoWriter
                 Kite::cliApp()->getOutput()->info('write results to file: ' . $this->output);
             }
 
-            $filepath = Kite::alias($this->output);
+            $filepath = Kite::resolve($this->output);
 
             // write
             File::mkdirSave($contents, $filepath);
