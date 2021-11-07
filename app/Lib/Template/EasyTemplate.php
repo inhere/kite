@@ -36,6 +36,12 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
         parent::__construct($config);
 
         $this->compiler = new PregCompiler();
+        $this->compiler->addDirective(
+            'include',
+            function (string $body, string $name) {
+                return 'echo $this->' . $name . $body;
+            }
+        );
     }
 
     /**
@@ -58,6 +64,19 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
      * @return string
      */
     public function renderFile(string $tplFile, array $tplVars): string
+    {
+        $phpFile = $this->compileFile($tplFile);
+
+        return $this->doRenderFile($phpFile, $tplVars);
+    }
+
+    /**
+     * @param string $tplFile
+     * @param array $tplVars
+     *
+     * @return string
+     */
+    protected function include(string $tplFile, array $tplVars): string
     {
         $phpFile = $this->compileFile($tplFile);
 
@@ -97,14 +116,25 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
 
     /**
      * @param string $name
+     * @param callable $filter
+     *
+     * @return $this
+     */
+    public function addFilter(string $name, callable $filter): self
+    {
+        $this->compiler->addFilter($name, $filter);
+        return $this;
+    }
+
+    /**
+     * @param string $name
      * @param callable $handler
      *
      * @return $this
      */
-    public function addFilter(string $name, callable $handler): self
+    public function addDirective(string $name, callable $handler): self
     {
-        //
-        // $this->compiler->addFilter();
+        $this->compiler->addDirective($name, $handler);
         return $this;
     }
 

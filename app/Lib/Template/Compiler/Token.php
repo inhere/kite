@@ -81,7 +81,21 @@ class Token
     public static function getBlockNamePattern(): string
     {
         // ~^(if|elseif|else|endif|for|endfor|foreach|endforeach)~
-        return '~^(' . implode('|', self::BLOCK_NAMES) . ')[^\w-]~';
+        return self::buildDirectivePattern(self::BLOCK_NAMES);
+    }
+
+    /**
+     * @param string[] $names
+     *
+     * @return string
+     */
+    public static function buildDirectivePattern(array $names): string
+    {
+        if (!$names) {
+            return '';
+        }
+
+        return '~^(' . implode('|', $names) . ')[^\w-]~';
     }
 
     /**

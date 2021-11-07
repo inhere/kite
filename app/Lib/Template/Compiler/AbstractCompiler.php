@@ -20,13 +20,20 @@ abstract class AbstractCompiler implements CompilerInterface
     public string $closeTag = '}}';
 
     /**
+     * custom filter for handle result.
+     *
+     * @var array{string, callable(mixed): string}
+     */
+    public array $customFilters = [];
+
+    /**
      * custom directive, control statement token.
      *
      * eg: implement include()
      *
-     * @var array
+     * @var array{string, callable(string, string): string}
      */
-    public array $customTokens = [];
+    public array $customDirectives = [];
 
     /**
      * @param string $open
@@ -42,4 +49,27 @@ abstract class AbstractCompiler implements CompilerInterface
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @param callable $filter
+     *
+     * @return $this
+     */
+    public function addFilter(string $name, callable $filter): self
+    {
+        $this->customFilters[$name] = $filter;
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param callable $handler
+     *
+     * @return $this
+     */
+    public function addDirective(string $name, callable $handler): self
+    {
+        $this->customDirectives[$name] = $handler;
+        return $this;
+    }
 }

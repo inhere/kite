@@ -75,6 +75,8 @@ class PregCompilerTest extends BaseKiteTestCase
             ['{{ $name }}', '<?= $name ?>'],
             ['{{ $name ?: "inhere" }}', '<?= $name ?: "inhere" ?>'],
             ['{{ $name ?? "inhere" }}', '<?= $name ?? "inhere" ?>'],
+            ['{{ some_func() }}', '<?= some_func() ?>'],
+            ['{{ $this->include("header.tpl") }}', '<?= $this->include("header.tpl") ?>'],
         ];
         foreach ($simpleTests as [$in, $out]) {
             $this->assertEquals($out, $p->compile($in));
@@ -105,6 +107,29 @@ TPL;
 <?= $ctx->pkgName ?? "org.example.entity" ?>
 CODE
             ,$compiled);
+    }
+
+    public function testCompile_customDirective():void
+    {
+        $p = new PregCompiler();
+        $p->addDirective('include', function (string $body, string $name) {
+            return 'echo $this->' . $name . $body;
+        });
+
+        $tests = [
+            ['{{ include("header.tpl") }}', '<?php echo $this->include("header.tpl") ?>'],
+            ['{{ include("header.tpl", [
+   "key1" => "value1",
+]) }}', '<?php
+echo $this->include("header.tpl", [
+   "key1" => "value1",
+])
+?>'],
+        ];
+        foreach ($tests as [$in, $out]) {
+            $this->assertEquals($out, $p->compile($in));
+        }
+
     }
 
     public function testCompile_if_block():void

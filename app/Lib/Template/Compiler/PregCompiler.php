@@ -3,12 +3,14 @@
 namespace Inhere\Kite\Lib\Template\Compiler;
 
 use function addslashes;
+use function array_keys;
 use function explode;
 use function implode;
 use function is_numeric;
 use function preg_match;
 use function preg_replace_callback;
 use function strlen;
+use function substr;
 use function trim;
 
 /**
@@ -57,8 +59,6 @@ class PregCompiler extends AbstractCompiler
         if (!str_contains($tplCode, $this->openTag)) {
             return $tplCode;
         }
-
-        $this->prevTokenType = '';
 
         $openTagE  = $this->openTagE;
         $closeTagE = $this->closeTagE;
@@ -109,9 +109,12 @@ class PregCompiler extends AbstractCompiler
         $isInline = !str_contains($trimmed, "\n");
         $kwPattern = Token::getBlockNamePattern();
 
+        $directive = '';
+        $userPattern = Token::buildDirectivePattern(array_keys($this->customDirectives));
+
         // default is define statement.
         $type  = Token::T_DEFINE;
-        $open  = self::PHP_TAG_OPEN . "\n";
+        $open  = self::PHP_TAG_OPEN . ($isInline ? ' ' : "\n");
         $close = ($isInline ? ' ' : "\n") . self::PHP_TAG_CLOSE;
 
         if ($trimmed[0] === '=') {
@@ -143,6 +146,11 @@ class PregCompiler extends AbstractCompiler
                     $close = ': ' . self::PHP_TAG_CLOSE;
                 }
             }
+        } elseif ($userPattern && preg_match($userPattern, $trimmed, $matches)) {
+            $directive = $type = $matches[1];
+            $handlerFn = $this->customDirectives[$directive];
+
+            $trimmed = $handlerFn(substr($trimmed, strlen($directive)), $directive);
         } elseif ($isInline && !str_contains($trimmed, '=')) {
             // inline and not define expr, as echo expr.
             $type = Token::T_ECHO;
@@ -150,7 +158,7 @@ class PregCompiler extends AbstractCompiler
         }
 
         // not need continue handle
-        if (Token::isAloneToken($type)) {
+        if ($directive || Token::isAloneToken($type)) {
             return $open . $trimmed . $close;
         }
 

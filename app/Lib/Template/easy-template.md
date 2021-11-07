@@ -1,4 +1,4 @@
-# Text2Template
+# EasyTemplate
 
 ## Using the filters
 
