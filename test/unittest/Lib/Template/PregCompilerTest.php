@@ -117,6 +117,10 @@ CODE
                 '<?php if ($a < 4): ?> hi <?php endif ?>',
             ],
             [
+                '{{if ($a < 4) { }} hi {{ } }}',
+                '<?php if ($a < 4) { ?> hi <?php } ?>',
+            ],
+            [
                 '{{if ($a < 4) }}
 hi
 {{endif}}',

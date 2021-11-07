@@ -40,7 +40,7 @@ class PregCompiler extends AbstractCompiler
     {
         parent::setOpenCloseTag($open, $close);
 
-        $this->openTagE = addslashes($open);
+        $this->openTagE  = addslashes($open);
         $this->closeTagE = addslashes($close);
 
         return $this;
@@ -58,8 +58,7 @@ class PregCompiler extends AbstractCompiler
             return $tplCode;
         }
 
-        // $compiler = $this->getCompiler();
-        // $compiler->compile($code);
+        $this->prevTokenType = '';
 
         $openTagE  = $this->openTagE;
         $closeTagE = $this->closeTagE;
@@ -102,20 +101,23 @@ class PregCompiler extends AbstractCompiler
             return $block;
         }
 
+        // special '}' -  if, for, foreach end char
+        if ($trimmed === '}') {
+            return self::PHP_TAG_OPEN . ' } ' . self::PHP_TAG_CLOSE;
+        }
+
         $isInline = !str_contains($trimmed, "\n");
-        // ~^(if|elseif|else|endif|for|endfor|foreach|endforeach)~
         $kwPattern = Token::getBlockNamePattern();
 
         // default is define statement.
-        $type = Token::T_DEFINE;
-        $open = self::PHP_TAG_OPEN . "\n";
-        $close = ($isInline ? ' ' : "\n" ) . self::PHP_TAG_CLOSE;
+        $type  = Token::T_DEFINE;
+        $open  = self::PHP_TAG_OPEN . "\n";
+        $close = ($isInline ? ' ' : "\n") . self::PHP_TAG_CLOSE;
 
-        // echo statement
         if ($trimmed[0] === '=') {
             $type = Token::T_ECHO;
             $open = self::PHP_TAG_ECHO;
-        } elseif (str_starts_with($trimmed, 'echo')) { // echo statement
+        } elseif (str_starts_with($trimmed, 'echo ')) { // echo statement
             $type = Token::T_ECHO;
             $open = self::PHP_TAG_OPEN . ' ';
         } elseif ($isInline && ($tryType = Token::tryAloneToken($trimmed))) {
@@ -134,10 +136,10 @@ class PregCompiler extends AbstractCompiler
 
             // auto fix pad some chars.
             if (Token::canAutoFixed($type)) {
-                $endChar = $trimmed[strlen($trimmed)-1];
+                $endChar = $trimmed[strlen($trimmed) - 1];
 
                 // not in raw php code AND end char != :
-                if ($endChar !== '}' && $endChar !== ':') {
+                if ($endChar !== '}' && $endChar !== '{' && $endChar !== ':') {
                     $close = ': ' . self::PHP_TAG_CLOSE;
                 }
             }

@@ -38,6 +38,12 @@ if example2:
 
 <?php if ($a < 2) { echo "at if\n"; }?>
 
+if example3:
+
+<?php if ($a < 2){ ?>
+  at if
+<?php } ?>
+
 if-elseif-else example1:
 
 <?php if ($a < 3): ?>

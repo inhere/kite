@@ -13,7 +13,6 @@ use function date;
 use function extract;
 use function file_exists;
 use function file_put_contents;
-use function hash;
 use function md5;
 use function ob_clean;
 use function ob_get_clean;
@@ -107,7 +106,7 @@ class TextTemplate extends AbstractTemplate
             return ob_get_clean();
         } catch (Throwable $e) {
             ob_clean();
-            throw $e;
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
