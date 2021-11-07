@@ -2,6 +2,7 @@
 
 namespace Inhere\Kite\Lib\Template;
 
+use Inhere\Kite\Lib\Template\Contract\EasyTemplateInterface;
 use InvalidArgumentException;
 use Toolkit\FsUtil\File;
 use function addslashes;
@@ -20,9 +21,9 @@ use const PREG_SPLIT_NO_EMPTY;
 /**
  * Class EasyTemplate
  *
- * @package Inhere\Kite\Model\Logic
+ * @author inhere
  */
-class EasyTemplate extends TextTemplate
+class EasyTemplate extends TextTemplate implements EasyTemplateInterface
 {
     public const PHP_TAG_OPEN  = '<?php';
     public const PHP_TAG_ECHO  = '<?';
@@ -119,9 +120,7 @@ class EasyTemplate extends TextTemplate
 
         $openTagE  = $this->openTagE;
         $closeTagE = $this->closeTagE;
-        // $pattern = "/$openTagE\s*(.+)$closeTagE/";
 
-        $limit = -1;
         $flags = 0;
         // $flags = PREG_OFFSET_CAPTURE;
         // $flags = PREG_PATTERN_ORDER | PREG_SET_ORDER;
@@ -131,11 +130,10 @@ class EasyTemplate extends TextTemplate
         return preg_replace_callback(
             "~$openTagE\s*(.+?)$closeTagE~s", // Amixu, iu, s
             function (array $matches) {
-                // vdump($matches);
                 return $this->parseCodeBlock($matches[1]);
             },
             $code,
-            $limit,
+            -1,
             $count,
             $flags
         );

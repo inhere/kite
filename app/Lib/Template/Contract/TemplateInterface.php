@@ -5,6 +5,7 @@ namespace Inhere\Kite\Lib\Template\Contract;
 /**
  * Interface TemplateInterface
  *
+ * @author inhere
  * @package Inhere\Kite\Lib\Template\Contract
  */
 interface TemplateInterface

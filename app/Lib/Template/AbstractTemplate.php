@@ -7,6 +7,7 @@ use Inhere\Kite\Lib\Template\Contract\TemplateInterface;
 /**
  * Class AbstractTemplate
  *
+ * @author inhere
  * @package Inhere\Kite\Lib\Template
  */
 abstract class AbstractTemplate implements TemplateInterface

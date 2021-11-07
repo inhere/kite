@@ -22,6 +22,7 @@ use const PHP_EOL;
 /**
  * Class TextTemplate
  *
+ * @author inhere
  * @package Inhere\Kite\Model\Logic
  */
 class TextTemplate extends AbstractTemplate

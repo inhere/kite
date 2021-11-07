@@ -13,6 +13,7 @@ use function strtr;
 /**
  * Class SimpleTemplate
  *
+ * @author inhere
  * @package Inhere\Kite\Lib\Template
  */
 class SimpleTemplate extends AbstractTemplate
