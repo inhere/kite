@@ -28,7 +28,6 @@ use const PHP_EOL;
  */
 class TextTemplate extends AbstractTemplate
 {
-
     /**
      * The dir for auto generated temp php file
      *

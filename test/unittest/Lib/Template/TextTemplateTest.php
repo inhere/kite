@@ -19,7 +19,6 @@ class TextTemplateTest extends BaseKiteTestCase
 
         $tplFile = Kite::alias('@resource-tpl/gen-by-parse/gen-go-funcs.tpl');
         $tplVars = ['vars' => ['Info', 'Error', 'Warn']];
-        \vdump($tplFile);
 
         $result = $t->renderFile($tplFile, $tplVars);
 

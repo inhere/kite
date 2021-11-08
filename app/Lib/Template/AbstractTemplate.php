@@ -30,16 +30,23 @@ abstract class AbstractTemplate implements TemplateInterface
     protected array $allowExt = ['.php', '.tpl'];
 
     /**
-     * @var string
-     */
-    protected string $tplDir = '';
-
-    /**
      * manual set view files
      *
      * @var array
      */
     protected array $tplFiles = [];
+
+    /**
+     * @var string
+     */
+    public string $tplDir = '';
+
+    /**
+     * custom path resolve
+     *
+     * @var callable(string): string
+     */
+    public $pathResolver;
 
     /**
      * @return static
@@ -57,6 +64,17 @@ abstract class AbstractTemplate implements TemplateInterface
     public function __construct(array $config = [])
     {
         Obj::init($this, $config);
+    }
+
+    /**
+     * @param callable $fn
+     *
+     * @return $this
+     */
+    public function configThis(callable $fn): self
+    {
+        $fn($this);
+        return $this;
     }
 
     /**
@@ -100,6 +118,20 @@ abstract class AbstractTemplate implements TemplateInterface
         }
 
         throw new InvalidArgumentException("no such template file: $tplName");
+    }
+
+    /**
+     * @param string $filePath
+     *
+     * @return string
+     */
+    public function resolvePath(string $filePath): string
+    {
+        if ($fn = $this->pathResolver) {
+            return $fn($filePath);
+        }
+
+        return $filePath;
     }
 
     /**
@@ -175,4 +207,14 @@ abstract class AbstractTemplate implements TemplateInterface
         $this->globalVars = $globalVars;
     }
 
+    /**
+     * @param callable $pathResolver
+     *
+     * @return AbstractTemplate
+     */
+    public function setPathResolver(callable $pathResolver): self
+    {
+        $this->pathResolver = $pathResolver;
+        return $this;
+    }
 }

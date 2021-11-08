@@ -55,6 +55,7 @@ jobs:
 
       - name: Run test suite
         run: |
+          phpunit --debug
           php bin/kite -V
           php bin/kite -h
 
