@@ -78,12 +78,24 @@ abstract class AbstractTemplate implements TemplateInterface
     }
 
     /**
+     * @param string $tplFile
+     * @param array $tplVars
+     */
+    public function render(string $tplFile, array $tplVars = []): void
+    {
+        $tplFile = $this->findTplFile($tplFile);
+
+        echo $this->renderFile($tplFile, $tplVars);
+    }
+
+    /**
      * @param string $tplName
      *
      * @return string
      */
     protected function findTplFile(string $tplName): string
     {
+        $tplName = $this->resolvePath($tplName);
         if (is_file($tplName)) {
             return $tplName;
         }
@@ -181,6 +193,16 @@ abstract class AbstractTemplate implements TemplateInterface
     public function getAllowExt(): array
     {
         return $this->allowExt;
+    }
+
+    /**
+     * @param string[] $allowExt
+     */
+    public function addAllowExt(array $allowExt): void
+    {
+        foreach ($allowExt as $ext) {
+            $this->allowExt[] = $ext;
+        }
     }
 
     /**

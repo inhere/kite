@@ -18,6 +18,7 @@ use Inhere\Kite\Helper\KiteUtil;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Stream\StringsStream;
 use InvalidArgumentException;
+use Throwable;
 use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
@@ -32,7 +33,6 @@ use function str_replace;
 use function strlen;
 use function substr;
 use function trim;
-use function vdump;
 
 /**
  * Class StringController
@@ -76,7 +76,7 @@ class StringController extends Controller
     }
 
     /**
-     * @throws JsonException
+     * @throws Throwable
      */
     private function loadDumpContents(): void
     {
@@ -96,6 +96,8 @@ class StringController extends Controller
      *
      * @param FlagsParser $fs
      * @param Output $output
+     *
+     * @throws Throwable
      */
     public function loadCommand(FlagsParser $fs, Output $output): void
     {

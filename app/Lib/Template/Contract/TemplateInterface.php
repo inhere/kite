@@ -11,6 +11,18 @@ namespace Inhere\Kite\Lib\Template\Contract;
 interface TemplateInterface
 {
     /**
+     * Render template file and output
+     *
+     * @param string $tplFile
+     * @param array  $tplVars
+     *
+     * @return void
+     */
+    public function render(string $tplFile, array $tplVars): void;
+
+    /**
+     * Render template file to string
+     *
      * @param string $tplFile
      * @param array  $tplVars
      *
@@ -19,6 +31,8 @@ interface TemplateInterface
     public function renderFile(string $tplFile, array $tplVars): string;
 
     /**
+     * Render template text to string
+     *
      * @param string $tplCode
      * @param array  $tplVars
      *

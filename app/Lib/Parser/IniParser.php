@@ -20,8 +20,6 @@ use function trim;
  */
 class IniParser
 {
-    // public bool $parseBool = false;
-
     /**
      * current parsed section name.
      *
@@ -99,6 +97,7 @@ class IniParser
      */
     public static function encode(array $data): string
     {
+        // TODO
         return '';
     }
 
@@ -178,6 +177,7 @@ class IniParser
             $key = rtrim($tmp[0]);
             $val = ltrim($tmp[1]);
 
+            // empty value
             if ($val === '') {
                 $this->collectValue($key, $val);
                 continue;
@@ -227,40 +227,47 @@ class IniParser
         }
 
         // in section. eg: [arrayName] -> $sectionName='arrayName'
-        $sectionName = $this->sectionName;
+        $section = $this->sectionName;
 
-        // is array sub key.
+        // is list array value. eg `[] = "arr_elem_one"`
+        if ($key === '[]') {
+            if (!isset($this->data[$section]) || !is_array($this->data[$section])) {
+                $this->data[$section] = [];
+            }
+
+            $this->data[$section][] = $val;
+            return;
+        }
+
+        // is map array sub key.
         // eg:
-        // [] = "arr_elem_one"
         // val_arr[] = "arr_elem_one"
-        // val_arr_two[some_key] = "some_key_value"
+        // val_arr_two[sub_key] = "some_key_value"
+        // [sub_key] = "some_key_value"
         $ok = preg_match("/[\w-]{0,64}\[(.*?)]$/", $key, $matches);
         if ($ok === 1 && isset($matches[0])) {
             [$arrName, $subKey] = explode('[', trim($key, ']'));
 
             if ($arrName !== '') {
-                if (!isset($this->data[$sectionName][$arrName]) || !is_array($this->data[$sectionName][$arrName])) {
-                    $this->data[$sectionName][$arrName] = [];
+                if (!isset($this->data[$section][$arrName]) || !is_array($this->data[$section][$arrName])) {
+                    $this->data[$section][$arrName] = [];
                 }
 
                 if ($subKey !== '') { // eg: val_arr[subKey] = "arr_elem_one"
-                    $this->data[$sectionName][$arrName][$subKey] = $val;
+                    $this->data[$section][$arrName][$subKey] = $val;
                 } else { // eg: val_arr[] = "arr_elem_one"
-                    $this->data[$sectionName][$arrName][] = $val;
+                    $this->data[$section][$arrName][] = $val;
                 }
             } else {
-                if (!isset($this->data[$sectionName]) || !is_array($this->data[$sectionName])) {
-                    $this->data[$sectionName] = [];
+                if (!isset($this->data[$section]) || !is_array($this->data[$section])) {
+                    $this->data[$section] = [];
                 }
 
-                if ($subKey !== '') { // eg: [subKey] = "arr_elem_one"
-                    $this->data[$sectionName][$subKey] = $val;
-                } else { // eg: [] = "arr_elem_one"
-                    $this->data[$sectionName][] = $val;
-                }
+                // eg: [sub_key] = "arr_elem_one"
+                $this->data[$section][$subKey] = $val;
             }
         } else {
-            $this->data[$sectionName][$key] = $val;
+            $this->data[$section][$key] = $val;
         }
     }
 

@@ -18,17 +18,6 @@ class HtmlTemplate extends TextTemplate
      * @param string $viewPath
      * @param array $vars
      */
-    public function render(string $viewPath, array $vars = []): void
-    {
-        $viewFile = $this->findTplFile($viewPath);
-
-        echo $this->renderFile($viewFile, $vars);
-    }
-
-    /**
-     * @param string $viewPath
-     * @param array $vars
-     */
     public function renderOutput(string $viewPath, array $vars = []): void
     {
         $viewFile = $this->findTplFile($viewPath);
