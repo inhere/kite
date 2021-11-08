@@ -113,15 +113,15 @@ CODE
     {
         $p = new PregCompiler();
         $p->addDirective('include', function (string $body, string $name) {
-            return 'echo $this->' . $name . $body;
+            return '$this->' . $name . $body;
         });
 
         $tests = [
-            ['{{ include("header.tpl") }}', '<?php echo $this->include("header.tpl") ?>'],
+            ['{{ include("header.tpl") }}', '<?php $this->include("header.tpl") ?>'],
             ['{{ include("header.tpl", [
    "key1" => "value1",
 ]) }}', '<?php
-echo $this->include("header.tpl", [
+$this->include("header.tpl", [
    "key1" => "value1",
 ])
 ?>'],
@@ -129,7 +129,6 @@ echo $this->include("header.tpl", [
         foreach ($tests as [$in, $out]) {
             $this->assertEquals($out, $p->compile($in));
         }
-
     }
 
     public function testCompile_if_block():void
@@ -163,7 +162,7 @@ hi
         }
     }
 
-    public function testCompileCode_ml_block():void
+    public function testCompileCode_ml_define():void
     {
         $p = new PregCompiler();
 
@@ -175,7 +174,21 @@ $a = random_int(1, 10);
 CODE;
         $compiled = $p->compile($code);
         $this->assertEquals(<<<'CODE'
-<?php $a = random_int(1, 10);
+<?php $a = random_int(1, 10); ?>
+CODE
+            ,$compiled);
+
+        $code = <<<'CODE'
+{{
+// comments
+$a = random_int(1, 10);
+}}
+CODE;
+        $compiled = $p->compile($code);
+        $this->assertEquals(<<<'CODE'
+<?php
+// comments
+$a = random_int(1, 10);
 ?>
 CODE
             ,$compiled);

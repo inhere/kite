@@ -2,24 +2,25 @@
 /**
  * comments
  *
- * @var array $arr
+ * @var array $map
  * @var object $obj
  */
 }}
 
 echo vars:
 
-{{= $arr['name'] }}
-{{ echo $arr['name'] }}
+{{= $map['name'] }}
+
+{{ echo $map['name'] }}
 
 foreach example:
 
-{{ foreach ($arr as $key => $val) : }}
+{{ foreach ($map as $key => $val) : }}
+    in foreach
         KEY:{{= $key}} => VALUE:{{
     $typ = gettype($val);
     echo ucfirst($typ === 'array' ? 'arrayValue' : $typ)
-}}
-    in foreach
+}} {{ $val }};
 {{ endforeach }}
 
 {{

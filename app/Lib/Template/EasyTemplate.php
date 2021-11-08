@@ -5,9 +5,6 @@ namespace Inhere\Kite\Lib\Template;
 use Inhere\Kite\Lib\Template\Compiler\PregCompiler;
 use Inhere\Kite\Lib\Template\Contract\CompilerInterface;
 use Inhere\Kite\Lib\Template\Contract\EasyTemplateInterface;
-use InvalidArgumentException;
-use Toolkit\FsUtil\File;
-use function file_exists;
 
 /**
  * Class EasyTemplate
@@ -16,11 +13,6 @@ use function file_exists;
  */
 class EasyTemplate extends TextTemplate implements EasyTemplateInterface
 {
-    /**
-     * @var string[]
-     */
-    protected array $allowExt = ['.php', '.tpl'];
-
     /**
      * @var CompilerInterface
      */
@@ -39,22 +31,9 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
         $this->compiler->addDirective(
             'include',
             function (string $body, string $name) {
-                return 'echo $this->' . $name . $body;
+                return '$this->' . $name . $body;
             }
         );
-    }
-
-    /**
-     * @param string $tplCode
-     * @param array $tplVars
-     *
-     * @return string
-     */
-    public function renderString(string $tplCode, array $tplVars): string
-    {
-        $tplCode = $this->compileCode($tplCode);
-
-        return parent::renderString($tplCode, $tplVars);
     }
 
     /**
@@ -71,12 +50,36 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
     }
 
     /**
+     * @param string $tplCode
+     * @param array $tplVars
+     *
+     * @return string
+     */
+    public function renderString(string $tplCode, array $tplVars): string
+    {
+        $tplCode = $this->compiler->compile($tplCode);
+
+        return parent::renderString($tplCode, $tplVars);
+    }
+
+    /**
+     * @param string $tplFile
+     * @param array $tplVars
+     */
+    protected function include(string $tplFile, array $tplVars): void
+    {
+        $phpFile = $this->compileFile($tplFile);
+
+        echo $this->doRenderFile($phpFile, $tplVars);
+    }
+
+    /**
      * @param string $tplFile
      * @param array $tplVars
      *
      * @return string
      */
-    protected function include(string $tplFile, array $tplVars): string
+    protected function renderInclude(string $tplFile, array $tplVars): string
     {
         $phpFile = $this->compileFile($tplFile);
 
@@ -90,13 +93,10 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
      */
     public function compileFile(string $tplFile): string
     {
-        if (!file_exists($tplFile)) {
-            throw new InvalidArgumentException('no such template file:' . $tplFile);
-        }
+        $tplFile = $this->findTplFile($tplFile);
 
-        $tplCode = File::readAll($tplFile);
         // compile contents
-        $tplCode = $this->compileCode($tplCode);
+        $tplCode = $this->compiler->compileFile($tplFile);
 
         // generate temp php file
         return $this->genTempPhpFile($tplCode);

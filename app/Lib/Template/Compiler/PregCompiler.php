@@ -2,6 +2,7 @@
 
 namespace Inhere\Kite\Lib\Template\Compiler;
 
+use Toolkit\FsUtil\File;
 use function addslashes;
 use function array_keys;
 use function explode;
@@ -46,6 +47,18 @@ class PregCompiler extends AbstractCompiler
         $this->closeTagE = addslashes($close);
 
         return $this;
+    }
+
+    /**
+     * @param string $tplFile
+     *
+     * @return string
+     */
+    public function compileFile(string $tplFile): string
+    {
+        $tplCode = File::readAll($tplFile);
+
+        return $this->compile($tplCode);
     }
 
     /**
@@ -117,10 +130,12 @@ class PregCompiler extends AbstractCompiler
         $open  = self::PHP_TAG_OPEN . ($isInline ? ' ' : "\n");
         $close = ($isInline ? ' ' : "\n") . self::PHP_TAG_CLOSE;
 
+        // echo statement
         if ($trimmed[0] === '=') {
             $type = Token::T_ECHO;
             $open = self::PHP_TAG_ECHO;
-        } elseif (str_starts_with($trimmed, 'echo ')) { // echo statement
+        } elseif (str_starts_with($trimmed, 'echo ')) {
+            // echo statement
             $type = Token::T_ECHO;
             $open = self::PHP_TAG_OPEN . ' ';
         } elseif ($isInline && ($tryType = Token::tryAloneToken($trimmed))) {
@@ -142,7 +157,7 @@ class PregCompiler extends AbstractCompiler
                 $endChar = $trimmed[strlen($trimmed) - 1];
 
                 // not in raw php code AND end char != :
-                if ($endChar !== '}' && $endChar !== '{' && $endChar !== ':') {
+                if ($endChar !== '}' && $endChar !== '{' && $endChar !== ';' && $endChar !== ':') {
                     $close = ': ' . self::PHP_TAG_CLOSE;
                 }
             }

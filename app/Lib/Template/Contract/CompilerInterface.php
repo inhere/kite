@@ -9,7 +9,6 @@ namespace Inhere\Kite\Lib\Template\Contract;
  */
 interface CompilerInterface
 {
-
     /**
      * @param string $open
      * @param string $close
@@ -26,4 +25,13 @@ interface CompilerInterface
      * @return string
      */
     public function compile(string $tplCode): string;
+
+    /**
+     * compile template file contents to raw PHP template codes
+     *
+     * @param string $tplFile
+     *
+     * @return string
+     */
+    public function compileFile(string $tplFile): string;
 }

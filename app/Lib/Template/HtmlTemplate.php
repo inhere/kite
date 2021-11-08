@@ -2,11 +2,6 @@
 
 namespace Inhere\Kite\Lib\Template;
 
-use InvalidArgumentException;
-use Toolkit\FsUtil\File;
-use function is_file;
-use function strpos;
-
 /**
  * Class HtmlTemplate
  *
@@ -20,117 +15,26 @@ class HtmlTemplate extends TextTemplate
     protected array $allowExt = ['.html', '.phtml', '.php'];
 
     /**
-     * @var string
-     */
-    protected string $viewsDir = '';
-
-    /**
-     * manual set view files
-     *
-     * @var array
-     */
-    protected array $viewsFiles = [];
-
-    /**
      * @param string $viewPath
-     * @param array  $vars
+     * @param array $vars
      *
      * @return string
      */
     public function render(string $viewPath, array $vars = []): string
     {
-        $viewFile = $this->findViewFile($viewPath);
+        $viewFile = $this->findTplFile($viewPath);
 
         return $this->renderFile($viewFile, $vars);
     }
 
     /**
      * @param string $viewPath
-     * @param array  $vars
+     * @param array $vars
      */
     public function renderOutput(string $viewPath, array $vars = []): void
     {
-        $viewFile = $this->findViewFile($viewPath);
+        $viewFile = $this->findTplFile($viewPath);
 
         echo $this->renderFile($viewFile, $vars);
     }
-
-    /**
-     * @param string $viewName
-     *
-     * @return string
-     */
-    protected function findViewFile(string $viewName): string
-    {
-        if (isset($this->viewsFiles[$viewName])) {
-            return $this->viewsFiles[$viewName];
-        }
-
-        $suffix = '';
-        if (strpos($viewName, '.') > 0) {
-            $suffix = File::getExtension($viewName);
-        }
-
-        $viewFile = $this->viewsDir . '/' . $viewName;
-
-        // is an exists file
-        if ($suffix) {
-            if (is_file($viewFile)) {
-                return $viewFile;
-            }
-
-            throw new InvalidArgumentException("no such view file: $viewName");
-        }
-
-        foreach ($this->allowExt as $ext) {
-            $filename = $viewFile . $ext;
-            if (is_file($filename)) {
-                return $filename;
-            }
-        }
-
-        throw new InvalidArgumentException("no such view file: $viewName");
-    }
-
-    /**
-     * @param string $viewName
-     * @param string $filePath
-     */
-    public function addViewFile(string $viewName, string $filePath): void
-    {
-        $this->viewsFiles[$viewName] = $filePath;
-    }
-
-    /**
-     * @return array
-     */
-    public function getViewsFiles(): array
-    {
-        return $this->viewsFiles;
-    }
-
-    /**
-     * @param array $viewsFiles
-     */
-    public function setViewsFiles(array $viewsFiles): void
-    {
-        $this->viewsFiles = $viewsFiles;
-    }
-
-    /**
-     * @return string
-     */
-    public function getViewsDir(): string
-    {
-        return $this->viewsDir;
-    }
-
-    /**
-     * @param string $viewsDir
-     */
-    public function setViewsDir(string $viewsDir): void
-    {
-        $this->viewsDir = $viewsDir;
-    }
-
 }

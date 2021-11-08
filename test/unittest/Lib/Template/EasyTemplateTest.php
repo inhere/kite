@@ -3,13 +3,10 @@
 namespace Inhere\KiteTest\Lib\Template;
 
 use Inhere\Kite\Kite;
-use Inhere\Kite\Lib\Template\Compiler\Token;
 use Inhere\Kite\Lib\Template\EasyTemplate;
 use Inhere\KiteTest\BaseKiteTestCase;
 use PhpToken;
 use Toolkit\FsUtil\File;
-use function preg_match;
-use function random_int;
 use function vdump;
 
 /**
@@ -17,7 +14,20 @@ use function vdump;
  */
 class EasyTemplateTest extends BaseKiteTestCase
 {
-    public function testV2Render_use_echo_foreach():void
+    private $tplVars = [
+        'int' => 23,
+        'str' => 'a string',
+        'arr' => [
+             'inhere',
+             20,
+        ],
+        'map' => [
+            'name' => 'inhere',
+            'age'  => 20,
+        ],
+    ];
+
+    public function testV2RenderFile_use_echo_foreach(): void
     {
         $t = new EasyTemplate();
 
@@ -30,7 +40,7 @@ class EasyTemplateTest extends BaseKiteTestCase
         vdump($result);
     }
 
-    public function testCompileFile_use_echo_foreach():void
+    public function testCompileFile_use_echo_foreach(): void
     {
         $t = new EasyTemplate();
 
@@ -48,7 +58,7 @@ class EasyTemplateTest extends BaseKiteTestCase
         // vdump($genCode);
     }
 
-    public function testCompileFile_use_all_token():void
+    public function testCompileFile_use_all_token(): void
     {
         $t = new EasyTemplate();
 
@@ -66,7 +76,19 @@ class EasyTemplateTest extends BaseKiteTestCase
         $this->assertStringNotContainsString('}}', $genCode);
     }
 
-    public function testCompileCode_check():void
+    public function testV2RenderFile_use_all_token(): void
+    {
+        $t = new EasyTemplate();
+
+        $tplFile = Kite::resolve('@testdata/use_all_token.tpl');
+        $result = $t->renderFile($tplFile, $this->tplVars);
+
+        $this->assertNotEmpty($result);
+
+        vdump($result);
+    }
+
+    public function testCompileCode_check(): void
     {
         $t2 = new EasyTemplate();
 
@@ -77,20 +99,7 @@ class EasyTemplateTest extends BaseKiteTestCase
         $this->assertEquals('no tpl tags', $compiled);
     }
 
-    private $tplVars = [
-        'int' => 23,
-        'str' => 'a string',
-        'arr' => [
-            'hello',
-            'world',
-        ],
-        'map' => [
-            'key0' => 'map-val0',
-            'key1' => 'map-val1',
-        ],
-    ];
-
-    public function testV2Render_vars():void
+    public function testV2Render_vars(): void
     {
         // inline
         $code = '
@@ -104,14 +113,14 @@ class EasyTemplateTest extends BaseKiteTestCase
         vdump($tokens2);
 
         $tplVars = ['vars' => ['Info', 'Error', 'Warn']];
-        $t = new EasyTemplate();
+        $t       = new EasyTemplate();
 
         $result = $t->renderString($code, $tplVars);
 
         vdump($result);
     }
 
-    public function testV2Render_ifElse():void
+    public function testV2Render_ifElse(): void
     {
         $t = new EasyTemplate();
 
@@ -124,7 +133,7 @@ class EasyTemplateTest extends BaseKiteTestCase
         vdump($result);
     }
 
-    public function testV2Render_foreach():void
+    public function testV2Render_foreach(): void
     {
         $t = new EasyTemplate();
 

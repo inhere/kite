@@ -28,10 +28,6 @@ use const PHP_EOL;
  */
 class TextTemplate extends AbstractTemplate
 {
-    /**
-     * @var string[]
-     */
-    protected array $allowExt = ['.php'];
 
     /**
      * The dir for auto generated temp php file
@@ -123,22 +119,6 @@ class TextTemplate extends AbstractTemplate
 
         $this->tmpPhpFile = $tmpFile;
         return $tmpFile;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getAllowExt(): array
-    {
-        return $this->allowExt;
-    }
-
-    /**
-     * @param string[] $allowExt
-     */
-    public function setAllowExt(array $allowExt): void
-    {
-        $this->allowExt = $allowExt;
     }
 
     /**

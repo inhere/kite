@@ -2,19 +2,19 @@
 /**
  * comments
  *
- * @var array $arr
+ * @var array $map
  * @var object $obj
  */
 ?>
 
 echo vars:
 
-<?= $arr['name'] ?>
-<?php echo $arr['name'] ?>
+<?= $map['name'] ?>
+<?php echo $map['name'] ?>
 
 foreach example:
 
-<?php foreach ($arr as $key => $val) : ?>
+<?php foreach ($map as $key => $val) : ?>
         KEY:<?= $key?> => VALUE:<?php
     $typ = gettype($val);
     echo ucfirst($typ === 'array' ? 'arrayValue' : $typ)
