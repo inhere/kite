@@ -53,30 +53,6 @@ class BodyData extends DataObject
     }
 
     /**
-     * @param array $data
-     */
-    public function override(array $data): void
-    {
-        $this->exchangeArray($data);
-    }
-
-    /**
-     * @param array $data
-     * @param bool  $override
-     */
-    public function load(array $data, bool $override = false): void
-    {
-        if ($override) {
-            $this->override($data);
-            return;
-        }
-
-        foreach ($data as $key => $val) {
-            $this->offsetSet($key, $val);
-        }
-    }
-
-    /**
      * @param int $limit
      *
      * @return array

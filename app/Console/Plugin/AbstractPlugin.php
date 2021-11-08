@@ -5,6 +5,7 @@ namespace Inhere\Kite\Console\Plugin;
 use Inhere\Console\Application;
 use Inhere\Console\GlobalOption;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Lib\Template\SimpleTemplate;
 use Toolkit\PFlag\Flags;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Helper\DataHelper;
@@ -42,6 +43,11 @@ abstract class AbstractPlugin implements PluginInterface
      */
     protected array $metadata = [];
 
+    public function __construct()
+    {
+        $this->createFlags();
+    }
+
     public function init(): void
     {
         $this->metadata = array_merge([
@@ -63,6 +69,11 @@ abstract class AbstractPlugin implements PluginInterface
         $fs->setMoreHelp($this->metadata['help']);
         $fs->setExample($this->metadata['example']);
         $fs->addOptsByRules(GlobalOption::getCommonOptions());
+
+        // replace help tpl vars
+        $fs->setBeforePrintHelp(function (string $help): string {
+            return $this->applyHelpVars($help);
+        });
 
         $loaded = false;
         if ($optRules = $this->options()) {
@@ -129,6 +140,16 @@ abstract class AbstractPlugin implements PluginInterface
     {
         return [
             // 'file' => 'the Idea Http Request file',
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    protected function helpTplVars(): array
+    {
+        return [
+            'plugName' => $this->name,
         ];
     }
 
@@ -207,6 +228,20 @@ abstract class AbstractPlugin implements PluginInterface
      * @param Output $output
      */
     abstract public function exec(Application $app, Output $output): void;
+
+    /**
+     * replace help tpl vars
+     *
+     * @param string $help
+     *
+     * @return string
+     */
+    protected function applyHelpVars(string $help): string
+    {
+        $tpl = SimpleTemplate::new(['format' => '${%s}']);
+
+        return $tpl->renderString($help, $this->helpTplVars());
+    }
 
     /**
      * @return string

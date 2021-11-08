@@ -22,7 +22,9 @@ use Inhere\Route\Router;
 use Monolog\Logger;
 use Toolkit\FsUtil\Dir;
 use Toolkit\Stdlib\Obj\ObjectBox;
+use Toolkit\Stdlib\OS;
 use const BASE_PATH;
+use const IN_PHAR;
 
 /**
  * Class Kite
@@ -132,7 +134,11 @@ class Kite
      */
     public static function getTmpPath(string $path): string
     {
-        // TODO tmp path 不该跟着 kite 执行文件
+        if (IN_PHAR) {
+            // see app/boot.php
+            return self::resolve('@user-tmp');
+        }
+
         return self::getPath("tmp/$path");
     }
 
