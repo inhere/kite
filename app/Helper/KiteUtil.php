@@ -97,12 +97,11 @@ class KiteUtil
      */
     public static function newTplEngine(): EasyTemplate
     {
-        // $tplEng = new TextTemplate($text);
-        $tplEng = new EasyTemplate();
-
-        $tplEng->tmpDir = Kite::getTmpPath('tplCache');
-        // some config
-        return $tplEng;
+        return EasyTemplate::new()
+            ->setPathResolver([Kite::class, 'resolve'])
+            ->configThis(function (EasyTemplate $tpl) {
+                $tpl->tmpDir = Kite::getTmpPath('tplCache');
+            });
     }
 
     /**

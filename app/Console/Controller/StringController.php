@@ -200,6 +200,10 @@ class StringController extends Controller
     protected function applyFilters(string $str, array $filters): string
     {
         foreach ($filters as $filter) {
+            if ('' === $str) {
+                break;
+            }
+
             $args = [];
             $argStr = '';
 
@@ -213,14 +217,21 @@ class StringController extends Controller
                 }
             }
 
-            if ($filter === 'wrap') {
-                $str = Str::wrap($str, ...$args);
-            } elseif ($filter === 'append') {
-                $str .= $argStr;
-            } elseif ($filter === 'prepend') {
-                $str = $argStr . $str;
-            } else {
-                throw new InvalidArgumentException("unsupported filter: $filter");
+            switch ($filter) {
+                case 'wrap':
+                    $str = Str::wrap($str, ...$args);
+                    break;
+                case 'append':
+                    $str .= $argStr;
+                    break;
+                case 'prepend':
+                    $str = $argStr . $str;
+                    break;
+                case 'replace':
+                    $str = str_replace($args[0], $args[1], $str);
+                    break;
+                default:
+                    throw new InvalidArgumentException("unsupported filter: $filter");
             }
         }
 
@@ -273,20 +284,23 @@ class StringController extends Controller
      *          input '@FILEPATH'                   - will read from the filepath
      *
      * @options
-     *  -e, --exclude   array;exclude line on contains keywords.
-     *  -m, --match     array;include line on contains keywords.
-     *  -t, --trim      bool;trim the each line text.
+     *  -e, --exclude   array;sub text should not contains keywords.
+     *  -i, --include   array;sub text should contains keywords.
+     *  -t, --trim      bool;trim the each sub text.
      *      --each      bool;Operate on each substr after split.
      *      --wrap      wrap the each line by the separator
      *  -j, --join      join the each line by the separator
      *  -c, --cut       cut each line by the separator. cut position: L R, eg: 'L='
-     *  -r, --replace   array;replace chars for each line
+     *  -r, --replace   array;replace chars for each sub text
      *  -s, --sep       The separator char for split contents. defaults is newline(\n).
-     *  -f, --filter    array;apply more filter for handle text.
+     *  -f, --filter    array;apply filter for handle each sub text.
      *                  allow filters:
+     *                  - replace       replace substr
      *                  - notEmpty      filter empty line
      *                  - min           limit min length
-     *                  - wrap          wrap each line. wrap:'
+     *                  - wrap          wrap each line. `wrap:'`
+     *                  - prepend        prepend char each line. `prepend:-`
+     *                  - append        append char to each line. `append:'`
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -309,13 +323,13 @@ class StringController extends Controller
         }
 
         $ex = $fs->getOpt('exclude');
-        $in = $fs->getOpt('match');
+        $in = $fs->getOpt('include');
 
         $trim = $fs->getOpt('trim');
         $cut  = $fs->getOpt('cut');
         $sep  = $fs->getOpt('sep', "\n");
-        //
-        $replaces = $fs->getOpt('replace');
+        // filters
+        $filters = $fs->getOpt('filter');
 
         $cutPos = 'L';
         $cutChar = $cut;
@@ -345,20 +359,9 @@ class StringController extends Controller
             ->filterIf(function (string $line) use ($in) { // include
                 return Str::has($line, $in);
             }, count($in) > 0)
-            ->eachIf(function (string $line) use ($replaces) { // replace
-                // TODO
-                // $this->applyFilters($line, $filters);
-
-                $froms = $tos = [];
-                foreach ($replaces as $replace) {
-                    [$from, $to] = explode('/', $replace, 2);
-                    $froms[] = $from;
-                    $tos[]   = $to;
-                }
-
-                // vdump($line);
-                return str_replace($froms, $tos, $line);
-            }, $replaces);
+            ->eachIf(function (string $line) use ($filters) { // filters
+                return $this->applyFilters($line, $filters);
+            }, $filters);
 
         echo $s->implode($sep), "\n";
     }

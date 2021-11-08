@@ -16,6 +16,7 @@ use Toolkit\Stdlib\OS;
 use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Type;
 use function array_merge;
+use function date;
 use function dirname;
 use function gettype;
 use function is_file;
@@ -103,40 +104,11 @@ abstract class AbstractJsonToCode
             throw new InvalidArgumentException('empty source json(5) data for generate');
         }
 
-        // auto add quote char
-        if ($json[0] !== '{') {
-            $json = '{' . $json . "\n}";
-        }
+        $jd = Json5Data::new()->loadFrom($json);
 
-        $comments = [];
-        $jsonData = Json5Decoder::decode($json, true);
+        $this->fields = $jd->getFields();
+        $this->setContexts($jd->getSettings());
 
-        // has comments chars
-        if (str_contains($json, '//')) {
-            $p = TextParser::newWithParser($json, new Json5LineParser())
-                ->withConfig(function (TextParser $p) {
-                    $p->headerSep = "\n//###\n";
-                })
-                ->setBeforeParseHeader(function (string $header) {
-                    if ($pos = strpos($header, "//##\n")) {
-                        $header = substr($header, $pos + 4);
-                        $header = str_replace("\n//", '', $header);
-                    }
-                    return $header;
-                })
-                ->parse();
-
-            $comments = $p->getStringMap('field', 'comment');
-            $this->setContexts($p->getSettings());
-        }
-
-        foreach ($jsonData as $key => $value) {
-            $this->fields[$key] = JsonField::new([
-                'name' => $key,
-                'type' => gettype($value),
-                'desc' => $comments[$key] ?? $key,
-            ]);
-        }
         return $this;
     }
 
@@ -149,9 +121,11 @@ abstract class AbstractJsonToCode
         $tplEng  = KiteUtil::newTplEngine();
 
         $settings = array_merge([
-            'user' => OS::getUserName(),
+            'lang'      => 'java',
+            'user'      => OS::getUserName(),
+            'date'      => date('Y-m-d'),
         ], $this->contexts);
-vdump($settings);
+
         $tplVars = [
             'ctx'    => $settings,
             'fields' => $this->fields,

@@ -672,6 +672,16 @@ class TextParser
     }
 
     /**
+     * @param int $fieldNum
+     */
+    public function setFieldNum(int $fieldNum): void
+    {
+        if ($fieldNum > 0) {
+            $this->fieldNum = $fieldNum;
+        }
+    }
+
+    /**
      * @param bool $parseHeader
      */
     public function setParseHeader(bool $parseHeader): void

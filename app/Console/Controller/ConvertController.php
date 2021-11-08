@@ -25,6 +25,7 @@ use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Yaml;
 use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
+use Toolkit\Stdlib\Json;
 use function array_pad;
 use function array_shift;
 use function base_convert;
@@ -32,6 +33,7 @@ use function date;
 use function file_get_contents;
 use function implode;
 use function is_file;
+use function json_encode;
 use function strlen;
 use function substr;
 use function trim;
@@ -129,6 +131,7 @@ class ConvertController extends Controller
      *  -s,--source     string;The source code for convert. allow: FILEPATH, @clipboard;true
      *  -o,--output     The output target. default is stdout.
      *     --item-sep   The item sep char. default is NL.
+     *     --value-num   int;The item value number. default get from first line.
      *     --value-sep   The item value sep char. default is SPACE
      *
      * @param FlagsParser $fs
@@ -141,6 +144,7 @@ class ConvertController extends Controller
 
         $p = TextParser::new($text);
         $p->setItemSep($fs->getOpt('item-sep'));
+        $p->setFieldNum($fs->getOpt('value-num'));
 
         if ($vSep = $fs->getOpt('value-sep')) {
             $p->setItemParser(TextParser::charSplitParser($vSep));
@@ -162,8 +166,10 @@ class ConvertController extends Controller
                 $result = $head . "\n" . $line . "\n". implode("\n", $rows);
                 break;
             case 'raw':
-            default:
                 $result = $text;
+                break;
+            default:
+                $result = Json::pretty($p->getData());
                 break;
         }
 

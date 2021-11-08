@@ -20,6 +20,20 @@ class MapStream extends BaseStream
     }
 
     /**
+     * @param array $data
+     *
+     * @return $this
+     */
+    public function load(array $data): self
+    {
+        foreach ($data as $key => $value) {
+            $this->offsetSet($key, $value);
+        }
+
+        return $this;
+    }
+
+    /**
      * @param callable(array): string $func
      * @param bool|mixed $apply
      *

@@ -8,8 +8,6 @@ use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\Obj\AbstractObj;
 use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Type;
-use function gettype;
-use function json_encode;
 use function preg_match;
 
 /**
@@ -20,6 +18,20 @@ class JsonField extends AbstractObj implements JsonSerializable
     public string $name;
     public string $type;
     public string $desc;
+
+    /**
+     * @param string $lang
+     *
+     * @return string
+     */
+    public function getType(string $lang = 'php'): string
+    {
+        if ($lang === 'php') {
+            return $this->type;
+        }
+
+        return $this->toJavaType();
+    }
 
     /**
      * @return string
