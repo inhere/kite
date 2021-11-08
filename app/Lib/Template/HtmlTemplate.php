@@ -17,14 +17,12 @@ class HtmlTemplate extends TextTemplate
     /**
      * @param string $viewPath
      * @param array $vars
-     *
-     * @return string
      */
-    public function render(string $viewPath, array $vars = []): string
+    public function render(string $viewPath, array $vars = []): void
     {
         $viewFile = $this->findTplFile($viewPath);
 
-        return $this->renderFile($viewFile, $vars);
+        echo $this->renderFile($viewFile, $vars);
     }
 
     /**

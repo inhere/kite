@@ -1,5 +1,5 @@
 # Template
 
 
-## Text2Template
+## EasyTemplate
 
