@@ -2,8 +2,6 @@
 
 namespace Inhere\Kite\Lib\Generate;
 
-use function random_int;
-
 /**
  * class JsonToJavaClass
  * - json(5) to java DTO class
@@ -18,7 +16,8 @@ class JsonToJavaClass extends AbstractJsonToCode
     public function generate(): string
     {
         // todo
-        $this->contexts['pkgName'] = 'YOUR.PKG.NAME';
+        $this->contexts['package'] = 'YOUR.PKG.NAME';
+        $this->contexts['pkgName'] = 'PKG_NAME';
         $this->contexts['className'] = 'YourClass';
 
         return parent::generate();

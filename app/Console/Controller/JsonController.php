@@ -70,7 +70,7 @@ class JsonController extends Controller
     {
         parent::init();
 
-        $this->dumpfile = Kite::getPath('tmp/json-load.json');
+        $this->dumpfile = Kite::getTmpPath('json-load.json');
     }
 
     protected function jsonRender(): JSONPretty
@@ -311,7 +311,7 @@ class JsonController extends Controller
             'tplDir'  => $tplDir,
             'tplFile' => $tplFile,
         ]));
-// vdump($config);
+
         // @user-custom/template/java-service-tpl/req-resp-dto.tpl
         $gen = JsonToCode::create($type)
             ->setSource($json)

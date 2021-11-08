@@ -3,11 +3,11 @@
 namespace Inhere\Kite\Lib\Template;
 
 use InvalidArgumentException;
-use Toolkit\Stdlib\Obj;
 use function array_merge;
 use function file_exists;
 use function file_get_contents;
 use function sprintf;
+use function str_contains;
 use function strtr;
 
 /**
@@ -19,19 +19,11 @@ use function strtr;
 class SimpleTemplate extends AbstractTemplate
 {
     /**
+     * template var format
+     *
      * @var string
      */
-    protected string $varTpl = '{{%s}}';
-
-    /**
-     * Class constructor.
-     *
-     * @param array $config
-     */
-    public function __construct(array $config = [])
-    {
-        Obj::init($this, $config);
-    }
+    protected string $format = '{{%s}}';
 
     /**
      * @param string $tplFile
@@ -42,7 +34,7 @@ class SimpleTemplate extends AbstractTemplate
     public function renderFile(string $tplFile, array $tplVars): string
     {
         if (!file_exists($tplFile)) {
-            throw new InvalidArgumentException('the template file is not exist. file:' . $tplFile);
+            throw new InvalidArgumentException('No such template file:' . $tplFile);
         }
 
         $tplCode = file_get_contents($tplFile);
@@ -64,7 +56,7 @@ class SimpleTemplate extends AbstractTemplate
 
         $fmtVars = [];
         foreach ($tplVars as $name => $var) {
-            $name = sprintf($this->varTpl, (string)$name);
+            $name = sprintf($this->format, (string)$name);
             // add
             $fmtVars[$name] = $var;
         }
@@ -75,16 +67,20 @@ class SimpleTemplate extends AbstractTemplate
     /**
      * @return string
      */
-    public function getVarTpl(): string
+    public function getFormat(): string
     {
-        return $this->varTpl;
+        return $this->format;
     }
 
     /**
-     * @param string $varTpl
+     * @param string $format
      */
-    public function setVarTpl(string $varTpl): void
+    public function setFormat(string $format): void
     {
-        $this->varTpl = $varTpl;
+        if (!str_contains($format, '%s')) {
+            throw new InvalidArgumentException('var format must contains %s');
+        }
+
+        $this->format = $format;
     }
 }

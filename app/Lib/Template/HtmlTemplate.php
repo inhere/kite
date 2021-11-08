@@ -15,21 +15,21 @@ use function strpos;
 class HtmlTemplate extends TextTemplate
 {
     /**
-     * @var string
-     */
-    protected string $viewsDir = '';
-
-    /**
      * @var string[]
      */
     protected array $allowExt = ['.html', '.phtml', '.php'];
+
+    /**
+     * @var string
+     */
+    protected string $viewsDir = '';
 
     /**
      * manual set view files
      *
      * @var array
      */
-    protected $viewsFiles = [];
+    protected array $viewsFiles = [];
 
     /**
      * @param string $viewPath
@@ -79,7 +79,7 @@ class HtmlTemplate extends TextTemplate
                 return $viewFile;
             }
 
-            throw new InvalidArgumentException("the view file '$viewName' not found");
+            throw new InvalidArgumentException("no such view file: $viewName");
         }
 
         foreach ($this->allowExt as $ext) {
@@ -89,7 +89,7 @@ class HtmlTemplate extends TextTemplate
             }
         }
 
-        throw new InvalidArgumentException("the view file '$viewName' not found");
+        throw new InvalidArgumentException("no such view file: $viewName");
     }
 
     /**

@@ -6,7 +6,6 @@ use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
 use Toolkit\FsUtil\Dir;
-use Toolkit\Stdlib\Obj;
 use Toolkit\Sys\Sys;
 use function array_merge;
 use function date;
@@ -47,16 +46,6 @@ class TextTemplate extends AbstractTemplate
      * @var string
      */
     private string $tmpPhpFile = '';
-
-    /**
-     * Class constructor.
-     *
-     * @param array $config
-     */
-    public function __construct(array $config = [])
-    {
-        Obj::init($this, $config);
-    }
 
     /**
      * @param string $tplCode
