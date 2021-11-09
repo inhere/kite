@@ -70,15 +70,18 @@ class PregCompilerTest extends BaseKiteTestCase
     {
         $p = new PregCompiler();
 
-        $simpleTests = [
+        $tests = [
             ['{{ "a" . "b" }}', '<?= "a" . "b" ?>'],
             ['{{ $name }}', '<?= $name ?>'],
+            ['{{ $name; }}', '<?= $name; ?>'],
             ['{{ $name ?: "inhere" }}', '<?= $name ?: "inhere" ?>'],
             ['{{ $name ?? "inhere" }}', '<?= $name ?? "inhere" ?>'],
+            ['{{ $name ?? "inhere"; }}', '<?= $name ?? "inhere"; ?>'],
             ['{{ some_func() }}', '<?= some_func() ?>'],
+            ['{{ some_func(); }}', '<?= some_func(); ?>'],
             ['{{ $this->include("header.tpl") }}', '<?= $this->include("header.tpl") ?>'],
         ];
-        foreach ($simpleTests as [$in, $out]) {
+        foreach ($tests as [$in, $out]) {
             $this->assertEquals($out, $p->compile($in));
         }
 
@@ -107,6 +110,40 @@ TPL;
 <?= $ctx->pkgName ?? "org.example.entity" ?>
 CODE
             ,$compiled);
+    }
+
+    public function testCompile_inline_echo_with_filters():void
+    {
+        $p = new PregCompiler();
+
+        $tests = [
+            ['{{ "a" . "b" }}', '<?= "a" . "b" ?>'],
+            ['{{ $name | ucfirst }}', '<?= ucfirst(htmlspecialchars($name)) ?>'],
+            [
+                '{{ $name ?: "inhere" | substr:0,3 }}',
+                '<?= substr(htmlspecialchars($name ?: "inhere"), 0,3) ?>'
+            ],
+            ['{{ some_func() | raw }}', '<?= some_func() ?>'],
+            ['{{ $this->include("header.tpl") }}', '<?= $this->include("header.tpl") ?>'],
+        ];
+        foreach ($tests as [$in, $out]) {
+            $this->assertEquals($out, $p->compile($in));
+        }
+
+        $p->disableEchoFilter();
+
+        $tests = [
+            ['{{ "a" . "b" }}', '<?= "a" . "b" ?>'],
+            ['{{ $name | ucfirst }}', '<?= ucfirst($name) ?>'],
+            [
+                '{{ $name ?: "inhere" | substr:0,3 }}',
+                '<?= substr($name ?: "inhere", 0,3) ?>'
+            ],
+            ['{{ some_func() | raw }}', '<?= some_func() ?>'],
+        ];
+        foreach ($tests as [$in, $out]) {
+            $this->assertEquals($out, $p->compile($in));
+        }
     }
 
     public function testCompile_customDirective():void

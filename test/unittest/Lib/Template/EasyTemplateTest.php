@@ -7,6 +7,7 @@ use Inhere\Kite\Lib\Template\EasyTemplate;
 use Inhere\KiteTest\BaseKiteTestCase;
 use PhpToken;
 use Toolkit\FsUtil\File;
+use function substr;
 use function vdump;
 
 /**
@@ -26,6 +27,17 @@ class EasyTemplateTest extends BaseKiteTestCase
             'age'  => 20,
         ],
     ];
+
+    public function testCompileCode_check(): void
+    {
+        $t2 = new EasyTemplate();
+
+        $compiled = $t2->compileCode('');
+        $this->assertEquals('', $compiled);
+
+        $compiled = $t2->compileCode('no tpl tags');
+        $this->assertEquals('no tpl tags', $compiled);
+    }
 
     public function testV2RenderFile_use_echo_foreach(): void
     {
@@ -76,7 +88,7 @@ class EasyTemplateTest extends BaseKiteTestCase
         $this->assertStringNotContainsString('}}', $genCode);
     }
 
-    public function testV2RenderFile_use_all_token(): void
+    public function testRenderFile_use_all_token(): void
     {
         $t = new EasyTemplate();
 
@@ -84,43 +96,68 @@ class EasyTemplateTest extends BaseKiteTestCase
         $result = $t->renderFile($tplFile, $this->tplVars);
 
         $this->assertNotEmpty($result);
-
         vdump($result);
     }
 
-    public function testCompileCode_check(): void
+    public function testRender_array_value_use_keyPath(): void
     {
-        $t2 = new EasyTemplate();
-
-        $compiled = $t2->compileCode('');
-        $this->assertEquals('', $compiled);
-
-        $compiled = $t2->compileCode('no tpl tags');
-        $this->assertEquals('no tpl tags', $compiled);
-    }
-
-    public function testV2Render_vars(): void
-    {
+        $t = new EasyTemplate();
         // inline
         $code = '
 {{= $ctx.pkgName ?? "org.example.entity" }}
 ';
 
-        $tokens1 = token_get_all($code);
-        vdump($tokens1);
-
-        $tokens2 = PhpToken::tokenize($code);
-        vdump($tokens2);
-
-        $tplVars = ['vars' => ['Info', 'Error', 'Warn']];
-        $t       = new EasyTemplate();
-
+        $tplVars = ['ctx' => ['pkgName' => 'MyPKG']];
         $result = $t->renderString($code, $tplVars);
-
-        vdump($result);
+        // vdump($result);
+        $this->assertEquals("\nMyPKG\n", $result);
     }
 
-    public function testV2Render_ifElse(): void
+    public function testAddFilters(): void
+    {
+        $t = new EasyTemplate();
+        $t->addFilters([
+            'upper' => 'strtoupper',
+            'myFilter' => function (string $str) {
+                return substr($str, 3);
+            },
+        ]);
+
+        $code = '{{ $name | upper }}';
+        $out = '<?= strtoupper(htmlspecialchars($name)) ?>';
+        $this->assertEquals($out, $t->compileCode($code));
+
+        $code = '{{ $name | myFilter }}';
+        $out = <<<'CODE'
+<?= $this->applyFilter('myFilter', htmlspecialchars($name)) ?>
+CODE;
+        $this->assertEquals($out, $t->compileCode($code));
+
+        $code = '{{ $name | upper | myFilter }}';
+        $out = <<<'CODE'
+<?= $this->applyFilter('myFilter', strtoupper(htmlspecialchars($name))) ?>
+CODE;
+        $this->assertEquals($out, $t->compileCode($code));
+    }
+
+    public function testAddFilter_setFilterSep(): void
+    {
+        $t = new EasyTemplate();
+        $t->addFilter('upper', 'strtoupper');
+        $t->setFilterSep(' | ');
+
+        // bad
+        $code = '{{ $name |upper }}';
+        $out = '<?= $name |upper ?>';
+        $this->assertEquals($out, $t->compileCode($code));
+
+        // goods
+        $code = '{{ $name | upper }}';
+        $out = '<?= strtoupper(htmlspecialchars($name)) ?>';
+        $this->assertEquals($out, $t->compileCode($code));
+    }
+
+    public function testRenderFile_ifElse(): void
     {
         $t = new EasyTemplate();
 
@@ -129,19 +166,20 @@ class EasyTemplateTest extends BaseKiteTestCase
         \vdump($tplFile);
 
         $result = $t->renderFile($tplFile, $tplVars);
+        $this->assertNotEmpty($result);
 
         vdump($result);
     }
 
-    public function testV2Render_foreach(): void
+    public function testRenderFile_foreach(): void
     {
         $t = new EasyTemplate();
 
         $tplFile = Kite::resolve('@resource-tpl/gen-by-parse/gen-go-funcs2.tpl');
         $tplVars = ['vars' => ['Info', 'Error', 'Warn']];
-        \vdump($tplFile);
 
         $result = $t->renderFile($tplFile, $tplVars);
+        $this->assertNotEmpty($result);
 
         vdump($result);
     }

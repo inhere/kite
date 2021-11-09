@@ -18,6 +18,11 @@ interface CompilerInterface
     public function setOpenCloseTag(string $open, string $close): self;
 
     /**
+     * @return $this
+     */
+    public function disableEchoFilter(): self;
+
+    /**
      * compile template contents to raw PHP template codes
      *
      * @param string $tplCode

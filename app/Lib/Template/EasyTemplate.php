@@ -5,6 +5,8 @@ namespace Inhere\Kite\Lib\Template;
 use Inhere\Kite\Lib\Template\Compiler\PregCompiler;
 use Inhere\Kite\Lib\Template\Contract\CompilerInterface;
 use Inhere\Kite\Lib\Template\Contract\EasyTemplateInterface;
+use InvalidArgumentException;
+use function is_string;
 
 /**
  * Class EasyTemplate
@@ -19,6 +21,22 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
     private CompilerInterface $compiler;
 
     /**
+     * custom filter for handle result(only for echo body).
+     *
+     * ```php
+     * $p->addFilter('upper', 'strtoupper');
+     *
+     * // or
+     * $p->addFilter('upper', function(string $str) {
+     *      return strtoupper($str);
+     * });
+     * ```
+     *
+     * @var array{string, callable-string|callable(string, mixed): string}
+     */
+    public array $customFilters = [];
+
+    /**
      * Class constructor.
      *
      * @param array $config
@@ -31,6 +49,7 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
         $this->compiler->addDirective(
             'include',
             function (string $body, string $name) {
+                /** will call {@see include()} */
                 return '$this->' . $name . $body;
             }
         );
@@ -115,14 +134,52 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
     }
 
     /**
-     * @param string $name
-     * @param callable $filter
+     * Apply added filter by name.
+     *
+     * @param string $filter
+     * @param string $result
+     * @param mixed ...$args
+     *
+     * @return string
+     */
+    public function applyFilter(string $filter, string $result, ...$args): string
+    {
+        if (isset($this->customFilters[$filter])) {
+            throw new InvalidArgumentException("apply unregistered filter: $filter");
+        }
+
+        $filterFn = $this->customFilters[$filter];
+        return $filterFn($result, ...$args);
+    }
+
+    /**
+     * @param array<string, callable> $filters
      *
      * @return $this
      */
-    public function addFilter(string $name, callable $filter): self
+    public function addFilters(array $filters): self
     {
-        $this->compiler->addFilter($name, $filter);
+        foreach ($filters as $name => $filterFn) {
+            $this->addFilter($name, $filterFn);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $name The filter name
+     * @param callable $filterFn
+     *
+     * @return $this
+     */
+    public function addFilter(string $name, callable $filterFn): self
+    {
+        // if not an string, build call filter expr
+        $callExpr = is_string($filterFn) ? $filterFn : "\$this->applyFilter('$name', ";
+
+        $this->customFilters[$name] = $filterFn;
+        $this->compiler->addFilter($name, $callExpr);
+
         return $this;
     }
 
@@ -135,6 +192,37 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
     public function addDirective(string $name, callable $handler): self
     {
         $this->compiler->addDirective($name, $handler);
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function disableEchoFilter(): self
+    {
+        $this->compiler->disableEchoFilter();
+        return $this;
+    }
+
+    /**
+     * @param string $filterSep
+     *
+     * @return $this
+     */
+    public function setFilterSep(string $filterSep): self
+    {
+        $this->compiler->filterSep = $filterSep;
+        return $this;
+    }
+
+    /**
+     * @param callable $name
+     *
+     * @return $this
+     */
+    public function setEchoFilterFunc(callable $name): self
+    {
+        $this->compiler->setEchoFilterFunc($name);
         return $this;
     }
 

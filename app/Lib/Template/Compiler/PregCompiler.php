@@ -10,6 +10,7 @@ use function implode;
 use function is_numeric;
 use function preg_match;
 use function preg_replace_callback;
+use function str_contains;
 use function strlen;
 use function substr;
 use function trim;
@@ -131,15 +132,20 @@ class PregCompiler extends AbstractCompiler
         $close = ($isInline ? ' ' : "\n") . self::PHP_TAG_CLOSE;
 
         // echo statement
+        $endChar = '';
+        // 'echo keywords' in echo statement
+        $eKws = '';
         if ($trimmed[0] === '=') {
+            $eKws = '=';
             $type = Token::T_ECHO;
             $open = self::PHP_TAG_ECHO;
         } elseif (str_starts_with($trimmed, 'echo ')) {
             // echo statement
+            $eKws = 'echo ';
             $type = Token::T_ECHO;
             $open = self::PHP_TAG_OPEN . ' ';
         } elseif ($isInline && ($tryType = Token::tryAloneToken($trimmed))) {
-            // special alone token: break, default, continue
+            // special alone token: break, default, continue, endXX
             $type = $tryType;
             $open = self::PHP_TAG_OPEN . ' ';
 
@@ -162,12 +168,13 @@ class PregCompiler extends AbstractCompiler
                 }
             }
         } elseif ($userPattern && preg_match($userPattern, $trimmed, $matches)) {
+            // support user add special directives.
             $directive = $type = $matches[1];
             $handlerFn = $this->customDirectives[$directive];
 
             $trimmed = $handlerFn(substr($trimmed, strlen($directive)), $directive);
         } elseif ($isInline && !str_contains($trimmed, '=')) {
-            // inline and not define expr, as echo expr.
+            // inline and not define expr, default as echo expr.
             $type = Token::T_ECHO;
             $open = self::PHP_TAG_ECHO1 . ' ';
         }
@@ -177,7 +184,14 @@ class PregCompiler extends AbstractCompiler
             return $open . $trimmed . $close;
         }
 
-        // TODO support custom directive tokens
+        // inline echo support filters
+        if ($isInline && $type === Token::T_ECHO) {
+            $endChar = $endChar ?: $trimmed[strlen($trimmed) - 1];
+            if ($endChar !== ';' && str_contains($trimmed, $this->filterSep)) {
+                $echoBody = substr($trimmed, strlen($eKws));
+                $trimmed  = $eKws . $this->parseInlineFilters($echoBody);
+            }
+        }
 
         // handle
         // - convert $ctx.top.sub to $ctx[top][sub]
