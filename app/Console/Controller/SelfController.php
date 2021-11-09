@@ -36,7 +36,7 @@ class SelfController extends Controller
 {
     protected static $name = 'self';
 
-    protected static $description = 'Operate and manage kite self commands';
+    protected static $desc = 'Operate and manage kite self commands';
 
     /**
      * @var string

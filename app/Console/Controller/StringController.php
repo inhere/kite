@@ -41,7 +41,7 @@ class StringController extends Controller
 {
     protected static $name = 'string';
 
-    protected static $description = 'Some useful development tool commands';
+    protected static $desc = 'Some useful development tool commands';
 
     /**
      * @var string
@@ -215,13 +215,29 @@ class StringController extends Controller
                 if (strlen($argStr) > 1 && str_contains($argStr, ',')) {
                     $args = Str::toTypedList($argStr);
                 } else {
-                    $args = [$argStr];
+                    $args = [Str::toTyped($argStr)];
                 }
             }
 
             switch ($filter) {
+                case 'minlen':
+                case 'minLen':
+                    if (strlen($str) < (int)$args[0]) {
+                        $str = '';
+                    }
+                    break;
+                case 'maxlen':
+                case 'maxLen':
+                    if (strlen($str) > (int)$args[0]) {
+                        $str = '';
+                    }
+                    break;
                 case 'wrap':
                     $str = Str::wrap($str, ...$args);
+                    break;
+                case 'sub':
+                case 'substr':
+                    $str = substr($str, ...$args);
                     break;
                 case 'append':
                     $str .= $argStr;
@@ -241,39 +257,6 @@ class StringController extends Controller
     }
 
     /**
-     * Replace all occurrences of the search string with the replacement string
-     *
-     * @arguments
-     * text     The source text for handle.
-     *          Special:
-     *          input '@c' or '@cb' or '@clipboard' - will read from Clipboard
-     *          input empty or '@i' or '@stdin'     - will read from STDIN
-     *          input '@l' or '@load'               - will read from loaded file
-     *          input '@FILEPATH'                   - will read from the filepath
-     *
-     * @options
-     *  -f, --from    The replace from char
-     *  -t, --to      The replace to chars
-     *
-     * @param FlagsParser $fs
-     * @param Output $output
-     */
-    public function replaceCommand(FlagsParser $fs, Output $output): void
-    {
-        $text = trim($fs->getArg('text'));
-        $text = ContentsAutoReader::readFrom($text);
-
-        $from = $fs->getOpt('from');
-        $to   = $fs->getOpt('to');
-        if (!$from && !$to) {
-            $output->warning('the from and to cannot all empty');
-            return;
-        }
-
-        $output->writeRaw(str_replace($from, $to, $text));
-    }
-
-    /**
      * Filtering the input multi line text contents
      *
      * @arguments
@@ -288,7 +271,7 @@ class StringController extends Controller
      * @options
      *  -e, --exclude   array;sub text should not contains keywords.
      *  -i, --include   array;sub text should contains keywords.
-     *  -t, --trim      bool;trim the each sub text.
+     *      --no-trim   bool;trim the each sub text.
      *      --each      bool;Operate on each substr after split.
      *      --wrap      wrap the each line by the separator
      *  -j, --join      join the each line by the separator
@@ -299,9 +282,11 @@ class StringController extends Controller
      *                  allow filters:
      *                  - replace       replace substr
      *                  - notEmpty      filter empty line
-     *                  - min           limit min length
+     *                  - minlen        limit min length. `minlen:6`
+     *                  - maxlen        limit max length. `maxlen:16`
      *                  - wrap          wrap each line. `wrap:'`
-     *                  - prepend        prepend char each line. `prepend:-`
+     *                  - sub           substr handle. `sub:0,2`
+     *                  - prepend       prepend char each line. `prepend:-`
      *                  - append        append char to each line. `append:'`
      *
      * @param FlagsParser $fs
@@ -327,7 +312,7 @@ class StringController extends Controller
         $ex = $fs->getOpt('exclude');
         $in = $fs->getOpt('include');
 
-        $trim = $fs->getOpt('trim');
+        $trim = !$fs->getOpt('no-trim');
         $cut  = $fs->getOpt('cut');
         $sep  = $fs->getOpt('sep', "\n");
         // filters
@@ -366,6 +351,39 @@ class StringController extends Controller
             }, $filters);
 
         echo $s->implode($sep), "\n";
+    }
+
+    /**
+     * Replace all occurrences of the search string with the replacement string
+     *
+     * @arguments
+     * text     The source text for handle.
+     *          Special:
+     *          input '@c' or '@cb' or '@clipboard' - will read from Clipboard
+     *          input empty or '@i' or '@stdin'     - will read from STDIN
+     *          input '@l' or '@load'               - will read from loaded file
+     *          input '@FILEPATH'                   - will read from the filepath
+     *
+     * @options
+     *  -f, --from    The replace from char
+     *  -t, --to      The replace to chars
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function replaceCommand(FlagsParser $fs, Output $output): void
+    {
+        $text = trim($fs->getArg('text'));
+        $text = ContentsAutoReader::readFrom($text);
+
+        $from = $fs->getOpt('from');
+        $to   = $fs->getOpt('to');
+        if (!$from && !$to) {
+            $output->warning('the from and to cannot all empty');
+            return;
+        }
+
+        $output->writeRaw(str_replace($from, $to, $text));
     }
 
     /**

@@ -20,7 +20,7 @@ class SysController extends Controller
 {
     protected static $name = 'sys';
 
-    protected static $description = 'Some useful tool commands for system';
+    protected static $desc = 'Some useful tool commands for system';
 
     /**
      * run a php built-in server for development(is alias of the command 'server:dev')

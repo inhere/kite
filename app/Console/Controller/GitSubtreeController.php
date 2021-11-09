@@ -37,7 +37,7 @@ class GitSubtreeController extends Controller
     public const TYPE_HTTPS = 'https://github.com/';
 
     protected static $name = 'git-sub';
-    protected static $description = 'quick the git subtree tool';
+    protected static $desc = 'quick the git subtree tool';
 
     /**
      * @var string

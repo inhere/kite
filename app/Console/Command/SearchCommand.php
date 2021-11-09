@@ -15,7 +15,7 @@ class SearchCommand extends Command
 {
     protected static $name = 'search';
 
-    protected static $description = 'Search by web search engine, such as google, baidu, bing';
+    protected static $desc = 'Search by web search engine, such as google, baidu, bing';
 
     private array $engines = [
         'google'        => 'https://www.google.com/search?q=',

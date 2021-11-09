@@ -26,7 +26,7 @@ class GitFlowController extends Controller
 {
     protected static $name = 'gitflow';
 
-    protected static $description = 'Some useful tool commands for git flow development';
+    protected static $desc = 'Some useful tool commands for git flow development';
 
     /**
      * @var array

@@ -20,7 +20,7 @@ class DemoController extends Controller
 {
     protected static $name = 'demo';
 
-    protected static $description = 'Some useful development tool commands';
+    protected static $desc = 'Some useful development tool commands';
 
     public static function isEnabled(): bool
     {

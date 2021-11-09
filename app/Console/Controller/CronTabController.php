@@ -24,7 +24,7 @@ class CronTabController extends Controller
 {
     protected static $name = 'crontab';
 
-    protected static $description = 'parse or convert crontab expression';
+    protected static $desc = 'parse or convert crontab expression';
 
     public static function aliases(): array
     {

@@ -40,7 +40,7 @@ class CheatCommand extends Command
 
     protected static $name = 'cheat';
 
-    protected static $description = 'Query cheat for development';
+    protected static $desc = 'Query cheat for development';
 
     /**
      * @return string[]

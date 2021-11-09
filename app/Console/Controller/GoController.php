@@ -26,7 +26,7 @@ class GoController extends Controller
 {
     protected static $name = 'go';
 
-    protected static $description = 'Some useful tool commands for go development';
+    protected static $desc = 'Some useful tool commands for go development';
 
     protected static function commandAliases(): array
     {

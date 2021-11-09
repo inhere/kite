@@ -26,7 +26,7 @@ class DbController extends Controller
 {
     protected static $name = 'db';
 
-    protected static $description = 'Database development tool commands';
+    protected static $desc = 'Database development tool commands';
 
     /**
      * convert an mysql table create SQL to markdown table

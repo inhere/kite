@@ -48,7 +48,7 @@ class ConvertController extends Controller
 {
     protected static $name = 'convert';
 
-    protected static $description = 'Some useful convert development tool commands';
+    protected static $desc = 'Some useful convert development tool commands';
 
     /**
      * @return string[]

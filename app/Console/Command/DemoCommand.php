@@ -20,7 +20,7 @@ class DemoCommand extends Command
 {
     protected static $name = 'demo1';
 
-    protected static $description = 'a test command';
+    protected static $desc = 'a test command';
 
     public static function isEnabled(): bool
     {

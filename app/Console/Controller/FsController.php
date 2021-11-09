@@ -27,7 +27,7 @@ class FsController extends Controller
 {
     protected static $name = 'fs';
 
-    protected static $description = 'Some useful development tool commands';
+    protected static $desc = 'Some useful development tool commands';
 
     public static function aliases(): array
     {

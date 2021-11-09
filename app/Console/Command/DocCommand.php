@@ -36,7 +36,7 @@ class DocCommand extends Command
 {
     protected static $name = 'doc';
 
-    protected static $description = 'Useful documents for how to use git,tmux and more tool';
+    protected static $desc = 'Useful documents for how to use git,tmux and more tool';
 
     /**
      * @var string

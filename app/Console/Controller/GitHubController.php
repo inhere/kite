@@ -30,7 +30,7 @@ class GitHubController extends Controller
 {
     protected static $name = 'github';
 
-    protected static $description = 'Some useful development tool commands';
+    protected static $desc = 'Some useful development tool commands';
 
     /**
      * @var array

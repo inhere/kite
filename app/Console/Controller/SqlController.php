@@ -24,7 +24,7 @@ class SqlController extends Controller
 {
     protected static $name = 'sql';
 
-    protected static $description = 'Some useful development tool commands for SQL';
+    protected static $desc = 'Some useful development tool commands for SQL';
 
     /**
      * @return string[][]

@@ -51,7 +51,7 @@ class GitController extends Controller
 {
     protected static $name = 'git';
 
-    protected static $description = 'Provide useful tool commands for quick use git';
+    protected static $desc = 'Provide useful tool commands for quick use git';
 
     /**
      * @var DataObject

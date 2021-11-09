@@ -23,7 +23,7 @@ class InitCommand extends Command
 {
     protected static $name = 'init';
 
-    protected static $description = 'initialize kite on the system';
+    protected static $desc = 'initialize kite on the system';
 
     /**
      * @options

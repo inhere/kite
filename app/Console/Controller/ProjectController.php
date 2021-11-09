@@ -14,7 +14,7 @@ class ProjectController extends Controller
 {
     protected static $name = 'new';
 
-    protected static $description = 'quick create new project or package or library tool commands';
+    protected static $desc = 'quick create new project or package or library tool commands';
 
     public static function aliases(): array
     {

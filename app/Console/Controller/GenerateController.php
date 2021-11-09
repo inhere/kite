@@ -32,7 +32,7 @@ class GenerateController extends Controller
 {
     protected static $name = 'gen';
 
-    protected static $description = 'quick generate new class or file from template';
+    protected static $desc = 'quick generate new class or file from template';
 
     public static function aliases(): array
     {

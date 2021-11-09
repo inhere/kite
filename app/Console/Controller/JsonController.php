@@ -42,7 +42,7 @@ class JsonController extends Controller
 {
     protected static $name = 'json';
 
-    protected static $description = 'Some useful json development tool commands';
+    protected static $desc = 'Some useful json development tool commands';
 
     /**
      * @var string

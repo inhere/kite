@@ -52,7 +52,7 @@ class PhpController extends Controller
 {
     protected static $name = 'php';
 
-    protected static $description = 'Some useful tool commands for php development';
+    protected static $desc = 'Some useful tool commands for php development';
 
     protected static function commandAliases(): array
     {

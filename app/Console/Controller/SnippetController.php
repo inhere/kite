@@ -20,7 +20,7 @@ class SnippetController extends Controller
 {
     protected static $name = 'snippet';
 
-    protected static $description = 'Some useful development tool commands';
+    protected static $desc = 'Some useful development tool commands';
 
     /**
      * @return string[]

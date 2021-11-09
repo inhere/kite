@@ -45,7 +45,7 @@ class ExprCommand extends Command
 {
     protected static $name = 'expr';
 
-    protected static $description = 'Use for expression calculation';
+    protected static $desc = 'Use for expression calculation';
 
     public const RESULT_VAR = 'ret';
 

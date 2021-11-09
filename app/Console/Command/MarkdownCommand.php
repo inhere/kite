@@ -27,7 +27,7 @@ class MarkdownCommand extends Command
     /**
      * @var string
      */
-    protected static $description = 'render markdown file on terminal';
+    protected static $desc = 'render markdown file on terminal';
 
     /**
      * @return string[]

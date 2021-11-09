@@ -26,7 +26,7 @@ class RunCommand extends Command
 {
     protected static $name = 'run';
 
-    protected static $description = 'run an script command or script file or kite plugin';
+    protected static $desc = 'run an script command or script file or kite plugin';
 
     /**
      * @var ScriptRunner

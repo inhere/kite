@@ -25,7 +25,7 @@ class K8sController extends Controller
 {
     protected static $name = 'k8s';
 
-    protected static $description = 'Kubernetes development tool commands';
+    protected static $desc = 'Kubernetes development tool commands';
 
     /**
      * generate apply template contents for k8s

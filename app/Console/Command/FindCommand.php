@@ -20,7 +20,7 @@ class FindCommand extends Command
 {
     protected static $name = 'find';
 
-    protected static $description = 'find file name, contents by grep,find command';
+    protected static $desc = 'find file name, contents by grep,find command';
 
     public static function aliases(): array
     {

@@ -24,7 +24,7 @@ class PluginController extends Controller
 {
     protected static $name = 'plugin';
 
-    protected static $description = 'kite plugins manage tools';
+    protected static $desc = 'kite plugins manage tools';
 
     /**
      * @return string[]

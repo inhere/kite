@@ -49,7 +49,7 @@ class UtilController extends Controller
 
     protected static $name = 'util';
 
-    protected static $description = 'Some useful development tool commands';
+    protected static $desc = 'Some useful development tool commands';
 
     protected static function commandAliases(): array
     {
