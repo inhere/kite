@@ -4,6 +4,7 @@ namespace Inhere\Kite\Helper;
 
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Template\EasyTemplate;
+use Inhere\Kite\Lib\Template\TextTemplate;
 use Toolkit\FsUtil\FS;
 use Toolkit\Stdlib\OS;
 use Toolkit\Stdlib\Str;
@@ -18,10 +19,10 @@ use function str_replace;
 class KiteUtil
 {
 
-    public const NL_CHAR = 'NL';
+    public const NL_CHAR    = 'NL';
     public const SPACE_CHAR = 'SPACE';
 
-    public const STDIN_ALIAS  = [
+    public const STDIN_ALIAS = [
         '@i',
         '@stdin',
         'stdin',
@@ -98,8 +99,7 @@ class KiteUtil
      */
     public static function newTplEngine(array $config = []): EasyTemplate
     {
-        return EasyTemplate::new($config)
-            ->disableEchoFilter()
+        return TextTemplate::new($config)
             ->setPathResolver([Kite::class, 'resolve'])
             ->configThis(function (EasyTemplate $tpl) {
                 $tpl->tmpDir = Kite::getTmpPath('tplCache');

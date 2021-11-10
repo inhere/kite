@@ -6,6 +6,8 @@ use Inhere\Kite\Lib\Template\Compiler\PregCompiler;
 use Inhere\Kite\Lib\Template\Contract\CompilerInterface;
 use Inhere\Kite\Lib\Template\Contract\EasyTemplateInterface;
 use InvalidArgumentException;
+use Toolkit\FsUtil\File;
+use function basename;
 use function is_string;
 
 /**
@@ -13,8 +15,13 @@ use function is_string;
  *
  * @author inhere
  */
-class EasyTemplate extends TextTemplate implements EasyTemplateInterface
+class EasyTemplate extends PhpTemplate implements EasyTemplateInterface
 {
+    /**
+     * @var string[]
+     */
+    protected array $allowExt = ['.html', '.phtml', '.php', '.tpl'];
+
     /**
      * @var CompilerInterface
      */
@@ -115,10 +122,10 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
         $tplFile = $this->findTplFile($tplFile);
 
         // compile contents
-        $tplCode = $this->compiler->compileFile($tplFile);
+        $phpCode = $this->compiler->compileFile($tplFile);
 
         // generate temp php file
-        return $this->genTempPhpFile($tplCode);
+        return $this->genTmpPhpFile($phpCode, File::getName($tplFile, true));
     }
 
     /**

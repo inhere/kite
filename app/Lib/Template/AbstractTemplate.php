@@ -112,7 +112,6 @@ abstract class AbstractTemplate implements TemplateInterface
 
         $suffix  = '';
         $tplFile = $this->tplDir . '/' . $tplName;
-
         if (strpos($tplName, '.') > 0) {
             $suffix = File::getExtension($tplName);
         }
