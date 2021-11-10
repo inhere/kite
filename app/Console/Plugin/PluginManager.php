@@ -16,6 +16,7 @@ use function array_search;
 use function basename;
 use function class_exists;
 use function count;
+use function implode;
 use function is_dir;
 use function is_file;
 use function key;
@@ -26,6 +27,7 @@ use function strpos;
 use function strtolower;
 use function substr;
 use function trim;
+use function vdump;
 
 /**
  * Class PluginManager
@@ -99,7 +101,6 @@ class PluginManager
 
             $matched = $words = [];
             // input is multi words for match.
-            // $isMulti = str_contains($name, ' ');
             if (str_contains($name, ' ')) {
                 $words = Str::explode($name, ' ');
             }
@@ -119,6 +120,10 @@ class PluginManager
 
                 $plugin = $this->getPlugin($pluginName);
             } else {
+                if (count($matched) > 1) {
+                    Cli::warn("[Tips] keywords can match multi plugins: " . implode(',', array_keys($matched)));
+                }
+
                 throw new RuntimeException("the plugin '$name' is not exists.");
             }
         }

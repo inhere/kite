@@ -13,6 +13,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
+use Inhere\Kite\Console\Component\ContentsAutoWriter;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\KiteUtil;
 use Inhere\Kite\Kite;
@@ -33,6 +34,7 @@ use function str_replace;
 use function strlen;
 use function substr;
 use function trim;
+use function vdump;
 
 /**
  * Class StringController
@@ -246,7 +248,7 @@ class StringController extends Controller
                     $str = $argStr . $str;
                     break;
                 case 'replace':
-                    $str = str_replace($args[0], $args[1], $str);
+                    $str = (string)str_replace($args[0], $args[1], $str);
                     break;
                 default:
                     throw new InvalidArgumentException("unsupported filter: $filter");
@@ -269,25 +271,24 @@ class StringController extends Controller
      *          input '@FILEPATH'                   - will read from the filepath
      *
      * @options
-     *  -e, --exclude   array;sub text should not contains keywords.
-     *  -i, --include   array;sub text should contains keywords.
-     *      --no-trim   bool;trim the each sub text.
-     *      --each      bool;Operate on each substr after split.
-     *      --wrap      wrap the each line by the separator
-     *  -j, --join      join the each line by the separator
-     *  -c, --cut       cut each line by the separator. cut position: L R, eg: 'L='
-     *  -r, --replace   array;replace chars for each sub text
-     *  -s, --sep       The separator char for split contents. defaults is newline(\n).
-     *  -f, --filter    array;apply filter for handle each sub text.
-     *                  allow filters:
-     *                  - replace       replace substr
-     *                  - notEmpty      filter empty line
-     *                  - minlen        limit min length. `minlen:6`
-     *                  - maxlen        limit max length. `maxlen:16`
-     *                  - wrap          wrap each line. `wrap:'`
-     *                  - sub           substr handle. `sub:0,2`
-     *                  - prepend       prepend char each line. `prepend:-`
-     *                  - append        append char to each line. `append:'`
+     *  -e, --exclude      array;sub text should not contains keywords.
+     *  -i, --include      array;sub text should contains keywords.
+     *      --no-trim      bool;trim the each sub text.
+     *      --each         bool;Operate on each substr after split.
+     *  -c, --cut          cut each line by the separator. cut position: L R, eg: 'L='
+     *  -o, --output       write result to the output;;stdout
+     *      --join-sep     join the each line by the separator
+     *  -s, --sep          The separator char for split contents. defaults is newline(\n).
+     *  -f, --filter       array;apply filter for handle each sub text.
+     *                     allow filters:
+     *                     - replace       replace substr
+     *                     - notEmpty      filter empty line
+     *                     - minlen        limit min length. `minlen:6`
+     *                     - maxlen        limit max length. `maxlen:16`
+     *                     - wrap          wrap each line. `wrap:'`
+     *                     - sub           substr handle. `sub:0,2`
+     *                     - prepend       prepend char each line. `prepend:-`
+     *                     - append        append char to each line. `append:'`
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -350,7 +351,10 @@ class StringController extends Controller
                 return $this->applyFilters($line, $filters);
             }, $filters);
 
-        echo $s->implode($sep), "\n";
+        $result  = $s->implode($sep);
+        $outFile = $fs->getOpt('output');
+
+        ContentsAutoWriter::writeTo($outFile, $result);
     }
 
     /**

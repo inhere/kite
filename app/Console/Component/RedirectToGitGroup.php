@@ -39,9 +39,9 @@ class RedirectToGitGroup extends AbstractObj
 
         // resolve alias
         $gitCtrl = $app->getController(GitController::getName());
-        $action  = $gitCtrl->resolveAlias($action);
 
-        $group = $ctrl->getRealGName();
+        $action = $gitCtrl->resolveAlias($action);
+        $group  = $ctrl->getRealGName();
 
         // if $first = *, will redirect all command.
         $first = $this->cmdList[0];

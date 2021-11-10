@@ -5,7 +5,7 @@ namespace Inhere\Kite\Concern;
 use Inhere\Kite\Common\GitAPI\GitHubV3API;
 use Inhere\Kite\Common\GitAPI\GitLabV4API;
 use Inhere\Kite\Kite;
-use Leuffen\TextTemplate\TextTemplate;
+use Inhere\Kite\Lib\Template\EasyTemplate;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Toolkit\Stdlib\Arr\ArrayHelper;
@@ -104,7 +104,7 @@ trait InitApplicationTrait
         });
 
         $box->set('txtRender', function () {
-            return new TextTemplate();
+            return EasyTemplate::new()->disableEchoFilter();
         });
 
         $box->set('glApi', function () {

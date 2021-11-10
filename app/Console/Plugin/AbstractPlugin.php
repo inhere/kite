@@ -21,7 +21,7 @@ abstract class AbstractPlugin implements PluginInterface
     /**
      * @var FlagsParser
      */
-    protected $fs;
+    protected FlagsParser $fs;
 
     /**
      * @var string

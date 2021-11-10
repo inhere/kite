@@ -10,6 +10,7 @@ defined('IN_PHAR') || define('IN_PHAR', false);
 $loader = require $baseDir . '/vendor/autoload.php';
 
 $loader->addPsr4("PhpPkg\\EasyTpl\\", $baseDir . '/vendor/phppkg/easytpl/src/');
+$loader->addPsr4("PhpPkg\\Config\\", $baseDir . '/vendor/phppkg/config/src/');
 $loader->addPsr4("PhpPkg\\Ini\\", $baseDir . '/vendor/phppkg/ini/src/');
 
 // user kite dirs
