@@ -11,7 +11,7 @@ use function substr;
 /**
  * class Json5LineParser - parse json5 line, get field and comments
  */
-class Json5LineParser
+class Json5ItemParser
 {
     public const KEY_FIELD  = 'field';
     public const KEY_COMMENT = 'comment';

@@ -9,7 +9,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Parser\IniParser;
-use Inhere\Kite\Lib\Template\TextTemplate;
+use Inhere\Kite\Lib\Template\PhpTemplate;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Proc\ProcWrapper;
@@ -99,7 +99,7 @@ class GenerateController extends Controller
         $vars = IniParser::decode(trim($varDefine));
         $output->aList($vars, 'template vars', ['ucFirst' => false]);
 
-        $logic  = new TextTemplate();
+        $logic  = new PhpTemplate();
         $result = $logic->renderString(trim($template), $vars);
 
         $output->success('Render Result:');

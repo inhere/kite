@@ -24,6 +24,16 @@ class DBSchemeSQL
      *
      * @return DBTable
      */
+    public static function parseSQL(string $createSQL): DBTable
+    {
+        return (new self())->parse($createSQL);
+    }
+
+    /**
+     * @param string $createSQL
+     *
+     * @return DBTable
+     */
     public function parse(string $createSQL): DBTable
     {
         $dbt = new DBTable();
@@ -63,6 +73,11 @@ class DBSchemeSQL
         return $dbt;
     }
 
+    /**
+     * @param string $row
+     *
+     * @return array
+     */
     public function parseLine(string $row): array
     {
         [$field, $other] = explode(' ', $row, 2);
@@ -105,7 +120,7 @@ class DBSchemeSQL
             'type'     => strtolower($type),
             'typeLen'  => $typeLen,
             'typeExt'  => $typeExt,
-            'nullable' => $allowNull,
+            'allowNull' => $allowNull,
             'default'  => $default,
             'comment'  => $comment,
         ];

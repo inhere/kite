@@ -3,8 +3,8 @@
 namespace Inhere\Kite\Lib\Parser\Text;
 
 use Closure;
-use Inhere\Kite\Lib\Parser\IniParser;
 use InvalidArgumentException;
+use PhpPkg\Ini\Ini;
 use Toolkit\Stdlib\Str;
 use function array_combine;
 use function array_merge;
@@ -12,6 +12,7 @@ use function array_pad;
 use function count;
 use function explode;
 use function implode;
+use function is_array;
 use function str_contains;
 use function str_replace;
 use function trim;
@@ -313,7 +314,7 @@ class TextParser
             $header = $beforeFn($header);
         }
 
-        $this->settings = IniParser::decode($header);
+        $this->settings = Ini::decode($header);
         foreach ($allowConfig as $prop) {
             if (!isset($this->settings[$prop])) {
                 continue;
@@ -422,6 +423,10 @@ class TextParser
         if ($indexToField && $this->fields) {
             $new = [];
             foreach ($this->data as $item) {
+                if (!is_array($item)) {
+                    throw new InvalidArgumentException('data item is not array, cannot replace index to field');
+                }
+
                 // on item elem number < $this->fieldNum, pad empty string value.
                 if (count($item) < $this->fieldNum) {
                     $item = array_pad($item, $this->fieldNum, '');
@@ -448,6 +453,10 @@ class TextParser
 
         $indexToField = $indexToField && $this->fields;
         foreach ($this->data as $item) {
+            if (!is_array($item)) {
+                throw new InvalidArgumentException('data item is not array, cannot replace index to field');
+            }
+
             if (!isset($item[$keyIdxOrName])) {
                 throw new InvalidArgumentException("the data item index/key '$keyIdxOrName' not exists");
             }

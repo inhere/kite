@@ -19,10 +19,22 @@ use function trim;
 use function ucfirst;
 
 /**
- * class MkDownTable
+ * class DBMdTable
+ *
+ * @author inhere
  */
 class DBMdTable
 {
+    /**
+     * @param string $mdTable
+     *
+     * @return DBTable
+     */
+    public static function parseMD(string $mdTable): DBTable
+    {
+        return (new self())->parse($mdTable);
+    }
+
     /**
      * @param string $mdTable
      *
@@ -88,7 +100,6 @@ class DBMdTable
             return trim($value, '`\': ');
         }, explode('|', $line));
 
-
         $typeLen  = 0;
         $typeExt  = '';
         $typeNode = $nodes[1];
@@ -148,7 +159,7 @@ class DBMdTable
             'type'     => strtolower($upType),
             'typeLen'  => $typeLen,
             'typeExt'  => $typeExt,
-            'nullable' => $allowNull === '',
+            'allowNull' => $allowNull === '',
             'default'  => $defValue,
             'comment'  => $fieldComment,
         ];

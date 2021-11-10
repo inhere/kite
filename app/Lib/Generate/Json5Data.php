@@ -4,7 +4,7 @@ namespace Inhere\Kite\Lib\Generate;
 
 use ColinODell\Json5\Json5Decoder;
 use Inhere\Kite\Lib\Generate\Json\JsonField;
-use Inhere\Kite\Lib\Parser\Text\Json5LineParser;
+use Inhere\Kite\Lib\Parser\Text\Json5ItemParser;
 use Inhere\Kite\Lib\Parser\Text\TextParser;
 use Toolkit\Stdlib\Obj\AbstractObj;
 use function gettype;
@@ -43,7 +43,7 @@ class Json5Data extends AbstractObj
 
         // has comments chars
         if (str_contains($json, '//')) {
-            $p = TextParser::newWithParser($json, new Json5LineParser())
+            $p = TextParser::newWithParser($json, new Json5ItemParser())
                 ->withConfig(function (TextParser $p) {
                     $p->headerSep = "\n//###\n";
                 })

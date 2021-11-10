@@ -8,7 +8,6 @@ use Toolkit\Stdlib\Str;
 use function array_merge;
 use function implode;
 use function sprintf;
-use function str_contains;
 use function strtoupper;
 
 /**
@@ -17,13 +16,13 @@ use function strtoupper;
 class DBTable
 {
     public const FIELD_META = [
-        'name'     => '',
-        'type'     => '', // int
-        'typeLen'  => '', // eg: 10
-        'typeExt'  => '', // eg: UNSIGNED
-        'nullable' => true,
-        'default'  => '',
-        'comment'  => '',
+        'name'      => '',
+        'type'      => '', // int
+        'typeLen'   => 0, // eg: 10
+        'typeExt'   => '', // eg: UNSIGNED
+        'allowNull' => true,
+        'default'   => '',
+        'comment'   => '',
     ];
 
     protected string $source = '';
@@ -31,14 +30,14 @@ class DBTable
     /**
      * @var string
      */
-    protected string $tableName = '';
+    public string $tableName = '';
 
     /**
      * table comments desc
      *
      * @var string
      */
-    protected string $tableComment = '';
+    public string $tableComment = '';
 
     /**
      * @see FIELD_META
@@ -194,7 +193,7 @@ TXT;
             }
 
             $nodes[] = $typeNode;
-            if (!$meta['nullable']) {
+            if (!$meta['allowNull']) {
                 $nodes[] = 'NOT NULL';
             }
 
@@ -207,7 +206,7 @@ TXT;
                 }
                 // if ($this->isNoDefault($type)) {
                 // } else {
-            } elseif (!$meta['nullable'] && TypeMap::isStringType($type)) {
+            } elseif (!$meta['allowNull'] && TypeMap::isStringType($type)) {
                 $nodes[] = "DEFAULT ''";
             }
 
@@ -248,7 +247,7 @@ TXT;
                 $upType .= ' ' . $meta['typeExt'];
             }
 
-            $allowNull = $meta['nullable'] ? 'Yes' : 'No';
+            $allowNull = $meta['allowNull'] ? 'Yes' : 'No';
             $default   = $meta['default'];
 
             $mdNodes[] = sprintf(
@@ -293,6 +292,20 @@ TXT;
     public function getFields(): array
     {
         return $this->fields;
+    }
+
+    /**
+     * @param class-string $fieldClass
+     *
+     * @return array[]
+     */
+    public function getObjFields(string $fieldClass): array
+    {
+        $map = [];
+        foreach ($this->fields as $field => $info) {
+            $map[$field] = new $fieldClass($fieldClass);
+        }
+        return $map;
     }
 
     /**

@@ -17,7 +17,7 @@ use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Generate\JsonToCode;
-use Inhere\Kite\Lib\Parser\Text\Json5LineParser;
+use Inhere\Kite\Lib\Parser\Text\Json5ItemParser;
 use Inhere\Kite\Lib\Parser\Text\TextParser;
 use InvalidArgumentException;
 use Throwable;
@@ -237,7 +237,7 @@ class JsonController extends Controller
             throw new InvalidArgumentException('please input json(5) text for handle');
         }
 
-        $parser = TextParser::newWithParser($json, new Json5LineParser());
+        $parser = TextParser::newWithParser($json, new Json5ItemParser());
         $fields = $parser->getStringMap('field', 'comment');
 
         $output->aList($fields);

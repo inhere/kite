@@ -2,32 +2,16 @@
 
 namespace Inhere\Kite\Lib\Generate;
 
-use ColinODell\Json5\Json5Decoder;
 use Inhere\Kite\Helper\KiteUtil;
-use Inhere\Kite\Lib\Generate\Java\JavaType;
-use Inhere\Kite\Lib\Generate\Json\JsonField;
-use Inhere\Kite\Lib\Parser\Text\Json5LineParser;
-use Inhere\Kite\Lib\Parser\Text\TextParser;
 use InvalidArgumentException;
-use Throwable;
 use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Obj;
 use Toolkit\Stdlib\OS;
-use Toolkit\Stdlib\Str;
-use Toolkit\Stdlib\Type;
 use function array_merge;
 use function date;
 use function dirname;
-use function gettype;
 use function is_file;
-use function preg_match;
-use function str_contains;
-use function str_ends_with;
-use function str_replace;
-use function strpos;
-use function substr;
 use function trim;
-use function vdump;
 
 /**
  * class AbstractJsonToCode
@@ -121,17 +105,18 @@ abstract class AbstractJsonToCode
         $tplEng  = KiteUtil::newTplEngine();
 
         $settings = array_merge([
-            'lang'      => 'java',
-            'user'      => OS::getUserName(),
-            'date'      => date('Y-m-d'),
+            'lang' => 'java',
+            'user' => OS::getUserName(),
+            'date' => date('Y-m-d'),
         ], $this->contexts);
 
-        $tplVars = [
-            'ctx'    => $settings,
-            'fields' => $this->fields,
-        ];
+        $settings['fields'] = $this->fields;
+        // $tplVars = [
+        //     'ctx'    => $settings,
+        //     'fields' => $this->fields,
+        // ];
 
-        return $tplEng->renderString($tplText, $tplVars);
+        return $tplEng->renderString($tplText, $settings);
     }
 
     /**
