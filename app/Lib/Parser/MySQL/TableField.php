@@ -2,7 +2,9 @@
 
 namespace Inhere\Kite\Lib\Parser\MySQL;
 
+use Inhere\Kite\Lib\Generate\Java\JavaType;
 use Inhere\Kite\Lib\Parser\Item\FieldItem;
+use Toolkit\Stdlib\Str;
 
 /**
  * class TableField
@@ -36,6 +38,29 @@ class TableField extends FieldItem
      * @var string
      */
     public string $default = '';
+
+    /**
+     * @return string
+     */
+    public function phpType(): string
+    {
+        return DBType::toPhpType($this->type);
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return string
+     */
+    public function toJavaType(string $type): string
+    {
+        if ($type === DBType::JSON) {
+            return JavaType::OBJECT;
+        }
+
+        $type = DBType::toPhpType($type);
+        return Str::upFirst($type);
+    }
 
     /**
      * @return array

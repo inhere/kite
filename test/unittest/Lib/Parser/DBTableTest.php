@@ -4,7 +4,7 @@ namespace Inhere\KiteTest\Lib\Parser;
 
 use Inhere\Kite\Lib\Parser\DBMdTable;
 use Inhere\Kite\Lib\Parser\DBTable;
-use Inhere\Kite\Lib\Parser\MySQL\TypeMap;
+use Inhere\Kite\Lib\Parser\MySQL\DBType;
 use Inhere\KiteTest\BaseKiteTestCase;
 
 /**
@@ -51,7 +51,7 @@ SQL;
 
         $field = $dbt->getField('orderno');
         $this->assertNotEmpty($field);
-        $this->assertEquals(TypeMap::VARCHAR, $field['type']);
+        $this->assertEquals(DBType::VARCHAR, $field['type']);
         $this->assertEquals(48, $field['typeLen']);
 
         $this->assertNotEmpty($genSql = $dbt->toString());

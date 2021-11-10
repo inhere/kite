@@ -31,26 +31,44 @@ class FieldItem extends AbstractObj implements JsonSerializable
     public function getType(string $lang = 'php'): string
     {
         if ($lang === 'php') {
-            return $this->type;
+            return $this->phpType();
         }
 
-        return $this->toJavaType();
+        return $this->javaType();
     }
 
     /**
      * @return string
      */
-    public function toJavaType(): string
+    public function phpType(): string
     {
-        if ($this->type === Type::ARRAY) {
-            return JavaType::OBJECT;
-        }
+        return $this->type;
+    }
 
+    /**
+     * @return string
+     */
+    public function javaType(): string
+    {
         if (str_ends_with($this->name, 'id') || str_ends_with($this->name, 'Id')) {
             return JavaType::LONG;
         }
 
-        return Str::upFirst($this->type);
+        return $this->toJavaType($this->type);
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return string
+     */
+    public function toJavaType(string $type): string
+    {
+        if ($type === Type::ARRAY) {
+            return JavaType::OBJECT;
+        }
+
+        return Str::upFirst($type);
     }
 
     /**

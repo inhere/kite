@@ -110,7 +110,7 @@ class KiteUtil
                 'nl'      => function (string $str): string {
                     return $str . "\n";
                 },
-                'camel'   => function (string $str, bool $upFirst): string {
+                'camel'   => function (string $str, bool $upFirst = false): string {
                     return Str::toCamel($str, $upFirst);
                 },
                 'snake'   => function (string $str): string {

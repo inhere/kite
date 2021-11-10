@@ -2,7 +2,7 @@
 
 namespace Inhere\Kite\Lib\Parser;
 
-use Inhere\Kite\Lib\Parser\MySQL\TypeMap;
+use Inhere\Kite\Lib\Parser\MySQL\DBType;
 use Inhere\Kite\Lib\Stream\MapStream;
 use Toolkit\Stdlib\Str;
 use function array_merge;
@@ -206,7 +206,7 @@ TXT;
                 }
                 // if ($this->isNoDefault($type)) {
                 // } else {
-            } elseif (!$meta['allowNull'] && TypeMap::isStringType($type)) {
+            } elseif (!$meta['allowNull'] && DBType::isStringType($type)) {
                 $nodes[] = "DEFAULT ''";
             }
 
@@ -303,7 +303,7 @@ TXT;
     {
         $map = [];
         foreach ($this->fields as $field => $info) {
-            $map[$field] = new $fieldClass($fieldClass);
+            $map[$field] = new $fieldClass($info);
         }
         return $map;
     }

@@ -2,7 +2,7 @@
 
 namespace Inhere\Kite\Lib\Parser;
 
-use Inhere\Kite\Lib\Parser\MySQL\TypeMap;
+use Inhere\Kite\Lib\Parser\MySQL\DBType;
 use function array_filter;
 use function array_map;
 use function array_values;
@@ -144,7 +144,7 @@ class DBMdTable
 
             // default value
             if (isset($nodes[3])) {
-                if (TypeMap::isNoDefault($upType)) {
+                if (DBType::isNoDefault($upType)) {
                     $defValue = '';
                 } else {
                     $defValue = $isInt ? (int)$nodes[3] : $nodes[3];

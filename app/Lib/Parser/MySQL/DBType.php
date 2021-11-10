@@ -8,7 +8,7 @@ use function strtolower;
 /**
  * class TypeMap
  */
-class TypeMap
+class DBType
 {
     public const INT = 'int';
 
@@ -79,7 +79,7 @@ class TypeMap
         }
 
         if (self::isIntType($dbType)) {
-            return Type::INT;
+            return Type::INTEGER;
         }
 
         if (self::isStringType($dbType)) {

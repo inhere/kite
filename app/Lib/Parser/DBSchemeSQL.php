@@ -2,6 +2,7 @@
 
 namespace Inhere\Kite\Lib\Parser;
 
+use InvalidArgumentException;
 use function array_pop;
 use function array_shift;
 use function explode;
@@ -39,9 +40,17 @@ class DBSchemeSQL
         $dbt = new DBTable();
         $dbt->setSource($createSQL);
 
-        $tableRows = explode("\n", trim($createSQL));
+        if (!$createSQL = trim($createSQL)) {
+            throw new InvalidArgumentException('empty create SQL for parse');
+        }
+
+        if (stripos($createSQL, 'CREATE TABLE ') !== 0) {
+            throw new InvalidArgumentException('invalid create table SQL for parse');
+        }
+
+        $tableRows = explode("\n", $createSQL);
         $tableName = trim(array_shift($tableRows), '( ');
-        $tableName = trim(substr($tableName, 12));
+        $tableName = trim(substr($tableName, 12), " \t\n\r\0\x0B`");
 
         $tableComment = '';
         $tableEngine  = array_pop($tableRows);

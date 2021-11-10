@@ -45,7 +45,8 @@ abstract class AbstractPlugin implements PluginInterface
 
     public function __construct()
     {
-        $this->createFlags();
+        $this->fs = new Flags();
+        // $this->createFlags();
     }
 
     public function init(): void
@@ -63,7 +64,7 @@ abstract class AbstractPlugin implements PluginInterface
 
     protected function createAndInitFlags(): void
     {
-        $fs = $this->createFlags();
+        $fs = $this->fs;
 
         $fs->setDesc($this->metadata['desc']);
         $fs->setMoreHelp($this->metadata['help']);
@@ -94,14 +95,14 @@ abstract class AbstractPlugin implements PluginInterface
     /**
      * @return FlagsParser
      */
-    protected function createFlags(): FlagsParser
-    {
-        if (!$this->fs) {
-            $this->fs = new Flags();
-        }
-
-        return $this->fs;
-    }
+    // protected function createFlags(): FlagsParser
+    // {
+    //     if (!$this->fs) {
+    //         $this->fs = new Flags();
+    //     }
+    //
+    //     return $this->fs;
+    // }
 
     /**
      * Metadata for the plugin
