@@ -4,7 +4,6 @@ namespace Inhere\Kite\Helper;
 
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Template\EasyTemplate;
-use Leuffen\TextTemplate\TextTemplate;
 use Toolkit\FsUtil\FS;
 use Toolkit\Stdlib\OS;
 use Toolkit\Stdlib\Str;
@@ -93,15 +92,31 @@ class KiteUtil
     }
 
     /**
+     * @param array $config
+     *
      * @return EasyTemplate
      */
-    public static function newTplEngine(): EasyTemplate
+    public static function newTplEngine(array $config = []): EasyTemplate
     {
-        return EasyTemplate::new()
+        return EasyTemplate::new($config)
+            ->disableEchoFilter()
             ->setPathResolver([Kite::class, 'resolve'])
             ->configThis(function (EasyTemplate $tpl) {
                 $tpl->tmpDir = Kite::getTmpPath('tplCache');
-            });
+            })
+            ->addFilters([
+                'upFirst' => 'ucfirst',
+                'upper'   => 'strtoupper',
+                'nl'      => function (string $str): string {
+                    return $str . "\n";
+                },
+                'camel'   => function (string $str, bool $upFirst): string {
+                    return Str::toCamel($str, $upFirst);
+                },
+                'snake'   => function (string $str): string {
+                    return Str::toSnake($str);
+                },
+            ]);
     }
 
     /**

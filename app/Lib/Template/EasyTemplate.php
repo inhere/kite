@@ -144,8 +144,8 @@ class EasyTemplate extends TextTemplate implements EasyTemplateInterface
      */
     public function applyFilter(string $filter, string $result, ...$args): string
     {
-        if (isset($this->customFilters[$filter])) {
-            throw new InvalidArgumentException("apply unregistered filter: $filter");
+        if (!isset($this->customFilters[$filter])) {
+            throw new InvalidArgumentException("Template - apply unregistered filter: $filter");
         }
 
         $filterFn = $this->customFilters[$filter];

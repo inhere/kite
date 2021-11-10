@@ -111,7 +111,7 @@ abstract class AbstractCompiler implements CompilerInterface
                 if (strlen($argStr) > 1 && str_contains($argStr, ',')) {
                     $args = Str::toTypedList($argStr);
                 } else {
-                    $args = [Str::toTyped($argStr)];
+                    $args = [Str::toTyped($argStr, true)];
                 }
 
                 $filter  = $this->filterMapping[$filter] ?? $filter . '(';

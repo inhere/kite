@@ -49,6 +49,8 @@ abstract class AbstractTemplate implements TemplateInterface
     public $pathResolver;
 
     /**
+     * @param array $config
+     *
      * @return static
      */
     public static function new(array $config = []): self
