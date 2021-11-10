@@ -9,9 +9,13 @@ use function explode;
 use function htmlspecialchars;
 use function implode;
 use function in_array;
+use function is_bool;
+use function is_float;
+use function is_int;
 use function sprintf;
 use function str_contains;
 use function strlen;
+use function vdump;
 
 /**
  * class AbstractCompiler
@@ -114,8 +118,21 @@ abstract class AbstractCompiler implements CompilerInterface
                     $args = [Str::toTyped($argStr, true)];
                 }
 
+                $fmtArgs = [];
+                foreach ($args as $arg) {
+                    if (is_int($arg) || is_float($arg)) {
+                        $fmtArgs[] = $arg;
+                    } elseif (is_bool($arg)) {
+                        $fmtArgs[] = $arg ? 'true' : 'false';
+                    } elseif ($arg[0] === '$') {
+                        $fmtArgs[] = $arg;
+                    } else {
+                        $fmtArgs[] = Str::shellQuote($arg);
+                    }
+                }
+
                 $filter  = $this->filterMapping[$filter] ?? $filter . '(';
-                $newExpr = sprintf('%s%s, %s)', $filter, $newExpr, implode(',', $args));
+                $newExpr = sprintf('%s%s, %s)', $filter, $newExpr, implode(',', $fmtArgs));
             } else {
                 $filter  = $this->filterMapping[$filter] ?? $filter . '(';
                 $newExpr = sprintf('%s%s)', $filter, $newExpr);
