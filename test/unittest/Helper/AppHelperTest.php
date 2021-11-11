@@ -4,6 +4,7 @@ namespace Inhere\KiteTest\Helper;
 
 use Inhere\Kite\Console\Component\Clipboard;
 use PHPUnit\Framework\TestCase;
+use Toolkit\Stdlib\OS;
 
 /**
  * Class AppHelperTest
@@ -16,6 +17,11 @@ class AppHelperTest extends TestCase
     {
         $clip = Clipboard::new();
         self::assertNotEmpty($clip);
+
+        // in github action
+        if (OS::getEnvVal('GITHUB_ACTION')) {
+            return;
+        }
 
         $current = __METHOD__;
         // vdump($current);
