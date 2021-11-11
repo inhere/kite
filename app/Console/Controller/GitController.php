@@ -288,7 +288,7 @@ class GitController extends Controller
                 $name = substr($name, $rmtLen);
             }
 
-            if ($keyword && strpos($name, $keyword) === false) {
+            if ($keyword && !str_contains($name, $keyword)) {
                 continue;
             }
 
@@ -857,7 +857,10 @@ class GitController extends Controller
         }
 
         $output->info('collect git log output');
-        $builder->add("$oldVersion...$newVersion");
+        if ($oldVersion && $newVersion) {
+            $builder->add("$oldVersion...$newVersion");
+        }
+
         $builder->addf('--pretty=format:"%s"', $logFmt);
 
         // $b->addIf("--exclude $exclude", $exclude);
@@ -869,9 +872,8 @@ class GitController extends Controller
 
         $repoUrl = $fs->getOpt('repo-url');
         if (!$repoUrl) {
-            $info = $repo->getRemoteInfo();
-
-            $repoUrl = $info->getHttpUrl();
+            $rmtInfo = $repo->getRemoteInfo();
+            $repoUrl = $rmtInfo->getHttpUrl();
         }
 
         $output->info('repo URL: ' . $repoUrl);
@@ -940,9 +942,9 @@ class GitController extends Controller
     }
 
     /**
-     * @var TagsInfo
+     * @var TagsInfo|null
      */
-    private $tagsInfo;
+    private ?TagsInfo $tagsInfo = null;
 
     /**
      * @return TagsInfo
