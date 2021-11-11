@@ -7,7 +7,6 @@ use Inhere\Kite\Lib\Template\Contract\CompilerInterface;
 use Inhere\Kite\Lib\Template\Contract\EasyTemplateInterface;
 use InvalidArgumentException;
 use Toolkit\FsUtil\File;
-use function basename;
 use function is_string;
 
 /**

@@ -130,7 +130,7 @@ abstract class AbstractTemplate implements TemplateInterface
             }
         }
 
-        throw new InvalidArgumentException("no such template file: $tplName");
+        throw new InvalidArgumentException("tplDir - no such template file: $tplName");
     }
 
     /**
