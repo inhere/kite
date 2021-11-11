@@ -63,7 +63,7 @@ jobs:
       # git status && git log -1 && git fetch --prune --unshallow
       # git status && git log -1 && git fetch --depth=500 --tags --force
       - name: Test build Phar and run
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.php == '7.4' }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.php == '8.0' }}
         run: |
           php -d phar.readonly=0 bin/kite --debug 4 phar:pack -o kite-latest.phar --no-progress
           php kite-latest.phar self info
