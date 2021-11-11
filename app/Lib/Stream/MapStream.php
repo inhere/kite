@@ -81,6 +81,21 @@ class MapStream extends BaseStream
     }
 
     /**
+     * @param callable(array): mixed $func
+     *
+     * @return array<string, mixed>
+     */
+    public function eachToMap(callable $func): array
+    {
+        $map = [];
+        foreach ($this as $key => $item) {
+            $map[$key] = $func($item);
+        }
+
+        return $map;
+    }
+
+    /**
      * @param callable(array): bool $func
      * @param bool|mixed $apply
      *

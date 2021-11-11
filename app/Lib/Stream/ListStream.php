@@ -96,7 +96,7 @@ class ListStream extends BaseStream
     }
 
     /**
-     * @param callable(array): array $func
+     * @param callable(array): array{string, mixed} $func
      *
      * @return array<string, mixed>
      */

@@ -72,6 +72,8 @@ return [
             // BASE_PATH . '/plugin'
             $basePath . '/plugin',
             $basePath . '/custom/plugin',
+            // dir => namespace. TODO
+            // $basePath . '/custom/plugin' => "Custom\\Plugin\\",
         ],
     ],
     /** @see \Inhere\Kite\Component\ScriptRunner */

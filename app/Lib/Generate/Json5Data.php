@@ -19,6 +19,9 @@ use function substr;
  */
 class Json5Data extends AbstractObj
 {
+    /**
+     * @var array<string, mixed>
+     */
     private array $settings = [];
 
     /**
@@ -33,13 +36,7 @@ class Json5Data extends AbstractObj
      */
     public function loadFrom(string $json): self
     {
-        // auto add quote char
-        if ($json[0] !== '{') {
-            $json = '{' . $json . "\n}";
-        }
-
         $comments = [];
-        $jsonData = Json5Decoder::decode($json, true);
 
         // has comments chars
         if (str_contains($json, '//')) {
@@ -52,23 +49,32 @@ class Json5Data extends AbstractObj
                         $header = substr($header, $pos + 4);
                         $header = str_replace("\n//", '', $header);
                     }
+
                     return $header;
                 })
                 ->parse();
 
             $comments = $p->getStringMap('field', 'comment');
             $this->setSettings($p->getSettings());
+            // get no header json
+            $json = $p->getTextBody();
         }
 
+        // auto add quote char
+        if ($json[0] !== '{') {
+            $json = '{' . $json . "\n}";
+        }
+
+        $jsonData = Json5Decoder::decode($json, true);
         foreach ($jsonData as $key => $value) {
             $this->fields[$key] = JsonField::new([
-                'name' => $key,
-                'type' => gettype($value),
-                'desc' => $comments[$key] ?? $key,
+                'name'    => $key,
+                'type'    => gettype($value),
+                'comment' => $comments[$key] ?? $key,
             ]);
         }
 
-        return  $this;
+        return $this;
     }
 
     /**
@@ -88,7 +94,7 @@ class Json5Data extends AbstractObj
     }
 
     /**
-     * @return JsonField[]
+     * @return array<string, JsonField>
      */
     public function getFields(): array
     {

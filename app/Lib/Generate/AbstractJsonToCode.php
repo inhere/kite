@@ -102,8 +102,6 @@ abstract class AbstractJsonToCode
     protected function renderTplText(): string
     {
         $tplText = $this->readSourceFromFile();
-        $tplEng  = KiteUtil::newTplEngine();
-
         $settings = array_merge([
             'lang' => 'java',
             'user' => OS::getUserName(),
@@ -116,7 +114,8 @@ abstract class AbstractJsonToCode
         //     'fields' => $this->fields,
         // ];
 
-        return $tplEng->renderString($tplText, $settings);
+        $tpl = KiteUtil::newTplEngine();
+        return $tpl->renderString($tplText, $settings);
     }
 
     /**

@@ -10,6 +10,7 @@
 namespace Inhere\Kite;
 
 use BadMethodCallException;
+use Composer\Autoload\ClassLoader;
 use Inhere\Kite\Component\ScriptRunner;
 use Inhere\Kite\Concern\StaticPathAliasTrait;
 use Inhere\Kite\Console\CliApplication;
@@ -22,7 +23,6 @@ use Inhere\Route\Router;
 use Monolog\Logger;
 use Toolkit\FsUtil\Dir;
 use Toolkit\Stdlib\Obj\ObjectBox;
-use Toolkit\Stdlib\OS;
 use const BASE_PATH;
 use const IN_PHAR;
 
@@ -50,19 +50,24 @@ class Kite
     public const MODE_WEB = 'web';
 
     /**
-     * @var ObjectBox
+     * @var ObjectBox|null
      */
-    private static $box;
+    private static ?ObjectBox $box = null;
 
     /**
      * @var CliApplication
      */
-    private static $cliApp;
+    private static CliApplication $cliApp;
 
     /**
      * @var WebApplication
      */
-    private static $webApp;
+    private static WebApplication $webApp;
+
+    /**
+     * @var ClassLoader
+     */
+    // public static ClassLoader $loader;
 
     /**
      * @return ObjectBox
@@ -94,9 +99,9 @@ class Kite
     /**
      * @param string $id
      *
-     * @return mixed|object
+     * @return mixed
      */
-    public static function get(string $id)
+    public static function get(string $id): mixed
     {
         return self::box()->get($id);
     }
