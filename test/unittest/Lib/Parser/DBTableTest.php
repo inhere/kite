@@ -69,6 +69,6 @@ SQL;
         $ret = $dmt->parseLine('`name` | `VARCHAR(64)` | `No` | `` | 用户名称');
 
         $this->assertNotEmpty($ret);
-        $this->assertFalse($ret['nullable']);
+        $this->assertFalse($ret['allowNull']);
     }
 }

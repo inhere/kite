@@ -86,9 +86,9 @@ class Request
     private string $bodyRaw = '';
 
     /**
-     * @var BodyData
+     * @var BodyData|null
      */
-    private BodyData $bodyData;
+    private ?BodyData $bodyData = null;
 
     /**
      * @param array $data

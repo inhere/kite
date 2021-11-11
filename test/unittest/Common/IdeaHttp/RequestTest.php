@@ -5,6 +5,7 @@ namespace Inhere\KiteTest\Common\IdeaHttp;
 use Inhere\Kite\Common\IdeaHttp\Request;
 use Inhere\Kite\Common\IdeaHttp\RequestSet;
 use Inhere\KiteTest\BaseKiteTestCase;
+use function vdump;
 
 /**
  * Class RequestTest
@@ -35,7 +36,7 @@ HTTP;
         self::assertSame('application/json', $req->getContentType());
         // \vdump($req->getUrlInfo(), $req->getHeaders());
         self::assertNotEmpty($bd = $req->getBodyData());
-        \vdump($bd);
+        vdump($bd);
         // self::assertNotEmpty($data = $r->getEnvData('dev'));
         // self::assertArrayHasKey('host', $data);
     }
