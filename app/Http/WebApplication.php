@@ -9,7 +9,7 @@
 
 namespace Inhere\Kite\Http;
 
-use Inhere\Kite\Lib\Template\HtmlTemplate;
+use PhpPkg\EasyTpl\HtmlTemplate;
 use Inhere\Kite\Concern\InitApplicationTrait;
 use Inhere\Kite\Kite;
 use Inhere\Route\Dispatcher\Dispatcher;

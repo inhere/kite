@@ -16,7 +16,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Jump\JumpShell;
 use Inhere\Kite\Lib\Jump\JumpStorage;
-use Inhere\Kite\Lib\Template\SimpleTemplate;
+use PhpPkg\EasyTpl\SimpleTemplate;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Util\ShellUtil;

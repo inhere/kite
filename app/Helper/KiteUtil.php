@@ -3,8 +3,8 @@
 namespace Inhere\Kite\Helper;
 
 use Inhere\Kite\Kite;
-use Inhere\Kite\Lib\Template\EasyTemplate;
-use Inhere\Kite\Lib\Template\TextTemplate;
+use PhpPkg\EasyTpl\EasyTemplate;
+use PhpPkg\EasyTpl\TextTemplate;
 use Toolkit\FsUtil\FS;
 use Toolkit\Stdlib\OS;
 use Toolkit\Stdlib\Str;
@@ -106,10 +106,6 @@ class KiteUtil
             })
             ->addFilters([
                 'upFirst' => 'ucfirst',
-                'upper'   => 'strtoupper',
-                'nl'      => function (string $str): string {
-                    return $str . "\n";
-                },
                 'camel'   => function (string $str, bool $upFirst = false): string {
                     return Str::toCamel($str, $upFirst);
                 },

@@ -5,9 +5,10 @@ namespace Inhere\Kite\Concern;
 use Inhere\Kite\Common\GitAPI\GitHubV3API;
 use Inhere\Kite\Common\GitAPI\GitLabV4API;
 use Inhere\Kite\Kite;
-use Inhere\Kite\Lib\Template\EasyTemplate;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
+use PhpPkg\EasyTpl\EasyTemplate;
+use PhpPkg\EasyTpl\TextTemplate;
 use Toolkit\Stdlib\Arr\ArrayHelper;
 use Toolkit\Stdlib\Obj\ObjectBox;
 use Toolkit\Stdlib\OS;
@@ -104,7 +105,11 @@ trait InitApplicationTrait
         });
 
         $box->set('txtRender', function () {
-            return EasyTemplate::new()->disableEchoFilter();
+            return TextTemplate::new()->disableEchoFilter();
+        });
+
+        $box->set('htmlRender', function () {
+            return EasyTemplate::new();
         });
 
         $box->set('glApi', function () {

@@ -8,8 +8,8 @@ use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
-use Inhere\Kite\Lib\Parser\IniParser;
-use Inhere\Kite\Lib\Template\PhpTemplate;
+use PhpPkg\EasyTpl\TextTemplate;
+use PhpPkg\Ini\Ini;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Proc\ProcWrapper;
@@ -96,10 +96,10 @@ class GenerateController extends Controller
         [$varDefine, $template] = explode('###', $content);
 
         // $vars = (array)parse_ini_string(trim($varDefine), true);
-        $vars = IniParser::decode(trim($varDefine));
+        $vars = Ini::decode(trim($varDefine));
         $output->aList($vars, 'template vars', ['ucFirst' => false]);
 
-        $logic  = new PhpTemplate();
+        $logic  = TextTemplate::new();
         $result = $logic->renderString(trim($template), $vars);
 
         $output->success('Render Result:');

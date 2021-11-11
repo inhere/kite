@@ -5,7 +5,7 @@ namespace Inhere\Kite\Console\Plugin;
 use Inhere\Console\Application;
 use Inhere\Console\GlobalOption;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Lib\Template\SimpleTemplate;
+use PhpPkg\EasyTpl\SimpleTemplate;
 use Toolkit\PFlag\Flags;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Helper\DataHelper;
