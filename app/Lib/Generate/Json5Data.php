@@ -47,7 +47,7 @@ class Json5Data extends AbstractObj
                 ->setBeforeParseHeader(function (string $header) {
                     if ($pos = strpos($header, "//##\n")) {
                         $header = substr($header, $pos + 4);
-                        $header = str_replace("\n//", '', $header);
+                        $header = str_replace("\n//", "\n", $header);
                     }
 
                     return $header;

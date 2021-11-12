@@ -2,6 +2,9 @@
 
 namespace Inhere\Kite\Lib\Generate\Java;
 
+use Toolkit\Stdlib\Type;
+use function ucfirst;
+
 /**
  * class JavaType
  */
@@ -18,6 +21,12 @@ class JavaType
      */
     public static function php2javaType(string $type): string
     {
-        return $type;
+        if ($type === 'int') {
+            $type = Type::INTEGER;
+        } elseif ($type === Type::ARRAY) {
+            $type = Type::OBJECT;
+        }
+
+        return ucfirst($type);
     }
 }

@@ -65,14 +65,15 @@ class ContentsAutoReader extends AbstractObj
         if (!$source) {
             $this->srcType = self::TYPE_STDIN;
             $print && Cli::info('try read contents from STDIN');
-            $str = Kite::cliApp()->getInput()->readAll();
+            $str = Kite::cliApp()->getInput()->readAll(false);
+            // $str = File::readStdinBody();
 
             // is one line text
         } elseif (!str_contains($source, "\n")) {
             if (KiteUtil::isStdinAlias($source)) {
                 $this->srcType = self::TYPE_STDIN;
                 $print && Cli::info('try read contents from STDIN');
-                $str = Kite::cliApp()->getInput()->readAll();
+                $str = Kite::cliApp()->getInput()->readAll(false);
                 // $str = File::streamReadAll(STDIN);
                 // $str = File::readAll('php://stdin');
                 // vdump($str);
