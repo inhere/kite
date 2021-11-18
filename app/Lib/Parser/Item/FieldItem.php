@@ -9,6 +9,7 @@ use Toolkit\Stdlib\Obj\AbstractObj;
 use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Type;
 use function preg_match;
+use function sprintf;
 
 /**
  * class FieldItem
@@ -20,6 +21,13 @@ class FieldItem extends AbstractObj implements JsonSerializable
     public string $name;
 
     public string $type;
+
+    /**
+     * sub-elem type on type is array
+     *
+     * @var string
+     */
+    public string $elemType = '';
 
     public string $comment = '';
 
@@ -50,22 +58,32 @@ class FieldItem extends AbstractObj implements JsonSerializable
      */
     public function javaType(): string
     {
-        if (str_ends_with($this->name, 'id') || str_ends_with($this->name, 'Id')) {
-            return JavaType::LONG;
-        }
-
-        return $this->toJavaType($this->type);
+        return $this->toJavaType($this->type, $this->name);
     }
 
     /**
      * @param string $type
+     * @param string $name
      *
      * @return string
      */
-    public function toJavaType(string $type): string
+    public function toJavaType(string $type, string $name): string
     {
+        if (Str::hasSuffixIC($this->name, 'id')) {
+            return JavaType::LONG;
+        }
+
         if ($type === Type::ARRAY) {
-            return JavaType::OBJECT;
+            $elemType = $this->elemType ?: $name;
+            if ($elemType === 'List') {
+                $elemType .= '_KW';
+            }
+
+            return sprintf('%s<%s>', JavaType::LIST, Str::upFirst($elemType));
+        }
+
+        if ($type === Type::OBJECT) {
+            return Str::upFirst($name);
         }
 
         return Str::upFirst($type);

@@ -49,13 +49,15 @@ class TableField extends FieldItem
 
     /**
      * @param string $type
+     * @param string $name
      *
      * @return string
      */
-    public function toJavaType(string $type): string
+    public function toJavaType(string $type, string $name): string
     {
         if ($type === DBType::JSON) {
-            return JavaType::OBJECT;
+            // return JavaType::OBJECT;
+            return Str::upFirst($name);
         }
 
         $type = DBType::toPhpType($type);

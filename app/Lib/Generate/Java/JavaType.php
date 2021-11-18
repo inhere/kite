@@ -12,6 +12,8 @@ class JavaType
 {
     public const LONG = 'Long';
 
+    public const LIST = 'List';
+
     public const OBJECT = 'Object';
 
     /**

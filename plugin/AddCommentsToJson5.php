@@ -66,6 +66,7 @@ if equals @source will write to the source FILEPATH'
             return;
         }
 
+        $parent = '';
         $source = $this->fs->getOpt('source');
 
         $reader  = ContentsAutoReader::new();
@@ -75,18 +76,49 @@ if equals @source will write to the source FILEPATH'
         foreach (explode("\n", $srcText) as $line) {
             $trimmed = trim($line);
             // empty or exists comments
-            if (!$trimmed || str_contains($trimmed, '//')) {
+            if (!$trimmed) {
                 $fmtLines[] = $line;
                 continue;
             }
 
-            if (preg_match('/[a-zA-Z][\w_]+/', $trimmed, $matches)) {
-                $field = $matches[0];
+            // 匹配字段名
+            if (preg_match('/^\s*[\'"]?([a-zA-Z][\w_]+)/', $trimmed, $matches)) {
+                $field = $matches[1];
+                $fullK = $parent ? $parent . '.'. $field : '';
+
+                // 有注释标记了。检查特殊标记
+                if (strpos($trimmed, '//') > 0) {
+                    [$prefix, $comment] = Str::explode($trimmed, '//', 2);
+
+                    // 字段映射到map的别名 用于一些通用字段
+                    // 比如 type, status 等; type -> order.type, goods.type
+                    if ($comment && str_ends_with($comment, ".$field")) {
+                        $line  = $prefix;
+                        $field = $comment;
+                    } else {
+                        $fmtLines[] = $line;
+                        // start mark: eg 'object: {', 'array: ['
+                        if (Str::isEndWiths($prefix, ['{', '['])) {
+                            $parent = $field;
+                        }
+                        continue;
+                    }
+
+                    // start mark: eg 'object: {', 'array: ['
+                } elseif (Str::isEndWiths($trimmed, ['{', '['])) {
+                    $parent = $field;
+                }
 
                 // add comments
-                if (isset($this->mapData[$field]) && !in_array($field, $this->exclude, true)) {
+                if ($fullK && isset($this->mapData[$fullK])) {
+                    $line .= ' // ' . $this->mapData[$fullK];
+                } elseif (isset($this->mapData[$field]) && !in_array($field, $this->exclude, true)) {
                     $line .= ' // ' . $this->mapData[$field];
                 }
+
+                // object,array end: '}', ']'
+            } elseif (Str::isEndWiths(rtrim($trimmed, ','), ['}', ']'])) {
+                $parent = '';
             }
 
             $fmtLines[] = $line;

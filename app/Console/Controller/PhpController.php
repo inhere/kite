@@ -39,6 +39,7 @@ use function ob_start;
 use function preg_quote;
 use function sprintf;
 use function str_contains;
+use function strlen;
 use function trim;
 use function vdump;
 
@@ -363,7 +364,7 @@ class PhpController extends Controller
         if ($args = $fs->getArg('funcArgs')) {
             $fmtArgs = [];
             foreach ($args as $k => $arg) {
-                if (is_numeric($arg)) {
+                if (is_numeric($arg) && strlen($arg) < 11) {
                     $fmtArgs[] = $arg;
                     $args[$k]  = (int)$arg;
                 } else {

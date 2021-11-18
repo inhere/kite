@@ -33,11 +33,9 @@ use function date;
 use function file_get_contents;
 use function implode;
 use function is_file;
-use function json_encode;
 use function strlen;
 use function substr;
 use function trim;
-use function vdump;
 
 /**
  * Class ConvertController
@@ -122,20 +120,23 @@ class ConvertController extends Controller
     }
 
     /**
-     * convert create mysql table SQL to markdown table
+     * convert formatted text to markdown table
      *
      * @arguments
      * type     The target text doc type, allow: raw, md-table,
      *
      * @options
-     *  -s,--source     string;The source code for convert. allow: FILEPATH, @clipboard;true
-     *  -o,--output     The output target. default is stdout.
-     *     --item-sep   The item sep char. default is NL.
-     *     --value-num   int;The item value number. default get from first line.
-     *     --value-sep   The item value sep char. default is SPACE
+     *   -s,--source           string;The source code for convert. allow: FILEPATH, @clipboard;true
+     *   -o,--output           The output target. default is stdout.
+     *  --is, --item-sep       The item sep char. default is NL.
+     *  --vn, --value-num      int;The item value number. default get from first line.
+     *  --vs, --value-sep      The item value sep char. default is SPACE
      *
      * @param FlagsParser $fs
      * @param Output $output
+     *
+     * @example
+     *   {binWithCmd} -s @c --vn
      */
     public function textCommand(FlagsParser $fs, Output $output): void
     {
