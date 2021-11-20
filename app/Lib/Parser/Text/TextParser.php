@@ -9,6 +9,8 @@ use Toolkit\Stdlib\Str;
 use function array_combine;
 use function array_merge;
 use function array_pad;
+use function array_pop;
+use function array_shift;
 use function count;
 use function explode;
 use function implode;
@@ -401,6 +403,24 @@ class TextParser
     public static function isCommentsLine(string $line): bool
     {
         return str_starts_with($line, '#') || str_starts_with($line, '//');
+    }
+
+    /**
+     * @return $this
+     */
+    public function shiftFirst(): self
+    {
+        array_shift($this->data);
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function popLast(): self
+    {
+        array_pop($this->data);
+        return $this;
     }
 
     /**

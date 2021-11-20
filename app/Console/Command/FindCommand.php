@@ -12,6 +12,9 @@ namespace Inhere\Kite\Console\Command;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use SplFileInfo;
+use Toolkit\FsUtil\FileFinder;
+use Toolkit\Stdlib\Helper\DataHelper;
 
 /**
  * Class FindCommand
@@ -28,6 +31,8 @@ class FindCommand extends Command
     }
 
     /**
+     * @arguments
+     * paths         array;Find in the paths;true
      *
      * @param Input $input
      * @param Output $output
@@ -36,10 +41,23 @@ class FindCommand extends Command
      */
     protected function execute(Input $input, Output $output): int
     {
-        // $f = new FileFinder();
-        // $f->getIterator();
+        $paths = $this->flags->getArg('paths');
+        $output->info('find in the paths:' . DataHelper::toString($paths));
 
-        $output->info('recommended install fzf for search file');
+        $ff = FileFinder::create()->in($paths)
+            ->skipUnreadableDirs()
+            ->notFollowLinks()
+            ->name('plugins')
+            ->notPaths(['System', 'node_modules', 'bin/'])
+            // ->notNames(['System', 'node_modules', 'bin/'])
+            ->onlyDirs();
+
+        $output->aList($ff->getInfo());
+        $ff->each(function (SplFileInfo $info) {
+            echo $info->getPathname(), "\n";
+        });
+
+        $output->info('Completed!');
         return 0;
     }
 }

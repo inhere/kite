@@ -29,7 +29,6 @@ use function stripos;
 use function strpos;
 use function substr;
 use function trim;
-use function vdump;
 
 /**
  * class ScriptRunner
@@ -72,7 +71,7 @@ class ScriptRunner extends AbstractObj
     /**
      * @var array
      */
-    private array $scriptExts = ['.sh', '.zsh', '.bash', '.php', '.go', '.gop'];
+    private array $scriptExts = ['.sh', '.zsh', '.bash', '.php', '.go', '.gop', '.kts', '.gry', '.groovy'];
 
     /**
      * @var array
@@ -313,13 +312,13 @@ class ScriptRunner extends AbstractObj
      */
     public function findScriptFile(string $name): string
     {
+        if (is_file($name)) {
+            return $name;
+        }
+
         $ext = File::getExtension($name);
         if (!$ext || !in_array($ext, $this->scriptExts, true)) {
             return '';
-        }
-
-        if (is_file($name)) {
-            return $name;
         }
 
         foreach ($this->scriptDirs as $scriptDir) {

@@ -95,21 +95,27 @@ class UtilController extends Controller
     /**
      * find IDEA in the machine
      *
+     * @arguments
+     * name      ide name, such as: phpStorm
+     *
      * @param FlagsParser $fs
      * @param Output $output
      */
     public function findJetBrainsCommand(FlagsParser $fs, Output $output): void
     {
+        // doc: https://www.jetbrains.com/help/idea/directories-used-by-the-ide-to-store-settings-caches-plugins-and-logs.html
         $dirs = [
             // '~/Library/Preferences/PhpStorm2019.3/',
             '~/Library/Application\ Support/JetBrains/',
-            '~/Library/Application\ Support/JetBrains/GoLand2020.1/eval',
+            // '~/Library/Application\ Support/JetBrains/GoLand2020.1/eval',
             '~/Library/Application\ Support/JetBrains/Toolbox/apps/',
+            'logs' => '~/Library/Logs/JetBrains/',
+            'cache' => ' ~/Library/Caches/JetBrains/',
         ];
 
         $ideName = $fs->getArg('name', 'all');
         // rm -rf ~/Library/Application\ Support/${NAME}*/eval
-        vdump($dirs);
+        $output->aList($dirs, $ideName);
     }
 
     /**

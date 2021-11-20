@@ -95,19 +95,20 @@ class Json5Data extends AbstractObj
 
             $elemType = $elemSfx = '';
             if ($type === 'array' && !empty($value)) {
-                if ($key && isset($this->subObjects[$key])) {
+                $elemType = $key;
+                if (isset($this->subObjects[$key])) {
                     $elemSfx = '_' . count($this->subObjects);
                 }
 
                 // is object
                 if (!isset($value[0])) {
                     $type = Type::OBJECT;
-                    $this->collectObjectFields($key, $value);
+                    $this->collectObjectFields($key . $elemSfx, $value);
                 } elseif (!empty($value[0])) { // is array
                     // collect first item on it's object
                     if (is_array($value[0])) {
                         $elemSfx = 'Item' . $elemSfx;
-                        $this->collectObjectFields($key, $value[0]);
+                        $this->collectObjectFields($key . $elemSfx, $value[0]);
                     } else {
                         $elemType = gettype($value[0]);
                     }
@@ -115,10 +116,10 @@ class Json5Data extends AbstractObj
             }
 
             $fields[$key] = JsonField::new([
-                'name'     => $key,
-                'type'     => $type,
-                'elemType' => $elemType . $elemSfx,
-                'comment'  => $this->comments[$key] ?? $key,
+                'name'    => $key,
+                'type'    => $type,
+                'subType' => $elemType . $elemSfx,
+                'comment' => $this->comments[$key] ?? $key,
             ]);
         }
 

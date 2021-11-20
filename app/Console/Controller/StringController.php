@@ -9,6 +9,7 @@
 
 namespace Inhere\Kite\Console\Controller;
 
+use Inhere\Console\Component\Formatter\Table;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
@@ -17,12 +18,18 @@ use Inhere\Kite\Console\Component\ContentsAutoWriter;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\KiteUtil;
 use Inhere\Kite\Kite;
+use Inhere\Kite\Lib\Parser\Text\Json5ItemParser;
+use Inhere\Kite\Lib\Parser\Text\TextParser;
+use Inhere\Kite\Lib\Stream\ListStream;
 use Inhere\Kite\Lib\Stream\StringsStream;
 use InvalidArgumentException;
 use Throwable;
 use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
+use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\Str;
+use function array_pad;
+use function array_shift;
 use function count;
 use function explode;
 use function implode;
@@ -67,6 +74,7 @@ class StringController extends Controller
             'split'   => ['s'],
             'process' => ['p', 'filter', 'f'],
             'replace' => ['r'],
+            'parse'   => ['fields'],
         ];
     }
 
@@ -391,39 +399,85 @@ class StringController extends Controller
     }
 
     /**
-     * collect field and comments from multi line contents
+     * parse and collect fields from multi line contents
      *
      * @arguments
-     * text     The source text contents.
+     *  source     The source text for parse. allow: FILEPATH, @clipboard
+     *
+     * @options
+     *       --fields               The field names, split by ','
+     *       --get-cols             Only get the provide index cols, eg: 1,5
+     *   -o, --output               The output target. default is stdout.
+     *  --of, --out-fmt             The output format. allow: raw, md-table
+     *  --is, --item-sep            The item sep char. default is NL.
+     *  --vn, --value-num           int;The item value number. default get from first line.
+     *  --vs, --value-sep           The item value sep char for 'space' parser. default is SPACE
+     *  --parser, --item-parser     The item parser name. allow:
+     *                              space       -  parser substr by space
+     *                              json, json5 -  parser json(5) line
      *
      */
-    public function fieldsCommand(FlagsParser $fs, Output $output): void
+    public function parseCommand(FlagsParser $fs, Output $output): void
     {
-        $text = $fs->getArg('text');
+        $text = $fs->getArg('source');
         $text = ContentsAutoReader::readFrom($text, [
             'loadedFile' => $this->dumpfile,
         ]);
 
-        if (!$text) {
-            throw new InvalidArgumentException('please input text for handle');
+        $p = TextParser::new($text);
+        $p->setItemSep($fs->getOpt('item-sep'));
+        $p->setFieldNum($fs->getOpt('value-num'));
+
+        if ($valueSep = $fs->getOpt('value-sep')) {
+            $p->setItemParser(TextParser::charSplitParser($valueSep));
         }
 
-        $fields = [];
-        foreach (explode("\n", $text) as $line) {
-            if (!str_contains($line, '//')) {
-                continue;
-            }
-
-            [$jsonLine, $comments] = Str::explode($line, '//', 2);
-            if (!preg_match('/[a-zA-Z][\w_]+/', $jsonLine, $matches)) {
-                continue;
-            }
-
-            // vdump($matches);
-            $fields[$matches[0]] = $comments;
+        switch ($fs->getOpt('item-parser')) {
+            case 'json':
+            case 'json5':
+                $itemParser = new Json5ItemParser;
+                break;
+            case 'space':
+            default:
+                $valueSep   = $fs->getOpt('value-sep', ' ');
+                $itemParser = TextParser::charSplitParser($valueSep);
+                break;
         }
 
-        $output->aList($fields);
+        $p->setItemParser($itemParser);
+        $p->parse();
+
+        $result = '';
+        $doOutput = true;
+        switch ($fs->getOpt('out-fmt')) {
+            case 'mdtable':
+            case 'mdTable':
+            case 'md-table':
+                $rows = ListStream::new($p->getData())
+                    ->eachToArray(function (array $item) {
+                        return implode(' | ', $item);
+                    });
+                $head = array_shift($rows);
+                $line = implode('|', array_pad(['-----'], $p->fieldNum, '-----'));
+
+                $result = $head . "\n" . $line . "\n". implode("\n", $rows);
+                break;
+            case 'raw':
+                $result = $text;
+                break;
+            case 'table':
+                Table::show($p->getData());
+                $doOutput = false;
+                break;
+            default:
+                $result = Json::pretty($p->getData());
+                break;
+        }
+
+        if ($doOutput) {
+            $outFile = $fs->getOpt('output');
+            ContentsAutoWriter::writeTo($outFile, $result);
+        }
     }
 
     /**

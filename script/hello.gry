@@ -1,0 +1,6 @@
+#!/usr/bin/env groovy
+
+println "Hello groovy"
+def name = 'inhere'
+
+println "my name is: " + name

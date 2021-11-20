@@ -130,12 +130,14 @@ if equals @source will write to the source FILEPATH'
         ContentsAutoWriter::writeTo($outFile, $result);
     }
 
+    /**
+     * @param string $mapFile
+     */
     protected function loadMapData(string $mapFile): void
     {
-        $mapText  = File::readAll(Kite::alias($mapFile));
+        $mapText = File::readAll(Kite::resolve($mapFile));
 
-        $p = TextParser::new($mapText);
-        $p->parse();
+        $p = TextParser::new($mapText)->parse();
 
         $this->mapData = ListStream::new($p->getData())
             ->filter(function (array $item) {

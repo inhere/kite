@@ -56,7 +56,7 @@ class Json5ItemParser
         }
 
         // match field
-        if (!preg_match('/[a-zA-Z][\w_]+/', $line, $matches)) {
+        if (!preg_match('/^\s*[\'"]?([a-zA-Z][\w_]+)/', $line, $matches)) {
             return [];
         }
 

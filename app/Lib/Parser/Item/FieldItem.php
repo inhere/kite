@@ -8,6 +8,7 @@ use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\Obj\AbstractObj;
 use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Type;
+use function in_array;
 use function preg_match;
 use function sprintf;
 
@@ -27,7 +28,7 @@ class FieldItem extends AbstractObj implements JsonSerializable
      *
      * @var string
      */
-    public string $elemType = '';
+    public string $subType = '';
 
     public string $comment = '';
 
@@ -74,7 +75,7 @@ class FieldItem extends AbstractObj implements JsonSerializable
         }
 
         if ($type === Type::ARRAY) {
-            $elemType = $this->elemType ?: $name;
+            $elemType = $this->subType ?: $name;
             if ($elemType === 'List') {
                 $elemType .= '_KW';
             }
@@ -87,6 +88,14 @@ class FieldItem extends AbstractObj implements JsonSerializable
         }
 
         return Str::upFirst($type);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isComplexType(): bool
+    {
+        return in_array($this->type, [Type::ARRAY, Type::OBJECT], true);
     }
 
     /**
@@ -111,9 +120,10 @@ class FieldItem extends AbstractObj implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'name'   => $this->name,
-            'type'   => $this->type,
+            'name'    => $this->name,
+            'type'    => $this->type,
             'comment' => $this->comment,
+            'subType' => $this->subType,
         ];
     }
 
