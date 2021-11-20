@@ -9,6 +9,8 @@ cd $kiteDir
 
 (cd vendor/inhere/console;git pull)
 
+(cd vendor/phppkg/easytpl;git pull)
+
 (cd vendor/toolkit/stdlib;git pull)
 
 (cd vendor/toolkit/cli-utils; git pull)

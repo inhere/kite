@@ -35,7 +35,7 @@ class ListStream extends BaseStream
     }
 
     /**
-     * @param callable(array): string $func
+     * @param callable(array|mixed): string $func
      *
      * @return $this
      */
@@ -50,7 +50,7 @@ class ListStream extends BaseStream
     }
 
     /**
-     * @param callable(array): string $func
+     * @param callable(array|mixed): string $func
      * @param BaseStream $new
      *
      * @return BaseStream
@@ -66,7 +66,7 @@ class ListStream extends BaseStream
     }
 
     /**
-     * @param callable(array, int): array $func
+     * @param callable(array|mixed, int|string): array $func
      * @param array $arr
      *
      * @return array
@@ -80,7 +80,7 @@ class ListStream extends BaseStream
     }
 
     /**
-     * @param callable(array): array $func
+     * @param callable(array|mixed): array $func
      * @param MapStream $new
      *
      * @return MapStream
@@ -96,7 +96,7 @@ class ListStream extends BaseStream
     }
 
     /**
-     * @param callable(array): array{string, mixed} $func
+     * @param callable(array|mixed): array{string, mixed} $func
      * @param array $map
      *
      * @return array<string, mixed>
@@ -127,7 +127,7 @@ class ListStream extends BaseStream
     }
 
     /**
-     * @param callable(array): bool $func
+     * @param callable(array|mixed): bool $func
      *
      * @return $this
      */
