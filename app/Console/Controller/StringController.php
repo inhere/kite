@@ -21,7 +21,7 @@ use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Parser\Text\Json5ItemParser;
 use Inhere\Kite\Lib\Parser\Text\TextParser;
 use Inhere\Kite\Lib\Stream\ListStream;
-use Inhere\Kite\Lib\Stream\StringsStream;
+use Inhere\Kite\Lib\Stream\StringStream;
 use InvalidArgumentException;
 use Throwable;
 use Toolkit\FsUtil\File;
@@ -339,9 +339,9 @@ class StringController extends Controller
             }
         }
 
-        $s = StringsStream::new(explode($sep, $text))
-            ->eachIf('trim', $trim)
-            ->eachIf(function (string $line) use ($cutPos, $cutChar) {
+        $s = StringStream::new(explode($sep, $text))
+            ->mapIf('trim', $trim)
+            ->mapIf(function (string $line) use ($cutPos, $cutChar) {
                 if (!str_contains($line, $cutChar)) {
                     return $line;
                 }
@@ -355,7 +355,7 @@ class StringController extends Controller
             ->filterIf(function (string $line) use ($in) { // include
                 return Str::has($line, $in);
             }, count($in) > 0)
-            ->eachIf(function (string $line) use ($filters) { // filters
+            ->mapIf(function (string $line) use ($filters) { // filters
                 return $this->applyFilters($line, $filters);
             }, $filters);
 

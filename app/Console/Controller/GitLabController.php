@@ -366,7 +366,7 @@ class GitLabController extends Controller
         /** @see GitFlowController::newBranchCommand() */
         $command = 'gitflow:newBranch';
 
-        $output->notice("input $cmdName, will redirect to $command");
+        $output->notice("gitlab: input '$cmdName', will redirect to '$command'");
 
         // Console::app()->dispatch($command, $input->getArgs());
         // Console::app()->dispatch($command, $this->flags->getRawArgs());

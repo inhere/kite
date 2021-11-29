@@ -22,7 +22,7 @@ class ContentsAutoWriter
     /**
      * @var string
      */
-    private string $output = '';
+    private string $output;
 
     /**
      * @param string $output

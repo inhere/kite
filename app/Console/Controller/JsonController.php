@@ -14,6 +14,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
+use Inhere\Kite\Console\Component\ContentsAutoWriter;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Generate\JsonToCode;
@@ -145,6 +146,7 @@ class JsonController extends Controller
      * @options
      *     --type        The search type. allow: keys, path
      * -s, --source      The json data source, default read stdin, allow: @load, @clipboard, @stdin
+     * -o, --output      The output, default is stdout, allow: @load, @clipboard, @stdout
      *
      * @throws Throwable
      */
@@ -156,12 +158,14 @@ class JsonController extends Controller
         $path = $fs->getArg('path');
         $ret  = Arr::getByPath($this->data, $path);
 
-        if (is_scalar($ret)) {
-            $output->println($ret);
+        if (!$ret || is_scalar($ret)) {
+            $str = $ret;
         } else {
-            // $output->prettyJSON($ret);
-            $output->write($this->jsonRender()->renderData($ret));
+            $str = $this->jsonRender()->renderData($ret);
         }
+
+        $outFile = $fs->getOpt('output');
+        ContentsAutoWriter::writeTo($outFile, $str);
     }
 
     /**
@@ -276,10 +280,10 @@ class JsonController extends Controller
      *  source     The source json contents
      *
      * @options
-     *  -o, --output        The output target. default is STDOUT.
-     *      --tpl-dir       The custom template file dir.
-     *      --tpl-file      The custom template file path.
-     *  -t, --type          string;the generate code language type, allow: java, php;;php
+     *  -o, --output               The output target. default is STDOUT.
+     *      --tpl-dir              The custom template file dir.
+     *      --tpl, --tpl-file      The custom template file path.
+     *  -t, --type                 string;the generate code language type, allow: java, php;;php
      *
      * @param FlagsParser $fs
      * @param Output $output

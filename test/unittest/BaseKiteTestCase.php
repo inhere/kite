@@ -38,10 +38,10 @@ abstract class BaseKiteTestCase extends TestCase
         // $class  = new \ReflectionClass($class);
         // $method = $class->getMethod($method);
 
-        $method = new ReflectionMethod($class, $method);
-        $method->setAccessible(true);
+        $rftMth = new ReflectionMethod($class, $method);
+        $rftMth->setAccessible(true);
 
-        return $method;
+        return $rftMth;
     }
 
     /**
