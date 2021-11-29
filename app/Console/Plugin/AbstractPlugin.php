@@ -183,10 +183,10 @@ abstract class AbstractPlugin implements PluginInterface
         // $meta = $this->metadata();
         return [
             'name'   => $this->name,
+            'version' => $this->metadata['version'],
+            'author' => $this->metadata['author'],
             // 'desc'     => $meta['desc'] ?? '',
             'class'  => $this->classname,
-            'author' => $this->metadata['author'],
-            'version' => $this->metadata['version'],
             'path'   => $this->filepath,
         ];
     }

@@ -154,6 +154,10 @@ class PluginManager
             $panel['example'] = $meta['example'];
         }
 
+        if ($meta['help']) {
+            $panel['help'] = $meta['help'];
+        }
+
         Show::mList($panel);
     }
 
