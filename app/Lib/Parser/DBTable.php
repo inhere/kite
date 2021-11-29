@@ -94,7 +94,7 @@ class DBTable
     public function getFieldsComments(bool $camelName = false): array
     {
         return MapStream::new($this->fields)
-            ->eachTo(function (array $meta, string &$key) use ($camelName) {
+            ->map(function (array $meta, string &$key) use ($camelName) {
                 if ($camelName) {
                     $key = Str::camelCase($key, false, '_');
                 }

@@ -5,7 +5,7 @@ namespace Inhere\Kite\Lib\Stream;
 /**
  * class StringsStream
  */
-class StringsStream extends \Toolkit\Stdlib\Util\Stream\StringsStream
+class StringStream extends \Toolkit\Stdlib\Util\Stream\StringStream
 {
 
 }

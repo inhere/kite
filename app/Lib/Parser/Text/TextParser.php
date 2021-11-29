@@ -6,6 +6,7 @@ use Closure;
 use InvalidArgumentException;
 use PhpPkg\Ini\Ini;
 use Toolkit\Stdlib\Str;
+use Toolkit\Stdlib\Util\Stream\ListStream;
 use function array_combine;
 use function array_merge;
 use function array_pad;
@@ -431,6 +432,14 @@ class TextParser
         foreach ($this->data as $index => $row) {
             $handlerFn($row, $index);
         }
+    }
+
+    /**
+     * @return ListStream
+     */
+    public function stream(): ListStream
+    {
+        return ListStream::of($this->data);
     }
 
     /**
