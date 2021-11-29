@@ -21,9 +21,9 @@ use Toolkit\FsUtil\FS;
  */
 class InitCommand extends Command
 {
-    protected static $name = 'init';
+    protected static string $name = 'init';
 
-    protected static $desc = 'initialize kite on the system';
+    protected static string $desc = 'initialize kite on the system';
 
     /**
      * @options

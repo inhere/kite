@@ -12,9 +12,9 @@ use Inhere\Console\IO\Output;
  */
 class ProjectController extends Controller
 {
-    protected static $name = 'new';
+    protected static string $name = 'new';
 
-    protected static $desc = 'quick create new project or package or library tool commands';
+    protected static string $desc = 'quick create new project or package or library tool commands';
 
     public static function aliases(): array
     {

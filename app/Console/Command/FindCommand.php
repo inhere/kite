@@ -21,9 +21,9 @@ use Toolkit\Stdlib\Helper\DataHelper;
  */
 class FindCommand extends Command
 {
-    protected static $name = 'find';
+    protected static string $name = 'find';
 
-    protected static $desc = 'find file name, contents by grep,find command';
+    protected static string $desc = 'find file name, contents by grep,find command';
 
     public static function aliases(): array
     {

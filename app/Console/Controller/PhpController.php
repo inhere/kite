@@ -51,9 +51,9 @@ use function vdump;
  */
 class PhpController extends Controller
 {
-    protected static $name = 'php';
+    protected static string $name = 'php';
 
-    protected static $desc = 'Some useful tool commands for php development';
+    protected static string $desc = 'Some useful tool commands for php development';
 
     protected static function commandAliases(): array
     {

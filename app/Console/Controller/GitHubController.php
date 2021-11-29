@@ -28,9 +28,9 @@ use function strtoupper;
  */
 class GitHubController extends Controller
 {
-    protected static $name = 'github';
+    protected static string $name = 'github';
 
-    protected static $desc = 'Some useful development tool commands';
+    protected static string $desc = 'Some useful development tool commands';
 
     /**
      * @var array

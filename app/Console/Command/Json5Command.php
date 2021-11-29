@@ -27,9 +27,9 @@ use const JSON_UNESCAPED_UNICODE;
  */
 class Json5Command extends Command
 {
-    protected static $name = 'json5';
+    protected static string $name = 'json5';
 
-    protected static $desc = 'read and convert json5 file to json format';
+    protected static string $desc = 'read and convert json5 file to json format';
 
     public static function aliases(): array
     {

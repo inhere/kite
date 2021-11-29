@@ -22,12 +22,12 @@ use function file_get_contents;
 class MarkdownCommand extends Command
 {
     /** @var string  */
-    protected static $name = 'markdown';
+    protected static string $name = 'markdown';
 
     /**
      * @var string
      */
-    protected static $desc = 'render markdown file on terminal';
+    protected static string $desc = 'render markdown file on terminal';
 
     /**
      * @return string[]

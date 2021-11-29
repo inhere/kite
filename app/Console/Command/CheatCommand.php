@@ -38,9 +38,9 @@ class CheatCommand extends Command
 {
     public const CHT_HOST = 'https://cht.sh/';
 
-    protected static $name = 'cheat';
+    protected static string $name = 'cheat';
 
-    protected static $desc = 'Query cheat for development';
+    protected static string $desc = 'Query cheat for development';
 
     /**
      * @return string[]

@@ -18,9 +18,9 @@ use Inhere\Console\IO\Output;
  */
 class DemoGroup extends Controller
 {
-    protected static $name = 'demo';
+    protected static string $name = 'demo';
 
-    protected static $description = 'Some useful development tool commands';
+    protected static string $description = 'Some useful development tool commands';
 
     /**
      * run a php built-in server for development(is alias of the command 'server:dev')

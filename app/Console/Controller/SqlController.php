@@ -22,9 +22,9 @@ use Toolkit\PFlag\FlagsParser;
  */
 class SqlController extends Controller
 {
-    protected static $name = 'sql';
+    protected static string $name = 'sql';
 
-    protected static $desc = 'Some useful development tool commands for SQL';
+    protected static string $desc = 'Some useful development tool commands for SQL';
 
     /**
      * @return string[][]

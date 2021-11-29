@@ -25,9 +25,9 @@ use const GLOB_MARK;
  */
 class FsController extends Controller
 {
-    protected static $name = 'fs';
+    protected static string $name = 'fs';
 
-    protected static $desc = 'Some useful development tool commands';
+    protected static string $desc = 'Some useful development tool commands';
 
     public static function aliases(): array
     {

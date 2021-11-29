@@ -30,9 +30,9 @@ use function sprintf;
  */
 class JumpController extends Controller
 {
-    protected static $name = 'jump';
+    protected static string $name = 'jump';
 
-    protected static $desc = 'Jump helps you navigate faster by your history.';
+    protected static string $desc = 'Jump helps you navigate faster by your history.';
 
     /**
      * @return string[]

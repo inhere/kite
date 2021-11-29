@@ -18,9 +18,9 @@ use Inhere\Console\IO\Output;
  */
 class SnippetController extends Controller
 {
-    protected static $name = 'snippet';
+    protected static string $name = 'snippet';
 
-    protected static $desc = 'Some useful development tool commands';
+    protected static string $desc = 'Some useful development tool commands';
 
     /**
      * @return string[]

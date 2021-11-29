@@ -47,9 +47,9 @@ class UtilController extends Controller
         'GoLand',
     ];
 
-    protected static $name = 'util';
+    protected static string $name = 'util';
 
-    protected static $desc = 'Some useful development tool commands';
+    protected static string $desc = 'Some useful development tool commands';
 
     protected static function commandAliases(): array
     {

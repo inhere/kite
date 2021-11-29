@@ -24,9 +24,9 @@ use function file_get_contents;
  */
 class JavaController extends Controller
 {
-    protected static $name = 'java';
+    protected static string $name = 'java';
 
-    protected static $desc = 'Some useful tool commands for java development';
+    protected static string $desc = 'Some useful tool commands for java development';
 
     protected static function commandAliases(): array
     {

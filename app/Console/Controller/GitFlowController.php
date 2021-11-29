@@ -24,9 +24,9 @@ use function vdump;
  */
 class GitFlowController extends Controller
 {
-    protected static $name = 'gitflow';
+    protected static string $name = 'gitflow';
 
-    protected static $desc = 'Some useful tool commands for git flow development';
+    protected static string $desc = 'Some useful tool commands for git flow development';
 
     /**
      * @var array

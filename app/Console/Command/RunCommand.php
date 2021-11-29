@@ -24,9 +24,9 @@ use function is_array;
  */
 class RunCommand extends Command
 {
-    protected static $name = 'run';
+    protected static string $name = 'run';
 
-    protected static $desc = 'run an script command or script file or kite plugin';
+    protected static string $desc = 'run an script command or script file or kite plugin';
 
     /**
      * @var ScriptRunner

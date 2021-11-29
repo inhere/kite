@@ -24,9 +24,9 @@ use function file_get_contents;
  */
 class GoController extends Controller
 {
-    protected static $name = 'go';
+    protected static string $name = 'go';
 
-    protected static $desc = 'Some useful tool commands for go development';
+    protected static string $desc = 'Some useful tool commands for go development';
 
     protected static function commandAliases(): array
     {

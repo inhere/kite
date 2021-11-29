@@ -43,9 +43,9 @@ use const BASE_PATH;
  */
 class ExprCommand extends Command
 {
-    protected static $name = 'expr';
+    protected static string $name = 'expr';
 
-    protected static $desc = 'Use for expression calculation';
+    protected static string $desc = 'Use for expression calculation';
 
     public const RESULT_VAR = 'ret';
 

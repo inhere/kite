@@ -22,9 +22,9 @@ use function array_keys;
  */
 class PluginController extends Controller
 {
-    protected static $name = 'plugin';
+    protected static string $name = 'plugin';
 
-    protected static $desc = 'kite plugins manage tools';
+    protected static string $desc = 'kite plugins manage tools';
 
     /**
      * @return string[]

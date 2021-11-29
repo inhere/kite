@@ -41,9 +41,9 @@ use const JSON_THROW_ON_ERROR;
  */
 class JsonController extends Controller
 {
-    protected static $name = 'json';
+    protected static string $name = 'json';
 
-    protected static $desc = 'Some useful json development tool commands';
+    protected static string $desc = 'Some useful json development tool commands';
 
     /**
      * @var string

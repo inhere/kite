@@ -13,9 +13,9 @@ use function substr;
  */
 class SearchCommand extends Command
 {
-    protected static $name = 'search';
+    protected static string $name = 'search';
 
-    protected static $desc = 'Search by web search engine, such as google, baidu, bing';
+    protected static string $desc = 'Search by web search engine, such as google, baidu, bing';
 
     private array $engines = [
         'google'        => 'https://www.google.com/search?q=',

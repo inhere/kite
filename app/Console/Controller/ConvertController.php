@@ -44,9 +44,9 @@ use function trim;
  */
 class ConvertController extends Controller
 {
-    protected static $name = 'convert';
+    protected static string $name = 'convert';
 
-    protected static $desc = 'Some useful convert development tool commands';
+    protected static string $desc = 'Some useful convert development tool commands';
 
     /**
      * @return string[]

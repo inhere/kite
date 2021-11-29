@@ -20,9 +20,9 @@ use function is_scalar;
  */
 class EnvCommand extends Command
 {
-    protected static $name = 'env';
+    protected static string $name = 'env';
 
-    protected static $desc = 'a test command';
+    protected static string $desc = 'a test command';
 
     /**
      * print system ENV information

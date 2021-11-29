@@ -48,9 +48,9 @@ use function vdump;
  */
 class StringController extends Controller
 {
-    protected static $name = 'string';
+    protected static string $name = 'string';
 
-    protected static $desc = 'Some useful development tool commands';
+    protected static string $desc = 'Some useful development tool commands';
 
     /**
      * @var string

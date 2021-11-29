@@ -24,9 +24,9 @@ use const GLOB_MARK;
  */
 class DbController extends Controller
 {
-    protected static $name = 'db';
+    protected static string $name = 'db';
 
-    protected static $desc = 'Database development tool commands';
+    protected static string $desc = 'Database development tool commands';
 
     /**
      * convert an mysql table create SQL to markdown table

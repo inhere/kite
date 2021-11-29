@@ -34,9 +34,9 @@ use const PHP_VERSION;
  */
 class SelfController extends Controller
 {
-    protected static $name = 'self';
+    protected static string $name = 'self';
 
-    protected static $desc = 'Operate and manage kite self commands';
+    protected static string $desc = 'Operate and manage kite self commands';
 
     /**
      * @var string

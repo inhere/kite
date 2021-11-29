@@ -18,9 +18,9 @@ use Inhere\Console\IO\Output;
  */
 class DemoController extends Controller
 {
-    protected static $name = 'demo';
+    protected static string $name = 'demo';
 
-    protected static $desc = 'Some useful development tool commands';
+    protected static string $desc = 'Some useful development tool commands';
 
     public static function isEnabled(): bool
     {

@@ -13,7 +13,7 @@ use Inhere\Console\IO\Output;
  */
 class ProjectInit extends Command
 {
-    protected static $name = 'pinit';
+    protected static string $name = 'pinit';
 
     protected function configure(): void
     {

@@ -23,9 +23,9 @@ use const GLOB_MARK;
  */
 class K8sController extends Controller
 {
-    protected static $name = 'k8s';
+    protected static string $name = 'k8s';
 
-    protected static $desc = 'Kubernetes development tool commands';
+    protected static string $desc = 'Kubernetes development tool commands';
 
     /**
      * generate apply template contents for k8s

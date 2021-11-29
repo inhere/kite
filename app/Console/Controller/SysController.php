@@ -18,9 +18,9 @@ use Inhere\Console\IO\Output;
  */
 class SysController extends Controller
 {
-    protected static $name = 'sys';
+    protected static string $name = 'sys';
 
-    protected static $desc = 'Some useful tool commands for system';
+    protected static string $desc = 'Some useful tool commands for system';
 
     /**
      * run a php built-in server for development(is alias of the command 'server:dev')

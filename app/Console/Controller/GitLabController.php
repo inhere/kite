@@ -43,9 +43,9 @@ use function trim;
  */
 class GitLabController extends Controller
 {
-    protected static $name = 'gitlab';
+    protected static string $name = 'gitlab';
 
-    protected static $desc = 'Some useful tool commands for gitlab development';
+    protected static string $desc = 'Some useful tool commands for gitlab development';
 
     /**
      * @var array

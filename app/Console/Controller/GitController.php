@@ -49,9 +49,9 @@ use function trim;
  */
 class GitController extends Controller
 {
-    protected static $name = 'git';
+    protected static string $name = 'git';
 
-    protected static $desc = 'Provide useful tool commands for quick use git';
+    protected static string $desc = 'Provide useful tool commands for quick use git';
 
     /**
      * @var DataObject

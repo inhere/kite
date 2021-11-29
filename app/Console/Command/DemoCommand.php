@@ -18,9 +18,9 @@ use Inhere\Console\IO\Output;
  */
 class DemoCommand extends Command
 {
-    protected static $name = 'demo1';
+    protected static string $name = 'demo1';
 
-    protected static $desc = 'a test command';
+    protected static string $desc = 'a test command';
 
     public static function isEnabled(): bool
     {

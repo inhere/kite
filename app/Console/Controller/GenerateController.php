@@ -30,9 +30,9 @@ use function trim;
  */
 class GenerateController extends Controller
 {
-    protected static $name = 'gen';
+    protected static string $name = 'gen';
 
-    protected static $desc = 'quick generate new class or file from template';
+    protected static string $desc = 'quick generate new class or file from template';
 
     public static function aliases(): array
     {

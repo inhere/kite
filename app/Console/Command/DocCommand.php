@@ -34,9 +34,9 @@ use function str_replace;
  */
 class DocCommand extends Command
 {
-    protected static $name = 'doc';
+    protected static string $name = 'doc';
 
-    protected static $desc = 'Useful documents for how to use git,tmux and more tool';
+    protected static string $desc = 'Useful documents for how to use git,tmux and more tool';
 
     /**
      * @var string
@@ -115,7 +115,7 @@ TXT;
      * @param Input  $input
      * @param Output $output
      */
-    protected function execute(Input $input, Output $output)
+    protected function execute(Input $input, Output $output): void
     {
         $man = $this->prepareManDoc();
         if ($errPaths = $man->getErrorPaths()) {
