@@ -2,7 +2,7 @@
 
 namespace Inhere\Kite\Lib\Parser\Text;
 
-use Toolkit\Stdlib\Obj\Traits\QuickInitTrait;
+use Toolkit\Stdlib\Obj\Traits\AutoConfigTrait;
 use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Type;
 use function is_numeric;
@@ -17,7 +17,7 @@ use function trim;
  */
 class PhpConstInlineParser
 {
-    use QuickInitTrait;
+    use AutoConfigTrait;
 
     /**
      * @var bool
