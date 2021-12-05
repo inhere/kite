@@ -28,7 +28,7 @@
     "phppkg/hucron": "dev-master",
     "phppkg/phpgit": "dev-master",
     "phppkg/cli-markdown": "^1.0",
-    "toolkit/fsutil": "^1.0",
+    "toolkit/fsutil": "^2.0",
     "colinodell/json5": "^2.2",
     "laktak/hjson": "^2.1",
     "knplabs/github-api": "^3.3",

@@ -20,7 +20,6 @@ use function is_dir;
 use function md5;
 use function str_replace;
 use function stripos;
-use function strpos;
 use const JSON_PRETTY_PRINT;
 use const JSON_UNESCAPED_SLASHES;
 
@@ -38,22 +37,22 @@ class JumpStorage implements JsonSerializable
     /**
      * @var string
      */
-    private $datafile;
+    private string $datafile;
 
     /**
      * @var bool
      */
-    private $dataChanged = false;
+    private bool $dataChanged = false;
 
     /**
      * @var string
      */
-    private $prevPath = '';
+    private string $prevPath = '';
 
     /**
      * @var string
      */
-    private $lastPath = '';
+    private string $lastPath = '';
 
     /**
      * Named jump paths.
@@ -68,7 +67,7 @@ class JumpStorage implements JsonSerializable
      *
      * @var array
      */
-    private $namedPaths = [];
+    private array $namedPaths = [];
 
     /**
      *
@@ -83,12 +82,12 @@ class JumpStorage implements JsonSerializable
      *
      * @var string[]
      */
-    private $histories = [];
+    private array $histories = [];
 
     /**
      * @var bool
      */
-    private $windowsOS;
+    private bool $windowsOS;
 
     /**
      * Class constructor.
@@ -285,7 +284,7 @@ class JumpStorage implements JsonSerializable
         }
 
         foreach ($this->histories as $path) {
-            if (strpos($path, $keywords) !== false) {
+            if (str_contains($path, $keywords)) {
                 return $path;
             }
         }
@@ -372,6 +371,7 @@ class JumpStorage implements JsonSerializable
 
     /**
      * @return string
+     * @throws \JsonException
      */
     public function __toString(): string
     {
@@ -380,6 +380,7 @@ class JumpStorage implements JsonSerializable
 
     /**
      * @return string
+     * @throws \JsonException
      */
     public function toString(): string
     {
@@ -418,11 +419,11 @@ class JumpStorage implements JsonSerializable
      * Specify data which should be serialized to JSON
      *
      * @link  https://php.net/manual/en/jsonserializable.jsonserialize.php
-     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * @return array data which can be serialized by <b>json_encode</b>,
      * which is a value of any type other than a resource.
      * @since 5.4
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }

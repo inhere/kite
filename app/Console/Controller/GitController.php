@@ -805,8 +805,8 @@ class GitController extends Controller
      *                       wl     word length filter.
      *  --format            The git log option `--pretty` value.
      *                      can be one of oneline, short, medium, full, fuller, reference, email, raw, format:<string> and tformat:<string>.
-     *  --style             The style for generate for changelog.
-     *                      allow: markdown(<cyan>default</cyan>), simple, gh-release
+     *  -s, --style         The style for generate for changelog.
+     *                      allow: markdown(<cyan>default</cyan>), simple, gh-release(ghr)
      *  --repo-url          The git repo URL address. eg: https://github.com/inhere/kite
      *                      default will auto use current git origin remote url
      *  --no-merges         bool;No contains merge request logs
@@ -893,7 +893,7 @@ class GitController extends Controller
         }
 
         $style = $fs->getOpt('style');
-        if ($style === 'gh-release') {
+        if ($style === 'ghr' || $style === 'gh-release') {
             $gcl->setItemFormatter(new GithubReleaseFormatter());
         } elseif ($style === 'simple') {
             $gcl->setItemFormatter(new SimpleFormatter());
