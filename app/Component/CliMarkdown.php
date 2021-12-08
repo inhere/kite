@@ -41,8 +41,8 @@ class CliMarkdown extends GithubMarkdown
         'headline'   => 'lightBlue',
         'paragraph'  => '',
         'list'       => '',
-        'link'       => 'underscore',
         'image'      => 'info',
+        'link'       => 'underscore',
         'code'       => 'brown',
         'quote'      => 'cyan',
         'strong'     => 'bold',
@@ -322,7 +322,7 @@ class CliMarkdown extends GithubMarkdown
 
         return ColorTag::add("**$text**", $this->theme['strong']);
 
-        return self::NL . ColorTag::add("**$text**", $this->theme['strong']) . self::NL;
+        // return self::NL . ColorTag::add("**$text**", $this->theme['strong']) . self::NL;
     }
 
     /**
@@ -332,7 +332,6 @@ class CliMarkdown extends GithubMarkdown
      */
     protected function renderText($block): string
     {
-        // vdump($block);
         return $block[1];
     }
 

@@ -3,9 +3,9 @@
 namespace Inhere\Kite\Common\GitAPI;
 
 use JsonException;
-use PhpComp\Http\Client\AbstractClient;
-use PhpComp\Http\Client\Client;
-use PhpComp\Http\Client\ClientInterface;
+use PhpPkg\Http\Client\AbstractClient;
+use PhpPkg\Http\Client\Client;
+use PhpPkg\Http\Client\ClientInterface;
 use Toolkit\Stdlib\Helper\JsonHelper;
 use Toolkit\Stdlib\Obj\AbstractObj;
 use function explode;

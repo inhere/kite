@@ -1,0 +1,6 @@
+#!/usr/bin/env groovy
+
+// kite list-dir-files.gry
+new File(".").eachFile() {
+    file -> println file.getAbsolutePath()
+}

@@ -746,14 +746,14 @@ class GitController extends Controller
      *  maxCommit       int;Max display how many commits;;15
      *
      * @options
-     *  --abbrev-commit     Only display the abbrev commit ID
-     *  --exclude           Exclude contains given sub-string. multi by comma split.
-     *  --file              Export changelog message to file
-     *  --format            The git log option `--pretty` value.
-     *                      can be one of oneline, short, medium, full, fuller, reference, email, raw, format:<string> and tformat:<string>.
-     *  --max-commit        int;Max display how many commits
-     *  --no-color          bool;Dont use color render git output
-     *  --no-merges         bool;No contains merge request logs
+     *  --ac, --abbrev-commit     bool;Only display the abbrev commit ID
+     *  --exclude                 Exclude contains given sub-string. multi by comma split.
+     *  --file                    Export changelog message to file
+     *  --format                  The git log option `--pretty` value.
+     *                            can be one of oneline, short, medium, full, fuller, reference, email, raw, format:<string> and tformat:<string>.
+     *  --mc, --max-commit        int;Max display how many commits
+     *  --nc, --no-color          bool;Dont use color render git output
+     *  --nm, --no-merges         bool;No contains merge request logs
      *
      * @param FlagsParser $fs
      * @param Output $output

@@ -17,7 +17,7 @@ use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Console\Component\RedirectToGitGroup;
 use Inhere\Kite\Helper\AppHelper;
-use PhpComp\Http\Client\Client;
+use PhpPkg\Http\Client\Client;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
 use function strpos;

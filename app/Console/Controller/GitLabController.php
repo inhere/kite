@@ -882,6 +882,7 @@ class GitLabController extends Controller
         $gitlab = $this->getGitlab();
 
         $curBranch = $gitlab->getCurBranch();
+        $output->info('Current Branch: ' . $curBranch);
 
         $runner = CmdRunner::new();
         $runner->setDryRun($this->flags->getOpt('dry-run'));
