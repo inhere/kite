@@ -29,6 +29,7 @@ use function strpos;
 use function substr;
 use function trim;
 use function vdump;
+use const IN_PHAR;
 use const STDIN;
 
 /**
@@ -57,10 +58,7 @@ class AppHelper
      */
     public static function isInPhar(): bool
     {
-        if (defined('IN_PHAR')) {
-            return IN_PHAR;
-        }
-        return false;
+        return defined('IN_PHAR') && IN_PHAR;
     }
 
     /**

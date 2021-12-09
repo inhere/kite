@@ -8,10 +8,12 @@ use PhpPkg\EasyTpl\TextTemplate;
 use Toolkit\FsUtil\FS;
 use Toolkit\Stdlib\OS;
 use Toolkit\Stdlib\Str;
+use function defined;
 use function dirname;
 use function in_array;
 use function is_file;
 use function str_replace;
+use const IN_PHAR;
 
 /**
  * class KiteUtil
@@ -41,6 +43,14 @@ class KiteUtil
         '@clipboard',
         'clipboard',
     ];
+
+    /**
+     * @return bool
+     */
+    public static function isInPhar(): bool
+    {
+        return defined('IN_PHAR') && IN_PHAR;
+    }
 
     /**
      * @param string $sep

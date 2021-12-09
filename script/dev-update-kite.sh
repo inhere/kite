@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# run: kite run dev-update-kite-deps.sh --proxy
+
 set -ex
 
 # proxy_on

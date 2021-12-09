@@ -3,13 +3,16 @@
 namespace Inhere\Kite\Component;
 
 use Inhere\Console\Util\Show;
+use Inhere\Kite\Helper\KiteUtil;
 use Inhere\Kite\Helper\SysCmd;
+use Inhere\Kite\Kite;
 use InvalidArgumentException;
 use RuntimeException;
 use Toolkit\Cli\Cli;
 use Toolkit\FsUtil\Dir;
 use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Obj\AbstractObj;
+use Toolkit\Stdlib\OS;
 use function array_filter;
 use function array_map;
 use function array_merge;
@@ -29,6 +32,7 @@ use function stripos;
 use function strpos;
 use function substr;
 use function trim;
+use const IN_PHAR;
 
 /**
  * class ScriptRunner
@@ -203,7 +207,7 @@ class ScriptRunner extends AbstractObj
      */
     private function replaceScriptVars(string $name, string $cmdString, array $scriptArgs): string
     {
-        if (strpos($cmdString, '$') === false) {
+        if (!str_contains($cmdString, '$')) {
             return $cmdString;
         }
 
@@ -248,6 +252,7 @@ class ScriptRunner extends AbstractObj
         $name = basename($scriptFile);
 
         // must start withs '#!'
+        $binName = '';
         if (!$line || !str_starts_with($line, '#!')) {
             Cli::colored("will direct run the script file: $name", 'cyan');
 
@@ -280,6 +285,11 @@ class ScriptRunner extends AbstractObj
 
         if ($runArgs) {
             $command .= ' ' . implode(' ', $runArgs);
+        }
+
+        // not in phar.
+        if ($binName === 'php' && !KiteUtil::isInPhar()) {
+            OS::setEnvVar('KITE_PATH', Kite::basePath());
         }
 
         $this->executeScript($command);
@@ -348,9 +358,7 @@ class ScriptRunner extends AbstractObj
      */
     public function getAllScriptFiles(string $keyword = ''): array
     {
-        $extMatch = implode('|', array_map(static function ($ext) {
-            return trim($ext, '.');
-        }, $this->scriptExts));
+        $extMatch = implode('|', array_map(static fn($ext) => trim($ext, '.'), $this->scriptExts));
 
         $files = [];
         foreach ($this->scriptDirs as $dir) {
@@ -365,9 +373,7 @@ class ScriptRunner extends AbstractObj
         }
 
         if ($keyword) {
-            $files = array_filter($files, static function ($file) use($keyword) {
-                return stripos($file, $keyword) !== false;
-            });
+            $files = array_filter($files, static fn($file) => stripos($file, $keyword) !== false);
         }
 
         return $files;
