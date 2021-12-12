@@ -51,7 +51,7 @@ class CmdRunner extends AbstractCmdBuilder
         parent::__construct('', $workDir);
 
         if (is_string($command)) {
-            $this->command = $command;
+            $this->cmdline = $command;
         } elseif (is_array($command)) {
             $this->commands = (array)$command;
         }
@@ -99,7 +99,7 @@ class CmdRunner extends AbstractCmdBuilder
      */
     public function afterDo(string $cmd): self
     {
-        return $this->setCommand($cmd)->do($this->printOutput);
+        return $this->setCmdline($cmd)->do($this->printOutput);
     }
 
     /**
@@ -112,7 +112,7 @@ class CmdRunner extends AbstractCmdBuilder
     {
         // only run on return TRUE
         if (true === $whereFunc()) {
-            $this->setCommand($cmd)->do($this->printOutput);
+            $this->setCmdline($cmd)->do($this->printOutput);
         }
 
         return $this;
@@ -134,7 +134,7 @@ class CmdRunner extends AbstractCmdBuilder
             $this->workDir = $workDir;
         }
 
-        return $this->setCommand($cmd)->do($this->printOutput);
+        return $this->setCmdline($cmd)->do($this->printOutput);
     }
 
     /**************************************************************************
@@ -251,10 +251,10 @@ class CmdRunner extends AbstractCmdBuilder
      *
      * @return $this
      */
-    public function run(bool $printOutput = false): AbstractCmdBuilder
+    public function run(bool $printOutput = false): static
     {
         $this->printOutput = $printOutput;
-        if ($command = $this->command) {
+        if ($command = $this->cmdline) {
             $this->innerExecute($command, $this->workDir);
 
             // stop on error
