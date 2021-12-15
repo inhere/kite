@@ -181,7 +181,6 @@ abstract class AbstractGitAPI extends AbstractObj
      * @param array  $data
      *
      * @return array
-     * @throws JsonException
      */
     public function sendPOST(string $uriPath, array $data): array
     {

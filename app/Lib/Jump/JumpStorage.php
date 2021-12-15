@@ -111,7 +111,7 @@ class JumpStorage implements JsonSerializable
 
     /**
      * @param string $datafile
-     * @param bool   $ignoreNotExist
+     * @param bool $ignoreNotExist
      */
     public function loadFile(string $datafile, bool $ignoreNotExist = false): void
     {

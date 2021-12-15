@@ -13,10 +13,10 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Common\Cmd;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
+use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Manage\GitBranchManage;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
@@ -28,9 +28,13 @@ use PhpGit\Git;
 use PhpGit\Info\TagsInfo;
 use PhpGit\Repo;
 use Throwable;
+use Toolkit\Cli\Cli;
+use Toolkit\FsUtil\FS;
 use Toolkit\PFlag\FlagsParser;
+use Toolkit\Stdlib\Helper\Assert;
 use Toolkit\Stdlib\Obj\DataObject;
 use Toolkit\Stdlib\Str;
+use Toolkit\Sys\Proc\ProcTasks;
 use function abs;
 use function array_keys;
 use function chdir;
@@ -81,6 +85,7 @@ class GitController extends Controller
             'branch'       => ['br'],
             'branchUpdate' => ['brup', 'br-up', 'br-update', 'branch-up'],
             'update'       => ['up', 'pul', 'pull'],
+            'batchPull'    => ['bp', 'bpul', 'bpull'],
             'tagFind'      => ['tagfind', 'tag-find'],
             'tagNew'       => [
                 'tagnew',
@@ -103,8 +108,8 @@ class GitController extends Controller
     protected function options(): array
     {
         return [
-            '--dry-run' => 'bool;Dry-run the workflow, dont real execute',
-            '-y, --yes' => 'bool;Direct execution without confirmation',
+            '--dry-run'     => 'bool;Dry-run the workflow, dont real execute',
+            '-y, --yes'     => 'bool;Direct execution without confirmation',
             '-w, --workdir' => 'The command work dir, default is current dir.',
             // '-i, --interactive' => 'Run in an interactive environment[TODO]',
         ];
@@ -165,8 +170,9 @@ class GitController extends Controller
      */
     public function updateCommand(FlagsParser $fs, Input $input, Output $output): void
     {
-        $dir  = $fs->getOpt('dir') ?: $input->getWorkDir();
         $args = $fs->getRawArgs();
+        $dir  = $fs->getOpt('dir') ?: $input->getWorkDir();
+        Assert::isDir($dir . '/.git', "$dir is not a git dir");
 
         $c = Cmd::git('pull');
         $c->setWorkDir($dir);
@@ -180,6 +186,9 @@ class GitController extends Controller
     /**
      * push codes to origin by `git push`
      *
+     * @options
+     *  --dir       The git repo dir. default is workdir
+     *
      * @arguments
      *  gitArgs  Input more args or opts for run git
      *
@@ -189,10 +198,13 @@ class GitController extends Controller
     public function pushCommand(FlagsParser $fs, Output $output): void
     {
         $args = $fs->getRawArgs();
+        $dir  = $fs->getOpt('dir') ?: $this->getWorkDir();
+        Assert::isDir($dir . '/.git', "$dir is not a git dir");
 
-        $c = Cmd::git('push');
-        $c->setDryRun($this->flags->getOpt('dry-run'));
-        $c->addArgs(...$args);
+        $c = Cmd::git('push')
+            ->setWorkDir($dir)
+            ->setDryRun($this->flags->getOpt('dry-run'))
+            ->addArgs(...$args);
         $c->run(true);
 
         $output->success('Complete');
@@ -330,15 +342,28 @@ class GitController extends Controller
 
     /**
      * batch update multi dir by git pull
+     *
+     * @options
+     * --bd, --base, --base-dir     The base dir for all updated dirs. default is workDir
+     *
+     * @arguments
+     * dirs     array;The want updated git repo dirs;true
      */
-    public function batchPullCommand(): void
+    public function batchPullCommand(FlagsParser $fs, Output $output): void
     {
-        $commands = [
-            'git status',
-            'git remote -v',
-        ];
+        $baseDir = $fs->getOpt('base-dir') ?: $this->getWorkdir();
 
-        CmdRunner::new()->batch($commands)->runAndPrint();
+        $mpt = ProcTasks::new();
+        foreach ($fs->getArg('dirs') as $dir) {
+            $mpt->addTask(FS::join($baseDir, $dir));
+        }
+
+        $mpt->setTaskHandler(function (string $dir) {
+            Cli::info('Git repo:', $dir);
+            Cmd::git('pull')->setWorkDir($dir)->runAndPrint();
+        })
+            ->onCompleted(fn() => $output->success('Completed'))
+            ->run();
     }
 
     /**
@@ -645,7 +670,7 @@ class GitController extends Controller
           [2]=> string(8) "some message"
         }
          */
-        $args = $this->flags->getRawArgs();
+        $args   = $this->flags->getRawArgs();
         $args[] = '--not-push';
 
         $this->runActionWithArgs('acp', $args);

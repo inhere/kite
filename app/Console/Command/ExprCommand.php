@@ -109,6 +109,9 @@ class ExprCommand extends Command
      * @return int
      * @throws Throwable
      * @example
+     *  {binWithCmd} '34 + 6' // output: 40
+     *
+     * <b>Interactive:</b>
      *  <code>$ {binWithCmd} -i</code>
      *  Expr > 45 + 45
      *  90

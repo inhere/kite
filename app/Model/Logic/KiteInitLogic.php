@@ -17,17 +17,17 @@ class KiteInitLogic extends AbstractObj
     /**
      * @var bool
      */
-    public $dryRun = false;
+    public bool $dryRun = false;
 
     /**
      * @var string
      */
-    public $workDir = '';
+    public string $workDir = '';
 
     /**
      * @var string
      */
-    public $kiteDir = '';
+    public string $kiteDir = '';
 
     /**
      */

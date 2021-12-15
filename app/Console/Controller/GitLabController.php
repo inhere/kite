@@ -184,8 +184,10 @@ class GitLabController extends Controller
         ], 'Config:', ['ucFirst' => false]);
 
         $remotes = $gl->getRepo()->getRemotes();
-        $output->colored('Remotes(by git):', 'ylw0');
-        $output->json($remotes);
+        if ($remotes) {
+            $output->colored('Remotes(by git):', 'ylw0');
+            $output->prettyJSON($remotes);
+        }
 
         if ($fs->getOpt('list')) {
             return;
@@ -309,11 +311,11 @@ class GitLabController extends Controller
         // git clone $repoUrl
         $name = $fs->getArg('name');
 
-        // $cmd = Cmd::git('clone')
         Cmd::git('clone')
             ->add($repoUrl)
             ->addIf($name, $name !== '')
             ->setDryRun($this->flags->getOpt('dry-run'))
+            ->setWorkDir($this->flags->getOpt('workdir'))
             ->run(true);
 
         // if ($cmd->isSuccess()) {
@@ -792,7 +794,7 @@ class GitLabController extends Controller
         }
 
         $addr = trim($addr, '/');
-        if (strpos($addr, '/') === false) {
+        if (!str_contains($addr, '/')) {
             throw new PromptException('the input base repo name is invalid. should as "GROUP/NAME"');
         }
 
