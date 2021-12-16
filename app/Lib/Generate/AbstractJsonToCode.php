@@ -114,8 +114,7 @@ abstract class AbstractJsonToCode
         //     'fields' => $this->fields,
         // ];
 
-        $tpl = KiteUtil::newTplEngine();
-        return $tpl->renderString($tplText, $settings);
+        return KiteUtil::newTplEngine()->renderString($tplText, $settings);
     }
 
     /**

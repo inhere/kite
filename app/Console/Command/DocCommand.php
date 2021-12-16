@@ -41,12 +41,12 @@ class DocCommand extends Command
     /**
      * @var string
      */
-    private $topName = '';
+    private string $topName = '';
 
     /**
      * @var array
      */
-    private $subNames = [];
+    private array $subNames = [];
 
     public static function aliases(): array
     {

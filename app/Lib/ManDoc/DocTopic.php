@@ -19,58 +19,58 @@ class DocTopic
     /**
      * @var self|null
      */
-    private $parent;
+    private ?DocTopic $parent;
 
     /**
      * The topic childs. key is name
      *
      * @var self[]
      */
-    private $childs = [];
+    private array $childs = [];
 
     /**
      * @var array [name => isDir, ]
      */
-    private $childNames = [];
+    private array $childNames = [];
 
     /**
      * The topic name. eg: git, tmux
      *
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var int
      */
-    private $level = 1;
+    private int $level = 1;
 
     /**
      * @var string
      */
-    private $path;
+    private string $path;
 
     /**
      * The file/dir name. eg: git, tmux.md
      *
      * @var string
      */
-    private $fsName;
+    private string $fsName;
 
     /**
      * @var bool
      */
-    private $isDir;
+    private bool $isDir;
 
     /**
      * @var array
      */
-    private $info = [];
+    private array $info = [];
 
     /**
      * @var bool
      */
-    private $loaded = false;
+    private bool $loaded = false;
 
     /**
      * @param string $name

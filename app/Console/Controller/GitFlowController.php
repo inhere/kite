@@ -17,7 +17,6 @@ use Inhere\Kite\Helper\GitUtil;
 use Toolkit\PFlag\FlagsParser;
 use function array_keys;
 use function implode;
-use function vdump;
 
 /**
  * Class GitFlowGroup
@@ -31,7 +30,7 @@ class GitFlowController extends Controller
     /**
      * @var array
      */
-    private $config = [];
+    private array $config = [];
 
     /**
      * @var string
@@ -222,13 +221,12 @@ class GitFlowController extends Controller
         $remotes = GitUtil::getRemotes($pwd);
         if (!isset($remotes[$mainRemote])) {
             $names = array_keys($remotes);
-
-            $output->liteError("The remote '{$mainRemote}' is not exists. remotes: ", implode(',', $names));
+            $output->liteError("The remote '$mainRemote' is not exists. remotes: ", implode(',', $names));
             return;
         }
 
         // git pull main BRANCH
-        $cmd = "git pull {$mainRemote} $curBranch";
+        $cmd = "git pull $mainRemote $curBranch";
         CmdRunner::new($cmd, $pwd)->do(true)->afterOkDo('git status');
 
         $output->success('Complete');

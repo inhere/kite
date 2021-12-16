@@ -31,7 +31,7 @@ class RunCommand extends Command
     /**
      * @var ScriptRunner
      */
-    private $sr;
+    private ScriptRunner $sr;
 
     /**
      * @return string[]

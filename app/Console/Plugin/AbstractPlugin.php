@@ -239,9 +239,7 @@ abstract class AbstractPlugin implements PluginInterface
      */
     protected function applyHelpVars(string $help): string
     {
-        $tpl = SimpleTemplate::new(['format' => '${%s}']);
-
-        return $tpl->renderString($help, $this->helpTplVars());
+        return SimpleTemplate::new(['format' => '${%s}'])->renderString($help, $this->helpTplVars());
     }
 
     /**

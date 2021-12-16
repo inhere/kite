@@ -19,29 +19,29 @@ class QuickJump
     /**
      * @var bool
      */
-    private $initialized = false;
+    private bool $initialized = false;
 
     /**
      * @var string
      */
-    private $datafile = '';
+    private string $datafile = '';
 
     /**
      * @var JumpStorage
      */
-    private $engine;
+    private JumpStorage $engine;
 
     /**
      * Paths aliases
      *
      * @var array
      */
-    private $aliases = [];
+    private array $aliases = [];
 
     /**
      * @var array {bash:string, zsh:string}
      */
-    private $shellTplFiles = [
+    private array $shellTplFiles = [
         JumpShell::NAME_BASH => BASE_PATH . '/resource/templates/quick-jump/jump.bash',
         JumpShell::NAME_ZSH  => BASE_PATH . '/resource/templates/quick-jump/jump.zsh',
     ];

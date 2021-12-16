@@ -39,12 +39,12 @@ class PluginManager
     /**
      * @var bool
      */
-    private $loaded = false;
+    private bool $loaded = false;
 
     /**
      * @var bool
      */
-    private $enable = true;
+    private bool $enable = true;
 
     /**
      * loaded plugin objects
@@ -313,7 +313,7 @@ class PluginManager
             $name = $f->getFilename();
 
             // Skip hidden files and directories.
-            if (strpos($name, '.') === 0) {
+            if (str_starts_with($name, '.')) {
                 return false;
             }
 
@@ -362,7 +362,7 @@ class PluginManager
     /**
      * @param bool|int $enable
      */
-    public function setEnable($enable): void
+    public function setEnable(bool|int $enable): void
     {
         $this->enable = (bool)$enable;
     }

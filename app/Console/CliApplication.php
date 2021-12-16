@@ -39,7 +39,7 @@ class CliApplication extends Application
     /**
      * @var PluginManager
      */
-    private $plugManager;
+    private PluginManager $plugManager;
 
     // protected function prepareRun(): void
     // {

@@ -57,7 +57,7 @@ class ExprCommand extends Command
     /**
      * @var bool
      */
-    private $debug = false;
+    private bool $debug = false;
 
     /**
      * @var array

@@ -50,7 +50,7 @@ class GitLabController extends Controller
     /**
      * @var array
      */
-    private $settings = [];
+    private array $settings = [];
 
     /**
      * @return string[]
@@ -123,7 +123,11 @@ class GitLabController extends Controller
         if ($workdir = $this->flags->getOpt('workdir')) {
             $this->output->info('Change workdir to: ' . $workdir);
             chdir($workdir);
+        } else {
+            $workdir = $this->input->getWorkDir();
         }
+
+        $this->output->info("Current workdir: $workdir");
     }
 
     /**
@@ -323,6 +327,7 @@ class GitLabController extends Controller
         // }
 
         $output->success('Complete');
+        $output->info('recommend run: `kite gl init` for init some information');
     }
 
     /**
@@ -863,10 +868,10 @@ class GitLabController extends Controller
         }
         */
         $args = $this->flags->getRawArgs();
-        // add option
+        // add option - do push
         $args[] = '--push';
 
-        // do push
+        // run updateCommand();
         $this->runActionWithArgs('update', $args);
     }
 

@@ -114,7 +114,7 @@ class ContentsAutoReader extends AbstractObj
     protected function readFromStdin(): string
     {
         $text  = '';
-        $stdin = fopen('php://stdin', 'r');
+        $stdin = fopen('php://stdin', 'rb');
 
         if (stream_set_blocking($stdin, false)) {
             $text = stream_get_contents($stdin);

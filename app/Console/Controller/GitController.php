@@ -124,7 +124,11 @@ class GitController extends Controller
         if ($workdir = $this->flags->getOpt('workdir')) {
             $this->output->info('Change workdir to: ' . $workdir);
             chdir($workdir);
+        } else {
+            $workdir = $this->input->getWorkDir();
         }
+
+        $this->output->info("Current workdir: $workdir");
     }
 
     /**

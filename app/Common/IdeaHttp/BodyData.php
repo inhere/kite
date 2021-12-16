@@ -4,13 +4,13 @@ namespace Inhere\Kite\Common\IdeaHttp;
 
 use Inhere\Kite\Http\ContentType;
 use RuntimeException;
+use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\Obj\DataObject;
 use Toolkit\Stdlib\Str\UrlHelper;
 use Toolkit\Stdlib\Type;
 use function count;
 use function implode;
 use function is_array;
-use function json_encode;
 use function strlen;
 use function strtolower;
 
@@ -65,7 +65,7 @@ class BodyData extends DataObject
 
         $fewData = [];
         foreach ($this as $key => $val) {
-            $exampleString = is_array($val) ? json_encode($val) : (string)$val;
+            $exampleString = is_array($val) ? Json::encode($val) : (string)$val;
             if (strlen($exampleString) > 64) {
                 $exampleString = '';
             } else {
@@ -103,7 +103,7 @@ class BodyData extends DataObject
                 continue;
             }
 
-            $exampleString = is_array($val) ? json_encode($val) : (string)$val;
+            $exampleString = is_array($val) ? Json::encode($val) : (string)$val;
             if (strlen($exampleString) > 64) {
                 $exampleString = '';
             } else {
@@ -178,7 +178,7 @@ class BodyData extends DataObject
         // }
 
         if ($cType === ContentType::JSON) {
-            return json_encode($this->getArrayCopy());
+            return Json::encode($this->getArrayCopy());
         }
 
         if ($cType === ContentType::FORM) {

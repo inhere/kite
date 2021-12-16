@@ -146,14 +146,14 @@ class AppHelper
      * Get data from array or object by path.
      * Example: `DataCollector::getByPath($array, 'foo.bar.yoo')` equals to $array['foo']['bar']['yoo'].
      *
-     * @param array|ArrayAccess $data      An array or object to get value.
+     * @param ArrayAccess|array $data      An array or object to get value.
      * @param mixed             $path      The key path.
-     * @param mixed             $default
+     * @param mixed|null $default
      * @param string            $separator Separator of paths.
      *
      * @return mixed Found value, null if not exists.
      */
-    public static function getByPath($data, string $path, $default = null, string $separator = '.')
+    public static function getByPath(ArrayAccess|array $data, string $path, mixed $default = null, string $separator = '.'): mixed
     {
         if (isset($data[$path])) {
             return $data[$path];
@@ -206,11 +206,11 @@ class AppHelper
      *
      * @param array $data
      * @param array $nodes
-     * @param mixed $default
+     * @param mixed|null $default
      *
      * @return mixed
      */
-    public static function getValueByNodes(array $data, array $nodes, $default = null)
+    public static function getValueByNodes(array $data, array $nodes, mixed $default = null): mixed
     {
         $temp = $data;
         foreach ($nodes as $name) {

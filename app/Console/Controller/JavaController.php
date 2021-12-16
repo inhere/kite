@@ -12,7 +12,6 @@ namespace Inhere\Kite\Console\Controller;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Common\CmdRunner;
 use Toolkit\PFlag\FlagsParser;
 use function file_get_contents;
 
@@ -31,7 +30,8 @@ class JavaController extends Controller
     protected static function commandAliases(): array
     {
         return [
-
+            'json2class' => ['json2c'],
+            'sql2class'  => ['sql2c'],
         ];
     }
 
@@ -65,7 +65,7 @@ class JavaController extends Controller
     }
 
     /**
-     * Search java package from mavenrepo
+     * Search java package from maven-repo
      *
      * @param Output $output
      */

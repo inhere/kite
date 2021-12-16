@@ -150,7 +150,7 @@ class ScriptRunner extends AbstractObj
      * @param array $runArgs
      * @param mixed $commands
      */
-    private function executeScripts(string $name, array $runArgs, $commands): void
+    private function executeScripts(string $name, array $runArgs, mixed $commands): void
     {
         if (is_string($commands)) {
             // bash -c "echo hello"
@@ -491,7 +491,7 @@ class ScriptRunner extends AbstractObj
     /**
      * @param bool|string $autoScriptBin
      */
-    public function setAutoScriptBin($autoScriptBin): void
+    public function setAutoScriptBin(bool|string $autoScriptBin): void
     {
         $this->autoScriptBin = (bool)$autoScriptBin;
     }

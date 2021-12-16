@@ -41,12 +41,12 @@ class SelfController extends Controller
     /**
      * @var string
      */
-    protected $baseDir;
+    protected string $baseDir;
 
     /**
      * @var string
      */
-    protected $repoDir;
+    protected string $repoDir;
 
     protected static function commandAliases(): array
     {
@@ -279,7 +279,7 @@ class SelfController extends Controller
      *
      * @var array
      */
-    protected $webUi = [
+    protected array $webUi = [
         // document root
         // 'root'     => 'public',
         'root'    => '',

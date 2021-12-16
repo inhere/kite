@@ -26,7 +26,7 @@ abstract class AbstractGitLocal
     /**
      * @var Repo
      */
-    protected $repo;
+    protected Repo $repo;
 
     /**
      * @var string

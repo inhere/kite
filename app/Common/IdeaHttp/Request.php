@@ -6,6 +6,7 @@ use Inhere\Kite\Http\ContentType;
 use Inhere\Route\Router;
 use InvalidArgumentException;
 use RuntimeException;
+use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\Str;
 use function array_merge;
 use function count;
@@ -463,7 +464,7 @@ class Request
         }
 
         if ($cType === ContentType::JSON) {
-            $arr = json_decode($bodyRaw, true);
+            $arr = Json::decode($bodyRaw, true);
             return BodyData::new($arr)->withContentType($cType);
         }
 

@@ -15,12 +15,12 @@ class TopicNotFoundException extends RuntimeException
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var string
      */
-    private $parentName;
+    private string $parentName;
 
     /**
      * Class constructor.

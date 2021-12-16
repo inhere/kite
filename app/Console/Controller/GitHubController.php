@@ -35,7 +35,7 @@ class GitHubController extends Controller
     /**
      * @var array
      */
-    private $settings = [];
+    private array $settings = [];
 
     /**
      * @return array
@@ -260,7 +260,7 @@ class GitHubController extends Controller
         ];
 
         // use mirror
-        if ($mirror && isset($mirrors[$mirror]) && strpos($repo, '//') === false) {
+        if ($mirror && isset($mirrors[$mirror]) && !str_contains($repo, '//')) {
             $repo = $mirrors[$mirror] . '/' . $repo;
         }
 

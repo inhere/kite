@@ -44,13 +44,13 @@ class GitSubtreeController extends Controller
      * https eg. https://github.com/php-toolkit/php-utils.git
      * ssl eg. git@github.com:php-toolkit/php-utils.git
      */
-    public $gitUrl = '%sphp-toolkit/%s.git';
+    public string $gitUrl = '%sphp-toolkit/%s.git';
 
     /** @var array */
-    public $components = [];
+    public array $components = [];
 
     /** @var string */
-    public $componentDir;
+    public string $componentDir;
 
     public static function aliases(): array
     {

@@ -24,37 +24,37 @@ class Document
     /**
      * @var array
      */
-    private $paths;
+    private array $paths;
 
     /**
      * @var string
      */
-    private $lang;
+    private string $lang;
 
     /**
      * @var string
      */
-    private $fallbackLang = self::DEF_LANG;
+    private string $fallbackLang = self::DEF_LANG;
 
     /**
      * @var array
      */
-    private $realPaths = [];
+    private array $realPaths = [];
 
     /**
      * @var array
      */
-    private $errorPaths = [];
+    private array $errorPaths = [];
 
     /**
      * @var DocTopic[]
      */
-    private $topics = [];
+    private array $topics = [];
 
     /**
      * @var array [name => isDir, ]
      */
-    private $topicNames = [];
+    private array $topicNames = [];
 
     /**
      * Class constructor.
@@ -107,7 +107,7 @@ class Document
      * @param int|string $key
      * @param string     $path
      */
-    private function addRealPath($key, string $path): void
+    private function addRealPath(int|string $key, string $path): void
     {
         $path = rtrim($path, '/');
 
@@ -122,7 +122,7 @@ class Document
      * @param int|string $key
      * @param string     $path
      */
-    private function addErrorPath($key, string $path): void
+    private function addErrorPath(int|string $key, string $path): void
     {
         if (is_string($key)) {
             $this->errorPaths[$key] = $path;

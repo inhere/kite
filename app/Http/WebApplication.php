@@ -31,19 +31,19 @@ class WebApplication
     /**
      * @var HtmlTemplate
      */
-    private $renderer;
+    private HtmlTemplate $renderer;
 
     /**
      * @var array
      */
-    private $params = [];
+    private array $params = [];
 
     /**
      * The root path for project
      *
      * @var string
      */
-    private $basePath;
+    private string $basePath;
 
     /**
      * Class constructor.
@@ -151,11 +151,11 @@ class WebApplication
      * Get config param value
      *
      * @param string $name
-     * @param mixed  $default
+     * @param mixed|null $default
      *
      * @return array|mixed
      */
-    public function getParam(string $name, $default = null)
+    public function getParam(string $name, mixed $default = null): mixed
     {
         return $this->params[$name] ?? $default;
     }
