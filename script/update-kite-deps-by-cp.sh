@@ -1,19 +1,10 @@
 #!/usr/bin/env sh
 
+# run: sh script/update-kite-deps-by-cp.sh
 set -ex
-
-#openproxy
-kite env prox
 
 tmpKiteDir=~/Workspace/my-github/inhere/kite
 usrKiteDir=~/.kite
-
-cd $tmpKiteDir || exit 2
-composer update
-
-cp $tmpKiteDir/composer.lock $usrKiteDir
-rm -rf $usrKiteDir/vendor/composer
-cp -r $tmpKiteDir/vendor/composer $usrKiteDir/vendor
 
 cpDeps="cebe clue colinodell gitonomy guzzlehttp http-interop knplabs nette php-http monolog psr symfony"
 for dir in $cpDeps ; do

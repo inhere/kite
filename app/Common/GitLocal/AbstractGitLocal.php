@@ -24,9 +24,9 @@ abstract class AbstractGitLocal
     public const GITHUB_HOST = 'https://github.com';
 
     /**
-     * @var Repo
+     * @var Repo|null
      */
-    protected Repo $repo;
+    protected ?Repo $repo = null;
 
     /**
      * @var string

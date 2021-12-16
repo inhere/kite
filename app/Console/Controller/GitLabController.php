@@ -63,7 +63,7 @@ class GitLabController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'pullRequest'  => ['pr', 'mr'],
+            'pullRequest'  => ['pr', 'mr', 'merge-request'],
             'deleteBranch' => ['del-br', 'delbr', 'dbr', 'db'],
             'newBranch'    => ['new-br', 'newbr', 'nbr', 'nb'],
             'li'           => 'linkInfo',
@@ -582,6 +582,11 @@ class GitLabController extends Controller
      *
      * @param FlagsParser $fs
      * @param Output $output
+     * @help
+     * Special:
+     *   `@`, HEAD - Current branch.
+     *   `@s`      - Source branch.
+     *   `@t`      - Target branch.
      *
      * @example
      *   {binWithCmd}                       Will generate PR link for fork 'HEAD_BRANCH' to main 'HEAD_BRANCH'
@@ -622,8 +627,14 @@ class GitLabController extends Controller
 
         $open = $fs->getOpt('open');
         // if input '@', 'head', use current branch name.
-        if ($open && ($open === '@' || strtoupper($open) === 'HEAD')) {
-            $open = $curBranch;
+        if ($open) {
+            if ($open === '@' || strtoupper($open) === 'HEAD') {
+                $open = $curBranch;
+            } elseif ($open === '@s') {
+                $open = $srcBranch;
+            } elseif ($open === '@t') {
+                $open = $tgtBranch;
+            }
         }
 
         // if ($tgtBranch) {
@@ -852,27 +863,21 @@ class GitLabController extends Controller
     }
 
     /**
-     * update codes from origin and main remote repositories, then push to remote
+     * update codes from origin and main remote repository, then push to remote
      *
+     * @param Output $output
      * @throws Throwable
      */
-    public function updatePushCommand(): void
+    public function updatePushCommand(Output $output): void
     {
-        // $input->setSOpt('p', true);
-        // $this->updateCommand($input, $output);
+        // $args = $this->flags->getRawArgs();
+        // // add option - do push
+        // $args[] = '--push';
+        //
+        // // run updateCommand();
+        // $this->runActionWithArgs('update', $args);
 
-        /*
-        args:
-        array(3) {
-         [0]=> string(2) "updatePush"
-        }
-        */
-        $args = $this->flags->getRawArgs();
-        // add option - do push
-        $args[] = '--push';
-
-        // run updateCommand();
-        $this->runActionWithArgs('update', $args);
+        $this->runUpdateByGit(true, $output);
     }
 
     /**
@@ -885,6 +890,17 @@ class GitLabController extends Controller
      * @param Output $output
      */
     public function updateCommand(FlagsParser $fs, Output $output): void
+    {
+        $this->runUpdateByGit($fs->getOpt('push'), $output);
+    }
+
+    /**
+     * @param bool $doPush
+     * @param Output $output
+     *
+     * @return void
+     */
+    protected function runUpdateByGit(bool $doPush, Output $output): void
     {
         $gitlab = $this->getGitlab();
 
@@ -900,8 +916,8 @@ class GitLabController extends Controller
             $runner->addf('git pull %s master', $gitlab->getMainRemote());
         }
 
-        if ($fs->getOpt('push')) {
-            $runner->add('git push');
+        if ($doPush) {
+            $runner->add('git push origin');
         }
 
         $runner->run(true);
