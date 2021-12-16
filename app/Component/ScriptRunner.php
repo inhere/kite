@@ -32,7 +32,6 @@ use function stripos;
 use function strpos;
 use function substr;
 use function trim;
-use const IN_PHAR;
 
 /**
  * class ScriptRunner
@@ -95,16 +94,18 @@ class ScriptRunner extends AbstractObj
      * @var string[]
      */
     private array $scriptExt2bin = [
-        '.sh'   => 'sh',
-        '.zsh'  => 'zsh',
-        '.bash' => 'bash',
-        '.php'  => 'php',
-        '.go'   => 'go run',
+        '.sh'     => 'sh',
+        '.zsh'    => 'zsh',
+        '.bash'   => 'bash',
+        '.php'    => 'php',
+        '.gry'    => 'groovy',
+        '.groovy' => 'groovy',
+        '.go'     => 'go run',
     ];
 
     /**
      * @param string $name
-     * @param array  $runArgs
+     * @param array $runArgs
      */
     public function run(string $name, array $runArgs): void
     {
@@ -129,7 +130,7 @@ class ScriptRunner extends AbstractObj
      * run script by name
      *
      * @param string $name
-     * @param array  $runArgs
+     * @param array $runArgs
      */
     public function runScriptByName(string $name, array $runArgs): void
     {
@@ -146,8 +147,8 @@ class ScriptRunner extends AbstractObj
 
     /**
      * @param string $name
-     * @param array  $runArgs
-     * @param mixed  $commands
+     * @param array $runArgs
+     * @param mixed $commands
      */
     private function executeScripts(string $name, array $runArgs, $commands): void
     {
@@ -201,7 +202,7 @@ class ScriptRunner extends AbstractObj
     /**
      * @param string $name
      * @param string $cmdString
-     * @param array  $scriptArgs
+     * @param array $scriptArgs
      *
      * @return string
      */
@@ -238,7 +239,7 @@ class ScriptRunner extends AbstractObj
 
     /**
      * @param string $scriptFile
-     * @param array  $runArgs
+     * @param array $runArgs
      */
     public function runScriptFile(string $scriptFile, array $runArgs): void
     {
@@ -297,7 +298,7 @@ class ScriptRunner extends AbstractObj
 
     /**
      * @param string $command
-     * @param bool   $onlyOne
+     * @param bool $onlyOne
      */
     private function executeScript(string $command, bool $onlyOne = false): void
     {

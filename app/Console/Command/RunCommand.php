@@ -68,6 +68,7 @@ class RunCommand extends Command
     protected function execute(Input $input, Output $output)
     {
         $name = $this->flags->getArg('name');
+        $output->info('workdir: ' . $input->getWorkDir());
 
         $listType = $this->flags->getOpt('list');
         if ($listType === ScriptRunner::TYPE_FILE) {
