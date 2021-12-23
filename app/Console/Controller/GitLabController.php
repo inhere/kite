@@ -74,6 +74,7 @@ class GitLabController extends Controller
             'up'           => 'update',
             'updatePush'   => ['upp', 'up-push'],
             'project'      => ['pj', 'info'],
+            'checkout'     => ['co'],
         ];
     }
 
@@ -328,6 +329,32 @@ class GitLabController extends Controller
 
         $output->success('Complete');
         $output->info('recommend run: `kite gl init` for init some information');
+    }
+
+    /**
+     * checkout to new branch and update code to latest
+     *
+     * @arguments
+     * branch       string;target branch name;true
+     *
+     * @options
+     *  --np, --no-push      bool;dont push to origin remote after update
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function checkoutCommand(FlagsParser $fs, Output $output): void
+    {
+        $co = Cmd::git('checkout')
+            ->addArgs($fs->getArg('branch'))
+            ->runAndPrint();
+
+        if ($co->isFail()) {
+            return;
+        }
+
+        $output->notice('update branch code to latest');
+        $this->runUpdateByGit(!$fs->getOpt('no-push'), $output);
     }
 
     /**
