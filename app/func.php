@@ -12,3 +12,9 @@ if (!function_exists('env')) {
         return Toolkit\Stdlib\OS::getEnvStrVal($key, $default);
     }
 }
+
+function load_kite() {
+    if ($kiteDir = (string)getenv('KITE_PATH')) {
+        require $kiteDir. '/app/boot.php';
+    }
+}

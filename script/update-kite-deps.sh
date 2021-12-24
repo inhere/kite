@@ -2,7 +2,8 @@
 
 set -ex
 
-#openproxy
+# run: kite run update-kite-deps.sh --proxy
+# run: sh script/update-kite-deps.sh
 kite env prox
 
 tmpKiteDir=~/Workspace/my-github/inhere/kite

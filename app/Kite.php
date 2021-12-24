@@ -37,13 +37,13 @@ use const IN_PHAR;
  * @method static Dispatcher dispatcher()
  * @method static ScriptRunner scriptRunner()
  *
- * @see     Kite::__callStatic() for quick get object
+ * @see Kite::__callStatic() for quick get object
  */
 class Kite
 {
     use StaticPathAliasTrait;
 
-    public const VERSION  = '2.0.0';
+    public const VERSION  = '2.0.1';
     public const HOMEPAGE = 'https://github.com/inhere/kite';
 
     public const MODE_CLI = 'cli';

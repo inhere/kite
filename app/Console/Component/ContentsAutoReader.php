@@ -34,7 +34,7 @@ class ContentsAutoReader extends AbstractObj
 
     /**
      * @param string $source
-     * @param array $opts
+     * @param array{print: bool, loadedFile: string, throwOnEmpty: bool} $opts
      *
      * @return string
      */
@@ -52,7 +52,7 @@ class ContentsAutoReader extends AbstractObj
      * - input '@FILEPATH' or FILEPATH       - will read from the filepath.
      *
      * @param string $source the input text
-     * @param array{print: bool, loadedFile: string, throwOnEmpty: true} $opts
+     * @param array{print: bool, loadedFile: string, throwOnEmpty: bool} $opts
      *
      * @return string
      */

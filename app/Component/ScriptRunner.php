@@ -41,6 +41,16 @@ class ScriptRunner extends AbstractObj
     public const TYPE_CMD  = 'cmd';
     public const TYPE_FILE = 'file';
 
+    private const LOAD_KITE_CODE = <<<'TXT'
+function load_kite() {
+    if ($kiteDir = (string)getenv('KITE_PATH')) {
+        require $kiteDir. '/app/boot.php';
+    }
+}
+
+TXT;
+
+
     /**
      * @var bool
      */

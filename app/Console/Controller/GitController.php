@@ -29,6 +29,7 @@ use PhpGit\Info\TagsInfo;
 use PhpGit\Repo;
 use Throwable;
 use Toolkit\Cli\Cli;
+use Toolkit\Cli\Util\Clog;
 use Toolkit\FsUtil\FS;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Helper\Assert;
@@ -142,15 +143,14 @@ class GitController extends Controller
         $this->output->info("input command '$action' is not found, will exec git command: `git $action`");
 
         $c = Cmd::git($action);
+        $c->withIf(fn() => $c->addArgs(...$args), $args);
 
-        if ($args) {
-            $c->addArgs(...$args);
-        }
+        // if ($args) {
+        //     $c->addArgs(...$args);
+        // }
 
         $c->runAndPrint();
 
-        // $run = CmdRunner::new($this->input->getFullScript());
-        // $run->do(true);
         return true;
     }
 
@@ -417,13 +417,10 @@ class GitController extends Controller
     {
         $repo = $fs->getArg('repo');
         $name = $fs->getArg('name');
-        $args = $fs->getRawArgs();
 
-        // $dir = $this->flags->getOpt('workdir');
-
-        $c = Cmd::git('clone');
-        // $c->setWorkDir($dir);
-        $c->setDryRun($this->flags->getOpt('dry-run'));
+        $c = Cmd::git('clone')
+            ->setWorkDir($this->flags->getOpt('workdir'))
+            ->setDryRun($this->flags->getOpt('dry-run'));
 
         if ($fs->getOpt('gh')) {
             $gh = GitHub::new($output);
@@ -437,15 +434,14 @@ class GitController extends Controller
             $repoUrl = $repo;
         }
 
-        $c->add($repoUrl);
-        $c->addIf($name, $name);
-        if ($args) {
-            $c->addArgs(...$args);
-        }
+        $args = $fs->getRemainArgs();
+        $c->add($repoUrl)
+            ->addIf($name, $name)
+            ->withIf(fn() => $c->addArgs(...$args), $args);
 
         $c->runAndPrint();
 
-        $output->success('Complete');
+        Clog::info('Complete');
     }
 
     /**

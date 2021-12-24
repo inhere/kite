@@ -27,12 +27,18 @@ class ContentsAutoWriter
     /**
      * @param string $output
      * @param string $contents
+     * @param array{printTips: bool} $opts
      *
      * @return bool
      */
-    public static function writeTo(string $output, string $contents): bool
+    public static function writeTo(string $output, string $contents, array $opts = []): bool
     {
-        return (new self)->setOutput($output)->write($contents);
+        return (new self)
+            ->setOutput($output)
+            ->withConfig(function (self $writer) use ($opts) {
+                $writer->setPrintTips($opts['printTips'] ?? true);
+            })
+            ->write($contents);
     }
 
     /**
@@ -43,6 +49,17 @@ class ContentsAutoWriter
     public function __construct(string $output = '')
     {
         $this->output = $output;
+    }
+
+    /**
+     * @param callable $fn
+     *
+     * @return $this
+     */
+    public function withConfig(callable $fn): self
+    {
+        $fn($this);
+        return $this;
     }
 
     /**
@@ -66,7 +83,7 @@ class ContentsAutoWriter
                 Kite::cliApp()->getOutput()->colored('RESULT:');
             }
 
-            Kite::cliApp()->getOutput()->writeRaw($contents);
+            Kite::cliApp()->getOutput()->write($contents);
         } else {
             // write to file
             if ($this->printTips) {
@@ -85,7 +102,7 @@ class ContentsAutoWriter
     /**
      * @return bool
      */
-    public function IsToStdout(): bool
+    public function isToStdout(): bool
     {
         return !$this->output || in_array($this->output, ['@o', '@stdout'], true);
     }
@@ -100,4 +117,15 @@ class ContentsAutoWriter
         $this->output = $output;
         return $this;
     }
+
+    /**
+     * @param bool $printTips
+     *
+     * @return ContentsAutoWriter
+     */
+    public function setPrintTips(bool $printTips): self
+    {
+        $this->printTips = $printTips;
+        return $this;
+}
 }

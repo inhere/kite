@@ -4,9 +4,7 @@
 
 use Toolkit\FsUtil\FileFinder;
 
-if ($kiteDir = getenv('KITE_PATH')) {
-    require $kiteDir. '/app/boot.php';
-}
+load_kite();
 
 $args = $_SERVER['argv'];
 

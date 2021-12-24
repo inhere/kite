@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 /**
  * This file is part of Kite.
  *
@@ -19,6 +20,5 @@ $app->registerGroups('Inhere\\Kite\\Console\\Controller', __DIR__ . '/Controller
 // internal group
 $app->addController(PharController::class);
 
-$app->addAliases('self:update', [
-    'selfupdate', 'self-update', 'updateself', 'update-self', 'upself', 'selfup'
-]);
+// load simple commands.
+require __DIR__ . '/simple-cmds.php';

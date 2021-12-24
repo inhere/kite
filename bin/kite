@@ -19,5 +19,14 @@ $app = new CliApplication([
 // register routes
 require dirname(__DIR__) . '/app/Console/routes.php';
 
+$app->addAliases('self:update', [
+    'selfupdate',
+    'self-update',
+    'updateself',
+    'update-self',
+    'upself',
+    'selfup'
+]);
+
 // start application
 $app->run();

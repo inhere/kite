@@ -9,33 +9,26 @@
 
 namespace Inhere\Kite\Console\Controller;
 
+use Inhere\Console\Component\Formatter\JSONPretty;
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Console\Component\ContentsAutoWriter;
+use Inhere\Kite\Helper\KiteUtil;
 use Inhere\Kite\Lib\Convert\JavaProperties;
 use Inhere\Kite\Lib\Parser\DBTable;
-use Inhere\Kite\Lib\Parser\Text\TextParser;
-use Inhere\Kite\Lib\Stream\ListStream;
 use InvalidArgumentException;
+use PhpPkg\Config\ConfigUtil;
 use Symfony\Component\Yaml\Dumper;
-use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Yaml;
-use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Json;
-use function array_pad;
-use function array_shift;
 use function base_convert;
 use function date;
-use function file_get_contents;
-use function implode;
-use function is_file;
 use function strlen;
 use function substr;
-use function trim;
 
 /**
  * Class ConvertController
@@ -66,6 +59,7 @@ class ConvertController extends Controller
                 'tc',
                 'td',
             ],
+            'yaml2json' => ['yml2json', 'y2j'],
             'yaml2prop' => ['yml2prop', 'y2p'],
             'prop2yaml' => ['prop2yml', 'p2y'],
         ];
@@ -115,74 +109,44 @@ class ConvertController extends Controller
 
         $md = DBTable::fromSchemeSQL($source)->toMDTable();
         $output->writeRaw($md);
-        // $cm = new CliMarkdown();
-        // $output->println($cm->parse($md));
     }
 
     /**
-     * convert formatted text to markdown table
-     *
-     * @arguments
-     * type     The target text doc type, allow: raw, md-table,
+     * convert YAML to JSON contents.
      *
      * @options
-     *   -s,--source           string;The source code for convert. allow: FILEPATH, @clipboard;true
-     *   -o,--output           The output target. default is stdout.
-     *  --is, --item-sep       The item sep char. default is NL.
-     *  --vn, --value-num      int;The item value number. default get from first line.
-     *  --vs, --value-sep      The item value sep char. default is SPACE
+     *  -s,--source    The source code. allow: @i,@c,filepath. if is empty, will try read from STDIN
+     *  -o,--output     string;The output target, allow: filepath, clipboard, stdout;;stdout
      *
      * @param FlagsParser $fs
      * @param Output $output
-     *
-     * @example
-     *   {binWithCmd} -s @c --vn
      */
-    public function textCommand(FlagsParser $fs, Output $output): void
+    public function yaml2jsonCommand(FlagsParser $fs, Output $output): void
     {
-        $text = $fs->getOpt('source');
-        $text = ContentsAutoReader::readFrom($text);
-
-        $p = TextParser::new($text);
-        $p->setItemSep($fs->getOpt('item-sep'));
-        $p->setFieldNum($fs->getOpt('value-num'));
-
-        if ($vSep = $fs->getOpt('value-sep')) {
-            $p->setItemParser(TextParser::charSplitParser($vSep));
+        $str  = ContentsAutoReader::readFrom($fs->getOpt('source'));
+        $data = ConfigUtil::parseYamlString($str);
+        if (!$data) {
+            $output->warning('empty data for convert');
+            return;
         }
 
-        $p->parse();
-
-        switch ($fs->getArg('type')) {
-            case 'mdtable':
-            case 'mdTable':
-            case 'md-table':
-                $rows = ListStream::new($p->getData())
-                    ->eachToArray(function (array $item) {
-                        return implode(' | ', $item);
-                    });
-                $head = array_shift($rows);
-                $line = implode('|', array_pad(['-----'], $p->fieldNum, '-----'));
-
-                $result = $head . "\n" . $line . "\n". implode("\n", $rows);
-                break;
-            case 'raw':
-                $result = $text;
-                break;
-            default:
-                $result = Json::pretty($p->getData());
-                break;
-        }
-
+        $echoTip = true;
         $outFile = $fs->getOpt('output');
-        ContentsAutoWriter::writeTo($outFile, $result);
+        if (KiteUtil::isStdoutAlias($outFile)) {
+            $echoTip = false;
+            $result  = JSONPretty::pretty($data);
+        } else {
+            $result = Json::pretty($data);
+        }
+
+        ContentsAutoWriter::writeTo($outFile, $result, ['printTips' => $echoTip]);
     }
 
     /**
      * convert YAML to java properties contents.
      *
      * @options
-     *  -f,--file       The source code file. if is empty, will try read from clipboard
+     *  -s,--source    The source code. allow: @i,@c,filepath. if is empty, will try read from STDIN
      *  -o,--output     string;The output target, allow: filepath, clipboard, stdout;;stdout
      *
      * @param FlagsParser $fs
@@ -190,16 +154,8 @@ class ConvertController extends Controller
      */
     public function yaml2propCommand(FlagsParser $fs, Output $output): void
     {
-        $file = $fs->getOpt('file');
-
-        $str = ContentsAutoReader::readFrom($file);
-        if (!$str) {
-            throw new InvalidArgumentException('the source yaml contents is empty');
-        }
-
-        $parser = new Parser();
-        /** @var array $data */
-        $data = $parser->parse(trim($str));
+        $str  = ContentsAutoReader::readFrom($fs->getOpt('source'));
+        $data = ConfigUtil::parseYamlString($str);
         if (!$data) {
             $output->warning('empty data for convert');
             return;
@@ -209,16 +165,16 @@ class ConvertController extends Controller
 
         $result  = $jp->encode($data);
         $outFile = $fs->getOpt('output');
+        $echoTip = !KiteUtil::isStdoutAlias($outFile);
 
-        ContentsAutoWriter::writeTo($outFile, $result);
-        $output->success('Complete');
+        ContentsAutoWriter::writeTo($outFile, $result, ['printTips' => $echoTip]);
     }
 
     /**
      * convert java properties to YAML contents.
      *
      * @options
-     *  -f,--file       The source code file. if is empty, will try read from clipboard
+     *  -s,--source    The source code. allow: @i,@c,filepath. if is empty, will try read from STDIN
      *  -o,--output     string;The output target, allow: filepath, clipboard, stdout;;stdout
      *
      * @param FlagsParser $fs
@@ -226,23 +182,10 @@ class ConvertController extends Controller
      */
     public function prop2yamlCommand(FlagsParser $fs, Output $output): void
     {
-        $file = $fs->getOpt('file');
-        if (!$file) {
-            $str = Clipboard::readAll();
-        } else {
-            if (!is_file($file)) {
-                throw new PromptException("input source file not exists, file: $file");
-            }
-
-            $str = file_get_contents($file);
-        }
-
-        if (!$str) {
-            throw new InvalidArgumentException('the source properties contents is empty');
-        }
-
+        $str  = ContentsAutoReader::readFrom($fs->getOpt('source'));
         $prop = new JavaProperties();
         $data = $prop->decode($str);
+
         if (!$data) {
             $output->warning('empty data for convert');
             return;
@@ -252,17 +195,9 @@ class ConvertController extends Controller
         $result = $dumper->dump($data, 1, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK);
 
         $outFile = $fs->getOpt('output');
-        if (!$outFile || $outFile === 'stdout') {
-            $output->println($result);
-        } elseif ($outFile === 'clipboard') {
-            $output->info('will send result to Clipboard');
-            Clipboard::writeString($result);
-        } else {
-            $output->info("will write result to $outFile");
-            File::putContents($outFile, $result);
-        }
+        $echoTip = !KiteUtil::isStdoutAlias($outFile);
 
-        $output->success('Complete');
+        ContentsAutoWriter::writeTo($outFile, $result, ['printTips' => $echoTip]);
     }
 
     /**

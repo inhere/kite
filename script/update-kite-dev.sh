@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# run: kite run dev-update-kite-deps.sh --proxy
+# run: kite run update-kite-dev.sh --proxy
+# run: bash script/update-kite-dev.sh
 
 set -ex
 
