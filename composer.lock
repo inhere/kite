@@ -3712,16 +3712,16 @@
         },
         {
             "name": "toolkit/fsutil",
-            "version": "v2.0.0",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/fsutil.git",
-                "reference": "c3b2420e0e87d98fc081ddf2b2078c8026525d09"
+                "reference": "245a58cef6b619ff3ececc654e65cba5f5b63044"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/fsutil/zipball/c3b2420e0e87d98fc081ddf2b2078c8026525d09",
-                "reference": "c3b2420e0e87d98fc081ddf2b2078c8026525d09",
+                "url": "https://api.github.com/repos/php-toolkit/fsutil/zipball/245a58cef6b619ff3ececc654e65cba5f5b63044",
+                "reference": "245a58cef6b619ff3ececc654e65cba5f5b63044",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3765,9 +3765,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-toolkit/fsutil/issues",
-                "source": "https://github.com/php-toolkit/fsutil/tree/v2.0.0"
+                "source": "https://github.com/php-toolkit/fsutil/tree/v2.0.1"
             },
-            "time": "2021-11-30T14:28:14+00:00"
+            "time": "2021-12-25T04:22:32+00:00"
         },
         {
             "name": "toolkit/pflag",
@@ -3821,16 +3821,16 @@
         },
         {
             "name": "toolkit/stdlib",
-            "version": "v2.0.2",
+            "version": "v2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/stdlib.git",
-                "reference": "b2d5c502b59da027cac47b9a894e23fdb3f8ee6d"
+                "reference": "539d2e41ef654c8935a1cc515f2732341caac707"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/stdlib/zipball/b2d5c502b59da027cac47b9a894e23fdb3f8ee6d",
-                "reference": "b2d5c502b59da027cac47b9a894e23fdb3f8ee6d",
+                "url": "https://api.github.com/repos/php-toolkit/stdlib/zipball/539d2e41ef654c8935a1cc515f2732341caac707",
+                "reference": "539d2e41ef654c8935a1cc515f2732341caac707",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3881,9 +3881,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-toolkit/stdlib/issues",
-                "source": "https://github.com/php-toolkit/stdlib/tree/v2.0.2"
+                "source": "https://github.com/php-toolkit/stdlib/tree/v2.0.3"
             },
-            "time": "2021-12-04T14:54:29+00:00"
+            "time": "2021-12-16T14:19:43+00:00"
         },
         {
             "name": "toolkit/sys-utils",
