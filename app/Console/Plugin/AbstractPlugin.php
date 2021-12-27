@@ -200,7 +200,7 @@ abstract class AbstractPlugin implements PluginInterface
     protected function beforeRun(Application $app, array $args): bool
     {
         if ($this->fs->isNotEmpty()) {
-            $app->debugf('parse plugin flags, args: %s', DataHelper::toString($args));
+            $app->debugf('parse plugin %s flags, args: %s', $this->name, DataHelper::toString($args));
             $ok = $this->fs->parse($args);
 
             if (!$ok) {

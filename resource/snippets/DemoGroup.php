@@ -20,7 +20,7 @@ class DemoGroup extends Controller
 {
     protected static string $name = 'demo';
 
-    protected static string $description = 'Some useful development tool commands';
+    protected static string $desc = 'Some useful development tool commands';
 
     /**
      * run a php built-in server for development(is alias of the command 'server:dev')

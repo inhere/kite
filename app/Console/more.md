@@ -1,5 +1,5 @@
 
-## debain package search
+## debian package search
 
 - https://packages.debian.org/search
 
