@@ -58,7 +58,7 @@ class GitHubController extends Controller
     /**
      * @return string[]
      */
-    protected function options(): array
+    protected function getOptions(): array
     {
         return [
             '--dry-run' => 'bool;Dry-run the workflow, dont real execute',

@@ -94,7 +94,7 @@ class GitLabController extends Controller
     /**
      * @return string[]
      */
-    protected function options(): array
+    protected function getOptions(): array
     {
         return [
             '--dry-run' => 'bool;Dry-run the workflow, dont real execute',
@@ -322,10 +322,6 @@ class GitLabController extends Controller
             ->setDryRun($this->flags->getOpt('dry-run'))
             ->setWorkDir($this->flags->getOpt('workdir'))
             ->run(true);
-
-        // if ($cmd->isSuccess()) {
-        //     Cmd::new('cd', $name);
-        // }
 
         $output->success('Complete');
         $output->info('recommend run: `kite gl init` for init some information');
@@ -664,15 +660,6 @@ class GitLabController extends Controller
             }
         }
 
-        // if ($tgtBranch) {
-        //     if (!in_array($tgtBranch, $fixedBrs, true)) {
-        //         $tgtBranch = $brPrefix . $tgtBranch;
-        //     }
-        // } elseif (is_string($open) && $open) {
-        //     $tgtBranch = $open;
-        // } else {
-        //     $tgtBranch = $curBranch;
-        // }
         if (!$tgtBranch) {
             if (is_string($open) && $open) {
                 $tgtBranch = $open;

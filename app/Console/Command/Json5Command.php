@@ -15,9 +15,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Console\Component\ContentsAutoWriter;
-use JsonException;
-use function file_put_contents;
-use function json_encode;
+use Toolkit\Stdlib\Json;
 use const JSON_PRETTY_PRINT;
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
@@ -45,8 +43,6 @@ class Json5Command extends Command
      *
      * @param Input $input
      * @param Output $output
-     *
-     * @throws JsonException
      */
     protected function execute(Input $input, Output $output)
     {
@@ -54,7 +50,7 @@ class Json5Command extends Command
         $decoded = Json5Decoder::decode($source);
 
         $encFlag = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
-        $jsonStr = json_encode($decoded, JSON_THROW_ON_ERROR | $encFlag);
+        $jsonStr = Json::encode($decoded, $encFlag);
 
         $outFile = $this->flags->getOpt('output');
 

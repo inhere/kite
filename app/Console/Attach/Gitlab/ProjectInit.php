@@ -13,7 +13,8 @@ use Inhere\Console\IO\Output;
  */
 class ProjectInit extends Command
 {
-    protected static string $name = 'pinit';
+    protected static string $name = 'init';
+    protected static string $desc = 'init a gitlab project information';
 
     protected function configure(): void
     {
