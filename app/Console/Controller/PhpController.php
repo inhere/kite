@@ -172,6 +172,10 @@ class PhpController extends Controller
      *      --php-bin     manual set the php bin  file path.
      *      --phpunit     manual set the phpunit(.phar)  file path.
      *
+     * @example
+     * Use special php and phpunit:
+     * {binWithCmd} --php-bin php7 --phpunit /Users/inhere/.composer/vendor/phpunit/phpunit/phpunit -f KEYWORDS ./test
+     *
      * @param FlagsParser $fs
      * @param Output $output
      */
@@ -189,8 +193,19 @@ class PhpController extends Controller
 
         $output->info('found the phpunit config dir: ' . $runDir);
 
+        $phpBin = $fs->getOpt('php-bin');
+        if ($phpBin) {
+            $phpunit = $fs->getMustOpt('phpunit');
+
+            $cmd = Cmd::new($phpBin)->add($phpunit);
+        } else {
+            $phpunit = $fs->getOpt('phpunit', 'phpunit');
+
+            $cmd = Cmd::new($phpunit);
+        }
+
         // phpunit --debug --filter KEYWORDS
-        $cmd = Cmd::new('phpunit')->setWorkDir($runDir);
+        $cmd->setWorkDir($runDir);
         $cmd->addIf('--debug', !$fs->getOpt('no-debug'));
 
         if ($filter = $fs->getOpt('filter')) {
@@ -198,7 +213,6 @@ class PhpController extends Controller
         }
 
         $cmd->runAndPrint();
-
         $output->success('Complete');
     }
 

@@ -613,9 +613,10 @@ class GitLabController extends Controller
      *
      * @example
      *   {binWithCmd}                       Will generate PR link for fork 'HEAD_BRANCH' to main 'HEAD_BRANCH'
-     *   {binWithCmd} -s 4_16 -t qa         Will generate PR link for main 'PREFIX_4_16' to main 'qa'
+     *   {binWithCmd} -o @                  Will open PR link for fork 'HEAD_BRANCH' to main 'HEAD_BRANCH' on browser
+     *   {binWithCmd} -o qa                 Will open PR link for main 'HEAD_BRANCH' to main 'qa' on browser
      *   {binWithCmd} -t qa                 Will generate PR link for main 'HEAD_BRANCH' to main 'qa'
-     *   {binWithCmd} -t qa  --direct       Will generate PR link for fork 'HEAD_BRANCH' to main 'qa'
+     *   {binWithCmd} -t qa --direct       Will generate PR link for fork 'HEAD_BRANCH' to main 'qa'
      */
     public function pullRequestCommand(FlagsParser $fs, Output $output): void
     {
