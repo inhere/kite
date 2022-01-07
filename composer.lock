@@ -247,16 +247,16 @@
         },
         {
             "name": "dragonmantank/cron-expression",
-            "version": "v3.2.2",
+            "version": "v3.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dragonmantank/cron-expression.git",
-                "reference": "c9e208317b0cf679097cf976ffbb0b0eec81d4df"
+                "reference": "47c53bbb260d3c398fba9bfa9683dcf67add2579"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dragonmantank/cron-expression/zipball/c9e208317b0cf679097cf976ffbb0b0eec81d4df",
-                "reference": "c9e208317b0cf679097cf976ffbb0b0eec81d4df",
+                "url": "https://api.github.com/repos/dragonmantank/cron-expression/zipball/47c53bbb260d3c398fba9bfa9683dcf67add2579",
+                "reference": "47c53bbb260d3c398fba9bfa9683dcf67add2579",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -302,7 +302,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dragonmantank/cron-expression/issues",
-                "source": "https://github.com/dragonmantank/cron-expression/tree/v3.2.2"
+                "source": "https://github.com/dragonmantank/cron-expression/tree/v3.2.3"
             },
             "funding": [
                 {
@@ -310,7 +310,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-01-05T06:05:42+00:00"
+            "time": "2022-01-06T05:35:07+00:00"
         },
         {
             "name": "gitonomy/gitlib",
