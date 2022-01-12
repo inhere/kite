@@ -11,6 +11,7 @@ use RuntimeException;
 use Toolkit\Cli\Cli;
 use Toolkit\FsUtil\Dir;
 use Toolkit\FsUtil\File;
+use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\Obj\AbstractObj;
 use Toolkit\Stdlib\OS;
 use function array_filter;
@@ -18,6 +19,7 @@ use function array_map;
 use function array_merge;
 use function basename;
 use function count;
+use function dirname;
 use function explode;
 use function implode;
 use function in_array;
@@ -27,6 +29,7 @@ use function is_file;
 use function is_scalar;
 use function is_string;
 use function json_encode;
+use function ltrim;
 use function preg_match;
 use function stripos;
 use function strpos;
@@ -49,7 +52,6 @@ function load_kite() {
 }
 
 TXT;
-
 
     /**
      * @var bool
@@ -82,9 +84,11 @@ TXT;
     public array $scriptDirs = [];
 
     /**
+     * Allowed script file ext list.
+     *
      * @var array
      */
-    private array $scriptExts = ['.sh', '.zsh', '.bash', '.php', '.go', '.gop', '.kts', '.gry', '.groovy'];
+    private array $scriptExts = ['.sh', '.zsh', '.bash', '.php', '.go', '.gop', '.kts', '.gry', '.java', '.groovy'];
 
     /**
      * @var array
@@ -153,6 +157,81 @@ TXT;
 
         // run script commands
         $this->executeScripts($name, $runArgs, $commands);
+    }
+
+    /**
+     * @param string $scriptFile
+     * @param array $runArgs
+     */
+    public function runScriptFile(string $scriptFile, array $runArgs): void
+    {
+        if (!is_file($scriptFile)) {
+            throw new InvalidArgumentException("The script file:$scriptFile not exists");
+        }
+
+        $binName  = $workdir = '';
+        $filename = basename($scriptFile);
+        $extName  = File::getExtension($filename);
+
+        if (!$this->isAllowedExt($extName)) {
+            throw new InvalidArgumentException("The script file ext '$extName' is not allowed");
+        }
+
+        // #!/usr/bin/env bash
+        // #!/usr/bin/bash
+        $line = File::readFirstLine($scriptFile);
+
+        // must start withs '#!'
+        if (!$line || !str_starts_with($line, '#!')) {
+            $command = $scriptFile;
+
+            // auto use bin by file ext.
+            if ($this->autoScriptBin) {
+                if (isset($this->scriptExt2bin[$extName])) {
+                    $binName = $this->scriptExt2bin[$extName];
+                    $command = "$binName $scriptFile";
+                } else {
+                    $binName = ltrim($extName, '.');
+                }
+            }
+
+            Cli::colored("will direct run the script file: $filename(bin: $binName)", 'cyan');
+        } else {
+            Cli::colored("will run the script file: $filename (shebang: $line)", 'cyan');
+
+            // eg:
+            // '#!/usr/bin/env bash'
+            // '#!/usr/bin/env -S gop run'
+            if (strpos($line, ' ') > 0) {
+                [, $binName] = explode(' ', $line, 2);
+                if (str_starts_with($binName, '-S ')) {
+                    $binName = substr($binName, 3);
+                }
+            } else { // eg: '#!/usr/bin/bash'
+                $binName = trim($line, '#!');
+            }
+
+            // eg: "bash hello.sh"
+            $command = "$binName $scriptFile";
+        }
+
+        // java need compile
+        if ($binName === 'java') {
+            $workdir   = dirname($scriptFile);
+            $className = substr($filename, 0, -5);
+            $command   = "javac -encoding UTF-8 $filename; java $className";
+        }
+
+        if ($runArgs) {
+            $command .= ' ' . implode(' ', $runArgs);
+        }
+
+        // not in phar.
+        if ($binName === 'php' && !KiteUtil::isInPhar()) {
+            OS::setEnvVar('KITE_PATH', Kite::basePath());
+        }
+
+        $this->executeScript($command, false, $workdir);
     }
 
     /**
@@ -248,75 +327,17 @@ TXT;
     }
 
     /**
-     * @param string $scriptFile
-     * @param array $runArgs
-     */
-    public function runScriptFile(string $scriptFile, array $runArgs): void
-    {
-        if (!is_file($scriptFile)) {
-            throw new InvalidArgumentException("The script file:$scriptFile not exists");
-        }
-
-        // #!/usr/bin/env bash
-        // #!/usr/bin/bash
-        $line = File::readFirstLine($scriptFile);
-        $name = basename($scriptFile);
-
-        // must start withs '#!'
-        $binName = '';
-        if (!$line || !str_starts_with($line, '#!')) {
-            Cli::colored("will direct run the script file: $name", 'cyan');
-
-            $command = $scriptFile;
-            $extName = File::getExtension($name);
-
-            // auto use bin by file ext.
-            if ($this->autoScriptBin && isset($this->scriptExt2bin[$extName])) {
-                $binName = $this->scriptExt2bin[$extName];
-                $command = "$binName $scriptFile";
-            }
-        } else {
-            Cli::colored("will run the script file: $name (shebang: $line)", 'cyan');
-
-            // eg:
-            // '#!/usr/bin/env bash'
-            // '#!/usr/bin/env -S gop run'
-            if (strpos($line, ' ') > 0) {
-                [, $binName] = explode(' ', $line, 2);
-                if (str_starts_with($binName, '-S ')) {
-                    $binName = substr($binName, 3);
-                }
-            } else { // eg: '#!/usr/bin/bash'
-                $binName = trim($line, '#!');
-            }
-
-            // eg: "bash hello.sh"
-            $command = "$binName $scriptFile";
-        }
-
-        if ($runArgs) {
-            $command .= ' ' . implode(' ', $runArgs);
-        }
-
-        // not in phar.
-        if ($binName === 'php' && !KiteUtil::isInPhar()) {
-            OS::setEnvVar('KITE_PATH', Kite::basePath());
-        }
-
-        $this->executeScript($command);
-    }
-
-    /**
      * @param string $command
      * @param bool $onlyOne
+     * @param string $workdir
      */
-    private function executeScript(string $command, bool $onlyOne = false): void
+    private function executeScript(string $command, bool $onlyOne = false, string $workdir = ''): void
     {
         // CmdRunner::new($command)->do(true);
         if ($this->dryRun) {
             Cli::colored('DRY-RUN: ' . $command, 'cyan');
         } else {
-            SysCmd::quickExec($command);
+            SysCmd::quickExec($command, $workdir);
         }
 
         if ($onlyOne) {
@@ -355,11 +376,10 @@ TXT;
     public function loadAllScriptFiles(): void
     {
         // $extMatch = '';
-
-        foreach ($this->scriptDirs as $scriptDir) {
+        // foreach ($this->scriptDirs as $scriptDir) {
             // $iter = Dir::getIterator($scriptDir);
             // $files = Dir::getFiles($scriptDir, $extMatch);
-        }
+        // }
     }
 
     /**
@@ -394,7 +414,6 @@ TXT;
      * @param string $kw
      *
      * @return array
-     * @throws \JsonException
      */
     public function searchScripts(string $kw): array
     {
@@ -403,7 +422,7 @@ TXT;
             if (str_contains($name, $kw)) {
                 $matched[$name] = $item;
             } else {
-                $itemString = is_scalar($item) ? (string)$item : json_encode($item, JSON_THROW_ON_ERROR);
+                $itemString = is_scalar($item) ? (string)$item : Json::encode($item);
 
                 if (str_contains($itemString, $kw)) {
                     $matched[$name] = $item;
