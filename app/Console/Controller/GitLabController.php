@@ -17,11 +17,13 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\Cmd;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitLab;
-use Inhere\Kite\Console\Attach\Gitlab\ProjectInit;
+use Inhere\Kite\Console\Attach\Gitlab\BranchCmd;
+use Inhere\Kite\Console\Attach\Gitlab\ProjectCmd;
 use Inhere\Kite\Console\Component\RedirectToGitGroup;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use Throwable;
+use Toolkit\FsUtil\Path;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
 use function array_merge;
@@ -33,6 +35,7 @@ use function implode;
 use function in_array;
 use function is_string;
 use function parse_str;
+use function realpath;
 use function sprintf;
 use function strpos;
 use function strtoupper;
@@ -81,13 +84,11 @@ class GitLabController extends Controller
     /**
      * @return array
      */
-    protected function commands(): array
+    protected function subCommands(): array
     {
         return [
-            'test' => function () {
-                echo "hello \n";
-            },
-            ProjectInit::class,
+            BranchCmd::class,
+            ProjectCmd::class,
         ];
     }
 
@@ -122,6 +123,7 @@ class GitLabController extends Controller
         }
 
         if ($workdir = $this->flags->getOpt('workdir')) {
+            $workdir = realpath($workdir);
             $this->output->info('Change workdir to: ' . $workdir);
             chdir($workdir);
         } else {

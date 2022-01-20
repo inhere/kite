@@ -40,6 +40,7 @@ use function abs;
 use function array_keys;
 use function chdir;
 use function implode;
+use function realpath;
 use function sprintf;
 use function strlen;
 use function strpos;
@@ -123,6 +124,7 @@ class GitController extends Controller
         }
 
         if ($workdir = $this->flags->getOpt('workdir')) {
+            $workdir = realpath($workdir);
             $this->output->info('Change workdir to: ' . $workdir);
             chdir($workdir);
         } else {
@@ -198,6 +200,8 @@ class GitController extends Controller
      *
      * @param FlagsParser $fs
      * @param Output $output
+     * @example
+     * {binWithCmd} -- -u origin main  # with custom args for call git push
      */
     public function pushCommand(FlagsParser $fs, Output $output): void
     {

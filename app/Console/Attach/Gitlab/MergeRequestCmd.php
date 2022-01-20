@@ -21,7 +21,7 @@ class MergeRequestCmd extends Command
      *
      * @return mixed
      */
-    protected function execute(Input $input, Output $output)
+    protected function execute(Input $input, Output $output): mixed
     {
         return 0;
     }

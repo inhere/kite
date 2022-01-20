@@ -61,7 +61,10 @@ class GoController extends Controller
     }
 
     /**
-     * Search php package from packagist.org
+     * Search php package from
+     * - https://pkg.go.dev
+     * - https://golangrepo.com/
+     * - https://www.libhunt.com/l/go
      *
      * @param Output $output
      */

@@ -460,7 +460,9 @@ CODE;
     }
 
     /**
-     * Search php package from packagist.org
+     * Search php package from
+     * - https://packagist.org
+     * - https://www.libhunt.com/l/php
      *
      * @param FlagsParser $fs
      * @param Output $output

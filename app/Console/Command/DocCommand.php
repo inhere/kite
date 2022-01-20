@@ -36,7 +36,7 @@ class DocCommand extends Command
 {
     protected static string $name = 'doc';
 
-    protected static string $desc = 'Useful documents for how to use git,tmux and more tool';
+    protected static string $desc = 'Useful documents for linux,git,tmux and more tool commands';
 
     /**
      * @var string
@@ -50,7 +50,14 @@ class DocCommand extends Command
 
     public static function aliases(): array
     {
-        return ['man', 'docs'];
+        return ['man', 'docs', 'htu'];
+    }
+
+    protected function subCommands(): array
+    {
+        return [
+            'linux' => LinuxCommand::class,
+        ];
     }
 
     /**
