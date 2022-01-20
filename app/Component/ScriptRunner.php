@@ -28,7 +28,6 @@ use function is_dir;
 use function is_file;
 use function is_scalar;
 use function is_string;
-use function json_encode;
 use function ltrim;
 use function preg_match;
 use function stripos;
@@ -215,11 +214,14 @@ TXT;
             $command = "$binName $scriptFile";
         }
 
-        // java need compile
+        // java need compile TODO use host export logic
         if ($binName === 'java') {
             $workdir   = dirname($scriptFile);
             $className = substr($filename, 0, -5);
             $command   = "javac -encoding UTF-8 $filename; java $className";
+        } elseif ($binName === 'groovy') {
+            $fileDir = dirname($scriptFile);
+            $command = "$binName --classpath $fileDir $scriptFile";
         }
 
         if ($runArgs) {
