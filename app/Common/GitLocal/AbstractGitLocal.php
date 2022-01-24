@@ -75,7 +75,7 @@ abstract class AbstractGitLocal
     /**
      * @var array
      */
-    protected array $projects;
+    protected array $projects = [];
 
     /**
      * @var array
