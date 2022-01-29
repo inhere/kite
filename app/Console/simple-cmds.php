@@ -11,7 +11,7 @@ use Toolkit\Sys\Sys;
 $app->addCommand('ln', function ($fs) {
     vdump($fs);
 }, [
-    'desc' => 'run ln command',
+    'desc'    => 'run ln command',
     'options' => [
         's, src, source' => 'the source file path',
         't, dst, target' => 'the target link file path',
@@ -31,7 +31,7 @@ $app->addCommand('which', function (FlagsParser $fs, Output $output) {
 }, [
     'desc'      => 'find bin file path, like system `which`',
     'aliases'   => ['where', 'whereis'],
-    'options' => [
+    'options'   => [
         '--clean' => 'bool;clean output, only output path.'
     ],
     'arguments' => [

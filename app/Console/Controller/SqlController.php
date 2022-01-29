@@ -12,10 +12,16 @@ namespace Inhere\Kite\Console\Controller;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
-use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Lib\Parser\DBTable;
 use InvalidArgumentException;
 use Toolkit\PFlag\FlagsParser;
+use Toolkit\Stdlib\Helper\Assert;
+use Toolkit\Stdlib\Json;
+use function array_combine;
+use function array_map;
+use function count;
+use function explode;
+use function trim;
 
 /**
  * Class SqlController
@@ -32,7 +38,8 @@ class SqlController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'md' => ['2md', 'to-md'],
+            'md'    => ['2md', 'to-md'],
+            'toMap' => ['2map', '2kv', 'tomap', 'to-map'],
         ];
     }
 
@@ -75,7 +82,7 @@ class SqlController extends Controller
     public function fieldsCommand(FlagsParser $fs, Output $output): void
     {
         $source = $fs->getOpt('source');
-        $source = AppHelper::tryReadContents($source);
+        $source = ContentsAutoReader::readFrom($source);
 
         if (!$source) {
             throw new InvalidArgumentException('empty source code for convert');
@@ -87,5 +94,40 @@ class SqlController extends Controller
         $mp  = $dbt->getFieldsComments($toCemal);
 
         $output->aList($mp);
+    }
+
+    /**
+     * convert insert SQL to k-v map and dump it.
+     *
+     * @options
+     *  -s, --source        string;The source create SQL for convert. allow: FILEPATH, @clipboard;true
+     *  -o, --output        The output target. default is stdout.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function toMapCommand(FlagsParser $fs, Output $output): void
+    {
+        $source = $fs->getOpt('source');
+        $source = ContentsAutoReader::readFrom($source);
+
+        $fieldAndVals = explode(' VALUES ', trim($source), 2);
+        Assert::equals(count($fieldAndVals), 2, "invalid insert SQL: $source");
+
+        $fieldStr = trim($fieldAndVals[0]);
+        $valueStr = trim($fieldAndVals[1]);
+
+        $fields = explode(',', trim($fieldStr, ' ()'));
+        [, $first] = explode('(', $fields[0], 2);
+        $fields[0] = trim($first);
+
+        $fields = array_map(static fn($field) => trim(trim($field), ' `'), $fields);
+
+        // split values
+        $values = explode(', ', trim($valueStr, ' ();'));
+        $values = array_map(static fn($value) => trim($value), $values);
+
+        $map = array_combine($fields, $values);
+        $output->writeRaw(Json::pretty($map));
     }
 }
