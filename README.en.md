@@ -11,7 +11,7 @@ Kite is a tool for help development.
 > GitHub https://github.com/inhere/kite 
 > kite is build on the [inhere/php-console](https://github.com/inhere/php-console)
 
-![](resource/images/kite-commands.png)
+![kite-commands](resource/images/kite-commands.png)
 
 ## Install
 
@@ -23,10 +23,10 @@ Kite is a tool for help development.
 
 ### Install by script
 
-> file: [install.sh](./install.sh)
+> file: [bin/install.sh](bin/install.sh)
 
 ```bash
-curl https://raw.githubusercontent.com/inhere/kite/master/install.sh | bash
+curl https://raw.githubusercontent.com/inhere/kite/master/bin/install.sh | bash
 ```
 
 ### Manual clone

@@ -24,10 +24,10 @@ PHP编写的，方便本地开发和使用的个人CLI工具应用。
 
 **脚本安装(推荐)**
 
-> file: [install.sh](./install.sh)
+> file: [bin/install.sh](bin/install.sh)
 
 ```bash
-curl https://raw.githubusercontent.com/inhere/kite/master/install.sh | bash
+curl https://raw.githubusercontent.com/inhere/kite/master/bin/install.sh | bash
 ```
 
 **手动安装(推荐)**

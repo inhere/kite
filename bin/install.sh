@@ -7,15 +7,12 @@ set -ex
 
 INSTALL_DIR=~
 CLONE_DIR=.kite
-USER_CONF_DIR=~/.kite
 
+# goto user home dir.
 cd $INSTALL_DIR || exit
 
 # download tool by git clone
 git clone https://github.com/inhere/kite $CLONE_DIR
-
-# ensure use config dir is create
-mkdir -f "$USER_CONF_DIR"
 
 # shellcheck disable=SC2164
 cd $CLONE_DIR
@@ -29,3 +26,6 @@ chmod a+x bin/kite
 # link bin file to ENV path
 ln -s "$PWD"/bin/htu /usr/local/bin/htu
 ln -s "$PWD"/bin/kite /usr/local/bin/kite
+
+echo "- Install Successful"
+kite --help
