@@ -66,9 +66,9 @@ class SelfController extends Controller
         ];
     }
 
-    protected function init(): void
+    protected function beforeRun(): void
     {
-        parent::init();
+        parent::beforeRun();
 
         $this->baseDir = BASE_PATH;
         $this->repoDir = $this->input->getPwd();
@@ -112,13 +112,14 @@ class SelfController extends Controller
      * @arguments
      *  path        The sub-path in the kite. if empty, return kite path.
      *
+     * @param FlagsParser $fs
+     * @param Output $output
+     *
      * @example
      *  {binWithCmd}
      *  {binWithCmd} tmp/logs/some.log
      *  {binWithCmd} tmp/logs/some.log --inline
      *
-     * @param Input  $input
-     * @param Output $output
      */
     public function pathCommand(FlagsParser $fs, Output $output): void
     {
