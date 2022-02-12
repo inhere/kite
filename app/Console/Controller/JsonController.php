@@ -32,8 +32,8 @@ use function is_file;
 use function is_scalar;
 use function json_decode;
 use function str_contains;
+use function str_replace;
 use function trim;
-use function vdump;
 use const JSON_THROW_ON_ERROR;
 
 /**
@@ -292,8 +292,6 @@ class JsonController extends Controller
      */
     public function toClassCommand(FlagsParser $fs, Output $output): void
     {
-        $config = Kite::cliApp()->getArrayParam('json_toClass');
-
         $type = $fs->getOpt('type');
         $json = $fs->getArg('source');
         $json = ContentsAutoReader::readFrom($json, [
@@ -304,17 +302,21 @@ class JsonController extends Controller
             throw new InvalidArgumentException('empty input json(5) text for handle');
         }
 
-        $tplDir  = $fs->getOpt('tpl-dir');
+        $config = Kite::cliApp()->getArrayParam('json_toClass');
+        $tplDir = $fs->getOpt('tpl-dir', $config['tplDir'] ?? '');
+        $tplDir = str_replace('{type}', $type, $tplDir);
+
         $tplFile = $fs->getOpt('tpl-file');
         if (!$tplFile) {
-            // $tplFile = "@resource-tpl/dto-class/$type-data-dto.tpl";
-            $tplFile = "@user-custom/template/$type-code-tpl/req-resp-dto.tpl";
+            $tplFile = "$tplDir/req-resp-dto.tpl";
         }
 
         $config = array_merge($config, array_filter([
             'tplDir'  => $tplDir,
             'tplFile' => $tplFile,
         ]));
+
+        $output->aList($config);
 
         // @user-custom/template/java-service-tpl/req-resp-dto.tpl
         $gen = JsonToCode::create($type)

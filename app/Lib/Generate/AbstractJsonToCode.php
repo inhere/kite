@@ -58,9 +58,22 @@ abstract class AbstractJsonToCode
     // private array $jsonData = [];
 
     /**
+     * @var string
+     */
+    public string $className = 'YourClass';
+
+    /**
      * @var array
      */
     private array $fields = [];
+
+    /**
+     * @return string
+     */
+    public function getLang(): string
+    {
+        return 'java';
+    }
 
     /**
      * @return string
@@ -88,6 +101,9 @@ abstract class AbstractJsonToCode
             throw new InvalidArgumentException('empty source json(5) data for generate');
         }
 
+        // defaults
+        $this->contexts['className'] = $this->className;
+
         $jd = Json5Data::new()->loadFrom($json);
 
         $this->fields = $jd->getFields();
@@ -103,18 +119,16 @@ abstract class AbstractJsonToCode
     {
         $tplText = $this->readSourceFromFile();
         $settings = array_merge([
-            'lang' => 'java',
+            'lang' => $this->getLang(),
             'user' => OS::getUserName(),
             'date' => date('Y-m-d'),
         ], $this->contexts);
 
         $settings['fields'] = $this->fields;
-        // $tplVars = [
-        //     'ctx'    => $settings,
-        //     'fields' => $this->fields,
-        // ];
 
-        return KiteUtil::newTplEngine()->renderString($tplText, $settings);
+        return KiteUtil::newTplEngine([
+            'tplDir' => $this->tplDir,
+        ])->renderString($tplText, $settings);
     }
 
     /**
@@ -228,4 +242,15 @@ abstract class AbstractJsonToCode
         $this->pathResolver = $pathResolver;
         return $this;
     }
+
+    /**
+     * @param string $className
+     *
+     * @return AbstractJsonToCode
+     */
+    public function setClassName(string $className): self
+    {
+        $this->className = $className;
+        return $this;
+}
 }

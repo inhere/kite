@@ -103,7 +103,7 @@ class KiteUtil
     }
 
     /**
-     * @param array $config
+     * @param array{tplDir: string, allowExt: array, globalVars: array} $config
      *
      * @return EasyTemplate
      */

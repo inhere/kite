@@ -10,8 +10,8 @@
 namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
-use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Toolkit\PFlag\FlagsParser;
 
 /**
  * Class DemoController
@@ -28,6 +28,14 @@ class DemoController extends Controller
     }
 
     /**
+     * @return array{string: list<string>}
+     */
+    protected static function commandAliases(): array
+    {
+        return [];
+    }
+
+    /**
      * run a php built-in server for development(is alias of the command 'server:dev')
      *
      * @usage
@@ -39,10 +47,10 @@ class DemoController extends Controller
      *  -H,--host  The server host address. e.g 127.0.0.1
      *  -p,--port  The server host address. e.g 5577
      *
-     * @param Input  $input
+     * @param FlagsParser $fs
      * @param Output $output
      */
-    public function serveCommand(Input $input, Output $output): void
+    public function serveCommand(FlagsParser $fs, Output $output): void
     {
         $output->success('Complete');
     }

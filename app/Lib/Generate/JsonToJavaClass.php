@@ -18,9 +18,7 @@ class JsonToJavaClass extends AbstractJsonToCode
         // todo
         $this->contexts['package'] = 'YOUR.PKG.NAME';
         $this->contexts['pkgName'] = 'PKG_NAME';
-        $this->contexts['className'] = 'YourClass';
 
         return parent::generate();
     }
-
 }

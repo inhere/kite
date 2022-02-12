@@ -2,8 +2,6 @@
 
 namespace Inhere\Kite\Lib\Generate;
 
-use function random_int;
-
 /**
  * class JsonToPHPClass
  */
@@ -11,4 +9,11 @@ class JsonToPHPClass extends AbstractJsonToCode
 {
     public const TYPE = 'php';
 
+    /**
+     * @return string
+     */
+    public function getLang(): string
+    {
+        return self::TYPE;
+    }
 }
