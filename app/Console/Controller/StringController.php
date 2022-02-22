@@ -35,13 +35,11 @@ use function explode;
 use function implode;
 use function is_file;
 use function parse_str;
-use function preg_match;
 use function str_contains;
 use function str_replace;
 use function strlen;
 use function substr;
 use function trim;
-use function vdump;
 
 /**
  * Class StringController
@@ -151,7 +149,7 @@ class StringController extends Controller
             'loadedFile' => $this->dumpfile,
         ]);
 
-        $lines = explode("\n", $text);
+        $lines = Str::explode($text, "\n");
         $sep   = $fs->getOpt('sep');
 
         echo implode($sep, $lines), "\n";
