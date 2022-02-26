@@ -177,7 +177,7 @@ class GitController extends Controller
     public function updateCommand(FlagsParser $fs, Input $input, Output $output): void
     {
         $args = $fs->getRawArgs();
-        $dir  = $fs->getOpt('dir') ?: $this->flags->getOpt('workdir');
+        $dir  = $fs->getOpt('dir') ?: $this->flags->getOpt('workdir', $this->getWorkDir());
         Assert::isDir($dir . '/.git', "$dir is not a git dir");
 
         $c = Cmd::git('pull');
