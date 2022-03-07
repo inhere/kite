@@ -62,6 +62,7 @@ class GitHubController extends Controller
     {
         return [
             '--dry-run' => 'bool;Dry-run the workflow, dont real execute',
+            '-w, --workdir' => 'The command work dir, default is current dir.',
             // '-y, --yes' => 'Direct execution without confirmation',
             // '-i, --interactive' => 'Run in an interactive environment[TODO]',
         ];

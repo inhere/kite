@@ -56,6 +56,10 @@ class RedirectToGitGroup extends AbstractObj
             if ($ctrl->getFlags()->getOpt('dry-run')) {
                 $newArgs[] = '--dry-run';
             }
+            if ($wd = $ctrl->getFlags()->getOpt('workdir')) {
+                $newArgs[] = '--workdir';
+                $newArgs[] = $wd;
+            }
 
             $newArgs[] = $action;
             // append remaining args
