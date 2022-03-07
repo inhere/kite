@@ -59,6 +59,14 @@ jobs:
           php bin/kite -V
           php bin/kite -h
 
+#      - name: Test run with swoole-cli
+#        if: ${{ matrix.os == 'ubuntu-latest' && matrix.php == '8.0' }}
+#        run: |
+#          wget -c https://github.com/swoole/swoole-src/releases/download/v4.8.7/swoole-cli-v4.8.7-linux-x64.tar.xz
+#          tar -zxvf swoole-cli-v4.8.7-linux-x64.tar.xz
+#          ./swoole-cli
+#          ./swoole-cli bin/kite
+
       # git status && git log -1 && git fetch --tags --force
       # git status && git log -1 && git fetch --prune --unshallow
       # git status && git log -1 && git fetch --depth=500 --tags --force

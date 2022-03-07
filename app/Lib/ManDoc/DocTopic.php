@@ -19,7 +19,7 @@ class DocTopic
     /**
      * @var self|null
      */
-    private ?DocTopic $parent;
+    private ?DocTopic $parent = null;
 
     /**
      * The topic childs. key is name

@@ -7,6 +7,7 @@ use function implode;
 use function is_dir;
 use function is_string;
 use function rtrim;
+use const GLOB_BRACE;
 
 /**
  * Class ManDocument
@@ -137,10 +138,10 @@ class Document
     private function loadTopTopics(): void
     {
         // $flags  = GLOB_ONLYDIR | GLOB_MARK;
-        $flags = GLOB_MARK;
+        $flags = GLOB_MARK | GLOB_BRACE;
 
         foreach ($this->realPaths as $path) {
-            foreach (glob($path . '/*', $flags) as $subPath) {
+            foreach (glob($path . '/*.{md,txt}', $flags) as $subPath) {
                 $isDir = is_dir($subPath);
                 // parse for get name
                 [$tpName, $fsName] = DocTopic::parseSubPath($subPath, $isDir);
