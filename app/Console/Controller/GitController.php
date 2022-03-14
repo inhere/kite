@@ -684,10 +684,11 @@ class GitController extends Controller
      * run git add/commit/push at once command
      *
      * @options
-     *  -m, --message       string;The commit message;required
-     *      --not-push      bool;Dont execute git push
-     *      --auto-sign     bool;Auto add sign string after message.
-     *      --sign-text     Custom setting the sign text.
+     *  -m, --message             string;The commit message text
+     *      --nm, --no-message    bool;not input message, write message by git interactive shell.
+     *      --not-push            bool;Dont execute git push
+     *      --auto-sign           bool;Auto add sign string after message.
+     *      --sign-text           Custom setting the sign text.
      *
      * @arguments
      *  files...   array;Only add special files
@@ -710,24 +711,21 @@ class GitController extends Controller
      */
     public function acpCommand(FlagsParser $fs, Output $output): void
     {
-        $message = $fs->getOpt('message');
-        if (!$message) {
-            $output->liteError('please input an message for git commit');
-            return;
-        }
+        $message   = '';
+        $noMessage = $fs->getOpt('no-message');
+        if (!$noMessage) {
+            $message = $fs->getOpt('message');
+            if (!$message) {
+                $output->liteError('please input an message for git commit');
+                return;
+            }
 
-        $message = trim($message);
-        if (strlen($message) < 3) {
-            $output->liteError('the input commit message is too short');
-            return;
+            $message = trim($message);
+            if (strlen($message) < 3) {
+                $output->liteError('the input commit message is too short');
+                return;
+            }
         }
-
-        // $curDir = $this->input->getPwd();
-        // if ($runDir = $fs->getOpt('dir')) {
-        //     $output->info("current dir: $curDir(run dir: $runDir)");
-        // } else {
-        //     $output->info("current dir: $curDir");
-        // }
 
         $added = '.';
         if ($args = $fs->getArg('files')) {
@@ -739,7 +737,6 @@ class GitController extends Controller
 
         // will auto fetch user info by git
         if ($autoSign && !$signText) {
-            // $git       = Git::new($runDir);
             $git = Git::new();
 
             $username  = $git->config->get('user.name');
@@ -750,16 +747,20 @@ class GitController extends Controller
             }
         }
 
-        if ($signText) {
-            $message .= "\n\nSigned-off-by: $signText";
-        }
-
         $run = CmdRunner::new("git status $added");
         $run->setDryRun($this->flags->getOpt('dry-run'));
 
         $run->do(true);
         $run->afterOkDo("git add $added");
-        $run->afterOkDo(sprintf('git commit -m "%s"', $message));
+        if ($message) {
+            if ($signText) {
+                $message .= "\n\nSigned-off-by: $signText";
+            }
+
+            $run->afterOkDo(sprintf('git commit -m "%s"', $message));
+        } else {
+            $run->afterOkDo("git commit");
+        }
 
         if (false === $fs->getOpt('not-push')) {
             $run->afterOkDo('git push');
