@@ -23,7 +23,6 @@ use Inhere\Kite\Console\Component\RedirectToGitGroup;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use Throwable;
-use Toolkit\FsUtil\Path;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
 use function array_merge;
@@ -78,6 +77,7 @@ class GitLabController extends Controller
             'updatePush'   => ['upp', 'up-push'],
             'project'      => ['pj', 'info'],
             'checkout'     => ['co'],
+            'branch'       => BranchCmd::aliases(),
         ];
     }
 

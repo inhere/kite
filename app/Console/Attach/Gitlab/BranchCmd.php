@@ -25,6 +25,7 @@ class BranchCmd extends Command
     protected function subCommands(): array
     {
         return [
+            BranchInitCmd::class,
             BranchCreateCmd::class,
         ];
     }

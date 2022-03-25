@@ -8,19 +8,14 @@ use Inhere\Console\IO\Output;
 use Toolkit\PFlag\FlagsParser;
 
 /**
- * Class BranchCreateCmd
+ * Class BranchInitCmd
  *
  * @package Inhere\Kite\Console\Controller\Gitlab
  */
-class BranchCreateCmd extends Command
+class BranchInitCmd extends Command
 {
-    protected static string $name = 'create';
-    protected static string $desc = 'create a new branch for gitlab project';
-
-    public static function aliases(): array
-    {
-        return ['new', 'n'];
-    }
+    protected static string $name = 'init';
+    protected static string $desc = 'quick init testing, qa, pre branches for gitlab project';
 
     protected function configFlags(FlagsParser $fs): void
     {

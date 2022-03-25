@@ -329,7 +329,7 @@ class StringController extends Controller
         $cutChar = $cut;
         if (strlen($cut) > 1) {
             if ($cut[0] === 'L') {
-                $cutPos = 'L';
+                // $cutPos = 'L';
                 $cutChar= substr($cut, 1);
             } elseif ($cut[0] === 'R') {
                 $cutPos = 'R';
