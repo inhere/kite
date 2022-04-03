@@ -404,13 +404,13 @@ class StringController extends Controller
      *
      * @options
      *       --fields               The field names, split by ','
-     *       --get-cols             Only get the provide index cols, eg: 1,5
+     *       --get-cols             Only get the provide index cols, start is 0. eg: 1,5
      *   -o, --output               The output target. default is stdout.
      *  --of, --out-fmt             The output format. allow: raw, md-table
      *  --is, --item-sep            The item sep char. default is NL.
      *  --vn, --value-num           int;The item value number. default get from first line.
      *  --vs, --value-sep           The item value sep char for 'space' parser. default is SPACE
-     *  --parser, --item-parser     The item parser name. allow:
+     *  --parser, --item-parser     The item parser name for difference data type. allow:
      *                              space       -  parser substr by space
      *                              json, json5 -  parser json(5) line
      *
@@ -481,12 +481,20 @@ class StringController extends Controller
     /**
      * decode query string and print data.
      *
+     * @options
+     *  --full        bool;The input query argument is full url
+     *
      * @arguments
      * query    The URI query string.
      */
     public function dequeryCommand(FlagsParser $fs, Output $output): void
     {
         $str = $fs->getArg('query');
+        $str = rawurlencode($str);
+
+        // if (!$fs->getOpt('full')) {
+        //     $str = 'http://abc.com?' . $str;
+        // }
 
         parse_str($str, $ret);
 

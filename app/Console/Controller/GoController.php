@@ -13,6 +13,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
+use Inhere\Kite\Console\Attach\Golang\GenerateCmd;
 use Toolkit\PFlag\FlagsParser;
 use function file_get_contents;
 
@@ -36,6 +37,17 @@ class GoController extends Controller
             'pkgUp'     => [
                 'up', 'pkgup'
             ],
+            'generate' => GenerateCmd::aliases(),
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    protected function subCommands(): array
+    {
+        return [
+            GenerateCmd::class,
         ];
     }
 

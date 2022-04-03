@@ -19,9 +19,22 @@ class Json5ItemParser
     /**
      * exclude fields
      *
-     * @var array
+     * @var array<string>
      */
     public array $exclude = [];
+
+    /**
+     * @param array $exclude
+     *
+     * @return static
+     */
+    public static function new(array $exclude = []): self
+    {
+        $self = new self();
+
+        $self->exclude = $exclude;
+        return $self;
+    }
 
     /**
      * @param string $line

@@ -13,4 +13,9 @@ class GitBranchLogic
     {
         return [];
     }
+
+    public function create(): void
+    {
+
+    }
 }

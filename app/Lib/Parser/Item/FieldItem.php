@@ -3,6 +3,7 @@
 namespace Inhere\Kite\Lib\Parser\Item;
 
 use Inhere\Kite\Lib\Generate\Java\JavaType;
+use Inhere\Kite\Lib\Generate\LangName;
 use JsonSerializable;
 use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\Obj\AbstractObj;
@@ -19,8 +20,14 @@ use function sprintf;
  */
 class FieldItem extends AbstractObj implements JsonSerializable
 {
+    /**
+     * @var string
+     */
     public string $name;
 
+    /**
+     * @var string
+     */
     public string $type;
 
     /**
@@ -30,6 +37,9 @@ class FieldItem extends AbstractObj implements JsonSerializable
      */
     public string $subType = '';
 
+    /**
+     * @var string
+     */
     public string $comment = '';
 
     /**
@@ -37,13 +47,33 @@ class FieldItem extends AbstractObj implements JsonSerializable
      *
      * @return string
      */
-    public function getType(string $lang = 'php'): string
+    public function getType(string $lang = LangName::PHP): string
     {
-        if ($lang === 'php') {
+        if ($lang === LangName::PHP) {
             return $this->phpType();
         }
 
-        return $this->javaType();
+        if ($lang === LangName::JAVA) {
+            return $this->javaType();
+        }
+
+        if ($lang === LangName::GO) {
+            return $this->golangType();
+        }
+
+        return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    public function golangType(): string
+    {
+        if ($this->type === 'long') {
+            return 'int64';
+        }
+
+        return $this->type;
     }
 
     /**

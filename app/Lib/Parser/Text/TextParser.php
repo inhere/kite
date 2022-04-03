@@ -117,7 +117,7 @@ class TextParser
      * parse one item text to data item
      * - default item text parser {@see spaceSplitParser}
      *
-     * @var callable(string): array
+     * @var callable(string, int): array
      */
     private $itemParser;
 
@@ -255,6 +255,12 @@ class TextParser
         }
 
         $this->textBody = $text;
+
+        // fallback: init field number from fields list.
+        if ($this->fieldNum < 1 && $this->fields) {
+            $this->fieldNum = count($this->fields);
+        }
+
         return $this;
     }
 
@@ -332,10 +338,6 @@ class TextParser
                     $this->fields = (array)$value;
                     break;
             }
-        }
-
-        if ($this->fields) {
-            $this->fieldNum = count($this->fields);
         }
     }
 
@@ -471,7 +473,7 @@ class TextParser
     }
 
     /**
-     * @param int|string $keyIdxOrName
+     * @param int|string $keyIdxOrName only collect given index.
      * @param bool $indexToField replace item value index to field name, require the {@see $fields}
      *
      * @return array<string, array>
