@@ -10,6 +10,7 @@ tmpKiteDir=~/Workspace/my-github/inhere/kite
 usrKiteDir=~/.kite
 
 cd $tmpKiteDir || exit 2
+git pull
 composer update
 
 cp $tmpKiteDir/composer.lock $usrKiteDir
