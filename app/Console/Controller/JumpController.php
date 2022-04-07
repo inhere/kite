@@ -11,11 +11,11 @@ namespace Inhere\Kite\Console\Controller;
 
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
-use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Jump\JumpShell;
 use Inhere\Kite\Lib\Jump\JumpStorage;
+use InvalidArgumentException;
 use PhpPkg\EasyTpl\SimpleTemplate;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
@@ -74,15 +74,20 @@ class JumpController extends Controller
         $output->colored('Datafile: ' . $qj->getDatafile(), 'cyan');
         $output->println(Str::repeat('=', 60));
 
-        $key  = $fs->getFirstArg();
-        $data = $qj->getEngine()->toArray(true);
+
         $opts = [
             'ucTitleWords' => false,
         ];
 
-        if ($key && isset($data[$key])) {
-            $output->aList($data[$key], $key, $opts);
+        if ($key = $fs->getFirstArg()) {
+            $val = $qj->getEngine()->get($key);
+            if ($val === null) {
+                throw new InvalidArgumentException("invalid data key: $key");
+            }
+
+            $output->aList($val, $key, $opts);
         } else {
+            $data = $qj->getEngine()->toArray(true);
             $output->mList($data, $opts);
         }
     }
@@ -210,6 +215,7 @@ class JumpController extends Controller
         // vdump($input, $_SERVER['argv']);
         $name = $fs->getArg('name');
         $dir  = $qj->match($name);
+        // $qj->saveLastMatch($dir);
 
         Kite::logger()->info("jump get directory is: $dir, name: $name");
 

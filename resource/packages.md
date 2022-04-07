@@ -44,7 +44,7 @@ like Yaml, json but simple.
 **crontab**
 
 - `dragonmantank/cron-expression` https://github.com/dragonmantank/cron-expression
-- `phpcom-lab/hucron` https://github.com/phpcom-lab/hucron
+- `phppkg/hucron` https://github.com/phppkg/hucron
 
 **parser&lexer**
 

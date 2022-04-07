@@ -12,7 +12,7 @@ Render colored markdown contents on console terminal
 **composer**
 
 ```bash
-composer require phpcom-lab/cli-markdown
+composer require phppkg/cli-markdown
 ```
 
 ## Usage

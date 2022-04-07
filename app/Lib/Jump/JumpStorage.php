@@ -35,6 +35,8 @@ class JumpStorage implements JsonSerializable
     public const MATCH_BOTH  = 3;
 
     /**
+     * The json data file
+     *
      * @var string
      */
     private string $datafile;
@@ -380,11 +382,26 @@ class JumpStorage implements JsonSerializable
 
     /**
      * @return string
-     * @throws \JsonException
      */
     public function toString(): string
     {
         return Json::encode($this->toArray(), JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return string|array|null
+     */
+    public function get(string $key): string|array|null
+    {
+        return match ($key) {
+            'prev', 'prevPath' => $this->prevPath,
+            'last', 'lastPath' => $this->lastPath,
+            'name', 'named', 'namedPaths' => $this->namedPaths,
+            'his', 'history', 'histories' => array_values($this->histories),
+            default => null,
+        };
     }
 
     /**
