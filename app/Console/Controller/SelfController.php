@@ -2,6 +2,7 @@
 
 namespace Inhere\Kite\Console\Controller;
 
+use Inhere\Console\Component\Formatter\JSONPretty;
 use Inhere\Console\Component\Formatter\Title;
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
@@ -165,7 +166,9 @@ class SelfController extends Controller
                 'indent'   => 0,
                 'titlePos' => Title::POS_MIDDLE,
             ]);
-            $output->json($conf);
+
+            $result = JSONPretty::prettyData($conf);
+            $output->write($result);
             return;
         }
 
@@ -192,7 +195,9 @@ class SelfController extends Controller
                 'indent'   => 0,
                 'titlePos' => Title::POS_MIDDLE,
             ]);
-            $output->json($value);
+
+            $result = JSONPretty::prettyData($value);
+            $output->write($result);
         }
     }
 
