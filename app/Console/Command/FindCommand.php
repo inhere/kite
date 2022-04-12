@@ -13,7 +13,6 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\Cmd;
-use SplFileInfo;
 use Toolkit\FsUtil\FileFinder;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Helper\Assert;
@@ -28,7 +27,7 @@ class FindCommand extends Command
 {
     protected static string $name = 'find';
 
-    protected static string $desc = 'find file name, contents by grep,find command';
+    protected static string $desc = 'search file, dir by some options, like find';
 
     public static function aliases(): array
     {
@@ -44,19 +43,25 @@ class FindCommand extends Command
 
     /**
      * @options
-     * --paths, --path               Include paths pattern. multi split by comma ','.
-     * --not-paths, --np             Exclude paths pattern. multi split by comma ','. eg: node_modules,bin
-     * --names, --name               Include file,dir name match pattern, multi split by comma ','.
-     * --not-names, --nn             Exclude names pattern. multi split by comma ','.
-     * --only-dirs, --only-dir       Only find dirs.
-     * --only-files, --only-file     Only find files.
-     * --dirs, --dir, -d             Find in the dirs
-     * --exec, -e                    Exec command for each find file/dir path.
-     * --dry-run, --try              bool;Not real run the input command by --exec
+     * --paths, --path, -m                  Include paths pattern. multi split by comma ','.
+     * --not-paths, --np                    Exclude paths pattern. multi split by comma ','. eg: node_modules,bin
+     * --names, --name                      Include file name match pattern, multi split by comma ','.
+     * --not-names, --nn                    Exclude names pattern. multi split by comma ','.
+     * --exclude, --ex                      Exclude pattern for dir name and each sub-dirs, multi split by comma ','.
+     * --only-dirs, --only-dir, --od, -d    bool;Only find dirs.
+     * --only-files, --only-file, -f        bool;Only find files.
+     * --exec, -e                           Exec command for each find file/dir path.
+     *                                      Can used vars in command:
+     *                                      - {path}    refer the found file/dir.
+     * --dry-run, --try                     bool;Not real run the input command by --exec.
+     * ---not-ignore-vcs, --niv             bool;ignore vcs dirs, eg: .git, .svn, .hg
+     * --show-dot-file, --sdf             bool;not ignore file on start with '.'
+     * --show-dot-dir, --sdd              bool;not ignore dir on start with '.'
+     * --not-recursive, --nr                bool;not recursive sub-dirs.
      *
      * @arguments
+     * dirs          Find in the dirs, multi split by comma ','.;true
      * match         Include paths pattern, same of the option --paths.
-     * dirs          Find in the dirs, same of the option --paths.
      *
      * @param Input $input
      * @param Output $output
@@ -67,7 +72,8 @@ class FindCommand extends Command
     {
         $fs = $this->flags;
 
-        $dirs = $this->flags->getOpt('dirs', $fs->getArg('dirs'));
+        // $dirs = $this->flags->getOpt('dirs', $fs->getArg('dirs'));
+        $dirs = $fs->getArg('dirs');
         Assert::notEmpty($dirs, 'dirs cannot be empty.');
 
         $output->info('Find in the dirs:' . Std::toString($dirs));
@@ -75,6 +81,11 @@ class FindCommand extends Command
         $ff = FileFinder::create()->in($dirs)
             ->skipUnreadableDirs()
             ->notFollowLinks()
+            ->ignoreVCS(!$fs->getOpt('not-ignore-vcs'))
+            ->recursiveDir(!$fs->getOpt('not-recursive'))
+            ->ignoreDotFiles(!$fs->getOpt('show-dot-file'))
+            ->ignoreDotDirs(!$fs->getOpt('show-dot-dir'))
+            ->exclude($fs->getOpt('exclude'))
             ->addNames($fs->getOpt('names'))
             ->notNames($fs->getOpt('not-names'))
             ->addPaths($fs->getOpt('paths', $fs->getArg('match')))
@@ -86,23 +97,25 @@ class FindCommand extends Command
             $ff->onlyFiles();
         }
 
-        $cmdStr = $fs->getOpt('exec');
+        $cmdTpl = $fs->getOpt('exec');
         $output->aList($ff->getInfo());
 
         $cmd = Cmd::new()->setDryRun($fs->getOpt('dry-run'));
         $output->colored('RESULT:', 'ylw');
-        $ff->each(function (SplFileInfo $info) use($cmd, $cmdStr) {
+
+        foreach ($ff->all() as $info) {
             $fullPath = $info->getPathname();
-            println('F', $fullPath);
-            
-            if ($cmdStr) {
-                $cmdStr = strtr($cmdStr, [
-                    '{file}' => $fullPath,
+            println($info->isDir() ? 'D' : 'F', $fullPath);
+
+            if ($cmdTpl) {
+                $cmdStr = strtr($cmdTpl, [
+                    '{path}' => $fullPath,
                 ]);
 
                 $cmd->setCmdline($cmdStr)->runAndPrint();
             }
-        });
+        }
+
         return 0;
     }
 }
