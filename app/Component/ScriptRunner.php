@@ -3,6 +3,7 @@
 namespace Inhere\Kite\Component;
 
 use Inhere\Console\Util\Show;
+use Inhere\Kite\Concern\SimpleEventAwareTrait;
 use Inhere\Kite\Helper\KiteUtil;
 use Inhere\Kite\Helper\SysCmd;
 use Inhere\Kite\Kite;
@@ -40,17 +41,16 @@ use function trim;
  */
 class ScriptRunner extends AbstractObj
 {
+    use SimpleEventAwareTrait;
+
     public const TYPE_CMD  = 'cmd';
     public const TYPE_FILE = 'file';
 
-    private const LOAD_KITE_CODE = <<<'TXT'
-function load_kite() {
-    if ($kiteDir = (string)getenv('KITE_PATH')) {
-        require $kiteDir. '/app/boot.php';
-    }
-}
-
-TXT;
+    /**
+     * handler: function(string $binName, array $args) {}
+     */
+    public const EVT_ON_RUN_BEFORE = 'script.run.before';
+    public const EVT_ON_RUN_AFTER  = 'script.run.after';
 
     /**
      * @var bool
@@ -115,6 +115,18 @@ TXT;
         '.groovy' => 'groovy',
         '.go'     => 'go run',
     ];
+
+    /**
+     * Class constructor.
+     *
+     * @param array $config
+     */
+    public function __construct(array $config = [])
+    {
+        parent::__construct($config);
+
+        $this->setSupportEvents([self::EVT_ON_RUN_BEFORE, self::EVT_ON_RUN_AFTER]);
+    }
 
     /**
      * @param string $name
@@ -228,9 +240,11 @@ TXT;
             $command .= ' ' . implode(' ', $runArgs);
         }
 
+        $this->fire(self::EVT_ON_RUN_BEFORE, $binName, $runArgs);
         // not in phar.
         if ($binName === 'php' && !KiteUtil::isInPhar()) {
             OS::setEnvVar('KITE_PATH', Kite::basePath());
+            OS::setEnvVar('KITE_BOOT_FILE', Kite::getPath('app/boot.php'));
         }
 
         $this->executeScript($command, false, $workdir);
@@ -379,8 +393,8 @@ TXT;
     {
         // $extMatch = '';
         // foreach ($this->scriptDirs as $scriptDir) {
-            // $iter = Dir::getIterator($scriptDir);
-            // $files = Dir::getFiles($scriptDir, $extMatch);
+        // $iter = Dir::getIterator($scriptDir);
+        // $files = Dir::getFiles($scriptDir, $extMatch);
         // }
     }
 

@@ -133,7 +133,7 @@ class Kite
     }
 
     /**
-     * @param string $path
+     * @param string $path relative path on kite tmp dir.
      *
      * @return string
      */
@@ -148,7 +148,7 @@ class Kite
     }
 
     /**
-     * @param string $path
+     * @param string $path relative path on kite root. not need start with '/', eg: 'app/boot.php'
      * @param bool   $rmPharMark Will clear prefix 'phar://', if on phar package.
      *
      * @return string

@@ -59,11 +59,25 @@ class RunCommand extends Command
      * @arguments
      *  name        The script/plugin name for execute.
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
+     *
+     * @help
+     * <b>TIPs</b>:
+     *
+     * - you can load boot file, allow use all class in the kite.
+     *
+     * ```php
+     * // load kite boot file, allow use all class in the kite.
+     * if ($kiteBootFile = getenv('KITE_BOOT_FILE')) {
+     *      require $kiteBootFile;
+     * }
+     * ```
      *
      * @example
      *   {binWithCmd} hello.sh one two three 'a b c'
+     *   # with proxy
+     *   {binWithCmd} --proxy hello.sh one two three
      */
     protected function execute(Input $input, Output $output)
     {

@@ -12,9 +12,14 @@ namespace Inhere\Kite\Console\Command;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Common\Cmd;
 use SplFileInfo;
 use Toolkit\FsUtil\FileFinder;
-use Toolkit\Stdlib\Helper\DataHelper;
+use Toolkit\PFlag\FlagsParser;
+use Toolkit\Stdlib\Helper\Assert;
+use Toolkit\Stdlib\Std;
+use function println;
+use function strtr;
 
 /**
  * Class FindCommand
@@ -27,12 +32,31 @@ class FindCommand extends Command
 
     public static function aliases(): array
     {
-        return ['grep'];
+        return ['glob'];
+    }
+
+    protected function beforeInitFlagsParser(FlagsParser $fs): void
+    {
+        parent::beforeInitFlagsParser($fs);
+
+        $fs->setStopOnFistArg(false);
     }
 
     /**
+     * @options
+     * --paths, --path               Include paths pattern. multi split by comma ','.
+     * --not-paths, --np             Exclude paths pattern. multi split by comma ','. eg: node_modules,bin
+     * --names, --name               Include file,dir name match pattern, multi split by comma ','.
+     * --not-names, --nn             Exclude names pattern. multi split by comma ','.
+     * --only-dirs, --only-dir       Only find dirs.
+     * --only-files, --only-file     Only find files.
+     * --dirs, --dir, -d             Find in the dirs
+     * --exec, -e                    Exec command for each find file/dir path.
+     * --dry-run, --try              bool;Not real run the input command by --exec
+     *
      * @arguments
-     * paths         array;Find in the paths;true
+     * match         Include paths pattern, same of the option --paths.
+     * dirs          Find in the dirs, same of the option --paths.
      *
      * @param Input $input
      * @param Output $output
@@ -41,23 +65,44 @@ class FindCommand extends Command
      */
     protected function execute(Input $input, Output $output): int
     {
-        $paths = $this->flags->getArg('paths');
-        $output->info('find in the paths:' . DataHelper::toString($paths));
+        $fs = $this->flags;
 
-        $ff = FileFinder::create()->in($paths)
+        $dirs = $this->flags->getOpt('dirs', $fs->getArg('dirs'));
+        Assert::notEmpty($dirs, 'dirs cannot be empty.');
+
+        $output->info('Find in the dirs:' . Std::toString($dirs));
+
+        $ff = FileFinder::create()->in($dirs)
             ->skipUnreadableDirs()
             ->notFollowLinks()
-            ->name('plugins')
-            ->notPaths(['System', 'node_modules', 'bin/'])
-            // ->notNames(['System', 'node_modules', 'bin/'])
-            ->onlyDirs();
+            ->addNames($fs->getOpt('names'))
+            ->notNames($fs->getOpt('not-names'))
+            ->addPaths($fs->getOpt('paths', $fs->getArg('match')))
+            ->notPaths($fs->getOpt('not-paths'));
 
+        if ($fs->getOpt('only-dirs')) {
+            $ff->onlyDirs();
+        } elseif ($fs->getOpt('only-files')) {
+            $ff->onlyFiles();
+        }
+
+        $cmdStr = $fs->getOpt('exec');
         $output->aList($ff->getInfo());
-        $ff->each(function (SplFileInfo $info) {
-            echo $info->getPathname(), "\n";
-        });
 
-        $output->info('Completed!');
+        $cmd = Cmd::new()->setDryRun($fs->getOpt('dry-run'));
+        $output->colored('RESULT:', 'ylw');
+        $ff->each(function (SplFileInfo $info) use($cmd, $cmdStr) {
+            $fullPath = $info->getPathname();
+            println('F', $fullPath);
+            
+            if ($cmdStr) {
+                $cmdStr = strtr($cmdStr, [
+                    '{file}' => $fullPath,
+                ]);
+
+                $cmd->setCmdline($cmdStr)->runAndPrint();
+            }
+        });
         return 0;
     }
 }
