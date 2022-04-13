@@ -13,12 +13,13 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\Cmd;
+use Toolkit\Cli\Color\ColorTag;
 use Toolkit\FsUtil\FileFinder;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Helper\Assert;
 use Toolkit\Stdlib\Std;
-use function println;
 use function strtr;
+use function time;
 
 /**
  * Class FindCommand
@@ -55,8 +56,8 @@ class FindCommand extends Command
      *                                      - {path}    refer the found file/dir.
      * --dry-run, --try                     bool;Not real run the input command by --exec.
      * ---not-ignore-vcs, --niv             bool;ignore vcs dirs, eg: .git, .svn, .hg
-     * --show-dot-file, --sdf             bool;not ignore file on start with '.'
-     * --show-dot-dir, --sdd              bool;not ignore dir on start with '.'
+     * --with-dot-file, --wdf               bool;not ignore file on start with '.'
+     * --with-dot-dir, --wdd                bool;not ignore dir on start with '.'
      * --not-recursive, --nr                bool;not recursive sub-dirs.
      *
      * @arguments
@@ -67,6 +68,8 @@ class FindCommand extends Command
      * @param Output $output
      *
      * @return int
+     * @example
+     * {binWithCmd} --nr -e 'cd {path}; git status' .
      */
     protected function execute(Input $input, Output $output): int
     {
@@ -83,8 +86,8 @@ class FindCommand extends Command
             ->notFollowLinks()
             ->ignoreVCS(!$fs->getOpt('not-ignore-vcs'))
             ->recursiveDir(!$fs->getOpt('not-recursive'))
-            ->ignoreDotFiles(!$fs->getOpt('show-dot-file'))
-            ->ignoreDotDirs(!$fs->getOpt('show-dot-dir'))
+            ->ignoreDotFiles(!$fs->getOpt('with-dot-file'))
+            ->ignoreDotDirs(!$fs->getOpt('with-dot-dir'))
             ->exclude($fs->getOpt('exclude'))
             ->addNames($fs->getOpt('names'))
             ->notNames($fs->getOpt('not-names'))
@@ -103,19 +106,27 @@ class FindCommand extends Command
         $cmd = Cmd::new()->setDryRun($fs->getOpt('dry-run'));
         $output->colored('RESULT:', 'ylw');
 
+        $count = 0;
+        $start = time();
         foreach ($ff->all() as $info) {
+            $count++;
+
             $fullPath = $info->getPathname();
-            println($info->isDir() ? 'D' : 'F', $fullPath);
+            // println($info->isDir() ? 'D' : 'F', $fullPath);
+            $output->writeln(ColorTag::wrap($info->isDir() ? 'D' : 'F', 'cyan') . " $fullPath");
 
             if ($cmdTpl) {
                 $cmdStr = strtr($cmdTpl, [
                     '{path}' => $fullPath,
+                    '{name}' => $info->getFilename(),
                 ]);
 
                 $cmd->setCmdline($cmdStr)->runAndPrint();
             }
         }
 
+        $diffTime = time() - $start;
+        $output->println("Total: $count, Time consumption: {$diffTime}s");
         return 0;
     }
 }
