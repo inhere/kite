@@ -110,7 +110,7 @@ class GitController extends Controller
     protected function getOptions(): array
     {
         return [
-            '--dry-run'     => 'bool;Dry-run the workflow, dont real execute',
+            '--try,--dry-run'     => 'bool;Dry-run the workflow, dont real execute',
             '-y, --yes'     => 'bool;Direct execution without confirmation',
             '-w, --workdir' => 'The command work dir, default is current dir.',
             // '-i, --interactive' => 'Run in an interactive environment[TODO]',
@@ -177,7 +177,7 @@ class GitController extends Controller
     public function updateCommand(FlagsParser $fs, Input $input, Output $output): void
     {
         $args = $fs->getRawArgs();
-        $dir  = $fs->getOpt('dir') ?: $this->flags->getOpt('workdir', $this->getWorkDir());
+        $dir  = $fs->getOpt('dir') ?: $this->getWorkDir();
         Assert::isDir($dir . '/.git', "$dir is not a git dir");
 
         $c = Cmd::git('pull');
@@ -423,7 +423,7 @@ class GitController extends Controller
         $name = $fs->getArg('name');
 
         $c = Cmd::git('clone')
-            ->setWorkDir($this->flags->getOpt('workdir'))
+            // ->setWorkDir($this->flags->getOpt('workdir')) // fix: 前已经用 chdir 更改当前目录了
             ->setDryRun($this->flags->getOpt('dry-run'));
 
         if ($fs->getOpt('gh')) {
@@ -544,9 +544,10 @@ class GitController extends Controller
      * Add new tag version and push to the remote git repos
      *
      * @options
-     *  -v, --version       The new tag version. e.g: v2.0.4
-     *  -m, --message       The message for add new tag.
-     *  -n, --next          bool;Auto calc next version for add new tag.
+     *  -v, --version           The new tag version. e.g: v2.0.4
+     *  -m, --message           The message for add new tag.
+     *  -n, --next              bool;Auto calc next version for add new tag.
+     *  --no-auto-add-v         bool;Not auto add 'v' for add tag version.
      *
      * @param FlagsParser $fs
      * @param Input $input
@@ -579,6 +580,9 @@ class GitController extends Controller
         }
 
         // $remotes = Git::new($dir)->remote->getList();
+        if ($tag[0] !== 'v' && !$fs->getOpt('no-auto-add-v')) {
+            $tag = 'v' . $tag;
+        }
 
         $info = [
             'Work Dir' => $dir,
@@ -824,25 +828,25 @@ class GitController extends Controller
      *                  - keywords `head` will use `Head` commit.;required
      *
      * @options
-     *  --exclude           Exclude contains given sub-string. multi by comma split.
-     *  --fetch-tags        bool;Update repo tags list by `git fetch --tags`
-     *  --file              Export changelog message to file
-     *  --filters           Apply built in log filters. multi by `|` split
-     *                      allow:
-     *                       kw     keyword filter. eg: `kw:tom`
-     *                       kws    keywords filter.
-     *                       ml     msg length filter.
-     *                       wl     word length filter.
-     *  --format            The git log option `--pretty` value.
-     *                      can be one of oneline, short, medium, full, fuller, reference, email, raw, format:<string> and tformat:<string>.
-     *  -s, --style         The style for generate for changelog.
-     *                      allow: markdown(<cyan>default</cyan>), simple, gh-release(ghr)
-     *  --repo-url          The git repo URL address. eg: https://github.com/inhere/kite
-     *                      default will auto use current git origin remote url
-     *  --no-merges         bool;No contains merge request logs
-     *  --unshallow         bool;Convert to a complete warehouse, useful on GitHub Action.
-     *  --with-author       bool;Display commit author name
-     *  --to-clipboard      bool;Copy results to clipboard
+     *  --exclude               Exclude contains given sub-string. multi by comma split.
+     *  --fetch-tags            bool;Update repo tags list by `git fetch --tags`
+     *  --file                  Export changelog message to file
+     *  --filters               Apply built in log filters. multi by `|` split. TODO
+     *                          allow:
+     *                          kw     keyword filter. eg: `kw:tom`
+     *                          kws    keywords filter.
+     *                          ml     msg length filter.
+     *                          wl     word length filter.
+     *  --format                The git log option `--pretty` value.
+     *                          can be one of oneline, short, medium, full, fuller, reference, email, raw, format:<string> and tformat:<string>.
+     *  -s, --style             The style for generate for changelog.
+     *                          allow: markdown(<cyan>default</cyan>), simple, gh-release(ghr)
+     *  --repo-url              The git repo URL address. eg: https://github.com/inhere/kite
+     *                          default will auto use current git origin remote url
+     *  --no-merges             bool;No contains merge request logs
+     *  --unshallow             bool;Convert to a complete warehouse, useful on GitHub Action.
+     *  --with-author           bool;Display commit author name
+     *  --cb, --to-clipboard    bool;Copy results to clipboard
      *
      * @param FlagsParser $fs
      * @param Output $output

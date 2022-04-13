@@ -35,6 +35,7 @@ use function explode;
 use function implode;
 use function is_file;
 use function parse_str;
+use function rawurldecode;
 use function str_contains;
 use function str_replace;
 use function strlen;
@@ -485,17 +486,19 @@ class StringController extends Controller
      *  --full        bool;The input query argument is full url
      *
      * @arguments
-     * query    The URI query string.
+     * query    The URI query string. allow: FILEPATH, @clipboard
      */
     public function dequeryCommand(FlagsParser $fs, Output $output): void
     {
-        $str = $fs->getArg('query');
-        $str = rawurlencode($str);
+        $query = $fs->getArg('query');
+
+        $str = ContentsAutoReader::readFrom($query);
+        $str = rawurldecode($str);
+        // println($str);
 
         // if (!$fs->getOpt('full')) {
         //     $str = 'http://abc.com?' . $str;
         // }
-
         parse_str($str, $ret);
 
         $output->aList($ret);

@@ -98,9 +98,9 @@ class GitLabController extends Controller
     protected function getOptions(): array
     {
         return [
-            '--dry-run' => 'bool;Dry-run the workflow, dont real execute',
-            '-y, --yes' => 'bool;Direct execution without confirmation',
-            '-w, --workdir' => 'The command work dir, default is current dir.',
+            '--try, --dry-run' => 'bool;Dry-run the workflow, dont real execute',
+            '-y, --yes'        => 'bool;Direct execution without confirmation',
+            '-w, --workdir'    => 'The command work dir, default is current dir.',
             // '-i, --interactive' => 'Run in an interactive environment[TODO]',
         ];
     }
@@ -322,7 +322,7 @@ class GitLabController extends Controller
             ->add($repoUrl)
             ->addIf($name, $name !== '')
             ->setDryRun($this->flags->getOpt('dry-run'))
-            ->setWorkDir($this->flags->getOpt('workdir'))
+            // ->setWorkDir($this->flags->getOpt('workdir')) // fix: 前已经用 chdir 更改当前目录了
             ->run(true);
 
         $output->success('Complete');
@@ -607,6 +607,7 @@ class GitLabController extends Controller
      *
      * @param FlagsParser $fs
      * @param Output $output
+     *
      * @help
      * Special:
      *   `@`, HEAD - Current branch.
@@ -883,6 +884,7 @@ class GitLabController extends Controller
      * update codes from origin and main remote repository, then push to remote
      *
      * @param Output $output
+     *
      * @throws Throwable
      */
     public function updatePushCommand(Output $output): void

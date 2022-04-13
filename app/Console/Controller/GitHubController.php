@@ -20,7 +20,6 @@ use Inhere\Kite\Helper\AppHelper;
 use PhpPkg\Http\Client\Client;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
-use function strpos;
 use function strtoupper;
 
 /**
@@ -61,7 +60,7 @@ class GitHubController extends Controller
     protected function getOptions(): array
     {
         return [
-            '--dry-run' => 'bool;Dry-run the workflow, dont real execute',
+            '--try,--dry-run' => 'bool;Dry-run the workflow, dont real execute',
             '-w, --workdir' => 'The command work dir, default is current dir.',
             // '-y, --yes' => 'Direct execution without confirmation',
             // '-i, --interactive' => 'Run in an interactive environment[TODO]',
