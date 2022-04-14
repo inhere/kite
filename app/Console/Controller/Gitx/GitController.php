@@ -7,7 +7,7 @@
  * @license  MIT
  */
 
-namespace Inhere\Kite\Console\Controller;
+namespace Inhere\Kite\Console\Controller\Gitx;
 
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
@@ -42,6 +42,7 @@ use function chdir;
 use function implode;
 use function realpath;
 use function sprintf;
+use function str_contains;
 use function strlen;
 use function strpos;
 use function strtolower;
@@ -843,7 +844,7 @@ class GitController extends Controller
      *                          allow: markdown(<cyan>default</cyan>), simple, gh-release(ghr)
      *  --repo-url              The git repo URL address. eg: https://github.com/inhere/kite
      *                          default will auto use current git origin remote url
-     *  --no-merges             bool;No contains merge request logs
+     *  --nm,--no-merges        bool;No contains merge request logs
      *  --unshallow             bool;Convert to a complete warehouse, useful on GitHub Action.
      *  --with-author           bool;Display commit author name
      *  --cb, --to-clipboard    bool;Copy results to clipboard

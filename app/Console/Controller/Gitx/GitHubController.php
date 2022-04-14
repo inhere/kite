@@ -7,7 +7,7 @@
  * @license  MIT
  */
 
-namespace Inhere\Kite\Console\Controller;
+namespace Inhere\Kite\Console\Controller\Gitx;
 
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
@@ -20,6 +20,7 @@ use Inhere\Kite\Helper\AppHelper;
 use PhpPkg\Http\Client\Client;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
+use function str_contains;
 use function strtoupper;
 
 /**

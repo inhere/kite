@@ -53,6 +53,7 @@ class SelfController extends Controller
     {
         return [
             'up'     => 'update',
+            'alias'  => 'aliases',
             'webui'  => [
                 'web',
                 'webUI',
@@ -120,7 +121,6 @@ class SelfController extends Controller
      *  {binWithCmd}
      *  {binWithCmd} tmp/logs/some.log
      *  {binWithCmd} tmp/logs/some.log --inline
-     *
      */
     public function pathCommand(FlagsParser $fs, Output $output): void
     {
@@ -133,6 +133,24 @@ class SelfController extends Controller
         }
 
         $output->println($fullPath);
+    }
+
+    /**
+     * show the application command alias information
+     *
+     * @param Output $output
+     */
+    public function aliasesCommand(Output $output): void
+    {
+        $output->title('Kite Aliases', [
+            'indent'   => 0,
+            'titlePos' => Title::POS_MIDDLE,
+        ]);
+
+        $aliases = $this->getApp()->getArrayParam('aliases');
+
+        $result = JSONPretty::prettyData($aliases);
+        $output->write($result);
     }
 
     /**

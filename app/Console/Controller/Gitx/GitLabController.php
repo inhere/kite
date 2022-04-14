@@ -7,7 +7,7 @@
  * @license  MIT
  */
 
-namespace Inhere\Kite\Console\Controller;
+namespace Inhere\Kite\Console\Controller\Gitx;
 
 use Inhere\Console\Console;
 use Inhere\Console\Controller;
@@ -36,6 +36,7 @@ use function is_string;
 use function parse_str;
 use function realpath;
 use function sprintf;
+use function str_contains;
 use function strpos;
 use function strtoupper;
 use function trim;

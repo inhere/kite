@@ -7,7 +7,7 @@
  * @license  MIT
  */
 
-namespace Inhere\Kite\Console\Controller;
+namespace Inhere\Kite\Console\Controller\Gitx;
 
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
@@ -54,7 +54,7 @@ class GitSubtreeController extends Controller
 
     public static function aliases(): array
     {
-        return ['git-subtree', 'gitsub', 'gitst'];
+        return ['git-subtree', 'gitsub', 'subtree'];
     }
 
     /**
