@@ -18,6 +18,8 @@ use Toolkit\FsUtil\FileFinder;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Helper\Assert;
 use Toolkit\Stdlib\Std;
+use function basename;
+use function dirname;
 use function strtr;
 use function time;
 
@@ -53,15 +55,20 @@ class FindCommand extends Command
      * --only-files, --only-file, -f        bool;Only find files.
      * --exec, -e                           Exec command for each find file/dir path.
      *                                      Can used vars in command:
-     *                                      - {path}    refer the found file/dir.
+     *                                      - {path}    refer the found file/dir path
+     *                                      - {file}    refer the found file path
+     *                                      - {dir}     refer the found dir path
+     *                                      - {name}    refer the found file name
+     *                                      - {d_name}  refer the found dir name or file dir name.
      * --dry-run, --try                     bool;Not real run the input command by --exec.
      * ---not-ignore-vcs, --niv             bool;ignore vcs dirs, eg: .git, .svn, .hg
      * --with-dot-file, --wdf               bool;not ignore file on start with '.'
      * --with-dot-dir, --wdd                bool;not ignore dir on start with '.'
      * --not-recursive, --nr                bool;not recursive sub-dirs.
+     * --dirs, --in                         Find in the dirs, multi split by comma ','.
      *
      * @arguments
-     * dirs          Find in the dirs, multi split by comma ','.;true
+     * dirs          Find in the dirs, multi split by comma ','.
      * match         Include paths pattern, same of the option --paths.
      *
      * @param Input $input
@@ -75,8 +82,8 @@ class FindCommand extends Command
     {
         $fs = $this->flags;
 
-        // $dirs = $this->flags->getOpt('dirs', $fs->getArg('dirs'));
-        $dirs = $fs->getArg('dirs');
+        $dirs = $this->flags->getOpt('dirs', $fs->getArg('dirs'));
+        // $dirs = $fs->getArg('dirs');
         Assert::notEmpty($dirs, 'dirs cannot be empty.');
 
         $output->info('Find in the dirs:' . Std::toString($dirs));
@@ -113,12 +120,17 @@ class FindCommand extends Command
 
             $fullPath = $info->getPathname();
             // println($info->isDir() ? 'D' : 'F', $fullPath);
-            $output->writeln(ColorTag::wrap($info->isDir() ? 'D' : 'F', 'cyan') . " $fullPath");
+            $isDir = $info->isDir();
+            $output->writeln(ColorTag::wrap($isDir ? 'D' : 'F', 'cyan') . " $fullPath");
 
             if ($cmdTpl) {
-                $cmdStr = strtr($cmdTpl, [
-                    '{path}' => $fullPath,
-                    '{name}' => $info->getFilename(),
+                $dirPath = $isDir ? $fullPath : dirname($fullPath);
+                $cmdStr  = strtr($cmdTpl, [
+                    '{path}'   => $fullPath,
+                    '{file}'   => $isDir ? '' : $fullPath,
+                    '{dir}'    => $dirPath,
+                    '{name}'   => $info->getFilename(),
+                    '{d_name}' => basename($dirPath),
                 ]);
 
                 $cmd->setCmdline($cmdStr)->runAndPrint();
