@@ -14,10 +14,16 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Show;
 use Toolkit\Cli\Util\Download;
 use Toolkit\FsUtil\Dir;
+use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
 use function basename;
+use function count;
+use function file_get_contents;
 use function glob;
 use function preg_match;
+use function println;
+use function proc_close;
+use function str_replace;
 use const GLOB_MARK;
 
 /**
@@ -37,9 +43,9 @@ class FsController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'ls' => 'list',
-            'rn' => 'rename',
-            'mkdir' => ['create-dir'],
+            'ls'        => 'list',
+            'rn'        => 'rename',
+            'mkdir'     => ['create-dir'],
             'mkSubDirs' => ['mk-subDirs', 'mk-subs'],
         ];
     }
@@ -101,20 +107,13 @@ class FsController extends Controller
     }
 
     /**
-     * create ln
-     *
-     * @options
-     *  -s, --src   The server address. e.g 127.0.0.1:5577
-     *  -d, --dst   The server host address. e.g 127.0.0.1
+     * find file or dir
      *
      * @param Output $output
      */
     public function findCommand(Output $output): void
     {
-        // ln -s "$PWD"/bin/htu /usr/local/bin/htu
-
-        Show::success('ddd');
-        // $output->success('hello');
+        $output->info('Please use the `kite find` command for find file,dir');
     }
 
     /**
@@ -180,18 +179,20 @@ class FsController extends Controller
         // \var_dump(proc_get_status($process));
 
         // if(is_resource($process))
-        while(true){
-            if (proc_get_status($process)['running'] === false){
+        while (true) {
+            if (proc_get_status($process)['running'] === false) {
                 break;
             }
         }
 
         // \var_dump(proc_get_status($process));
-        \proc_close($process);
+        proc_close($process);
         $output->success('Complete');
     }
 
     /**
+     * rename file or dir
+     *
      * @options
      *  -d, --dir     The files directory for rename.
      *  --driver      The path match driver.
@@ -203,6 +204,46 @@ class FsController extends Controller
     public function renameCommand(FlagsParser $fs, Output $output): void
     {
         $output->success('hello');
+    }
+
+    /**
+     * replace file contents by given k-v pairs
+     *
+     * @options
+     *  --cat               bool;print the file contents after do replace
+     *  -f, --file          The file path for replace contents;true
+     *  -s, --search        array;The search for replace, allow multi;true
+     *  -r, --replace       array;The replacement value that replaces found search, allow multi;true
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     *
+     * @example
+     * {binWithCmd} -f path/to/file --ft A:a --ft B:b
+     */
+    public function replaceCommand(FlagsParser $fs, Output $output): void
+    {
+        $file = $fs->getOpt('file');
+        // $kvs = $fs->getOpt('from-to');
+
+        $count  = 0;
+        $search = $fs->getOpt('search');
+
+        $replace = $fs->getOpt('replace');
+        if (count($replace) === 1) {
+            $replace = $replace[0];
+        }
+
+        $body = file_get_contents($file);
+        $body = str_replace($search, $replace, $body, $count);
+
+        File::putContents($file, $body);
+        if ($fs->getOpt('cat')) {
+            $output->colored('Contents after replace:');
+            println($body);
+        }
+
+        $output->success("Complete, replace count: $count");
     }
 
     /**
