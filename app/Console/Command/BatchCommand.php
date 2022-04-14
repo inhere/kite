@@ -12,22 +12,22 @@ namespace Inhere\Kite\Console\Command;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Component\CliMarkdown;
-use Toolkit\Cli\Color;
-use function file_get_contents;
+use Inhere\Kite\Common\Cmd;
+use Toolkit\Stdlib\Helper\Assert;
+use function strtr;
 
 /**
  * Class BatchCommand
  */
 class BatchCommand extends Command
 {
-    /** @var string  */
+    /** @var string */
     protected static string $name = 'batch';
 
     /**
      * @var string
      */
-    protected static string $desc = 'batch run an reguer command multi times';
+    protected static string $desc = 'batch run an regular command template multi times';
 
     /**
      * @return string[]
@@ -37,25 +37,46 @@ class BatchCommand extends Command
         return ['brun', 'batch-run'];
     }
 
+    protected function configure(): void
+    {
+        $this->flags
+            ->addOpt('vars', 'v', 'the vars list use foreach to cmd template,multi split by ","', 'string', true)
+            ->addOpt('interval', '', 'the sleep interval time(seconds) for run each cmd', 'int', false, null, [
+                'aliases' => ['iv'],
+            ])
+            ->addOpt('dry-run', '', 'Not real run the command', 'bool', false, null, [
+                'aliases' => ['try']
+            ])
+            ->addArg('cmdTpl', 'command template that will be run', 'string', true);
+
+        $this->flags->setExample(<<<'TXT'
+{binWithCmd} --vars dir1,dir2,dir3 "cd {var}; git status"
+TXT
+);
+    }
+
     /**
-     * @arguments
-     *   mdfile     string;The markdown file path;required
-     *
-     * @param  Input $input
-     * @param  Output $output
+     * @param Input $input
+     * @param Output $output
      */
     protected function execute(Input $input, Output $output)
     {
-        $filename = $this->flags->getArg('mdfile');
+        $fs = $this->flags;
 
-        $text = file_get_contents($filename);
+        $cmdTpl   = $fs->getArg('cmdTpl');
+        $interval = $fs->getOpt('interval');
+        Assert::intShouldGte0($interval, 'interval', true);
 
-        // parse content
-        $md  = new CliMarkdown();
-        $doc = $md->parse($text);
-        $doc = Color::parseTag(rtrim($doc));
+        $cmd = Cmd::new()->setDryRun($fs->getOpt('dry-run'));
+        foreach ($fs->getOptStrAsArray('vars') as $var) {
+            $cmdStr = strtr($cmdTpl, [
+                '{var}' => $var,
+            ]);
 
-        // $output->colored("Document for the #$nameString");
-        $output->writeRaw($doc);
+            $cmd->setCmdline($cmdStr)->runAndPrint();
+            // $cmd->isFail()
+        }
+
+        $output->writeRaw($cmdTpl);
     }
 }
