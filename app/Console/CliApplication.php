@@ -11,16 +11,17 @@ namespace Inhere\Kite\Console;
 
 use Inhere\Console\Application;
 use Inhere\Console\ConsoleEvent;
+use Inhere\Console\GlobalOption;
 use Inhere\Kite\Common\Log\CliLogProcessor;
 use Inhere\Kite\Component\ScriptRunner;
+use Inhere\Kite\Concern\InitApplicationTrait;
 use Inhere\Kite\Console\Component\AutoSetProxyEnv;
 use Inhere\Kite\Console\Listener\BeforeCommandRunListener;
 use Inhere\Kite\Console\Listener\BeforeRunListener;
-use Inhere\Kite\Lib\Jump\QuickJump;
-use Inhere\Kite\Concern\InitApplicationTrait;
 use Inhere\Kite\Console\Listener\NotFoundListener;
 use Inhere\Kite\Console\Plugin\PluginManager;
 use Inhere\Kite\Kite;
+use Inhere\Kite\Lib\Jump\QuickJump;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Throwable;
@@ -130,6 +131,11 @@ class CliApplication extends Application
 
         // auto proxy setting
         $this->on(ConsoleEvent::COMMAND_RUN_BEFORE, new BeforeCommandRunListener);
+
+        // add global option
+        GlobalOption::setOption('workdir', [
+            'desc' => 'set the global workdir for all commands'
+        ]);
 
         Kite::logger()->info('console app init completed');
     }

@@ -19,7 +19,13 @@ class BeforeRunListener
      */
     public function __invoke(CliApplication $app)
     {
+        $workdir = $app->getFlags()->getOpt('workdir');
         $command = $app->getInput()->getCommand();
+
+        if ($workdir) {
+            $app->getInput()->chWorkDir($workdir);
+            $app->getOutput()->colored("Set global workdir: $workdir", 'mga');
+        }
 
         Kite::logger()->info('will run command: ' . $command, [
             'flags' => $app->getInput()->getFlags(),

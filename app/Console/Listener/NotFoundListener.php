@@ -35,7 +35,7 @@ final class NotFoundListener
             $realCmd = $aliases[$cmd];
 
             $app->notice("input command is alias name, will redirect to the real command '$realCmd'");
-            $app->dispatch($realCmd);
+            $app->dispatch($realCmd, $app->getFlags()->getRawArgs());
             return true;
         }
 
