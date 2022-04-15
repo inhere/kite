@@ -20,6 +20,7 @@ use Inhere\Kite\Common\GitLocal\GitLab;
 use Inhere\Kite\Console\Attach\Gitlab\BranchCmd;
 use Inhere\Kite\Console\Attach\Gitlab\ProjectCmd;
 use Inhere\Kite\Console\Component\RedirectToGitGroup;
+use Inhere\Kite\Console\SubCmd\Gitflow\BranchCreateCmd;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use Throwable;
@@ -37,6 +38,7 @@ use function parse_str;
 use function realpath;
 use function sprintf;
 use function str_contains;
+use function str_starts_with;
 use function strpos;
 use function strtoupper;
 use function trim;
@@ -382,7 +384,7 @@ class GitLabController extends Controller
      * checkout an new branch for development
      *
      * @options
-     *  --not-main   bool;Dont push new branch to the main remote
+     *  --nm, --not-main   bool;Dont push new branch to the main remote
      *
      * @arguments
      *  branch      The new branch name. eg: fea_6_12
@@ -394,16 +396,8 @@ class GitLabController extends Controller
      */
     public function newBranchCommand(FlagsParser $fs, Output $output): void
     {
-        // $cmdName = $input->getCommand();
-        $cmdName = $this->getCommandName();
-        /** @see GitFlowController::newBranchCommand() */
-        $command = 'gitflow:newBranch';
-
-        $output->notice("gitlab: input '$cmdName', will redirect to '$command'");
-
-        // Console::app()->dispatch($command, $input->getArgs());
-        // Console::app()->dispatch($command, $this->flags->getRawArgs());
-        Console::app()->dispatch($command, $fs->getRawArgs());
+        $bcCmd = new BranchCreateCmd($this->input, $output);
+        $bcCmd->run($fs->getFlags());
     }
 
     /**
@@ -526,10 +520,12 @@ class GitLabController extends Controller
      *  -m, --main   bool;Open the main repo page
      *
      * @arguments
-     *  remote      The remote name. default: origin
+     *  remote      The remote name, can also use group/repo. default: origin
      *
      * @param FlagsParser $fs
      * @param Output $output
+     * @example
+     * {binWithCmd} group/repo
      */
     public function openCommand(FlagsParser $fs, Output $output): void
     {
@@ -542,11 +538,19 @@ class GitLabController extends Controller
 
         $remote = $fs->getArg('remote', $defRemote);
 
-        $info = $gitlab->getRemoteInfo($remote);
-        $link = $info->getHttpUrl();
+        // is url path.
+        if (str_contains($remote, '/')) {
+            if (str_starts_with($remote, 'http')) {
+                $link = $remote;
+            } else {
+                $link = $gitlab->getHost() . '/'. $remote;
+            }
+        } else {
+            $info = $gitlab->getRemoteInfo($remote);
+            $link = $info->getHttpUrl();
+        }
 
         AppHelper::openBrowser($link);
-
         $output->success('Complete');
     }
 

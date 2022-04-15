@@ -839,7 +839,8 @@ class GitController extends Controller
      *                          ml     msg length filter.
      *                          wl     word length filter.
      *  --format                The git log option `--pretty` value.
-     *                          can be one of oneline, short, medium, full, fuller, reference, email, raw, format:<string> and tformat:<string>.
+     *                          can be one of oneline, short, medium, full, fuller, reference, email,
+     *                          raw, format:<string> and tformat:<string>.
      *  -s, --style             The style for generate for changelog.
      *                          allow: markdown(<cyan>default</cyan>), simple, gh-release(ghr)
      *  --repo-url              The git repo URL address. eg: https://github.com/inhere/kite

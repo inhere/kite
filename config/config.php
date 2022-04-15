@@ -18,6 +18,11 @@ return [
         // 'auto-sign' => true,
         // 'sign-text' => 'inhere <in.798@qq.com>',
     ],
+    'gitflow'      => [
+        // remote
+        'mainRemote' => 'main',
+        'forkRemote' => 'origin',
+    ],
     'gitlab'     => [
         // remote
         'mainRemote'       => 'main',
