@@ -3720,16 +3720,16 @@
         },
         {
             "name": "toolkit/fsutil",
-            "version": "v2.0.2",
+            "version": "v2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/fsutil.git",
-                "reference": "9b95ed08c5d282df56c53380e6b2d333d5dc05fb"
+                "reference": "73b28773128533c641fa7711aae7d6e85fdb8045"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/fsutil/zipball/9b95ed08c5d282df56c53380e6b2d333d5dc05fb",
-                "reference": "9b95ed08c5d282df56c53380e6b2d333d5dc05fb",
+                "url": "https://api.github.com/repos/php-toolkit/fsutil/zipball/73b28773128533c641fa7711aae7d6e85fdb8045",
+                "reference": "73b28773128533c641fa7711aae7d6e85fdb8045",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3773,9 +3773,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-toolkit/fsutil/issues",
-                "source": "https://github.com/php-toolkit/fsutil/tree/v2.0.2"
+                "source": "https://github.com/php-toolkit/fsutil/tree/v2.0.3"
             },
-            "time": "2022-04-12T05:58:05+00:00"
+            "time": "2022-04-13T11:13:28+00:00"
         },
         {
             "name": "toolkit/pflag",
