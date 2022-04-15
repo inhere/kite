@@ -22,7 +22,7 @@ class EnvCommand extends Command
 {
     protected static string $name = 'env';
 
-    protected static string $desc = 'a test command';
+    protected static string $desc = 'print system ENV information';
 
     /**
      * print system ENV information

@@ -7,7 +7,7 @@
  * @license  MIT
  */
 
-namespace Inhere\Kite\Console\Controller;
+namespace Inhere\Kite\Console\Controller\Filesystem;
 
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
