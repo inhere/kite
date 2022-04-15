@@ -15,6 +15,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Console\Component\ContentsAutoWriter;
+use Inhere\Kite\Console\SubCmd\ParseUrlQueryCmd;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\KiteUtil;
 use Inhere\Kite\Kite;
@@ -34,8 +35,6 @@ use function count;
 use function explode;
 use function implode;
 use function is_file;
-use function parse_str;
-use function rawurldecode;
 use function str_contains;
 use function str_replace;
 use function strlen;
@@ -74,6 +73,7 @@ class StringController extends Controller
             'process' => ['p', 'filter', 'f'],
             'replace' => ['r'],
             'parse'   => ['fields'],
+            'dequery' => ParseUrlQueryCmd::aliases(),
         ];
     }
 
@@ -82,6 +82,13 @@ class StringController extends Controller
         parent::init();
 
         $this->dumpfile = Kite::getTmpPath('string-loaded.txt');
+    }
+
+    protected function subCommands(): array
+    {
+        return [
+            ParseUrlQueryCmd::class,
+        ];
     }
 
     /**
@@ -215,7 +222,7 @@ class StringController extends Controller
                 break;
             }
 
-            $args = [];
+            $args   = [];
             $argStr = '';
 
             // eg 'wrap:,'
@@ -326,15 +333,15 @@ class StringController extends Controller
         // filters
         $filters = $fs->getOpt('filter');
 
-        $cutPos = 'L';
+        $cutPos  = 'L';
         $cutChar = $cut;
         if (strlen($cut) > 1) {
             if ($cut[0] === 'L') {
                 // $cutPos = 'L';
-                $cutChar= substr($cut, 1);
+                $cutChar = substr($cut, 1);
             } elseif ($cut[0] === 'R') {
-                $cutPos = 'R';
-                $cutChar= substr($cut, 1);
+                $cutPos  = 'R';
+                $cutChar = substr($cut, 1);
             }
         }
 
@@ -446,7 +453,7 @@ class StringController extends Controller
         $p->setItemParser($itemParser);
         $p->parse();
 
-        $result = '';
+        $result   = '';
         $doOutput = true;
         switch ($fs->getOpt('out-fmt')) {
             case 'mdtable':
@@ -459,7 +466,7 @@ class StringController extends Controller
                 $head = array_shift($rows);
                 $line = implode('|', array_pad(['-----'], $p->fieldNum, '-----'));
 
-                $result = $head . "\n" . $line . "\n". implode("\n", $rows);
+                $result = $head . "\n" . $line . "\n" . implode("\n", $rows);
                 break;
             case 'raw':
                 $result = $text;
@@ -477,31 +484,6 @@ class StringController extends Controller
             $outFile = $fs->getOpt('output');
             ContentsAutoWriter::writeTo($outFile, $result);
         }
-    }
-
-    /**
-     * decode query string and print data.
-     *
-     * @options
-     *  --full        bool;The input query argument is full url
-     *
-     * @arguments
-     * query    The URI query string. allow: FILEPATH, @clipboard
-     */
-    public function dequeryCommand(FlagsParser $fs, Output $output): void
-    {
-        $query = $fs->getArg('query');
-
-        $str = ContentsAutoReader::readFrom($query);
-        $str = rawurldecode($str);
-        // println($str);
-
-        // if (!$fs->getOpt('full')) {
-        //     $str = 'http://abc.com?' . $str;
-        // }
-        parse_str($str, $ret);
-
-        $output->aList($ret);
     }
 
     /**

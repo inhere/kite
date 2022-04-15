@@ -12,6 +12,7 @@ namespace Inhere\Kite\Console\Controller;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
+use Inhere\Kite\Console\SubCmd\ParseUrlQueryCmd;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str\UrlHelper;
 
@@ -31,6 +32,14 @@ class HttpController extends Controller
     {
         return [
             'bulk2query' => ['2query', 'to-query'],
+            'dequery'    => ParseUrlQueryCmd::aliases(),
+        ];
+    }
+
+    protected function subCommands(): array
+    {
+        return [
+            ParseUrlQueryCmd::class,
         ];
     }
 
