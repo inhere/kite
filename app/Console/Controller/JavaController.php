@@ -61,7 +61,7 @@ class JavaController extends Controller
      */
     public function sql2classCommand(FlagsParser $fs, Output $output): void
     {
-        $output->success('Complete');
+        $output->success('TODO');
     }
 
     /**

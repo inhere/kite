@@ -381,7 +381,7 @@ class GitLabController extends Controller
     }
 
     /**
-     * checkout an new branch for development
+     * checkout an new branch for development. alias for `br new`
      *
      * @options
      *  --nm, --not-main   bool;Dont push new branch to the main remote
@@ -404,8 +404,8 @@ class GitLabController extends Controller
      * delete branches from local, origin, main remote
      *
      * @options
-     *  -f, --force      bool;Force execute delete command, ignore error
-     *      --not-main   bool;Dont delete branch on the main remote
+     * -f, --force              bool;Force execute delete command, ignore error
+     * --nm, --not-main         bool;Dont delete branch on the main remote
      *
      * @arguments
      *  branches...   array;The want deleted branch name(s). eg: fea_6_12;required
