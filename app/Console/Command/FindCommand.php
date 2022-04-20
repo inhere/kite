@@ -51,7 +51,8 @@ class FindCommand extends Command
      * --names, --name                      Include file name match pattern, multi split by comma ','.
      * --not-names, --nn                    Exclude names pattern. multi split by comma ','.
      * --exclude, --ex                      Exclude pattern for dir name and each sub-dirs, multi split by comma ','.
-     * --only-dirs, --only-dir, --od, -d    bool;Only find dirs.
+     * --type, -t                           string;set find type, default is not limit. eg: dir, file.
+     * --only-dirs, --only-dir, --od        bool;Only find dirs.
      * --only-files, --only-file, -f        bool;Only find files.
      * --exec, -e                           Exec command for each find file/dir path.
      *                                      Can used vars in command:
@@ -65,7 +66,7 @@ class FindCommand extends Command
      * --with-dot-file, --wdf               bool;not ignore file on start with '.'
      * --with-dot-dir, --wdd                bool;not ignore dir on start with '.'
      * --not-recursive, --nr                bool;not recursive sub-dirs.
-     * --dirs, --in                         Find in the dirs, multi split by comma ','.
+     * --dirs, --in, -d                     Find in the dirs, multi split by comma ','.
      *
      * @arguments
      * dirs          Find in the dirs, multi split by comma ','.
@@ -101,9 +102,10 @@ class FindCommand extends Command
             ->addPaths($fs->getOpt('paths', $fs->getArg('match')))
             ->notPaths($fs->getOpt('not-paths'));
 
-        if ($fs->getOpt('only-dirs')) {
+        $type = $fs->getOpt('type');
+        if ($type === 'dir') {
             $ff->onlyDirs();
-        } elseif ($fs->getOpt('only-files')) {
+        } elseif ($type === 'file' || $fs->getOpt('only-files')) {
             $ff->onlyFiles();
         }
 
