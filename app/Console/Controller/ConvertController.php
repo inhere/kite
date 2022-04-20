@@ -26,9 +26,12 @@ use Symfony\Component\Yaml\Yaml;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Json;
 use function base_convert;
+use function count;
 use function date;
+use function preg_match_all;
 use function strlen;
-use function substr;
+use function strtotime;
+use function time;
 
 /**
  * Class ConvertController
@@ -58,6 +61,9 @@ class ConvertController extends Controller
             'ts2date'   => [
                 'tc',
                 'td',
+            ],
+            'date2ts'   => [
+                'dt',
             ],
             'yaml2json' => ['yml2json', 'y2j'],
             'yaml2prop' => ['yml2prop', 'y2p'],
@@ -228,13 +234,49 @@ class ConvertController extends Controller
     }
 
     /**
+     * convert datetime to timestamp
+     *
+     * @arguments
+     * date    string;The date want convert to timestamp, allow @clipboard;true
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function date2tsCommand(FlagsParser $fs, Output $output): void
+    {
+        $date = $fs->getArg('date');
+
+        if (KiteUtil::isClipboardAlias($date)) {
+            $date = Clipboard::new()->read();
+            if (!$date) {
+                throw new PromptException('no contents in clipboard');
+            }
+        }
+
+        $time = strtotime($date = $fs->getArg('date'));
+        if (!$time) {
+            throw new InvalidArgumentException("invalid date: $date");
+        }
+
+        $output->aList([
+            'input'     => $date,
+            'timestamp' => $time,
+            'datetime'  => date('Y-m-d H:i:s', $time),
+        ], 'input date');
+
+        $curTime = time();
+        $output->aList([
+            'today'        => date('Y-m-d', $curTime),
+            'current time' => $curTime,
+            'current date' => date('Y-m-d H:i:s', $curTime),
+        ], 'today');
+    }
+
+    /**
      * convert timestamp to datetime
      *
      * @arguments
-     * times    array;The want convert timestamps
-     *
-     * @options
-     * --cb     bool;read input from clipboard
+     * times    array;The want convert timestamps, allow @clipboard;true
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -242,21 +284,32 @@ class ConvertController extends Controller
     public function ts2dateCommand(FlagsParser $fs, Output $output): void
     {
         $args = $fs->getArg('times');
-        if (!$args) {
-            if ($fs->getOpt('cb')) {
-                $text = Clipboard::new()->read();
-                $args = $text ? [$text] : [];
-            }
+
+        if (count($args) === 1 && KiteUtil::isClipboardAlias($args[0])) {
+            $text = Clipboard::new()->read();
+            $args = $text ? [$text] : [];
 
             if (!$args) {
-                throw new PromptException('missing arguments');
+                throw new PromptException('no contents in clipboard');
             }
         }
 
         $data = [];
         foreach ($args as $time) {
             if (strlen($time) > 10) {
-                $time = substr($time, 0, 10);
+                preg_match_all('/1\d{9}/', $time, $matches);
+                if (empty($matches[0])) {
+                    $output->warning("not found time in the: $time");
+                    continue;
+                }
+
+                foreach ($matches[0] as $match) {
+                    $data[] = [
+                        'timestamp' => $match,
+                        'datetime'  => date('Y-m-d H:i:s', (int)$match),
+                    ];
+                }
+                continue;
             }
 
             $data[] = [
@@ -269,4 +322,5 @@ class ConvertController extends Controller
         // opts
         $output->table($data, 'Time to date', []);
     }
+
 }
