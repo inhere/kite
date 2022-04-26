@@ -13,6 +13,7 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\SubCmd\OpenCmd;
+use Inhere\Kite\Console\SubCmd\ToolCmd\HashHmacCommand;
 
 /**
  * Class ToolCommand
@@ -26,6 +27,7 @@ class ToolCommand extends Command
     {
         return [
             OpenCmd::class,
+            HashHmacCommand::class,
         ];
     }
 

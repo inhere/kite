@@ -5,25 +5,25 @@ use Toolkit\Stdlib\OS;
 $basePath = Inhere\Kite\Kite::basePath();
 
 return [
-    'app'        => [
+    'app'           => [
     ],
-    'logger'     => [
+    'logger'        => [
         'name'    => 'Kite',
         'logfile' => OS::userCacheDir('kite.log'),
     ],
-    'git'        => [
+    'git'           => [
         // remote
         'mainRemote' => 'main',
         'forkRemote' => 'origin',
         // 'auto-sign' => true,
         // 'sign-text' => 'inhere <in.798@qq.com>',
     ],
-    'gitflow'      => [
+    'gitflow'       => [
         // remote
         'mainRemote' => 'main',
         'forkRemote' => 'origin',
     ],
-    'gitlab'     => [
+    'gitlab'        => [
         // remote
         'mainRemote'       => 'main',
         'forkRemote'       => 'origin',
@@ -36,7 +36,7 @@ return [
         // gitlab api config
         'baseUrl'          => '',
     ],
-    'github'     => [
+    'github'        => [
         // remote
         'mainRemote'       => 'main',
         'forkRemote'       => 'origin',
@@ -44,15 +44,15 @@ return [
         'defaultGroup'     => 'swoft',
         'defaultForkGroup' => 'ulue',
         'redirectGit'      => [
-           '*'
+            '*'
         ],
         // github api config
         // 'baseUrl' => '',
     ],
-    'osEnv'      => [
+    'osEnv'         => [
         // env settings
     ],
-    'osPathEnv'      => [
+    'osPathEnv'     => [
         // os path env settings
         // '/path/to/my-tool/bin',
     ],
@@ -61,8 +61,13 @@ return [
         // 'http_proxy'  => 'http://127.0.0.1:1081',
         // 'https_proxy' => 'http://127.0.0.1:1081',
     ],
+    'jenkins' => [
+        'hostUrl'  => getenv('JK_HOST_URL') ?: '',
+        'username' => getenv('JK_UNAME') ?: '',
+        'apiToken' => getenv('JK_API_TOKEN') ?: '',
+    ],
     // tool command usage docs
-    'manDocs'    => [
+    'manDocs'       => [
         // if 'lang' not setting, will read from ENV.
         // 'lang'  => 'en',
         'fallbackLang' => 'en',
@@ -82,16 +87,16 @@ return [
         ],
     ],
     /** @see \Inhere\Kite\Component\ScriptRunner */
-    'scriptRunner' => [
-        'enable'  => true,
+    'scriptRunner'  => [
+        'enable' => true,
     ],
-    'scriptDirs' => [
+    'scriptDirs'    => [
         // BASE_PATH . '/script',
         $basePath . '/script',
         $basePath . '/custom/script',
     ],
     // custom scripts for quick run an command
-    'scripts'    => require 'scripts.php',
+    'scripts'       => require 'scripts.php',
     // command aliases. element is: alias command => real command
-    'aliases'    => require 'aliases.php',
+    'aliases'       => require 'aliases.php',
 ];

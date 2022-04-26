@@ -5,6 +5,7 @@ namespace Inhere\Kite\Concern;
 use Inhere\Kite\Common\GitAPI\GitHubV3API;
 use Inhere\Kite\Common\GitAPI\GitLabV4API;
 use Inhere\Kite\Kite;
+use Inhere\Kite\Lib\Jenkins\JenkinsClient;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use PhpPkg\EasyTpl\EasyTemplate;
@@ -121,6 +122,11 @@ trait InitApplicationTrait
         $box->set('ghApi', function () {
             $config = $this->getArrayParam('github');
             return new GitHubV3API($config);
+        });
+
+        $box->set('jenkins', function () {
+            $config = $this->getArrayParam('jenkins');
+            return new JenkinsClient($config);
         });
     }
 }
