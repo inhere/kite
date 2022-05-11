@@ -3,6 +3,7 @@
 namespace Inhere\Kite\Common\Log;
 
 use Inhere\Kite\Kite;
+use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 use Toolkit\Stdlib\OS;
 
@@ -15,18 +16,17 @@ use Toolkit\Stdlib\OS;
 class CliLogProcessor implements ProcessorInterface
 {
     /**
-     * @return array The processed record
+     * @param LogRecord $record
      *
-     * @psalm-param  Record $record
-     * @psalm-return Record
+     * @return LogRecord The processed record
      */
-    public function __invoke(array $record)
+    public function __invoke(LogRecord $record): LogRecord
     {
         $workDir = Kite::cliApp()->getInput()->getWorkDir();
 
         // add to log
-        $record['extra']['OSName'] = OS::name();
-        $record['extra']['workDir'] = $workDir;
+        $record->extra['OSName'] = OS::name();
+        $record->extra['workDir'] = $workDir;
 
         return $record;
     }

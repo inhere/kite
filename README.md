@@ -109,12 +109,12 @@ kite --auto-completion \
 
 ### 常用命令组别名
 
-推荐配置常用命令组别名，这样可以快速使用常用的命令组。
+推荐配置常用命令组别名到 `~/.bashrc` 或者 `~/.zshrc`，这样可以快速使用常用的命令组。
 
 ```bash
 ## aliases for kite
 # NOTICE: zsh plugin support add aliases
-#alias kj="kite jump"
+alias kj="kite jump"
 alias kg="kite git"
 alias kgit="kite git"
 alias kgl="kite gitlab"

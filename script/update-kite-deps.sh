@@ -1,24 +1,33 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-set -ex
+set -e
 
-# run: kite run update-kite-deps.sh --proxy
+# run: kite run --proxy update-kite-deps.sh
 # run: sh script/update-kite-deps.sh
-kite env prox
 
 tmpKiteDir=~/Workspace/my-github/inhere/kite
 usrKiteDir=~/.kite
 
+set -x
+kite env prox
 cd $tmpKiteDir || exit 2
+git checkout .
 git pull
-composer update
+composer update --no-progress
+set +x
 
+echo "update composer.lock"
 cp $tmpKiteDir/composer.lock $usrKiteDir
-rm -rf $usrKiteDir/vendor/composer
-cp -r $tmpKiteDir/vendor/composer $usrKiteDir/vendor
 
-cpDeps="cebe clue colinodell gitonomy guzzlehttp http-interop knplabs nette php-http monolog psr symfony"
-for dir in $cpDeps ; do
-    rm -rf $usrKiteDir/vendor/$dir
-    cp -r $tmpKiteDir/vendor/$dir  $usrKiteDir/vendor/
+echo "update packages:"
+for path in "$tmpKiteDir"/vendor/*; do
+    dir=$(basename "$path")
+    if [[ $dir == "inhere" || $dir == "phppkg" || $dir == "toolkit" ]]; then
+        echo "- Skip the vendor/$dir"
+        continue
+    fi
+
+    echo "- Update the vendor/$dir"
+    rm -rf $usrKiteDir/vendor/"$dir"
+    cp -r $tmpKiteDir/vendor/"$dir"  $usrKiteDir/vendor/
 done

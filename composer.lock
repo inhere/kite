@@ -78,16 +78,16 @@
         },
         {
             "name": "clue/stream-filter",
-            "version": "v1.5.0",
+            "version": "v1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/clue/stream-filter.git",
-                "reference": "aeb7d8ea49c7963d3b581378955dbf5bc49aa320"
+                "reference": "d6169430c7731d8509da7aecd0af756a5747b78e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/clue/stream-filter/zipball/aeb7d8ea49c7963d3b581378955dbf5bc49aa320",
-                "reference": "aeb7d8ea49c7963d3b581378955dbf5bc49aa320",
+                "url": "https://api.github.com/repos/clue/stream-filter/zipball/d6169430c7731d8509da7aecd0af756a5747b78e",
+                "reference": "d6169430c7731d8509da7aecd0af756a5747b78e",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -134,7 +134,7 @@
             ],
             "support": {
                 "issues": "https://github.com/clue/stream-filter/issues",
-                "source": "https://github.com/clue/stream-filter/tree/v1.5.0"
+                "source": "https://github.com/clue/stream-filter/tree/v1.6.0"
             },
             "funding": [
                 {
@@ -146,7 +146,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-10-02T12:38:20+00:00"
+            "time": "2022-02-21T13:15:14+00:00"
         },
         {
             "name": "colinodell/json5",
@@ -442,12 +442,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "GuzzleHttp\\": "src/"
-                },
                 "files": [
                     "src/functions_include.php"
-                ]
+                ],
+                "psr-4": {
+                    "GuzzleHttp\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -555,12 +555,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "GuzzleHttp\\Promise\\": "src/"
-                },
                 "files": [
                     "src/functions_include.php"
-                ]
+                ],
+                "psr-4": {
+                    "GuzzleHttp\\Promise\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -803,12 +803,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/inhere/php-console.git",
-                "reference": "ae9e9f615b2c5de2e3b05f61b7d09c7bcb85fc54"
+                "reference": "b57d62f62f039e083bf5c6312efceb9a630d1161"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/inhere/php-console/zipball/ae9e9f615b2c5de2e3b05f61b7d09c7bcb85fc54",
-                "reference": "ae9e9f615b2c5de2e3b05f61b7d09c7bcb85fc54",
+                "url": "https://api.github.com/repos/inhere/php-console/zipball/b57d62f62f039e083bf5c6312efceb9a630d1161",
+                "reference": "b57d62f62f039e083bf5c6312efceb9a630d1161",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -865,9 +865,9 @@
             ],
             "support": {
                 "issues": "https://github.com/inhere/php-console/issues",
-                "source": "https://github.com/inhere/php-console/tree/v4.1.0"
+                "source": "https://github.com/inhere/php-console/tree/v4.1.4"
             },
-            "time": "2021-12-09T06:41:19+00:00"
+            "time": "2022-05-11T13:52:38+00:00"
         },
         {
             "name": "inhere/sroute",
@@ -901,12 +901,12 @@
             "default-branch": true,
             "type": "library",
             "autoload": {
-                "psr-4": {
-                    "Inhere\\Route\\": "src/"
-                },
                 "files": [
                     "src/Helper/functions.php"
-                ]
+                ],
+                "psr-4": {
+                    "Inhere\\Route\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -1493,16 +1493,16 @@
         },
         {
             "name": "php-http/httplug",
-            "version": "2.2.0",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-http/httplug.git",
-                "reference": "191a0a1b41ed026b717421931f8d3bd2514ffbf9"
+                "reference": "f640739f80dfa1152533976e3c112477f69274eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-http/httplug/zipball/191a0a1b41ed026b717421931f8d3bd2514ffbf9",
-                "reference": "191a0a1b41ed026b717421931f8d3bd2514ffbf9",
+                "url": "https://api.github.com/repos/php-http/httplug/zipball/f640739f80dfa1152533976e3c112477f69274eb",
+                "reference": "f640739f80dfa1152533976e3c112477f69274eb",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1555,9 +1555,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-http/httplug/issues",
-                "source": "https://github.com/php-http/httplug/tree/master"
+                "source": "https://github.com/php-http/httplug/tree/2.3.0"
             },
-            "time": "2020-07-13T15:43:23+00:00"
+            "time": "2022-02-21T09:52:22+00:00"
         },
         {
             "name": "php-http/message",
@@ -1886,12 +1886,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phppkg/config.git",
-                "reference": "459ce799d7bb312d4b637196bbc2e841528e3af6"
+                "reference": "301ca08225bb4d5cca4175a579fc957e2391012d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phppkg/config/zipball/459ce799d7bb312d4b637196bbc2e841528e3af6",
-                "reference": "459ce799d7bb312d4b637196bbc2e841528e3af6",
+                "url": "https://api.github.com/repos/phppkg/config/zipball/301ca08225bb4d5cca4175a579fc957e2391012d",
+                "reference": "301ca08225bb4d5cca4175a579fc957e2391012d",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1907,7 +1907,8 @@
                 "phppkg/ini": "~0.1",
                 "symfony/yaml": "^6.0",
                 "toolkit/fsutil": "^2.0",
-                "toolkit/stdlib": "^2.0"
+                "toolkit/stdlib": "^2.0",
+                "yosymfony/toml": "^1.0"
             },
             "default-branch": true,
             "type": "library",
@@ -1938,13 +1939,14 @@
                 "json",
                 "library",
                 "php",
+                "toml",
                 "yaml"
             ],
             "support": {
                 "issues": "https://github.com/phppkg/config/issues",
-                "source": "https://github.com/phppkg/config/tree/v1.1.1"
+                "source": "https://github.com/phppkg/config/tree/master"
             },
-            "time": "2021-12-05T08:50:47+00:00"
+            "time": "2022-05-11T13:49:43+00:00"
         },
         {
             "name": "phppkg/easytpl",
@@ -1952,12 +1954,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phppkg/easytpl.git",
-                "reference": "1002991b0299b349e92ddfab361c201156278a6a"
+                "reference": "9321d3c4766579f45399a96daf50d20a160cb391"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phppkg/easytpl/zipball/1002991b0299b349e92ddfab361c201156278a6a",
-                "reference": "1002991b0299b349e92ddfab361c201156278a6a",
+                "url": "https://api.github.com/repos/phppkg/easytpl/zipball/9321d3c4766579f45399a96daf50d20a160cb391",
+                "reference": "9321d3c4766579f45399a96daf50d20a160cb391",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1968,7 +1970,7 @@
             },
             "require": {
                 "ext-mbstring": "*",
-                "php": ">8.0.1",
+                "php": ">=8.0.1",
                 "toolkit/fsutil": "~2.0",
                 "toolkit/stdlib": "~2.0"
             },
@@ -1996,7 +1998,7 @@
                 "issues": "https://github.com/phppkg/easytpl/issues",
                 "source": "https://github.com/phppkg/easytpl/tree/main"
             },
-            "time": "2021-12-03T17:24:21+00:00"
+            "time": "2022-04-06T13:40:40+00:00"
         },
         {
             "name": "phppkg/http-client",
@@ -2004,12 +2006,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phppkg/http-client.git",
-                "reference": "ae84b0bbea656bb19a2f531216a1c4d838e5e3a5"
+                "reference": "e0cebde8aadc7a3ba07163e4fa26bd70ccc12103"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phppkg/http-client/zipball/ae84b0bbea656bb19a2f531216a1c4d838e5e3a5",
-                "reference": "ae84b0bbea656bb19a2f531216a1c4d838e5e3a5",
+                "url": "https://api.github.com/repos/phppkg/http-client/zipball/e0cebde8aadc7a3ba07163e4fa26bd70ccc12103",
+                "reference": "e0cebde8aadc7a3ba07163e4fa26bd70ccc12103",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -2055,9 +2057,9 @@
             ],
             "support": {
                 "issues": "https://github.com/phppkg/http-client/issues",
-                "source": "https://github.com/phppkg/http-client/tree/v3.0.0"
+                "source": "https://github.com/phppkg/http-client/tree/master"
             },
-            "time": "2021-12-07T14:56:34+00:00"
+            "time": "2022-03-02T02:21:57+00:00"
         },
         {
             "name": "phppkg/http-message",
@@ -2229,12 +2231,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phppkg/phpgit.git",
-                "reference": "a9d653e055af499aa90885a5645ca9c53749a084"
+                "reference": "7668d4d7b6944e3009f228aa3ff0d75f5e82d4b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phppkg/phpgit/zipball/a9d653e055af499aa90885a5645ca9c53749a084",
-                "reference": "a9d653e055af499aa90885a5645ca9c53749a084",
+                "url": "https://api.github.com/repos/phppkg/phpgit/zipball/7668d4d7b6944e3009f228aa3ff0d75f5e82d4b7",
+                "reference": "7668d4d7b6944e3009f228aa3ff0d75f5e82d4b7",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -2283,9 +2285,9 @@
             "homepage": "https://github/phppkg/phpgit.git",
             "support": {
                 "issues": "https://github.com/phppkg/phpgit/issues",
-                "source": "https://github.com/phppkg/phpgit/tree/master"
+                "source": "https://github.com/phppkg/phpgit/tree/v2.0.1"
             },
-            "time": "2021-12-06T02:52:43+00:00"
+            "time": "2022-04-13T11:41:07+00:00"
         },
         {
             "name": "psr/cache",
@@ -2682,16 +2684,16 @@
         },
         {
             "name": "symfony/cache",
-            "version": "v6.0.6",
+            "version": "v6.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache.git",
-                "reference": "57faad4e0d694f9961f517fdd5e6fbb1f6d0e04f"
+                "reference": "e9a4e9229f078d93f2c492ea30c3f010373312b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache/zipball/57faad4e0d694f9961f517fdd5e6fbb1f6d0e04f",
-                "reference": "57faad4e0d694f9961f517fdd5e6fbb1f6d0e04f",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/e9a4e9229f078d93f2c492ea30c3f010373312b7",
+                "reference": "e9a4e9229f078d93f2c492ea30c3f010373312b7",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -2761,7 +2763,7 @@
                 "psr6"
             ],
             "support": {
-                "source": "https://github.com/symfony/cache/tree/v6.0.6"
+                "source": "https://github.com/symfony/cache/tree/v6.0.8"
             },
             "funding": [
                 {
@@ -2777,7 +2779,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-03-02T12:58:14+00:00"
+            "time": "2022-04-26T13:22:23+00:00"
         },
         {
             "name": "symfony/cache-contracts",
@@ -3081,7 +3083,7 @@
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "v1.24.0",
+            "version": "v1.25.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
@@ -3119,12 +3121,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Ctype\\": ""
-                },
                 "files": [
                     "bootstrap.php"
-                ]
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Ctype\\": ""
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -3149,7 +3151,7 @@
                 "portable"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.24.0"
+                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.25.0"
             },
             "funding": [
                 {
@@ -3414,16 +3416,16 @@
         },
         {
             "name": "symfony/service-contracts",
-            "version": "v2.4.1",
+            "version": "v2.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/service-contracts.git",
-                "reference": "d664541b99d6fb0247ec5ff32e87238582236204"
+                "reference": "24d9dc654b83e91aa59f9d167b131bc3b5bea24c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/d664541b99d6fb0247ec5ff32e87238582236204",
-                "reference": "d664541b99d6fb0247ec5ff32e87238582236204",
+                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/24d9dc654b83e91aa59f9d167b131bc3b5bea24c",
+                "reference": "24d9dc654b83e91aa59f9d167b131bc3b5bea24c",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3434,7 +3436,8 @@
             },
             "require": {
                 "php": ">=7.2.5",
-                "psr/container": "^1.1"
+                "psr/container": "^1.1",
+                "symfony/deprecation-contracts": "^2.1|^3"
             },
             "conflict": {
                 "ext-psr": "<1.1|>=2"
@@ -3445,7 +3448,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "2.4-dev"
+                    "dev-main": "2.5-dev"
                 },
                 "thanks": {
                     "name": "symfony/contracts",
@@ -3482,7 +3485,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/service-contracts/tree/v2.4.1"
+                "source": "https://github.com/symfony/service-contracts/tree/v2.5.1"
             },
             "funding": [
                 {
@@ -3498,20 +3501,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-11-04T16:37:19+00:00"
+            "time": "2022-03-13T20:07:29+00:00"
         },
         {
             "name": "symfony/var-exporter",
-            "version": "v6.0.7",
+            "version": "v6.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-exporter.git",
-                "reference": "5f1fddb1b3a8394dbfb234044e3ad620a26e1735"
+                "reference": "74b272979a490747c6775b0228d06cf246306a99"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/5f1fddb1b3a8394dbfb234044e3ad620a26e1735",
-                "reference": "5f1fddb1b3a8394dbfb234044e3ad620a26e1735",
+                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/74b272979a490747c6775b0228d06cf246306a99",
+                "reference": "74b272979a490747c6775b0228d06cf246306a99",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3560,7 +3563,7 @@
                 "serialize"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-exporter/tree/v6.0.7"
+                "source": "https://github.com/symfony/var-exporter/tree/v6.0.8"
             },
             "funding": [
                 {
@@ -3576,7 +3579,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-03-31T17:18:25+00:00"
+            "time": "2022-04-26T13:22:23+00:00"
         },
         {
             "name": "symfony/yaml",
@@ -3660,16 +3663,16 @@
         },
         {
             "name": "toolkit/cli-utils",
-            "version": "v2.0.0",
+            "version": "v2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/cli-utils.git",
-                "reference": "2aa3b540de57d1f1e6f7591c5896f86c8671f2fd"
+                "reference": "02af7b683c78209181185025a95b7c520a2aeb52"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/cli-utils/zipball/2aa3b540de57d1f1e6f7591c5896f86c8671f2fd",
-                "reference": "2aa3b540de57d1f1e6f7591c5896f86c8671f2fd",
+                "url": "https://api.github.com/repos/php-toolkit/cli-utils/zipball/02af7b683c78209181185025a95b7c520a2aeb52",
+                "reference": "02af7b683c78209181185025a95b7c520a2aeb52",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3718,9 +3721,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-toolkit/cli-utils/issues",
-                "source": "https://github.com/php-toolkit/cli-utils/tree/v2.0.0"
+                "source": "https://github.com/php-toolkit/cli-utils/tree/v2.0.2"
             },
-            "time": "2021-12-01T15:19:08+00:00"
+            "time": "2022-04-20T09:22:28+00:00"
         },
         {
             "name": "toolkit/fsutil",
@@ -3783,16 +3786,16 @@
         },
         {
             "name": "toolkit/pflag",
-            "version": "v2.0.0",
+            "version": "v2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/pflag.git",
-                "reference": "f085b1678cc7959d186f36ce765b8dcd64d5ddee"
+                "reference": "624654121e6b41c8427974b2aba9a53d2d09db6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/pflag/zipball/f085b1678cc7959d186f36ce765b8dcd64d5ddee",
-                "reference": "f085b1678cc7959d186f36ce765b8dcd64d5ddee",
+                "url": "https://api.github.com/repos/php-toolkit/pflag/zipball/624654121e6b41c8427974b2aba9a53d2d09db6c",
+                "reference": "624654121e6b41c8427974b2aba9a53d2d09db6c",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3827,9 +3830,9 @@
             "homepage": "https://github.com/php-toolkit/pflag",
             "support": {
                 "issues": "https://github.com/php-toolkit/pflag/issues",
-                "source": "https://github.com/php-toolkit/pflag/tree/v2.0.0"
+                "source": "https://github.com/php-toolkit/pflag/tree/v2.0.4"
             },
-            "time": "2021-12-09T06:35:35+00:00"
+            "time": "2022-01-25T05:50:24+00:00"
         },
         {
             "name": "toolkit/stdlib",
@@ -3899,16 +3902,16 @@
         },
         {
             "name": "toolkit/sys-utils",
-            "version": "v2.0.0",
+            "version": "v2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/sys-utils.git",
-                "reference": "5044aadaf2b39766631d9c82c023e419f905cefe"
+                "reference": "f060632a94c55b566fc87e0fd921855896b0e310"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/sys-utils/zipball/5044aadaf2b39766631d9c82c023e419f905cefe",
-                "reference": "5044aadaf2b39766631d9c82c023e419f905cefe",
+                "url": "https://api.github.com/repos/php-toolkit/sys-utils/zipball/f060632a94c55b566fc87e0fd921855896b0e310",
+                "reference": "f060632a94c55b566fc87e0fd921855896b0e310",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3952,9 +3955,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-toolkit/sys-utils/issues",
-                "source": "https://github.com/php-toolkit/sys-utils/tree/v2.0.0"
+                "source": "https://github.com/php-toolkit/sys-utils/tree/v2.0.2"
             },
-            "time": "2021-12-02T15:04:55+00:00"
+            "time": "2022-01-02T13:04:41+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -4019,6 +4022,128 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.10.0"
             },
             "time": "2021-03-09T10:59:23+00:00"
+        },
+        {
+            "name": "yosymfony/parser-utils",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yosymfony/parser-utils.git",
+                "reference": "00bec9a12722b21f2baf7f9db35f127e90c162c9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yosymfony/parser-utils/zipball/00bec9a12722b21f2baf7f9db35f127e90c162c9",
+                "reference": "00bec9a12722b21f2baf7f9db35f127e90c162c9",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Yosymfony\\ParserUtils\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Victor Puertas",
+                    "email": "vpgugr@gmail.com",
+                    "homepage": "http://yosymfony.com"
+                }
+            ],
+            "description": "Parser utilities",
+            "homepage": "http://github.com/yosymfony/toml",
+            "keywords": [
+                "lexer",
+                "parser"
+            ],
+            "support": {
+                "issues": "https://github.com/yosymfony/parser-utils/issues",
+                "source": "https://github.com/yosymfony/parser-utils/tree/master"
+            },
+            "time": "2018-06-29T15:31:11+00:00"
+        },
+        {
+            "name": "yosymfony/toml",
+            "version": "v1.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yosymfony/toml.git",
+                "reference": "bdab92ad920d0e36810a3a3e4a998d23f3498f8e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yosymfony/toml/zipball/bdab92ad920d0e36810a3a3e4a998d23f3498f8e",
+                "reference": "bdab92ad920d0e36810a3a3e4a998d23f3498f8e",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "php": ">=7.1",
+                "yosymfony/parser-utils": "^2.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Yosymfony\\Toml\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Victor Puertas",
+                    "email": "vpgugr@gmail.com",
+                    "homepage": "http://yosymfony.com"
+                }
+            ],
+            "description": "A PHP parser for TOML compatible with specification 0.4.0",
+            "homepage": "http://github.com/yosymfony/toml",
+            "keywords": [
+                "mojombo",
+                "parser",
+                "toml"
+            ],
+            "support": {
+                "issues": "https://github.com/yosymfony/toml/issues",
+                "source": "https://github.com/yosymfony/toml/tree/master"
+            },
+            "time": "2018-08-08T15:08:14+00:00"
         }
     ],
     "packages-dev": [],
