@@ -17,7 +17,7 @@ use Inhere\Kite\Common\Cmd;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Console\Component\Clipboard;
-use Inhere\Kite\Console\Manage\GitBranchManage;
+use Inhere\Kite\Console\Manager\GitBranchManager;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use PhpGit\Changelog\Filter\KeywordsFilter;
@@ -343,7 +343,7 @@ class GitController extends Controller
     {
         $remote = $fs->getArg('remote', 'origin');
 
-        $gbm = new GitBranchManage();
+        $gbm = new GitBranchManager();
         $gbm->update([$remote]);
 
         $output->success('Complete');

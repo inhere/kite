@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Console\Manage;
+namespace Inhere\Kite\Console\Manager;
 
 /**
  * Class GitBranchManage

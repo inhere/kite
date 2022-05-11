@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Console\Manage;
+namespace Inhere\Kite\Console\Manager;
 
 use Inhere\Kite\Common\CmdRunner;
 
@@ -9,12 +9,14 @@ use Inhere\Kite\Common\CmdRunner;
  *
  * @package Inhere\Kite\Console\Manage
  */
-class GitBranchManage extends BaseGitManage
+class GitBranchManager extends BaseGitManage
 {
     /**
      * update branch list from remote
      *
      * @param array $remotes
+     * @param bool $usePull
+     *
      * @return void
      */
     public function update(array $remotes = [], bool $usePull = false): void

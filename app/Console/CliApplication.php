@@ -19,6 +19,7 @@ use Inhere\Kite\Console\Component\AutoSetProxyEnv;
 use Inhere\Kite\Console\Listener\BeforeCommandRunListener;
 use Inhere\Kite\Console\Listener\BeforeRunListener;
 use Inhere\Kite\Console\Listener\NotFoundListener;
+use Inhere\Kite\Console\Manager\ToolManager;
 use Inhere\Kite\Console\Plugin\PluginManager;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Jump\QuickJump;
@@ -91,6 +92,11 @@ class CliApplication extends Application
         $box->set('plugManager', function () {
             $config = $this->getArrayParam('pluginManager');
             return new PluginManager($config);
+        });
+
+        $box->set('toolManager', function () {
+            $config = $this->getArrayParam('toolManager');
+            return new ToolManager($config);
         });
 
         $box->set('scriptRunner', function () {
