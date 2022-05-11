@@ -14,6 +14,9 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\SubCmd\OpenCmd;
 use Inhere\Kite\Console\SubCmd\ToolCmd\HashHmacCommand;
+use Inhere\Kite\Console\SubCmd\ToolCmd\InstallCommand;
+use Inhere\Kite\Console\SubCmd\ToolCmd\ListToolCommand;
+use Inhere\Kite\Console\SubCmd\ToolCmd\UpdateCommand;
 
 /**
  * Class ToolCommand
@@ -28,7 +31,15 @@ class ToolCommand extends Command
         return [
             OpenCmd::class,
             HashHmacCommand::class,
+            InstallCommand::class,
+            UpdateCommand::class,
+            ListToolCommand::class,
         ];
+    }
+
+    protected function configure(): void
+    {
+        $this->flags->addOptByRule('dry-run,try', 'bool;Dry-run the workflow, dont real execute');
     }
 
     /**
