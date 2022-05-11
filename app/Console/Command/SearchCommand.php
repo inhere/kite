@@ -24,6 +24,7 @@ class SearchCommand extends Command
     private array $engines = [
         'google'        => 'https://www.google.com/search?q=',
         'bing'          => 'https://www.bing.com/search?q=',
+        'you'       => 'https://you.com/search?q=',
         'yahoo'         => 'https://search.yahoo.com/search?p=',
         'duckduckgo'    => 'https://www.duckduckgo.com/?q=',
         'startpage'     => 'https://www.startpage.com/do/search?q=',

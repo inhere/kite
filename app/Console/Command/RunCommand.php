@@ -92,7 +92,7 @@ class RunCommand extends Command
 
         // support search
         $kw = $this->flags->getOpt('search') ?: $name;
-        if ($this->flags->hasInputArg('search')) {
+        if ($this->flags->hasInputOpt('search')) {
             $this->searchScripts($output, $kw);
             return;
         }
