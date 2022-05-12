@@ -9,11 +9,11 @@
 
 namespace Inhere\Kite\Http;
 
-use PhpPkg\EasyTpl\HtmlTemplate;
 use Inhere\Kite\Concern\InitApplicationTrait;
 use Inhere\Kite\Kite;
 use Inhere\Route\Dispatcher\Dispatcher;
 use Inhere\Route\Router;
+use PhpPkg\EasyTpl\EasyTemplate;
 use Throwable;
 use Toolkit\Stdlib\Obj\ObjectBox;
 use function array_merge;
@@ -29,9 +29,9 @@ class WebApplication
     use InitApplicationTrait;
 
     /**
-     * @var HtmlTemplate
+     * @var EasyTemplate
      */
-    private HtmlTemplate $renderer;
+    private EasyTemplate $renderer;
 
     /**
      * @var array
@@ -79,10 +79,12 @@ class WebApplication
         $box->set('webRouter', function () {
             return new Router();
         });
+
         $box->set('renderer', function () {
-            $config = $this->getArrayParam('renderer');
-            return new HtmlTemplate($config);
+            $config = $this->config()->getArray('renderer');
+            return new EasyTemplate($config);
         });
+
         $box->set('dispatcher', [
             'class'        => Dispatcher::class,
             // prop settings
@@ -192,9 +194,9 @@ class WebApplication
     }
 
     /**
-     * @return HtmlTemplate
+     * @return EasyTemplate
      */
-    public function getRenderer(): HtmlTemplate
+    public function getRenderer(): EasyTemplate
     {
         return Kite::box()->get('renderer');
     }

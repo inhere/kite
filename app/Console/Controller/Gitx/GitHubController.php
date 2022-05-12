@@ -17,6 +17,7 @@ use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Console\Component\RedirectToGitGroup;
 use Inhere\Kite\Helper\AppHelper;
+use Inhere\Kite\Kite;
 use PhpPkg\Http\Client\Client;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
@@ -82,7 +83,7 @@ class GitHubController extends Controller
     protected function beforeRun(): void
     {
         if ($this->app && !$this->settings) {
-            $this->settings = $this->app->getArrayParam('github');
+            $this->settings = Kite::config()->getArray('github');
         }
     }
 

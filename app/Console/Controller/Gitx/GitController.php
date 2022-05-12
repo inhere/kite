@@ -20,6 +20,7 @@ use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Manager\GitBranchManager;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
+use Inhere\Kite\Kite;
 use PhpGit\Changelog\Filter\KeywordsFilter;
 use PhpGit\Changelog\Formatter\GithubReleaseFormatter;
 use PhpGit\Changelog\Formatter\SimpleFormatter;
@@ -121,7 +122,7 @@ class GitController extends Controller
     protected function beforeRun(): void
     {
         if ($this->app && !isset($this->settings)) {
-            $this->settings = DataObject::new($this->app->getArrayParam('git'));
+            $this->settings = DataObject::new(Kite::config()->getArray('git'));
         }
 
         if ($workdir = $this->flags->getOpt('workdir')) {

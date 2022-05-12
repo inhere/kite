@@ -302,7 +302,7 @@ class JsonController extends Controller
             throw new InvalidArgumentException('empty input json(5) text for handle');
         }
 
-        $config = Kite::cliApp()->getArrayParam('json_toClass');
+        $config = Kite::config()->getArray('json_toClass');
         $tplDir = $fs->getOpt('tpl-dir', $config['tplDir'] ?? '');
         $tplDir = str_replace('{type}', $type, $tplDir);
 

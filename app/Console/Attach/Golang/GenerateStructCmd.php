@@ -114,7 +114,7 @@ TYPE:
 
         $lang = GenCodeFactory::LANG_GO;
 
-        $config = Kite::cliApp()->getArrayParam('gen_code');
+        $config = Kite::config()->getArray('gen_code');
         $tplDir = $fs->getOpt('tpl-dir', $config['tplDir'] ?? '');
         $tplDir = str_replace('{type}', $lang, $tplDir);
 

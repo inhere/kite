@@ -15,6 +15,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
 use Inhere\Kite\Component\CliMarkdown;
 use Inhere\Kite\Helper\AppHelper;
+use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\ManDoc\DocTopic;
 use Inhere\Kite\Lib\ManDoc\Document;
 use Toolkit\Cli\Color;
@@ -68,7 +69,7 @@ class DocCommand extends Command
         $fs = $this->getFlags();
 
         $lang = Document::DEF_LANG;
-        $conf = $this->app->getArrayParam('manDocs');
+        $conf = Kite::config()->getArray('manDocs');
         if (!empty($conf['lang'])) {
             $lang = $conf['lang'];
         }
@@ -104,7 +105,7 @@ TXT;
      */
     private function prepareManDoc(): Document
     {
-        $info = $this->app->getArrayParam('manDocs');
+        $info = Kite::config()->getArray('manDocs');
 
         $paths = $info['paths'] ?? [];
         $lang  = $this->flags->getOpt('lang');

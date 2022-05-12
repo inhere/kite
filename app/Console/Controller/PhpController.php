@@ -17,10 +17,10 @@ use Inhere\Console\Util\PhpDevServe;
 use Inhere\Kite\Common\Cmd;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
-use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\KiteUtil;
+use Inhere\Kite\Kite;
 use InvalidArgumentException;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Json;
@@ -36,12 +36,10 @@ use function is_file;
 use function is_numeric;
 use function ob_get_clean;
 use function ob_start;
-use function preg_quote;
 use function sprintf;
 use function str_contains;
 use function strlen;
 use function trim;
-use function vdump;
 
 /**
  * Class GitGroup
@@ -302,7 +300,7 @@ class PhpController extends Controller
      */
     public function serveCommand(FlagsParser $fs, Output $output): void
     {
-        $conf = $this->app->getArrayParam('php_serve');
+        $conf = Kite::config()->getArray('php_serve');
         if ($conf) {
             $conf = array_merge(self::DEF_SERVE_CONF, $conf);
 

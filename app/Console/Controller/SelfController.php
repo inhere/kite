@@ -17,10 +17,8 @@ use Toolkit\Cli\Color;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\OS;
 use Toolkit\Stdlib\Php;
-use Toolkit\Stdlib\Util\PhpDotEnv;
 use Toolkit\Sys\Sys;
 use Toolkit\Sys\Util\ShellUtil;
-use function array_keys;
 use function array_merge;
 use function count;
 use function is_scalar;
@@ -84,17 +82,16 @@ class SelfController extends Controller
      */
     public function infoCommand(Input $input, Output $output): void
     {
-        $app  = $this->getApp();
-        $conf = $app->getConfig();
+        $cfg = Kite::config();
 
         $output->mList([
             'kite'   => [
-                'root dir'     => $conf['rootPath'],
+                'root dir'     => $cfg->getString('app.rootPath'),
                 'work dir'     => $input->getWorkDir(),
-                'script count' => count($conf['scripts']),
+                'script count' => count($cfg->getArray('scripts')),
                 'plugin dirs'  => Kite::plugManager()->getPluginDirs(),
-                '.env files'   => PhpDotEnv::global()->getLoadedFiles(),
-                'config files' => $conf['__loaded_file'],
+                '.env files'   => Kite::dotenv()->getLoadedFiles(),
+                'config files' => $cfg['__loaded_file'],
             ],
             'system' => [
                 'OS name'     => OS::name(),
@@ -147,9 +144,9 @@ class SelfController extends Controller
             'titlePos' => Title::POS_MIDDLE,
         ]);
 
-        $aliases = $this->getApp()->getArrayParam('aliases');
-
+        $aliases = Kite::config()->getArray('aliases');
         $result = JSONPretty::prettyData($aliases);
+
         $output->write($result);
     }
 
@@ -169,13 +166,13 @@ class SelfController extends Controller
      */
     public function configCommand(FlagsParser $fs, Output $output): void
     {
-        $app = $this->getApp();
+        $cfg = Kite::config();
         if ($fs->getOpt('keys')) {
-            $output->aList(array_keys($app->getConfig()), 'Keys of config');
+            $output->aList($cfg->getKeys(), 'Keys of config');
             return;
         }
 
-        $conf = $app->getConfig();
+        $conf = $cfg->getData();
         $key  = $fs->getArg(0);
 
         // show all config
@@ -335,7 +332,7 @@ class SelfController extends Controller
      */
     public function webuiCommand(FlagsParser $fs, Output $output): void
     {
-        $this->webUi = array_merge($this->webUi, $this->app->getArrayParam('webui'));
+        $this->webUi = array_merge($this->webUi, Kite::config()->getArray('webui'));
         // vdump(BASE_PATH, $this->webUi);
 
         $svrAddr = $fs->getOpt('addr', $this->webUi['addr']);

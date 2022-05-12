@@ -35,7 +35,7 @@ class BranchCreateCmd extends Command
 
     protected function configure(): void
     {
-        $this->initParams(Kite::cliApp()->getArrayParam('gitflow'));
+        $this->initParams(Kite::config()->getArray('gitflow'));
 
         $this->forkRemote = $this->params->getString('forkRemote');
         $this->mainRemote = $this->params->getString('mainRemote');

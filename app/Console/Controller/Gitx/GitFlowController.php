@@ -15,6 +15,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Console\SubCmd\Gitflow\BranchCreateCmd;
 use Inhere\Kite\Helper\GitUtil;
+use Inhere\Kite\Kite;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
 use function array_keys;
@@ -75,7 +76,7 @@ class GitFlowController extends Controller
 
     protected function configure(): void
     {
-        $this->initParams($this->app->getArrayParam('gitflow'));
+        $this->initParams(Kite::config()->getArray('gitflow'));
 
         $this->forkRemote = $this->params->getString('forkRemote');
         $this->mainRemote = $this->params->getString('mainRemote');

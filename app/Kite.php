@@ -22,8 +22,10 @@ use Inhere\Kite\Lib\Jump\QuickJump;
 use Inhere\Route\Dispatcher\Dispatcher;
 use Inhere\Route\Router;
 use Monolog\Logger;
+use PhpPkg\Config\ConfigBox;
 use Toolkit\FsUtil\Dir;
 use Toolkit\Stdlib\Obj\ObjectBox;
+use Toolkit\Stdlib\Util\PhpDotEnv;
 use const BASE_PATH;
 use const IN_PHAR;
 
@@ -57,6 +59,11 @@ class Kite
     private static ?ObjectBox $box = null;
 
     /**
+     * @var ConfigBox|null
+     */
+    private static ?ConfigBox $cfg = null;
+
+    /**
      * @var CliApplication
      */
     private static CliApplication $cliApp;
@@ -84,6 +91,18 @@ class Kite
     }
 
     /**
+     * @return ConfigBox
+     */
+    public static function config(): ConfigBox
+    {
+        if (!self::$cfg) {
+            self::$cfg = new ConfigBox();
+        }
+
+        return self::$cfg;
+    }
+
+    /**
      * @param string $method
      * @param array  $args
      *
@@ -106,6 +125,14 @@ class Kite
     public static function get(string $id): mixed
     {
         return self::box()->get($id);
+    }
+
+    /**
+     * @return PhpDotEnv
+     */
+    public static function dotenv(): PhpDotEnv
+    {
+        return PhpDotEnv::global();
     }
 
     /**

@@ -28,7 +28,7 @@ final class NotFoundListener
      */
     public function __invoke(string $cmd, CliApplication $app): bool
     {
-        $aliases = $app->getArrayParam('aliases');
+        $aliases = Kite::config()->getArray('aliases');
 
         // - is an command alias.
         if ($aliases && isset($aliases[$cmd])) {

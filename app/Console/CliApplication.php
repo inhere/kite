@@ -80,7 +80,7 @@ class CliApplication extends Application
 
         // override logger, add processor
         $box->set('logger', function () {
-            $config = $this->getArrayParam('logger');
+            $config = $this->config()->getArray('logger');
             $logger = new Logger($config['name'] ?? 'kite');
             $logger->pushProcessor(new CliLogProcessor());
 
@@ -90,40 +90,40 @@ class CliApplication extends Application
         }, true);
 
         $box->set('plugManager', function () {
-            $config = $this->getArrayParam('pluginManager');
+            $config = $this->config()->getArray('pluginManager');
             return new PluginManager($config);
         });
 
         $box->set('toolManager', function () {
-            $config = $this->getArrayParam('toolManager');
+            $config = $this->config()->getArray('toolManager');
             return new ToolManager($config);
         });
 
         $box->set('scriptRunner', function () {
-            $config = $this->getArrayParam('scriptRunner');
-            $scripts = $this->getArrayParam('scripts');
+            $config = $this->config()->getArray('scriptRunner');
+            $scripts = $this->config()->getArray('scripts');
 
             // create object
             $sr = new ScriptRunner($config);
             $sr->setScripts($scripts);
-            $sr->scriptDirs = $this->getArrayParam('scriptDirs');
+            $sr->scriptDirs = $this->config()->getArray('scriptDirs');
 
             return $sr;
         });
 
         $box->set('jumper', function () {
-            $jumpConf = $this->getArrayParam('jumper');
+            $jumpConf = $this->config()->getArray('jumper');
             return QuickJump::new($jumpConf);
         });
 
         // auto proxy setting
         $box->set('autoProxy', function () {
-            $autoProxy = $this->getArrayParam('autoProxy');
+            $autoProxy = $this->config()->getArray('autoProxy');
             return AutoSetProxyEnv::new($autoProxy);
         });
 
         // $box->set('envLoader', function () {
-        //     $jumpConf = $this->getArrayParam('osEnv');
+        //     $jumpConf = $this->config()->getArray('osEnv');
         //     return QuickJump::new($jumpConf);
         // });
     }

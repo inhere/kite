@@ -113,7 +113,7 @@ class RunCommand extends Command
 
         // proxy
         $openProxy = $this->flags->getOpt('proxy');
-        $proxyEnv  = $this->app->getArrayParam('proxyEnv');
+        $proxyEnv  = Kite::config()->getArray('proxyEnv');
         if ($openProxy && $proxyEnv) {
             Show::aList($proxyEnv, 'Set Proxy ENV From Config: "proxyEnv"', [
                 'ucFirst'      => false,

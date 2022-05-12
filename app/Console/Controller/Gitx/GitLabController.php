@@ -23,6 +23,7 @@ use Inhere\Kite\Console\Component\RedirectToGitGroup;
 use Inhere\Kite\Console\SubCmd\Gitflow\BranchCreateCmd;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
+use Inhere\Kite\Kite;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
@@ -122,7 +123,7 @@ class GitLabController extends Controller
     protected function beforeRun(): void
     {
         if ($this->app && !$this->settings) {
-            $this->settings = $this->app->getArrayParam('gitlab');
+            $this->settings = Kite::config()->getArray('gitlab');
         }
 
         if ($workdir = $this->flags->getOpt('workdir')) {

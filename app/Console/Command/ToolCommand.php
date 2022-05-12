@@ -16,6 +16,7 @@ use Inhere\Kite\Console\SubCmd\OpenCmd;
 use Inhere\Kite\Console\SubCmd\ToolCmd\HashHmacCommand;
 use Inhere\Kite\Console\SubCmd\ToolCmd\InstallCommand;
 use Inhere\Kite\Console\SubCmd\ToolCmd\ListToolCommand;
+use Inhere\Kite\Console\SubCmd\ToolCmd\LnCommand;
 use Inhere\Kite\Console\SubCmd\ToolCmd\UpdateCommand;
 
 /**
@@ -30,6 +31,7 @@ class ToolCommand extends Command
     {
         return [
             OpenCmd::class,
+            LnCommand::class,
             HashHmacCommand::class,
             InstallCommand::class,
             UpdateCommand::class,

@@ -8,6 +8,7 @@ use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Jenkins\JenkinsClient;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
+use PhpPkg\Config\ConfigBox;
 use PhpPkg\EasyTpl\EasyTemplate;
 use PhpPkg\EasyTpl\TextTemplate;
 use Toolkit\Stdlib\Arr\ArrayHelper;
@@ -88,7 +89,9 @@ trait InitApplicationTrait
         }
 
         $config['__loaded_file'] = $loaded;
-        $this->setParams($config);
+
+        Kite::config()->loadData($config);
+        $this->setParams(Kite::config()->getArray('app'));
     }
 
     /**
@@ -97,7 +100,7 @@ trait InitApplicationTrait
     protected function registerComServices(ObjectBox $box): void
     {
         $box->set('logger', function () {
-            $config = $this->getArrayParam('logger');
+            $config = $this->config()->getArray('logger');
             $logger = new Logger($config['name'] ?? 'kite');
 
             $handler = new RotatingFileHandler($config['logfile']);
@@ -114,19 +117,27 @@ trait InitApplicationTrait
         });
 
         $box->set('glApi', function () {
-            $config = $this->getArrayParam('gitlab');
+            $config = $this->config()->getArray('gitlab');
 
             return new GitLabV4API($config);
         });
 
         $box->set('ghApi', function () {
-            $config = $this->getArrayParam('github');
+            $config = $this->config()->getArray('github');
             return new GitHubV3API($config);
         });
 
         $box->set('jenkins', function () {
-            $config = $this->getArrayParam('jenkins');
+            $config = $this->config()->getArray('jenkins');
             return new JenkinsClient($config);
         });
+    }
+
+    /**
+     * @return ConfigBox
+     */
+    public function config(): ConfigBox
+    {
+        return Kite::config();
     }
 }
