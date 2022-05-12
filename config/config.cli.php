@@ -8,6 +8,10 @@ $basePath = Inhere\Kite\Kite::basePath();
 return [
     // enable interactive
     'no-interactive' => false,
+    'app' => [
+        // enable interactive
+        'no-interactive' => false,
+    ],
 
     // --------- component object config -----------
 

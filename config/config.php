@@ -6,6 +6,7 @@ $basePath = Inhere\Kite\Kite::basePath();
 
 return [
     'app'           => [
+        'rootPath' => BASE_PATH,
     ],
     'logger'        => [
         'name'    => 'Kite',

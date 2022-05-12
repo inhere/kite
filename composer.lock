@@ -803,12 +803,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/inhere/php-console.git",
-                "reference": "b57d62f62f039e083bf5c6312efceb9a630d1161"
+                "reference": "59d0b61443a2ae2a7bfca37513a7509f16565f54"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/inhere/php-console/zipball/b57d62f62f039e083bf5c6312efceb9a630d1161",
-                "reference": "b57d62f62f039e083bf5c6312efceb9a630d1161",
+                "url": "https://api.github.com/repos/inhere/php-console/zipball/59d0b61443a2ae2a7bfca37513a7509f16565f54",
+                "reference": "59d0b61443a2ae2a7bfca37513a7509f16565f54",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -865,9 +865,9 @@
             ],
             "support": {
                 "issues": "https://github.com/inhere/php-console/issues",
-                "source": "https://github.com/inhere/php-console/tree/v4.1.4"
+                "source": "https://github.com/inhere/php-console/tree/master"
             },
-            "time": "2022-05-11T13:52:38+00:00"
+            "time": "2022-05-12T03:36:28+00:00"
         },
         {
             "name": "inhere/sroute",
@@ -3836,16 +3836,16 @@
         },
         {
             "name": "toolkit/stdlib",
-            "version": "v2.0.4",
+            "version": "v2.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/stdlib.git",
-                "reference": "b4e4d00bf30ad77b772d6307e20d4c925ba1cadd"
+                "reference": "3c0bfc6a5f9c187fc5fd075198f48fc43e3d6ca1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/stdlib/zipball/b4e4d00bf30ad77b772d6307e20d4c925ba1cadd",
-                "reference": "b4e4d00bf30ad77b772d6307e20d4c925ba1cadd",
+                "url": "https://api.github.com/repos/php-toolkit/stdlib/zipball/3c0bfc6a5f9c187fc5fd075198f48fc43e3d6ca1",
+                "reference": "3c0bfc6a5f9c187fc5fd075198f48fc43e3d6ca1",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3896,9 +3896,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-toolkit/stdlib/issues",
-                "source": "https://github.com/php-toolkit/stdlib/tree/v2.0.4"
+                "source": "https://github.com/php-toolkit/stdlib/tree/v2.0.6"
             },
-            "time": "2022-04-01T14:14:59+00:00"
+            "time": "2022-05-11T17:21:15+00:00"
         },
         {
             "name": "toolkit/sys-utils",
