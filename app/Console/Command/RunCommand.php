@@ -52,7 +52,7 @@ class RunCommand extends Command
      * @options
      *  -l, --list          List information for all scripts or script files. type: file, cmd(default)
      *  -s, --search        Display all matched scripts by the input name
-     *      --info          Show information for give script name or file
+     *  -i, --info          Show information for give script name or file
      *      --dry-run       bool;Mock running, not real execute.
      *      --proxy         bool;Enable proxy ENV setting
      *
@@ -62,6 +62,7 @@ class RunCommand extends Command
      * @param Input $input
      * @param Output $output
      *
+     * @return int
      * @help
      * <b>TIPs</b>:
      *
@@ -79,7 +80,7 @@ class RunCommand extends Command
      *   # with proxy
      *   {binWithCmd} --proxy hello.sh one two three
      */
-    protected function execute(Input $input, Output $output)
+    protected function execute(Input $input, Output $output): int
     {
         $name = $this->flags->getArg('name');
         $output->info('workdir: ' . $input->getWorkDir());
@@ -87,29 +88,30 @@ class RunCommand extends Command
         $listType = $this->flags->getOpt('list');
         if ($listType === ScriptRunner::TYPE_FILE) {
             $this->listScriptFiles($output, $name);
-            return;
+            return 0;
         }
 
         // support search
         $kw = $this->flags->getOpt('search') ?: $name;
         if ($this->flags->hasInputOpt('search')) {
             $this->searchScripts($output, $kw);
-            return;
+            return 0;
         }
 
         // default list script commands
         if ($listType) {
             $this->listScripts($output, $name);
-            return;
+            return 0;
         }
 
         if (!$name) {
             $output->liteError('please input an name for run or use -l TYPE see all scripts');
-            return;
+            return 0;
         }
 
+        $runner = $this->sr;
         $dryRun = $this->flags->getOpt('dry-run');
-        $this->sr->setDryRun($dryRun);
+        $runner->setDryRun($dryRun);
 
         // proxy
         $openProxy = $this->flags->getOpt('proxy');
@@ -126,28 +128,29 @@ class RunCommand extends Command
         // $runArgs = $this->flags->getRawArgs(); // 会包含 arg: name
         $runArgs = $this->flags->getRemainArgs();
 
-        if (!$this->sr->isScriptName($name)) {
+        if (!$runner->isScriptName($name)) {
             // - found script file
-            if ($scriptFile = $this->sr->findScriptFile($name)) {
-                $this->sr->runScriptFile($scriptFile, $runArgs);
-                return;
+            if ($scriptFile = $runner->findScriptFile($name)) {
+                $runner->runScriptFile($scriptFile, $runArgs);
+                return $runner->getErrCode();
             }
 
             // - is an plugin
             if (Kite::plugManager()->isPlugin($name)) {
                 $output->notice("input is an plugin name, will run plugin: $name");
                 Kite::plugManager()->run($name, $this->app, $runArgs);
-                return;
+                return 0;
             }
 
             // as script expr and run.
-            $this->sr->runInputScript($name);
+            $runner->runInputScript($name);
             // $output->liteError("please input an exists script name for run. ('$name' not exists)");
-            return;
+        } else {
+            // run script by name
+            $runner->runScriptByName($name, $runArgs);
         }
 
-        // run script by name
-        $this->sr->runScriptByName($name, $runArgs);
+       return $runner->getErrCode();
     }
 
     /**

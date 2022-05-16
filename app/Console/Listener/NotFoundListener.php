@@ -47,7 +47,7 @@ final class NotFoundListener
             array_shift($args); // first is script name.
             $app->note("input is an script name, redirect to run script: $cmd, args: " . DataHelper::toString($args));
             $ksr->runScriptByName($cmd, $args);
-
+            $app->setExitCode($ksr->getErrCode());
         } elseif (Kite::plugManager()->isPlugin($cmd)) { // - is an plugin
             array_shift($args); // first is $cmd
             $app->notice("input is an plugin name, will run plugin: $cmd, args: " . DataHelper::toString($args));
@@ -58,6 +58,7 @@ final class NotFoundListener
             $app->notice("input is an script file, will call it: $cmd, args: " . DataHelper::toString($args));
 
             $ksr->runScriptFile($sFile, $args);
+            $app->setExitCode($ksr->getErrCode());
         } else {
             // - call system command.
             $this->callSystemCmd($cmd, $app);
@@ -85,6 +86,7 @@ final class NotFoundListener
         $app->notice("input command is not found, will call system command: $cmdLine");
 
         // call system command
-        CmdRunner::new($cmdLine)->do(true);
+        $cr = CmdRunner::new($cmdLine)->do(true);
+        $app->setExitCode($cr->getCode());
     }
 }

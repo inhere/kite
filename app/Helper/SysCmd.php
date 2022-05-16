@@ -24,8 +24,10 @@ class SysCmd
     /**
      * @param string $command
      * @param string $workDir
+     *
+     * @return int
      */
-    public static function quickExec(string $command, string $workDir = ''): void
+    public static function quickExec(string $command, string $workDir = ''): int
     {
         Color::println("run > $command", 'comment');
 
@@ -44,6 +46,7 @@ class SysCmd
         // if (false === $hasOutput &&$lastLine) {
         //     echo $lastLine . "\n";
         // }
+        return $exitCode;
     }
 
     /**
