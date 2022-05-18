@@ -137,16 +137,16 @@ class GitController extends Controller
     }
 
     /**
-     * @param string $action
+     * @param string $command
      * @param array $args
      *
      * @return bool
      */
-    protected function onNotFound(string $action, array $args): bool
+    protected function onNotFound(string $command, array $args): bool
     {
-        $this->output->info("input command '$action' is not found, will exec git command: `git $action`");
+        $this->output->info("git: input command '$command' is not found, will exec git command: `git $command`");
 
-        $c = Cmd::git($action);
+        $c = Cmd::git($command);
         $c->withIf(fn() => $c->addArgs(...$args), $args);
 
         // if ($args) {

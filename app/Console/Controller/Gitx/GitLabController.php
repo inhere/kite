@@ -138,13 +138,13 @@ class GitLabController extends Controller
     }
 
     /**
-     * @param string $action
+     * @param string $command
      * @param array $args
      *
      * @return bool
      * @throws Throwable
      */
-    protected function onNotFound(string $action, array $args): bool
+    protected function onNotFound(string $command, array $args): bool
     {
         if (!$this->app) {
             return false;
@@ -154,7 +154,7 @@ class GitLabController extends Controller
             'cmdList' => $this->settings['redirectGit'] ?? [],
         ]);
 
-        return $h->handle($this, $action, $args);
+        return $h->handle($this, $command, $args);
     }
 
     /**

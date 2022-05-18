@@ -23,13 +23,13 @@ class RedirectToGitGroup extends AbstractObj
 
     /**
      * @param Controller $ctrl
-     * @param string $action
+     * @param string $command
      * @param array $args
      *
      * @return bool
      * @throws Throwable
      */
-    public function handle(Controller $ctrl, string $action, array $args): bool
+    public function handle(Controller $ctrl, string $command, array $args): bool
     {
         if (!$this->cmdList) {
             return false;
@@ -39,8 +39,7 @@ class RedirectToGitGroup extends AbstractObj
 
         // resolve alias
         $gitCtrl = $app->getController(GitController::getName());
-
-        $action = $gitCtrl->resolveAlias($action);
+        $action = $gitCtrl->resolveAlias($command);
         $group  = $ctrl->getRealGName();
 
         // if $first = *, will redirect all command.
@@ -49,8 +48,8 @@ class RedirectToGitGroup extends AbstractObj
             // auto proxy env
             Kite::autoProxy()->applyProxyEnv($action, $group);
 
-            Cli::info("NOTICE: will redirect to git group for run subcommand: $action");
-            $ctrl->debugf('command %s not found on %s, will redirect to the git group', $action, $group);
+            Cli::info("[NOTE] will redirect to git group and run subcommand: $action");
+            $ctrl->debugf('group: %s - command "%s" not found, will redirect to the git group', $group, $command);
 
             $newArgs = [];
             if ($ctrl->getFlags()->getOpt('dry-run')) {
