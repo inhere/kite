@@ -55,7 +55,7 @@ class DBSchemeSQL
         $tableComment = '';
         $tableEngine  = array_pop($tableRows);
         if (($pos = stripos($tableEngine, ' comment')) !== false) {
-            $tableComment = trim(substr($tableEngine, $pos + 9), ';\'"');
+            $tableComment = trim(substr($tableEngine, $pos + 9), '=;\'"');
         }
 
         $dbt->setTableName($tableName);
@@ -65,6 +65,11 @@ class DBSchemeSQL
         foreach ($tableRows as $row) {
             $row = trim($row, ', ');
             if (!$row) {
+                continue;
+            }
+
+            // eg: "(", ") ENGINE=some"
+            if ($row[0] === '(' || $row[0] === ')') {
                 continue;
             }
 

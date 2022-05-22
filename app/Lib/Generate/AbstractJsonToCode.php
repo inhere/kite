@@ -12,17 +12,11 @@ use function trim;
 abstract class AbstractJsonToCode extends AbstractGenCode
 {
     /**
-     * @var bool
-     */
-    private bool $prepared = false;
-
-    /**
      * Source json(5) codes
      *
      * @var string
      */
     protected string $source = '';
-
 
     /**
      * @var array
@@ -35,33 +29,20 @@ abstract class AbstractJsonToCode extends AbstractGenCode
     // protected array $fields = [];
 
     /**
-     * @return string
-     */
-    public function generate(): string
-    {
-        $this->prepare();
-
-        return $this->renderTplText();
-    }
-
-    /**
      * @return AbstractJsonToCode
      */
     public function prepare(): self
     {
-        if ($this->prepared) {
+        if ($this->isPrepared()) {
             return $this;
         }
 
-        $this->prepared = true;
+        parent::prepare();
 
         $json = $this->source;
         if (!$json = trim($json)) {
             throw new InvalidArgumentException('empty source json(5) data for generate');
         }
-
-        // defaults
-        $this->contexts['className'] = $this->className;
 
         $jd = Json5Data::new()->loadFrom($json);
 

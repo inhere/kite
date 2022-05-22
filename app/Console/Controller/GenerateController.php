@@ -17,9 +17,7 @@ use function date;
 use function explode;
 use function file_get_contents;
 use function implode;
-use function is_string;
 use function parse_ini_string;
-use function strpos;
 use function strtr;
 use function trim;
 

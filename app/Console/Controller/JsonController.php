@@ -277,13 +277,14 @@ class JsonController extends Controller
      * convert JSON(5) object string to PHP/JAVA DTO class.
      *
      * @arguments
-     *  source     The source json contents
+     *  source     The source json contents, allow use @
      *
      * @options
      *  -o, --output               The output target. default is STDOUT.
-     *      --tpl-dir              The custom template file dir.
-     *      --tpl, --tpl-file      The custom template file path.
+     *      --tpl-dir              The custom template file dir path.
+     *      --tpl, --tpl-file      The custom template file name or path.
      *  -t, --type                 string;the generate code language type, allow: java, php;;php
+     *  -c, --ctx                  array;provide context data, allow multi, format KEY:VALUE
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -308,7 +309,7 @@ class JsonController extends Controller
 
         $tplFile = $fs->getOpt('tpl-file');
         if (!$tplFile) {
-            $tplFile = "$tplDir/req-resp-dto.tpl";
+            $tplFile = "$tplDir/dto.tpl";
         }
 
         $config = array_merge($config, array_filter([
@@ -318,13 +319,15 @@ class JsonController extends Controller
 
         $output->aList($config);
 
-        // @user-custom/template/java-service-tpl/req-resp-dto.tpl
+        // @user-custom/template/java-service-tpl/dto.tpl
         $gen = JsonToCode::create($type)
             ->setSource($json)
             ->configThis($config)
+            ->loadVarsFromStrings($fs->getOpt('ctx'))
             ->setPathResolver([Kite::class, 'resolve'])
             ->prepare();
 
+        $output->aList($gen->getContexts(), 'Tpl Contexts');
         $output->aList($gen->getFields(), 'field list');
 
         $result = $gen->generate();

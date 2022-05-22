@@ -8,10 +8,12 @@ use InvalidArgumentException;
 use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Obj;
 use Toolkit\Stdlib\OS;
+use Toolkit\Stdlib\Str;
 use function array_merge;
 use function date;
 use function dirname;
 use function is_file;
+use function strpos;
 
 /**
  * class AbstractGenCode
@@ -53,6 +55,11 @@ abstract class AbstractGenCode
     protected array $fields = [];
 
     /**
+     * @var bool
+     */
+    protected bool $prepared = false;
+
+    /**
      * @return string
      */
     public function getLang(): string
@@ -60,13 +67,38 @@ abstract class AbstractGenCode
         return 'java';
     }
 
+    public function prepareContext(): void
+    {
+        // defaults
+        $this->addContexts([
+            'className' => $this->className,
+            'package'   => 'YOUR.PKG.NAME',
+            'modulePkg' => 'MODULE_PKG',
+            'pkgName'   => 'PKG_NAME',
+        ]);
+    }
+
+    /**
+     * @return AbstractJsonToCode
+     */
+    public function prepare(): self
+    {
+        if ($this->prepared) {
+            return $this;
+        }
+
+        $this->prepared = true;
+        $this->prepareContext();
+
+        return $this;
+    }
+
     /**
      * @return string
      */
     public function generate(): string
     {
-        // defaults
-        $this->contexts['className'] = $this->className;
+        $this->prepare();
 
         return $this->renderTplText();
     }
@@ -144,6 +176,28 @@ abstract class AbstractGenCode
     }
 
     /**
+     * load tpl vars from strings
+     *
+     * - each string format: KEY:VALUE
+     *
+     * @param array $ss
+     *
+     * @return $this
+     */
+    public function loadVarsFromStrings(array $ss): self
+    {
+        foreach ($ss as $kvStr) {
+            if (strpos($kvStr, ':') > 0) {
+                [$key, $value] = Str::explode($kvStr, ':', 2);
+                // set tpl var
+                $this->contexts[$key] = $value;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * @param string $filePath
      *
      * @return string
@@ -167,6 +221,21 @@ abstract class AbstractGenCode
     public function addTplVar(string $name, mixed $value): self
     {
         $this->contexts[$name] = $value;
+        return $this;
+    }
+
+    /**
+     * @param array $contexts
+     *
+     * @return AbstractJsonToCode
+     */
+    public function addContexts(array $contexts): self
+    {
+        foreach ($contexts as $name => $value) {
+            if (!isset($this->contexts[$name])) {
+                $this->contexts[$name] = $value;
+            }
+        }
         return $this;
     }
 
@@ -226,5 +295,21 @@ abstract class AbstractGenCode
         }
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPrepared(): bool
+    {
+        return $this->prepared;
+    }
+
+    /**
+     * @return array
+     */
+    public function getContexts(): array
+    {
+        return $this->contexts;
     }
 }
