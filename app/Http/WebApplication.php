@@ -11,7 +11,6 @@ namespace Inhere\Kite\Http;
 
 use Inhere\Kite\Concern\InitApplicationTrait;
 use Inhere\Kite\Kite;
-use Inhere\Route\Dispatcher\Dispatcher;
 use Inhere\Route\Router;
 use PhpPkg\EasyTpl\EasyTemplate;
 use Throwable;
@@ -76,20 +75,8 @@ class WebApplication
     {
         $this->registerComServices($box);
 
-        $box->set('webRouter', function () {
-            return new Router();
-        });
-
-        $box->set('renderer', function () {
-            $config = $this->config()->getArray('renderer');
-            return new EasyTemplate($config);
-        });
-
-        $box->set('dispatcher', [
-            'class'        => Dispatcher::class,
-            // prop settings
-            'actionSuffix' => '',
-        ]);
+        // register services
+        require 'services.php';
     }
 
     protected function initAppRun(): void
