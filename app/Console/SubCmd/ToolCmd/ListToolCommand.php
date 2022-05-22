@@ -45,6 +45,6 @@ class ListToolCommand extends Command
             return;
         }
 
-        $output->aList($tm->getToolsInfo(), 'Tools');
+        $output->aList($tm->getToolsInfo(), 'Tools management');
     }
 }

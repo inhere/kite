@@ -100,6 +100,7 @@ class RunCommand extends Command
 
         // default list script commands
         if ($listType) {
+            $name = $this->flags->getOpt('info', $name);
             $this->listScripts($output, $name);
             return 0;
         }
@@ -175,10 +176,13 @@ class RunCommand extends Command
     private function listScripts(Output $output, string $name): void
     {
         $listOpt = [
-            'ucFirst' => false,
+            'ucFirst'    => false,
+            'ucTitleWords' => false,
+            'filterEmpty' => true,
         ];
 
         if ($name && $this->sr->isScriptName($name)) {
+            $desc = '';
             $item = $this->sr->getScript($name);
 
             // [_meta => [desc, ]]
@@ -187,15 +191,14 @@ class RunCommand extends Command
                 unset($item['_meta']);
 
                 $desc = $meta['desc'] ?? '';
-                if ($desc) {
-                    $output->colored($desc . "\n", 'cyan');
-                }
+                // $output->colored(ucfirst($desc), 'cyan');
             }
 
             $output->aList([
                 'name'    => $name,
+                'desc'    => $desc,
                 'command' => $item,
-            ], 'script information', $listOpt);
+            ], "Script: $name", $listOpt);
         } else {
             $count = $this->sr->getScriptCount();
             $output->aList($this->sr->getScripts(), "registered scripts(total: $count)", $listOpt);
@@ -208,7 +211,6 @@ class RunCommand extends Command
      */
     private function searchScripts(Output $output, string $kw): void
     {
-        // search
         $matched = $this->sr->searchScripts($kw);
 
         $count = count($matched);

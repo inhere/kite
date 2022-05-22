@@ -100,4 +100,9 @@ return [
     'scripts'       => require 'scripts.php',
     // command aliases. element is: alias command => real command
     'aliases'       => require 'aliases.php',
+    // custom tools management
+    'toolManager'    => [
+        'workdir' => '',
+    ],
+    'tools'   => require 'tools.php',
 ];

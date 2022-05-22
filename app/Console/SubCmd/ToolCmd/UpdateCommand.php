@@ -46,7 +46,7 @@ class UpdateCommand extends Command
         $tool = $tm->getToolModel($name);
 
         $command = 'update';
-        $output->info("Will run '$command' for the tool: $name");
+        $output->info("Will $command the tool: $name");
 
         $cr = $tool->buildCmdRunner($command);
 

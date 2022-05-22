@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use Toolkit\Cli\Cli;
 use Toolkit\Stdlib\Obj;
 use Toolkit\Stdlib\Obj\AbstractObj;
+use function in_array;
 use function is_string;
 use function substr;
 
@@ -18,6 +19,8 @@ use function substr;
  */
 class BinTool extends AbstractObj
 {
+    public const BUILT_IN = ['install', 'update', 'remove'];
+
     public string $name = '';
     public string $desc = '';
 
@@ -25,6 +28,29 @@ class BinTool extends AbstractObj
     public string $homepage = '';
 
     public array $envVars = [];
+
+    /**
+     * @var string[]
+     */
+    protected array $deps = [];
+
+    /**
+     * @var array{run: array, deps: array}
+     * @see ToolCmdMeta
+     */
+    protected array $install = [];
+
+    /**
+     * @var array{run: array, deps: array}
+     * @see ToolCmdMeta
+     */
+    protected array $update = [];
+
+    /**
+     * @var array{run: array, deps: array}
+     * @see ToolCmdMeta
+     */
+    protected array $remove = [];
 
     public array $commands = [];
 
@@ -107,6 +133,7 @@ class BinTool extends AbstractObj
     public function getCommand(string $command): string|array
     {
         $this->mustCommand($command);
+
         return $this->commands[$command];
     }
 
@@ -127,9 +154,23 @@ class BinTool extends AbstractObj
      */
     private function mustCommand(string $command): void
     {
+        if ($this->isBuiltIn($command)) {
+            return;
+        }
+
         if (!isset($this->commands[$command])) {
             throw new InvalidArgumentException("command '$command' is not found in tool: " . $this->name);
         }
+    }
+
+    /**
+     * @param string $cmd
+     *
+     * @return bool
+     */
+    public function isBuiltIn(string $cmd): bool
+    {
+        return in_array($cmd, self::BUILT_IN, true);
     }
 
     /**
@@ -162,4 +203,79 @@ class BinTool extends AbstractObj
     {
         return $this->afterTips[$command] ?? '';
     }
+
+    /**
+     * @param array|string $deps
+     */
+    public function setDeps(array|string $deps): void
+    {
+        $this->deps = (array)$deps;
+    }
+
+    /**
+     * @return array
+     */
+    public function getInstall(): array
+    {
+        return $this->install;
+    }
+
+    /**
+     * @param array|string $install
+     */
+    public function setInstall(array|string $install): void
+    {
+        if (is_string($install)) {
+            $install = [
+                'run' => $install,
+            ];
+        }
+
+        $this->install = $install;
+    }
+
+    /**
+     * @return array
+     */
+    public function getUpdate(): array
+    {
+        return $this->update;
+    }
+
+    /**
+     * @param array|string $update
+     */
+    public function setUpdate(array|string $update): void
+    {
+        if (is_string($update)) {
+            $update = [
+                'run' => $update,
+            ];
+        }
+
+        $this->update = $update;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRemove(): array
+    {
+        return $this->remove;
+    }
+
+    /**
+     * @param array|string $remove
+     */
+    public function setRemove(array|string $remove): void
+    {
+        if (is_string($remove)) {
+            $remove = [
+                'run' => $remove,
+            ];
+        }
+
+        $this->remove = $remove;
+    }
+
 }

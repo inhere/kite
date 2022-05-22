@@ -21,7 +21,7 @@ class InstallCommand extends Command
 
     public static function aliases(): array
     {
-        return ['ins', 'i'];
+        return ['ins', 'in', 'i'];
     }
 
     protected function configure(): void
@@ -57,7 +57,7 @@ class InstallCommand extends Command
         }
 
         $command = 'install';
-        $output->info("Will run '$command' for the tool: $name");
+        $output->info("Will $command the tool: $name");
 
         $cr = $tool->buildCmdRunner($command);
 

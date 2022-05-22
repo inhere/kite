@@ -63,6 +63,11 @@ class ScriptRunner extends AbstractObj
     private bool $enable = true;
 
     /**
+     * @var int exit code of exec script
+     */
+    private int $errCode = 0;
+
+    /**
      * @var array
      */
     private array $envs = [];
@@ -353,7 +358,7 @@ class ScriptRunner extends AbstractObj
         if ($this->dryRun) {
             Cli::colored('DRY-RUN: ' . $command, 'cyan');
         } else {
-            SysCmd::quickExec($command, $workdir);
+            $this->errCode = SysCmd::quickExec($command, $workdir);
         }
 
         if ($onlyOne) {
@@ -605,6 +610,14 @@ class ScriptRunner extends AbstractObj
     public function setEnable(bool|int $enable): void
     {
         $this->enable = (bool)$enable;
+    }
+
+    /**
+     * @return int
+     */
+    public function getErrCode(): int
+    {
+        return $this->errCode;
     }
 
 }
