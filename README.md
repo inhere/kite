@@ -30,15 +30,18 @@ PHP编写的，方便本地开发和使用的个人CLI工具应用。
 curl https://raw.githubusercontent.com/inhere/kite/master/bin/install.sh | bash
 ```
 
-**手动安装(推荐)**
+**手动安装**
 
 ```bash
 cd ~
 git clone https://github.com/inhere/kite .kite
 cd .kite
 composer install
-ln -s $PWD/bin/kite /usr/local/bin/kite
 chmod a+x bin/kite
+cp .kite.example.php .kite.php
+sudo ln -s $PWD/bin/kite /usr/local/bin/kite
+# 检查安装是否成功
+kite --version
 ```
 
 **下载PHAR**

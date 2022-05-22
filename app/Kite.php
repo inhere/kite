@@ -47,8 +47,11 @@ class Kite
 {
     use StaticPathAliasTrait;
 
-    public const VERSION  = '2.0.1';
+    public const VERSION  = '2.2.5';
     public const HOMEPAGE = 'https://github.com/inhere/kite';
+
+    public const PUBLISH_AT  = '2020.05.24';
+    public const UPDATED_AT  = '2022.05.18';
 
     public const MODE_CLI = 'cli';
     public const MODE_WEB = 'web';

@@ -13,7 +13,7 @@
 # TAG=$(tag) # 使用 $(TAG)
 
 # 定义变量
-#SHELL := /bin/bash
+SHELL := /bin/bash
 
 # Full build flags used when building binaries. Not used for test compilation/execution.
 #BUILDFLAGS :=  -ldflags \
@@ -29,6 +29,9 @@ help:
 	@echo "There some make command for the project\n"
 	@echo "Available Commands:"
 	@grep -h -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+install:  ## Clean all created artifacts
+	$(SHELL) ./bin/install.sh
 
 clean:  ## Clean all created artifacts
 	git clean --exclude=.idea/ -fdx

@@ -19,11 +19,9 @@ return [
         'logfile' => BASE_PATH . '/tmp/logs/kite.log',
     ],
     'jumper'         => [
-        'datafile' => __DIR__ . "/tmp/jump-data.$osName.json",
+        'datafile' => BASE_PATH . "/tmp/jump-data.$osName.json",
         'aliases'  => [
             'home'  => '~',
-            'godev' => '~/Workspace/godev',
-            'php'   => '~/Workspace/php',
         ],
     ],
     /** @see \Inhere\Kite\Console\Component\AutoSetProxyEnv */

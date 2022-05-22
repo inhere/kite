@@ -20,5 +20,11 @@ $app->registerGroups('Inhere\\Kite\\Console\\Controller', __DIR__ . '/Controller
 // internal group
 $app->addController(PharController::class);
 
+// load custom commands
+$commands = $app->config()->getArray('commands');
+if ($commands) {
+    $app->addCommands($commands);
+}
+
 // load simple commands.
 require __DIR__ . '/simple-cmds.php';
