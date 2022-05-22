@@ -23,12 +23,12 @@ class FieldItem extends AbstractObj implements JsonSerializable
     /**
      * @var string
      */
-    public string $name;
+    public string $name = '';
 
     /**
      * @var string
      */
-    public string $type;
+    public string $type = '';
 
     /**
      * sub-elem type on type is array

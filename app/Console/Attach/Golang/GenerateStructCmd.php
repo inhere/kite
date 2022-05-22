@@ -14,13 +14,16 @@ use Inhere\Kite\Lib\Parser\Text\Json5ItemParser;
 use Inhere\Kite\Lib\Parser\Text\TextItemParser;
 use Inhere\Kite\Lib\Parser\Text\TextParser;
 use InvalidArgumentException;
+use PhpPkg\Config\ConfigUtil;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\FlagType;
 use Toolkit\PFlag\Validator\EnumValidator;
+use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Util\Stream\ListStream;
 use function array_filter;
 use function array_merge;
+use function get_class;
 use function str_replace;
 
 /**
@@ -31,7 +34,7 @@ use function str_replace;
 class GenerateStructCmd extends Command
 {
     protected static string $name = 'struct';
-    protected static string $desc = 'quick generate an go struct by json, text and more';
+    protected static string $desc = 'quick generate an go struct by json, yaml, text and more';
 
     public static function aliases(): array
     {
@@ -51,14 +54,16 @@ class GenerateStructCmd extends Command
             '--is, --item-sep'        => 'The item sep char. default is NL(newline).',
             '--vn, --value-num'       => 'int;set the item value number(cols number), default get from first item.',
             '--vs, --value-sep'       => 'The item value sep char for "space" parser. default is SPACE',
-            '--parser, --item-parser' => [
+            '-t, --type, --parser'    => [
                 'type'      => FlagType::STRING,
                 'desc'      => 'The item parser name for difference data type.
 TYPE:
   space, text -  parser substr by space, use for text data.
-  json, json5 -  parser json(5) line',
+  json, json5 -  parser json(5) line
+  yaml, yml   -  convert to json then parse.
+',
                 'default'   => 'text',
-                'validator' => EnumValidator::new(['json', 'json5', 'text', 'space'])
+                'validator' => EnumValidator::new(['json', 'json5', 'text', 'space', 'yaml', 'yml'])
             ]
         ]);
 
@@ -94,10 +99,18 @@ TYPE:
             $p->setFields(Str::explode($nameString, ','));
         }
 
-        switch ($fs->getOpt('item-parser')) {
+        switch ($fs->getOpt('parser')) {
+            case 'yml':
+            case 'yaml':
+                $data = ConfigUtil::parseYamlString($source);
+                $p->setText(Json::pretty($data));
+                $itemParser = new Json5ItemParser;
+                $itemParser->setKeyField('name');
+                break;
             case 'json':
             case 'json5':
                 $itemParser = new Json5ItemParser;
+                $itemParser->setKeyField('name');
                 break;
             case 'text':
             case 'space':
@@ -111,6 +124,9 @@ TYPE:
         $p->parse();
         $data = $p->getData(true);
         // $output->aList($data, 'parsed field list');
+        if (!$data) {
+            throw new InvalidArgumentException('no field data collected from the source.');
+        }
 
         $lang = GenCodeFactory::LANG_GO;
 
@@ -126,6 +142,7 @@ TYPE:
         $config = array_merge($config, array_filter([
             'tplDir'  => $tplDir,
             'tplFile' => $tplFile,
+            'parser'  => get_class($itemParser),
         ]));
 
         $output->aList($config);

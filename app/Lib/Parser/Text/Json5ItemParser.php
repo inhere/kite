@@ -2,8 +2,8 @@
 
 namespace Inhere\Kite\Lib\Parser\Text;
 
+use Toolkit\Stdlib\Str;
 use function in_array;
-use function preg_match;
 use function preg_replace;
 use function strpos;
 use function substr;
@@ -11,31 +11,8 @@ use function substr;
 /**
  * class Json5LineParser - parse json5 line, get field and comments
  */
-class Json5ItemParser
+class Json5ItemParser extends JsonItemParser
 {
-    public const KEY_FIELD  = 'field';
-    public const KEY_COMMENT = 'comment';
-
-    /**
-     * exclude fields
-     *
-     * @var array<string>
-     */
-    public array $exclude = [];
-
-    /**
-     * @param array $exclude
-     *
-     * @return static
-     */
-    public static function new(array $exclude = []): self
-    {
-        $self = new self();
-
-        $self->exclude = $exclude;
-        return $self;
-    }
-
     /**
      * @param string $line
      *
@@ -56,6 +33,13 @@ class Json5ItemParser
     {
         $pos = strpos($line, '//');
         if ($pos < 1) {
+            // fallback parse json line
+            if ($matches = self::matchField($line)) {
+                return [
+                    $this->keyField   => $matches[1],
+                    $this->keyComment => Str::toLowerWords($matches[1]),
+                ];
+            }
             return [];
         }
 
@@ -69,24 +53,25 @@ class Json5ItemParser
         }
 
         // match field
-        if (!preg_match('/^\s*[\'"]?([a-zA-Z][\w_]+)/', $line, $matches)) {
+        if (!$matches = self::matchField($line)) {
             return [];
         }
 
-        $field = $matches[0];
-        $item  = [
-            'field' => $field,
-        ];
+        $field = $matches[1];
         if ($this->exclude && in_array($field, $this->exclude, true)) {
             return [];
         }
 
+        $item = [
+            $this->keyField   => $field,
+            $this->keyComment => Str::toLowerWords($field),
+        ];
+
         // get comments
-        if (!$comment = trim(substr($line, $pos + 2))) {
-            return [];
+        if ($comment = trim(substr($line, $pos + 2))) {
+            $item[$this->keyComment] = $comment;
         }
 
-        $item['comment'] = $comment;
         return $item;
     }
 }
