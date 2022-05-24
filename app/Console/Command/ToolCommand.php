@@ -24,6 +24,9 @@ use Inhere\Kite\Console\SubCmd\ToolCmd\UpdateCommand;
  */
 class ToolCommand extends Command
 {
+    public const OPT_DRY_RUN   = 'dry-run';
+    public const OPT_PROXY_ENV = 'proxy-env';
+
     protected static string $name = 'tool';
     protected static string $desc = 'some little tool commands';
 
@@ -41,7 +44,8 @@ class ToolCommand extends Command
 
     protected function configure(): void
     {
-        $this->flags->addOptByRule('dry-run,try', 'bool;Dry-run the workflow, dont real execute');
+        $this->flags->addOptByRule(self::OPT_DRY_RUN . ',try', 'bool;Dry-run the workflow, dont real execute');
+        $this->flags->addOptByRule(self::OPT_PROXY_ENV, 'bool;open proxy env settings on run command');
     }
 
     /**

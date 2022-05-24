@@ -89,14 +89,14 @@ class BinTool extends AbstractObj
     public function run(string $command, CmdRunner $runner): void
     {
         if ($tips = $this->getBeforeTip($command)) {
-            Cli::cyan('Beginning.tips:');
+            Cli::info('Beginning.tips:');
             Cli::writeln($tips);
         }
 
         $runner->runAndPrint();
 
         if ($tips = $this->getAfterTip($command)) {
-            Cli::cyan('Complete.tips:');
+            Cli::magenta("\n[Complete.tips]:");
             Cli::writeln($tips);
         }
     }
@@ -109,17 +109,33 @@ class BinTool extends AbstractObj
     public function getCmdScripts(string $command): string|array
     {
         $this->mustCommand($command);
-        $name = $this->name;
-        $cmd  = $this->commands[$command];
 
+        switch ($command) {
+            case 'install':
+                $info = $this->install;
+                $cmd = $info['run'];
+                break;
+            case 'update':
+                $info = $this->update;
+                $cmd = $info['run'];
+                break;
+            case 'remove':
+                $info = $this->remove;
+                $cmd = $info['run'];
+                break;
+            default:
+                $cmd = $this->commands[$command];
+        }
+
+        $name = $this->name;
         if (is_string($cmd) && str_starts_with($cmd, '@')) {
-            $refCmd = substr($cmd, 1);
-            if (!$this->hasCommand($refCmd)) {
-                throw new InvalidArgumentException("not found refer command '$refCmd' in the tool '$name'");
+            $refName = substr($cmd, 1);
+            if (!$this->isExtraCmd($refName)) {
+                throw new InvalidArgumentException("not found refer command '$refName' in the tool '$name'");
             }
 
-            // use refer command
-            $cmd = $this->commands[$refCmd];
+            // use refer command info
+            $cmd = $this->getCmdScripts($refName);
         }
 
         return $cmd;
@@ -138,12 +154,36 @@ class BinTool extends AbstractObj
     }
 
     /**
+     * @param string $cmd
+     *
+     * @return bool
+     */
+    public function isBuiltIn(string $cmd): bool
+    {
+        return in_array($cmd, self::BUILT_IN, true);
+    }
+
+    /**
+     * @param string $command
+     *
+     * @return bool
+     */
+    public function isExtraCmd(string $command): bool
+    {
+        return isset($this->commands[$command]);
+    }
+
+    /**
      * @param string $command
      *
      * @return bool
      */
     public function hasCommand(string $command): bool
     {
+        if ($this->isBuiltIn($command)) {
+            return true;
+        }
+
         return isset($this->commands[$command]);
     }
 
@@ -161,16 +201,6 @@ class BinTool extends AbstractObj
         if (!isset($this->commands[$command])) {
             throw new InvalidArgumentException("command '$command' is not found in tool: " . $this->name);
         }
-    }
-
-    /**
-     * @param string $cmd
-     *
-     * @return bool
-     */
-    public function isBuiltIn(string $cmd): bool
-    {
-        return in_array($cmd, self::BUILT_IN, true);
     }
 
     /**
@@ -225,7 +255,7 @@ class BinTool extends AbstractObj
      */
     public function setInstall(array|string $install): void
     {
-        if (is_string($install)) {
+        if (is_string($install) || !isset($install['run'])) {
             $install = [
                 'run' => $install,
             ];
@@ -247,7 +277,7 @@ class BinTool extends AbstractObj
      */
     public function setUpdate(array|string $update): void
     {
-        if (is_string($update)) {
+        if (is_string($update) || !isset($update['run'])) {
             $update = [
                 'run' => $update,
             ];
@@ -269,7 +299,7 @@ class BinTool extends AbstractObj
      */
     public function setRemove(array|string $remove): void
     {
-        if (is_string($remove)) {
+        if (is_string($remove) || !isset($remove['run'])) {
             $remove = [
                 'run' => $remove,
             ];

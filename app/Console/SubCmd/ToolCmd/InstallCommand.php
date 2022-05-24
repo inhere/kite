@@ -5,6 +5,7 @@ namespace Inhere\Kite\Console\SubCmd\ToolCmd;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Console\Command\ToolCommand;
 use Inhere\Kite\Console\Manager\ToolManager;
 use Inhere\Kite\Kite;
 use Toolkit\Stdlib\Helper\Assert;
@@ -62,7 +63,11 @@ class InstallCommand extends Command
         $cr = $tool->buildCmdRunner($command);
 
         if ($p = $this->getParent()) {
-            $cr->setDryRun($p->getFlags()->getOpt('dry-run'));
+            $cr->setDryRun($p->getFlags()->getOpt(ToolCommand::OPT_DRY_RUN));
+
+            if ($p->getFlags()->getOpt(ToolCommand::OPT_PROXY_ENV)) {
+                Kite::autoProxy()->directApply($this->getCommandId());
+            }
         }
 
         // $cr->setEnvVars();

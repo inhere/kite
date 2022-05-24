@@ -88,6 +88,21 @@ class AutoSetProxyEnv extends AbstractObj
     }
 
     /**
+     * @param string $cmdId
+     *
+     * @return bool
+     */
+    public function directApply(string $cmdId): bool
+    {
+        if (!$this->envSettings) {
+            return false;
+        }
+
+        $this->setProxyEnv($this->envSettings, $cmdId);
+        return true;
+    }
+
+    /**
      * @param array  $settings
      * @param string $command
      */
