@@ -43,7 +43,6 @@ use function chdir;
 use function implode;
 use function realpath;
 use function sprintf;
-use function str_contains;
 use function strlen;
 use function strpos;
 use function strtolower;
@@ -112,9 +111,9 @@ class GitController extends Controller
     protected function getOptions(): array
     {
         return [
-            '--try,--dry-run'     => 'bool;Dry-run the workflow, dont real execute',
-            '-y, --yes'     => 'bool;Direct execution without confirmation',
-            '-w, --workdir' => 'The command work dir, default is current dir.',
+            '--try,--dry-run' => 'bool;Dry-run the workflow, dont real execute',
+            '-y, --yes'       => 'bool;Direct execution without confirmation',
+            '-w, --workdir'   => 'The command work dir, default is current dir.',
             // '-i, --interactive' => 'Run in an interactive environment[TODO]',
         ];
     }
@@ -202,6 +201,7 @@ class GitController extends Controller
      *
      * @param FlagsParser $fs
      * @param Output $output
+     *
      * @example
      * {binWithCmd} -- -u origin main  # with custom args for call git push
      */
@@ -258,13 +258,12 @@ class GitController extends Controller
      * list branch by git branch
      *
      * @options
-     *  -a, --all          bool;Display all branches
-     *  -r, --remote       Display branches for the given remote
-     *      --only-name    bool;Only display branch name
-     *      --inline       bool;Only display branch name and print inline
-     *  -s, --search       The keyword name for search branches
-     *
-     * @arguments
+     *  -a, --all               bool;Display all branches
+     *  -r, --remote            Display branches for the given remote
+     *  --on, --only-name       bool;Only display branch name
+     *      --inline            bool;Only display branch name and print inline
+     *  -s, --search            The keyword name for search branches, allow multi by comma.
+     *                          Start with ^ for exclude.
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -286,14 +285,22 @@ class GitController extends Controller
 
         $onlyName = $fs->getOpt('only-name');
         $keyword  = $fs->getOpt('search');
+        $keyword  = strlen($keyword) > 1 ? $keyword : '';
 
         $msg = 'Branch List';
         if (strlen($remote) > 1) {
             $msg .= " Of '$remote'";
         }
 
+        $exclude = '';
         if ($keyword) {
             $msg .= "(keyword: $keyword)";
+            if ($keyword[0] === '^') {
+                $exclude = Str::splitTrimmed(substr($keyword, 1));
+                $keyword = '';
+            } else {
+                $keyword = Str::splitTrimmed($keyword);
+            }
         }
 
         $output->colored($msg . ':');
@@ -310,7 +317,14 @@ class GitController extends Controller
                 $name = substr($name, $rmtLen);
             }
 
-            if ($keyword && !str_contains($name, $keyword)) {
+            // 排除匹配
+            if ($exclude) {
+                if (Str::has($name, $exclude)) {
+                    continue;
+                }
+
+                // 包含匹配搜索
+            } elseif ($keyword && !Str::has($name, $keyword)) {
                 continue;
             }
 
