@@ -2684,16 +2684,16 @@
         },
         {
             "name": "symfony/cache",
-            "version": "v6.0.8",
+            "version": "v6.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache.git",
-                "reference": "e9a4e9229f078d93f2c492ea30c3f010373312b7"
+                "reference": "314afa1b7c9e157dbce75221a057428cfeb9c61e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache/zipball/e9a4e9229f078d93f2c492ea30c3f010373312b7",
-                "reference": "e9a4e9229f078d93f2c492ea30c3f010373312b7",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/314afa1b7c9e157dbce75221a057428cfeb9c61e",
+                "reference": "314afa1b7c9e157dbce75221a057428cfeb9c61e",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -2703,7 +2703,7 @@
                 ]
             },
             "require": {
-                "php": ">=8.0.2",
+                "php": ">=8.1",
                 "psr/cache": "^2.0|^3.0",
                 "psr/log": "^1.1|^2|^3",
                 "symfony/cache-contracts": "^1.1.7|^2|^3",
@@ -2738,6 +2738,9 @@
                 "psr-4": {
                     "Symfony\\Component\\Cache\\": ""
                 },
+                "classmap": [
+                    "Traits/ValueWrapper.php"
+                ],
                 "exclude-from-classmap": [
                     "/Tests/"
                 ]
@@ -2763,7 +2766,7 @@
                 "psr6"
             ],
             "support": {
-                "source": "https://github.com/symfony/cache/tree/v6.0.8"
+                "source": "https://github.com/symfony/cache/tree/v6.1.0"
             },
             "funding": [
                 {
@@ -2779,20 +2782,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-04-26T13:22:23+00:00"
+            "time": "2022-05-21T13:34:40+00:00"
         },
         {
             "name": "symfony/cache-contracts",
-            "version": "v3.0.0",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache-contracts.git",
-                "reference": "2f7463f156cf9c665d9317e21a809c3bbff5754e"
+                "reference": "1c0a181c9ee221afe4fa55b2d13fc63c5ae14348"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache-contracts/zipball/2f7463f156cf9c665d9317e21a809c3bbff5754e",
-                "reference": "2f7463f156cf9c665d9317e21a809c3bbff5754e",
+                "url": "https://api.github.com/repos/symfony/cache-contracts/zipball/1c0a181c9ee221afe4fa55b2d13fc63c5ae14348",
+                "reference": "1c0a181c9ee221afe4fa55b2d13fc63c5ae14348",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -2848,7 +2851,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/cache-contracts/tree/v3.0.0"
+                "source": "https://github.com/symfony/cache-contracts/tree/v3.0.1"
             },
             "funding": [
                 {
@@ -2864,20 +2867,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-08-17T15:35:52+00:00"
+            "time": "2022-01-02T09:55:41+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
-            "version": "v3.0.0",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "c726b64c1ccfe2896cb7df2e1331c357ad1c8ced"
+                "reference": "26954b3d62a6c5fd0ea8a2a00c0353a14978d05c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/c726b64c1ccfe2896cb7df2e1331c357ad1c8ced",
-                "reference": "c726b64c1ccfe2896cb7df2e1331c357ad1c8ced",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/26954b3d62a6c5fd0ea8a2a00c0353a14978d05c",
+                "reference": "26954b3d62a6c5fd0ea8a2a00c0353a14978d05c",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -2921,7 +2924,7 @@
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.0.0"
+                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.0.1"
             },
             "funding": [
                 {
@@ -2937,20 +2940,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-11-01T23:48:49+00:00"
+            "time": "2022-01-02T09:55:41+00:00"
         },
         {
             "name": "symfony/expression-language",
-            "version": "v6.0.8",
+            "version": "v6.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/expression-language.git",
-                "reference": "7affe5d5e579cd89c664b364f74ce2d01d57cf29"
+                "reference": "be8d1306b69651b63a80319b2b0972cadc30f2ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/expression-language/zipball/7affe5d5e579cd89c664b364f74ce2d01d57cf29",
-                "reference": "7affe5d5e579cd89c664b364f74ce2d01d57cf29",
+                "url": "https://api.github.com/repos/symfony/expression-language/zipball/be8d1306b69651b63a80319b2b0972cadc30f2ec",
+                "reference": "be8d1306b69651b63a80319b2b0972cadc30f2ec",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -2960,7 +2963,7 @@
                 ]
             },
             "require": {
-                "php": ">=8.0.2",
+                "php": ">=8.1",
                 "symfony/cache": "^5.4|^6.0",
                 "symfony/service-contracts": "^1.1|^2|^3"
             },
@@ -2990,7 +2993,7 @@
             "description": "Provides an engine that can compile and evaluate expressions",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/expression-language/tree/v6.0.8"
+                "source": "https://github.com/symfony/expression-language/tree/v6.1.0"
             },
             "funding": [
                 {
@@ -3006,7 +3009,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-04-12T16:11:42+00:00"
+            "time": "2022-05-27T06:38:45+00:00"
         },
         {
             "name": "symfony/options-resolver",
@@ -3505,16 +3508,16 @@
         },
         {
             "name": "symfony/var-exporter",
-            "version": "v6.0.8",
+            "version": "v6.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-exporter.git",
-                "reference": "74b272979a490747c6775b0228d06cf246306a99"
+                "reference": "51c9947398d4f87f0b5a861999534a95afcd971e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/74b272979a490747c6775b0228d06cf246306a99",
-                "reference": "74b272979a490747c6775b0228d06cf246306a99",
+                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/51c9947398d4f87f0b5a861999534a95afcd971e",
+                "reference": "51c9947398d4f87f0b5a861999534a95afcd971e",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3563,7 +3566,7 @@
                 "serialize"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-exporter/tree/v6.0.8"
+                "source": "https://github.com/symfony/var-exporter/tree/v6.0.9"
             },
             "funding": [
                 {
@@ -3579,7 +3582,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-04-26T13:22:23+00:00"
+            "time": "2022-05-21T13:33:31+00:00"
         },
         {
             "name": "symfony/yaml",
