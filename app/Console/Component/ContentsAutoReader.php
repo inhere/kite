@@ -14,7 +14,7 @@ use function is_file;
 use function stream_get_contents;
 use function stream_set_blocking;
 use function substr;
-use function vdump;
+use function trim;
 
 /**
  * class ContentsAutoReader
@@ -100,6 +100,9 @@ class ContentsAutoReader extends AbstractObj
                 }
             }
         }
+
+        // trim contents.
+        $str = trim($str);
 
         if (($opts['throwOnEmpty'] ?? true) && !$str) {
             throw new InvalidArgumentException('Nothing contents was read');

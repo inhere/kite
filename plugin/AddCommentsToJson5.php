@@ -20,7 +20,7 @@ class AddCommentsToJson5 extends AbstractPlugin
     {
         return [
             'desc'    => 'add field comments for text(eg: json5) contents',
-            'example' => 'kite plug AddComments2Json -- -h'
+            'example' => 'kite plug ${plugName} -- -h'
         ];
     }
 

@@ -93,7 +93,7 @@ class ContentsAutoWriter
             $filepath = Kite::resolve($this->output);
 
             // write
-            File::mkdirSave($contents, $filepath);
+            File::mkdirSave($filepath, $contents);
         }
 
         return $ok;
