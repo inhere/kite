@@ -150,6 +150,10 @@ class GitLabController extends Controller
             return false;
         }
 
+        if (in_array($command, ['ac', 'acp'], true)) {
+            // deny commit message.
+        }
+
         $h = RedirectToGitGroup::new([
             'cmdList' => $this->settings['redirectGit'] ?? [],
         ]);

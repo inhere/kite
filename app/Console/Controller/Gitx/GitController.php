@@ -39,7 +39,6 @@ use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Proc\ProcTasks;
 use function abs;
 use function array_keys;
-use function chdir;
 use function implode;
 use function realpath;
 use function sprintf;
@@ -127,7 +126,7 @@ class GitController extends Controller
         if ($workdir = $this->flags->getOpt('workdir')) {
             $workdir = realpath($workdir);
             $this->output->info('Change workdir to: ' . $workdir);
-            chdir($workdir);
+            $this->input->chWorkDir($workdir);
         } else {
             $workdir = $this->input->getWorkDir();
         }
@@ -160,9 +159,6 @@ class GitController extends Controller
     /**
      * update codes from origin by git pull
      *
-     * @options
-     *  --dir       The want updated git repo dir. default is workdir
-     *
      * @arguments
      *  gitArgs  Input more args or opts for run git
      *
@@ -178,11 +174,11 @@ class GitController extends Controller
     public function updateCommand(FlagsParser $fs, Input $input, Output $output): void
     {
         $args = $fs->getRawArgs();
-        $dir  = $fs->getOpt('dir') ?: $this->getWorkDir();
-        Assert::isDir($dir . '/.git', "$dir is not a git dir");
+        $dir  = $this->getFlags()->getOpt('workdir', $this->getWorkDir());
+        Assert::isDir('.git', "$dir is not a git dir");
 
         $c = Cmd::git('pull');
-        $c->setWorkDir($dir);
+        // $c->setWorkDir($dir);
         $c->setDryRun($this->flags->getOpt('dry-run'));
         $c->addArgs(...$args);
         $c->run(true);
@@ -192,9 +188,6 @@ class GitController extends Controller
 
     /**
      * push codes to origin by `git push`
-     *
-     * @options
-     *  --dir       The git repo dir. default is workdir
      *
      * @arguments
      *  gitArgs  Input more args or opts for run git
@@ -208,11 +201,11 @@ class GitController extends Controller
     public function pushCommand(FlagsParser $fs, Output $output): void
     {
         $args = $fs->getRawArgs();
-        $dir  = $fs->getOpt('dir') ?: $this->getWorkDir();
-        Assert::isDir($dir . '/.git', "$dir is not a git dir");
+        $dir  = $this->getFlags()->getOpt('workdir', $this->getWorkDir());
+        Assert::isDir('.git', "$dir is not a git dir");
 
         $c = Cmd::git('push')
-            ->setWorkDir($dir)
+            // ->setWorkDir($dir)
             ->setDryRun($this->flags->getOpt('dry-run'))
             ->addArgs(...$args);
         $c->run(true);
@@ -246,6 +239,7 @@ class GitController extends Controller
      */
     public function infoCommand(FlagsParser $fs, Output $output): void
     {
+        // $dir  = $this->getFlags()->getOpt('workdir');
         $repo = Repo::new();
         $repo->setPrintCmd($fs->getOpt('show-commands'));
 
@@ -271,6 +265,7 @@ class GitController extends Controller
     public function branchCommand(FlagsParser $fs, Output $output): void
     {
         $opts = [];
+        // $dir  = $this->getFlags()->getOpt('workdir');
         $repo = Repo::new();
 
         $remote = '';
