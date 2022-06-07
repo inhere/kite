@@ -6,6 +6,7 @@ use Exception;
 use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Console\SubCmd\ToolCmd\HashCommand;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
 use PhpPkg\EasyTpl\TextTemplate;
@@ -46,6 +47,12 @@ class GenerateController extends Controller
         ];
     }
 
+    protected function subCommands(): array
+    {
+        return [
+            HashCommand::class,
+        ];
+    }
     /**
      * @param Output $output
      */
@@ -179,8 +186,8 @@ class GenerateController extends Controller
      * generate an random string.
      *
      * @options
-     *  -l, --length        The string length. default: 12
-     *  -n, --number        The number of generated strings. default: 1
+     *  -l, --length        int;The string length. default: 12
+     *  -n, --number        int;The number of generated strings. default: 1
      *  -t, --template      The sample template name. allow: alpha, alpha_num, alpha_num_c
      *
      * @param FlagsParser $fs

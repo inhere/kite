@@ -12,6 +12,7 @@ namespace Inhere\Kite\Console\Controller;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
+use Inhere\Kite\Console\SubCmd\OpenUrlCmd;
 use Inhere\Kite\Console\SubCmd\ParseUrlQueryCmd;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str\UrlHelper;
@@ -31,8 +32,9 @@ class HttpController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'bulk2query' => ['2query', 'to-query'],
-            'dequery'    => ParseUrlQueryCmd::aliases(),
+            'bulk2query'          => ['2query', 'to-query'],
+            'dequery'             => ParseUrlQueryCmd::aliases(),
+            OpenUrlCmd::getName() => ['open', 'open-url'],
         ];
     }
 
@@ -40,6 +42,7 @@ class HttpController extends Controller
     {
         return [
             ParseUrlQueryCmd::class,
+            OpenUrlCmd::class,
         ];
     }
 
