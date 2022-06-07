@@ -52,9 +52,9 @@ class RunCommand extends Command
      * @options
      *  -l, --list          List information for all scripts or script files. type: file, cmd(default)
      *  -s, --search        Display all matched scripts by the input name
-     *  -i, --info          Show information for give script name or file
+     *  -i, --info          Show information for give script name or script file
      *      --dry-run       bool;Mock running, not real execute.
-     *      --proxy         bool;Enable proxy ENV setting
+     *  -p, --proxy         bool;Enable proxy ENV setting
      *
      * @arguments
      *  name        The script/plugin name for execute.
@@ -64,9 +64,9 @@ class RunCommand extends Command
      *
      * @return int
      * @help
-     * <b>TIPs</b>:
+     * <cyan>TIPS</cyan>:
      *
-     * - you can load boot file, allow use all class in the kite.
+     * - In php script, you can load boot file, to use all kite class in the file.
      *
      * ```php
      * // load kite boot file, allow use all class in the kite.
@@ -76,6 +76,13 @@ class RunCommand extends Command
      * ```
      *
      * @example
+     *   {binWithCmd} -l cmd
+     *   {binWithCmd} -l cmd KEYWORDS
+     *   {binWithCmd} -l file
+     *   {binWithCmd} -l file KEYWORDS
+     *   # run script
+     *   {binWithCmd} script-name
+     *   # run script file with args
      *   {binWithCmd} hello.sh one two three 'a b c'
      *   # with proxy
      *   {binWithCmd} --proxy hello.sh one two three
@@ -85,21 +92,27 @@ class RunCommand extends Command
         $name = $this->flags->getArg('name');
         $output->info('workdir: ' . $input->getWorkDir());
 
-        $listType = $this->flags->getOpt('list');
-        if ($listType === ScriptRunner::TYPE_FILE) {
-            $this->listScriptFiles($output, $name);
+        if ($this->flags->hasInputOpt('list')) {
+            $listType = $this->flags->getOpt('list', 'cmd');
+
+            if ($listType === ScriptRunner::TYPE_FILE) {
+                $this->listScriptFiles($output, $name);
+            } else {
+                $this->listScripts($output, $name);
+            }
+
             return 0;
         }
 
         // support search
-        $kw = $this->flags->getOpt('search') ?: $name;
         if ($this->flags->hasInputOpt('search')) {
+            $kw = $this->flags->getOpt('search') ?: $name;
             $this->searchScripts($output, $kw);
             return 0;
         }
 
         // default list script commands
-        if ($listType) {
+        if ($this->flags->hasInputOpt('info')) {
             $name = $this->flags->getOpt('info', $name);
             $this->listScripts($output, $name);
             return 0;

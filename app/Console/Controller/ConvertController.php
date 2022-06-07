@@ -294,6 +294,9 @@ class ConvertController extends Controller
             }
         }
 
+        $output->info('Input Data:');
+        $output->writeRaw($args);
+
         $data = [];
         foreach ($args as $time) {
             if (strlen($time) > 10) {
@@ -318,6 +321,7 @@ class ConvertController extends Controller
             ];
         }
 
+        $output->info('Parsed Result:');
         $output->colored('- Current Time: ' . date('Y-m-d H:i:s'));
         // opts
         $output->table($data, 'Time to date', []);

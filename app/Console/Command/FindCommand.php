@@ -77,7 +77,10 @@ class FindCommand extends Command
      *
      * @return int
      * @example
-     * {binWithCmd} --nr -e 'cd {path}; git status' .
+     * # list sub dirs
+     * {binWithCmd} -t dir --nr .
+     * # list sub dirs and run command
+     * {binWithCmd} -t dir --nr -e 'cd {path}; git status' .
      */
     protected function execute(Input $input, Output $output): int
     {
