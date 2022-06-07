@@ -16,6 +16,7 @@ use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Console\Component\ContentsAutoWriter;
 use Inhere\Kite\Console\SubCmd\ParseUrlQueryCmd;
+use Inhere\Kite\Console\SubCmd\ToolCmd\HashCommand;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\KiteUtil;
 use Inhere\Kite\Kite;
@@ -88,6 +89,7 @@ class StringController extends Controller
     {
         return [
             ParseUrlQueryCmd::class,
+            HashCommand::class,
         ];
     }
 

@@ -13,6 +13,7 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\SubCmd\OpenCmd;
+use Inhere\Kite\Console\SubCmd\ToolCmd\HashCommand;
 use Inhere\Kite\Console\SubCmd\ToolCmd\HashHmacCommand;
 use Inhere\Kite\Console\SubCmd\ToolCmd\InstallCommand;
 use Inhere\Kite\Console\SubCmd\ToolCmd\ListToolCommand;
@@ -36,6 +37,7 @@ class ToolCommand extends Command
             OpenCmd::class,
             LnCommand::class,
             HashHmacCommand::class,
+            HashCommand::class,
             InstallCommand::class,
             UpdateCommand::class,
             ListToolCommand::class,
