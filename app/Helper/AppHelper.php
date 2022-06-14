@@ -5,12 +5,9 @@ namespace Inhere\Kite\Helper;
 use ArrayAccess;
 use Closure;
 use Inhere\Console\Util\Show;
-use Inhere\Kite\Console\Component\Clipboard;
+use Inhere\Kite\Common\GitLocal\GitLab;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Kite;
-use Toolkit\Cli\Cli;
-use Toolkit\FsUtil\File;
-use Toolkit\Stdlib\OS;
 use Toolkit\Sys\Sys;
 use function array_filter;
 use function array_shift;
@@ -21,16 +18,11 @@ use function explode;
 use function getenv;
 use function implode;
 use function is_array;
-use function is_file;
 use function is_object;
 use function random_int;
 use function strlen;
 use function strpos;
-use function substr;
-use function trim;
-use function vdump;
 use const IN_PHAR;
-use const STDIN;
 
 /**
  * Class AppHelper
@@ -262,5 +254,15 @@ class AppHelper
             $values[] = implode(' ', $others);
             return $values;
         };
+    }
+
+    /**
+     * @return GitLab
+     */
+    public static function newGitlab(): GitLab
+    {
+        $settings = Kite::config()->getArray('gitlab');
+
+        return GitLab::new(Kite::cliApp()->getOutput(), $settings);
     }
 }
