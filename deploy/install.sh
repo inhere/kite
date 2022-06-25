@@ -3,6 +3,7 @@
 # This is an script for install inhere/kite
 # More please see https://github.com/inhere/kite
 #
+# local run: bash ./deploy/install.sh
 set -e
 
 INSTALL_DIR=~
@@ -11,12 +12,28 @@ CLONE_DIR=.kite
 # goto user home dir.
 cd $INSTALL_DIR || exit
 
+echo "🔄 Check install depends: git, php, composer"
+if ! [ -x "$(command -v git)" ]; then
+  echo '🔴 Error: git is not installed.'
+  exit 1
+fi
+
+if ! [ -x "$(command -v php5)" ]; then
+  echo '🔴 Error: php is not installed.'
+  exit 1
+fi
+
+if ! [ -x "$(command -v composer)" ]; then
+  echo '🔴 Error: composer is not installed.'
+  exit 1
+fi
+
 if [ -d "$INSTALL_DIR/$CLONE_DIR"/bin ]; then
-    echo "- 🙈 SKIP install, the kite dir exists"
+    echo "🙈 SKIP install, the kite dir exists"
     exit
 fi
 
-echo "🟢  Fetch kite codes by git"
+echo "🟢  Fetch kite codes by git clone"
 # download tool by git clone
 git clone https://github.com/inhere/kite $CLONE_DIR
 

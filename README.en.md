@@ -23,10 +23,10 @@ Kite is a tool for help development.
 
 ### Install by script
 
-> file: [bin/install.sh](bin/install.sh)
+> file: [deploy/install.sh](deploy/install.sh)
 
 ```bash
-curl https://raw.githubusercontent.com/inhere/kite/master/bin/install.sh | bash
+curl https://raw.githubusercontent.com/inhere/kite/master/deploy/install.sh | bash
 ```
 
 ### Manual clone
