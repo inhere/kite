@@ -18,6 +18,7 @@ use Inhere\Kite\Common\Cmd;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitLab;
 use Inhere\Kite\Console\Attach\Gitlab\BranchCmd;
+use Inhere\Kite\Console\Attach\Gitlab\BranchDeleteCmd;
 use Inhere\Kite\Console\Attach\Gitlab\MergeRequestCmd;
 use Inhere\Kite\Console\Attach\Gitlab\ProjectCmd;
 use Inhere\Kite\Console\Component\RedirectToGitGroup;
@@ -31,14 +32,12 @@ use function chdir;
 use function date;
 use function explode;
 use function http_build_query;
-use function implode;
 use function in_array;
 use function parse_str;
 use function realpath;
 use function sprintf;
 use function str_contains;
 use function str_starts_with;
-use function strpos;
 use function trim;
 
 /**
@@ -149,7 +148,7 @@ class GitLabController extends Controller
         }
 
         if (in_array($command, ['ac', 'acp'], true)) {
-            // deny commit message.
+            // TODO deny commit message.
         }
 
         $h = RedirectToGitGroup::new([
@@ -415,74 +414,13 @@ class GitLabController extends Controller
      *
      * @param FlagsParser $fs
      * @param Output $output
+     *
+     * @throws Throwable
      */
     public function deleteBranchCommand(FlagsParser $fs, Output $output): void
     {
-        $names = $fs->getArg('branches');
-        if (!$names) {
-            throw new PromptException('please input an branch name');
-        }
-
-        $gitlab  = $this->getGitlab();
-        $force   = $fs->getOpt('force');
-        $notMain = $fs->getOpt('not-main');
-        $dryRun  = $this->flags->getOpt('dry-run');
-
-        $deletedNum = 0;
-        $mainRemote = $gitlab->getMainRemote();
-        $output->colored('Will deleted: ' . implode(',', $names));
-        foreach ($names as $name) {
-            if (strpos($name, ',') > 0) {
-                $nameList = Str::explode($name, ',');
-            } else {
-                $nameList = [$name];
-            }
-
-            foreach ($nameList as $brName) {
-                $deletedNum++;
-                $run = CmdRunner::new();
-                $run->setDryRun($dryRun);
-
-                if ($force) {
-                    $run->setIgnoreError(true);
-                }
-
-                $this->doDeleteBranch($brName, $mainRemote, $run, $notMain);
-            }
-        }
-
-        // $output->info('update git branch list after deleted');
-        // git fetch main --prune
-        // $run = CmdRunner::new();
-        // $run->add('git fetch origin --prune');
-        // $run->addf('git fetch %s --prune', $mainRemote);
-        // $run->run(true);
-
-        $output->success('Completed. Total delete: ' . $deletedNum);
-    }
-
-    /**
-     * @param string $name
-     * @param string $mainRemote
-     * @param CmdRunner $run
-     * @param bool $notMain
-     */
-    protected function doDeleteBranch(string $name, string $mainRemote, CmdRunner $run, bool $notMain): void
-    {
-        $this->output->title("delete the branch: $name", [
-            'indent' => 0,
-        ]);
-
-        $run->addf('git branch --delete %s', $name);
-        // git push origin --delete BRANCH
-        $run->addf('git push origin --delete %s', $name);
-
-        if (false === $notMain) {
-            // git push main --delete BRANCH
-            $run->addf('git push %s --delete %s', $mainRemote, $name);
-        }
-
-        $run->run(true);
+        $bcCmd = new BranchDeleteCmd($this->input, $output);
+        $bcCmd->run($fs->getFlags());
     }
 
     /**

@@ -15,7 +15,7 @@ use Toolkit\PFlag\FlagsParser;
 class BranchDeleteCmd extends Command
 {
     protected static string $name = 'delete';
-    protected static string $desc = 'delete git branches from local, origin, main remote';
+    protected static string $desc = 'quick delete git branches from local, origin, main remote';
 
     public static function aliases(): array
     {

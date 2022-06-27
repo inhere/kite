@@ -11,7 +11,7 @@ use Inhere\Console\IO\Output;
  *
  * @package Inhere\Kite\Console\Controller\Gitlab
  */
-class ProjectInit extends Command
+class ProjectInitCmd extends Command
 {
     protected static string $name = 'init';
     protected static string $desc = 'init a gitlab project information';

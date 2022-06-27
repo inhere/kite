@@ -15,7 +15,7 @@ use Toolkit\PFlag\FlagsParser;
 class BranchInitCmd extends Command
 {
     protected static string $name = 'init';
-    protected static string $desc = 'quick init testing, qa, pre branches for gitlab project';
+    protected static string $desc = 'quick init defined branches for gitlab project';
 
     protected function configFlags(FlagsParser $fs): void
     {

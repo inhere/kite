@@ -1,23 +1,21 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Console\Attach\Gitlab;
+namespace Inhere\Kite\Console\SubCmd;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Console\SubCmd\Gitflow\BranchCreateCmd;
 use Inhere\Kite\Console\SubCmd\Gitflow\BranchListCmd;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
 
 /**
- * Class BranchCreateCmd
- *
+ * Class BranchCmd
  */
 class BranchCmd extends Command
 {
     protected static string $name = 'branch';
-    protected static string $desc = 'git branch manage for gitlab project';
+    protected static string $desc = 'git branch manage tool command';
 
     public static function aliases(): array
     {
@@ -27,10 +25,7 @@ class BranchCmd extends Command
     protected function subCommands(): array
     {
         return [
-            BranchInitCmd::class,
-            BranchCreateCmd::class,
             BranchListCmd::class,
-            BranchDeleteCmd::class,
         ];
     }
 

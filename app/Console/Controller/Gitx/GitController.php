@@ -18,6 +18,7 @@ use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Manager\GitBranchManager;
+use Inhere\Kite\Console\SubCmd\BranchCmd;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use Inhere\Kite\Kite;
@@ -38,14 +39,11 @@ use Toolkit\Stdlib\Obj\DataObject;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Proc\ProcTasks;
 use function abs;
-use function array_keys;
 use function implode;
 use function realpath;
 use function sprintf;
 use function strlen;
-use function strpos;
 use function strtolower;
-use function substr;
 use function trim;
 
 /**
@@ -101,6 +99,16 @@ class GitController extends Controller
             ],
             'tagList'      => ['tag', 'tags', 'tl', 'taglist'],
             'tagInfo'      => ['tag-info', 'ti', 'tag-show'],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    protected function subCommands(): array
+    {
+        return [
+            BranchCmd::class,
         ];
     }
 
@@ -246,94 +254,6 @@ class GitController extends Controller
         $output->aList($repo->getInfo(), 'Project Info', [
             'ucFirst' => false,
         ]);
-    }
-
-    /**
-     * list branch by git branch
-     *
-     * @options
-     *  -a, --all               bool;Display all branches
-     *  -r, --remote            Display branches for the given remote
-     *  --on, --only-name       bool;Only display branch name
-     *      --inline            bool;Only display branch name and print inline
-     *  -s, --search            The keyword name for search branches, allow multi by comma.
-     *                          Start with ^ for exclude.
-     *
-     * @param FlagsParser $fs
-     * @param Output $output
-     */
-    public function branchCommand(FlagsParser $fs, Output $output): void
-    {
-        $opts = [];
-        // $dir  = $this->getFlags()->getOpt('workdir');
-        $repo = Repo::new();
-
-        $remote = '';
-        $inline = $fs->getOpt('inline');
-        if ($fs->getOpt('all')) {
-            $opts['all'] = true;
-        } elseif ($remote = $fs->getOpt('remote')) {
-            $opts['remotes'] = true;
-        }
-
-        $list = $repo->getGit()->branch->getList($opts);
-
-        $onlyName = $fs->getOpt('only-name');
-        $keyword  = $fs->getOpt('search');
-        $keyword  = strlen($keyword) > 1 ? $keyword : '';
-
-        $msg = 'Branch List';
-        if (strlen($remote) > 1) {
-            $msg .= " Of '$remote'";
-        }
-
-        $exclude = '';
-        if ($keyword) {
-            $msg .= "(keyword: $keyword)";
-            if ($keyword[0] === '^') {
-                $exclude = Str::splitTrimmed(substr($keyword, 1));
-                $keyword = '';
-            } else {
-                $keyword = Str::splitTrimmed($keyword);
-            }
-        }
-
-        $output->colored($msg . ':');
-
-        $matched = [];
-        $rmtLen  = strlen($remote) + 1;
-        foreach ($list as $name => $item) {
-            if ($remote) {
-                $pos = strpos($name, $remote . '/');
-                if ($pos !== 0) {
-                    continue;
-                }
-
-                $name = substr($name, $rmtLen);
-            }
-
-            // 排除匹配
-            if ($exclude) {
-                if (Str::has($name, $exclude)) {
-                    continue;
-                }
-
-                // 包含匹配搜索
-            } elseif ($keyword && !Str::has($name, $keyword)) {
-                continue;
-            }
-
-            $matched[$name] = $item;
-        }
-
-        // \vdump($keyword, $remote, $list);
-        if ($inline) {
-            $output->println(implode(',', array_keys($matched)));
-        } elseif ($onlyName) {
-            $output->println(array_keys($matched));
-        } else {
-            $output->table($matched, 'Git Branches');
-        }
     }
 
     /**
@@ -870,7 +790,6 @@ class GitController extends Controller
      */
     public function changelogCommand(FlagsParser $fs, Output $output): void
     {
-        $builder = Git::new()->newCmd('log');
         // see https://devhints.io/git-log-format
         // useful options:
         // --no-merges
@@ -886,6 +805,8 @@ class GitController extends Controller
             $fetch->addArgs('--force');
             $fetch->runAndPrint();
         }
+
+        $builder = $repo->newCmd('log');
 
         // git log v1.0.7...v1.0.8 --pretty=format:'<project>/commit/%H %s' --reverse
         // git log v1.0.7...v1.0.7 --pretty=format:'<li> <a href="https://github.com/inhere/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse
