@@ -9,6 +9,7 @@
 
 namespace Inhere\Kite\Helper;
 
+use Inhere\Kite\Common\Cmd;
 use Inhere\Kite\Common\CmdRunner;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Sys;
@@ -64,6 +65,29 @@ class GitUtil
         }
 
         return 'v' . $tag;
+    }
+
+    /**
+     * match branch by `git branch -a | grep $branch`
+     *
+     * **Examples:**
+     *
+     * ```text
+     * * br1
+     *   remotes/main/br1
+     *   remotes/origin/br1
+     * ```
+     *
+     * @param string $branch
+     *
+     * @return array
+     */
+    public static function matchBranch(string $branch): array
+    {
+        return Cmd::new()
+            ->setCmdline("git branch -a | grep $branch")
+            ->run()
+            ->getOutputLines();
     }
 
     /**

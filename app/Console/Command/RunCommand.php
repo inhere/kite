@@ -55,6 +55,7 @@ class RunCommand extends Command
      *  -i, --info          Show information for give script name or script file
      *      --dry-run       bool;Mock running, not real execute.
      *  -p, --proxy         bool;Enable proxy ENV setting
+     *  -w, --workdir       change the workdir
      *
      * @arguments
      *  name        The script/plugin name for execute.
@@ -89,9 +90,13 @@ class RunCommand extends Command
      */
     protected function execute(Input $input, Output $output): int
     {
-        $name = $this->flags->getArg('name');
-        $output->info('workdir: ' . $input->getWorkDir());
+        $workdir = $this->flags->getOpt('workdir');
+        if ($workdir) {
+            $input->chWorkDir($workdir);
+        }
+        $output->info('Workdir: ' . $input->getWorkDir());
 
+        $name = $this->flags->getArg('name');
         if ($this->flags->hasInputOpt('list')) {
             $listType = $this->flags->getOpt('list', 'cmd');
 

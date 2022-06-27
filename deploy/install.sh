@@ -18,7 +18,7 @@ if ! [ -x "$(command -v git)" ]; then
   exit 1
 fi
 
-if ! [ -x "$(command -v php5)" ]; then
+if ! [ -x "$(command -v php)" ]; then
   echo '🔴 Error: php is not installed.'
   exit 1
 fi
