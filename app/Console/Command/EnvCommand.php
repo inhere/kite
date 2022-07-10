@@ -14,6 +14,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Toolkit\Stdlib\OS;
 use function is_scalar;
+use function ucfirst;
 
 /**
  * Class DemoCommand
@@ -53,8 +54,12 @@ class EnvCommand extends Command
         if ($name) {
             $value = null;
             $upKey = strtoupper($name);
+            // fix: in windows, ENV 'PATH' is 'Path'
+            $upFKey = ucfirst($name);
             if (isset($_SERVER[$upKey])) {
                 $value = $_SERVER[$upKey];
+            } elseif (isset($_SERVER[$upFKey])) {
+                $value = $_SERVER[$upFKey];
             } elseif (isset($_SERVER[$name])) {
                 $value = $_SERVER[$name];
             }
