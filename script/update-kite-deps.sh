@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
 
 # run: kite run --proxy update-kite-deps.sh
-# run: sh script/update-kite-deps.sh
+# run: bash script/update-kite-deps.sh
 
 set -e
-tmpKiteDir=~/Workspace/my-github/inhere/kite
+#tmpKiteDir=~/Workspace/my-github/inhere/kite
+# windows
+tmpKiteDir=/f/work/php/inhere/kite-tmp
 usrKiteDir=~/.kite
 
 set -x
-kite env prox
+#kite env prox
 cd $tmpKiteDir || exit 2
 git checkout .
 git pull
-composer update --no-progress
+composer update --no-progress --ignore-platform-req=ext-posix
 set +x
 
 echo "✅  Update composer.lock"
