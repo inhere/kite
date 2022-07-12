@@ -19,6 +19,7 @@ use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Manager\GitBranchManager;
 use Inhere\Kite\Console\SubCmd\BranchCmd;
+use Inhere\Kite\Console\SubCmd\GitTagCmd;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use Inhere\Kite\Kite;
@@ -97,7 +98,6 @@ class GitController extends Controller
                 'tp',
                 'tag-push',
             ],
-            'tagList'      => ['tag', 'tags', 'tl', 'taglist'],
             'tagInfo'      => ['tag-info', 'ti', 'tag-show'],
         ];
     }
@@ -109,6 +109,7 @@ class GitController extends Controller
     {
         return [
             BranchCmd::class,
+            GitTagCmd::class,
         ];
     }
 
@@ -428,29 +429,6 @@ class GitController extends Controller
     }
 
     /**
-     * list all git tags for the project
-     *
-     * @arguments
-     *  keywords    Filter by input keywords
-     *
-     * @param FlagsParser $fs
-     * @param Output $output
-     */
-    public function tagListCommand(FlagsParser $fs, Output $output): void
-    {
-        // git tag --sort=-creatordate 倒序排列
-        $cmd = 'git tag -l -n2';
-        $kw  = $fs->getArg(0);
-        if ($kw) {
-            $cmd .= " | grep $kw";
-        }
-
-        CmdRunner::new($cmd)->do(true);
-
-        $output->success('Complete');
-    }
-
-    /**
      * display git tag information by `git show TAG`
      *
      * @arguments
@@ -477,6 +455,7 @@ class GitController extends Controller
      * @options
      *  -v, --version           The new tag version. e.g: v2.0.4
      *  -m, --message           The message for add new tag.
+     *  --hash                  The hash ID for add new tag. default is HEAD
      *  -n, --next              bool;Auto calc next version for add new tag.
      *  --no-auto-add-v         bool;Not auto add 'v' for add tag version.
      *
@@ -510,6 +489,9 @@ class GitController extends Controller
             return;
         }
 
+        $hashId = $fs->getOpt('hash');
+        $dryRun = $this->flags->getOpt('dry-run');
+
         // $remotes = Git::new($dir)->remote->getList();
         if ($tag[0] !== 'v' && !$fs->getOpt('no-auto-add-v')) {
             $tag = 'v' . $tag;
@@ -517,7 +499,8 @@ class GitController extends Controller
 
         $info = [
             'Work Dir' => $dir,
-            // 'Origin'   => $remotes,
+            'Hash ID'  => $hashId,
+            'Dry Run'  => $dryRun,
             'New Tag'  => $tag,
         ];
 
@@ -527,9 +510,9 @@ class GitController extends Controller
 
         $msg = $fs->getOpt('message');
         $msg = $msg ?: "Release $tag";
+
         // add message
         $info['Message'] = $msg;
-
         $output->aList($info, 'Information', ['ucFirst' => false]);
 
         if (
@@ -541,14 +524,12 @@ class GitController extends Controller
             return;
         }
 
-        $dryRun = $this->flags->getOpt('dry-run');
-
         // git tag -a $1 -m "Release $1"
         // git push origin --tags
         // $cmd = sprintf('git tag -a %s -m "%s" && git push origin %s', $tag, $msg, $tag);
         $run = CmdRunner::new();
         $run->setDryRun($dryRun);
-        $run->addf('git tag -a %s -m "%s"', $tag, $msg);
+        $run->addf('git tag -a %s -m "%s" %s', $tag, $msg, $hashId);
         $run->addf('git push origin %s', $tag);
         $run->runAndPrint();
 
