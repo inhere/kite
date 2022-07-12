@@ -23,6 +23,7 @@ use Inhere\Kite\Console\Attach\Gitlab\MergeRequestCmd;
 use Inhere\Kite\Console\Attach\Gitlab\ProjectCmd;
 use Inhere\Kite\Console\Component\RedirectToGitGroup;
 use Inhere\Kite\Console\SubCmd\Gitflow\BranchCreateCmd;
+use Inhere\Kite\Console\SubCmd\GitlabCmd\ResolveConflictCmd;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
 use Throwable;
@@ -78,6 +79,7 @@ class GitLabController extends Controller
             'checkout'     => ['co'],
             'branch'       => BranchCmd::aliases(),
             MergeRequestCmd::getName()  => MergeRequestCmd::aliases(),
+            ResolveConflictCmd::getName()  => ResolveConflictCmd::aliases(),
         ];
     }
 
@@ -90,6 +92,7 @@ class GitLabController extends Controller
             BranchCmd::class,
             ProjectCmd::class,
             MergeRequestCmd::class,
+            ResolveConflictCmd::class,
         ];
     }
 
@@ -348,10 +351,11 @@ class GitLabController extends Controller
      */
     public function checkoutCommand(FlagsParser $fs, Output $output): void
     {
-        $co = Cmd::git('checkout')
-            ->addArgs($fs->getArg('branch'))
-            ->runAndPrint();
+        $br = $fs->getArg('branch');
+        // $repo = Repo::new();
+        // $repo->hasBranch(); TODO
 
+        $co = Cmd::git('checkout')->addArgs($br)->runAndPrint();
         if ($co->isFail()) {
             return;
         }
@@ -493,48 +497,6 @@ class GitLabController extends Controller
 
         AppHelper::openBrowser($link);
         $output->success('Complete');
-    }
-
-    /**
-     * Resolve conflicts preparing for current git branch.
-     *
-     * @help
-     *  1. will checkout to <cyan>branch</cyan>
-     *  2. will update code by <cyan>git pull</cyan>
-     *  3. update the <cyan>branch</cyan> codes from main repository
-     *  4. merge current-branch codes from main repository
-     *  5. please resolve conflicts by tools or manual
-     *
-     * @arguments
-     *    branch    string;The conflicts target branch name. eg: testing, qa, pre;required
-     *
-     * @param FlagsParser $fs
-     * @param Output $output
-     */
-    public function resolveCommand(FlagsParser $fs, Output $output): void
-    {
-        $gitlab = $this->getGitlab();
-        $branch = $fs->getArg('branch');
-        $branch = $gitlab->getRealBranchName($branch);
-        $dryRun = $this->flags->getOpt('dry-run');
-
-        $curBranch = $gitlab->getCurBranch();
-        // $orgRemote = $gitlab->getForkRemote();
-
-        $runner = CmdRunner::new();
-        $runner->setDryRun($dryRun);
-        $runner->add('git fetch');
-        $runner->addf('git checkout %s', $branch);
-        // git checkout --track origin/BRANCH
-        // $runner->addf('git checkout --track %s/%s', $orgRemote, $branch);
-        $runner->addf('git pull');
-        $runner->addf('git pull %s %s', $gitlab->getMainRemote(), $branch);
-        $runner->addf('git pull %s %s', $gitlab->getMainRemote(), $curBranch);
-        $runner->run(true);
-
-        $output->success('Complete. please resolve conflicts by tools or manual');
-        $output->note('TIPS can exec this command after resolved for quick commit:');
-        $output->colored("  git add . && git commit && git push && kite gl pr -o head && git checkout $curBranch", 'mga');
     }
 
     /**

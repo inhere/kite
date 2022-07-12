@@ -55,7 +55,11 @@ class BranchDeleteCmd extends Command
 
         $force   = $fs->getOpt('force');
         $notMain = $fs->getOpt('not-main');
-        $dryRun  = $this->flags->getOpt('dry-run');
+
+        $dryRun = false;
+        if ($p = $this->getParent()) {
+            $dryRun = $p->getFlags()->getOpt('dry-run');
+        }
 
         $deletedNum = 0;
         $mainRemote = $gl->getMainRemote();
