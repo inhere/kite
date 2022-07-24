@@ -16,6 +16,7 @@
     "ext-mbstring": "*",
     "inhere/console": "dev-master",
     "inhere/sroute": "dev-master",
+    "inhere/php-validate": "dev-master",
     "cebe/markdown": "^1.2",
     "colinodell/json5": "^2.2",
     "gitonomy/gitlib": "^1.3",

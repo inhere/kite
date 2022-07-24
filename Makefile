@@ -45,6 +45,9 @@ up-dev-deps:  ## Update kite composer.lock and all depends on vendor
 phar:  ## build kite application to phar package
 	php -d phar.readonly=0 bin/kite phar:pack -o kite.phar
 
+micro-bin:phar  ## build kite application to phar package
+	cat ~/Workspace/php/phpsrc/php-src/sapi/micro/micro.sfx kite.phar > kiteapp
+
 cs-fix:  ## Fix code style for all files
 	gofmt -w ./
 

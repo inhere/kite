@@ -40,7 +40,7 @@ __jump_completion() {
     # - $term='hi'
     local term="${COMP_WORDS[COMP_CWORD]}"
 
-    local commands=$(kite jump hint "$term" --no-name)
+    local commands=$(kite jump hint --no-name "$term")
     #    echo commands:
     #    echo $commands --- ${commands[@]}
     #    COMPREPLY=$commands

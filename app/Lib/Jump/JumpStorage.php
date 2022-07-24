@@ -268,12 +268,12 @@ class JumpStorage implements JsonSerializable
      */
     public function matchOne(string $keywords): string
     {
-        if (!$keywords || '.' === $keywords) {
+        if ('.' === $keywords) {
             return OS::getWorkDir();
         }
 
-        // latestPath
-        if ($keywords === '-') {
+        // jump to prev path
+        if (!$keywords || $keywords === '-') {
             return $this->prevPath;
         }
 

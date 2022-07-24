@@ -51,6 +51,7 @@ class JumpController extends Controller
             'hint'  => ['match', 'search'],
             'chdir' => ['into'],
             'get'   => ['cd'],
+            'list'  => ['ls'],
         ];
     }
 

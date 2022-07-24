@@ -24,6 +24,7 @@ use Toolkit\Stdlib\Util\Stream\ListStream;
 use function array_filter;
 use function array_merge;
 use function get_class;
+use function println;
 use function str_replace;
 
 /**
@@ -104,6 +105,8 @@ TYPE:
             case 'yaml':
                 $data = ConfigUtil::parseYamlString($source);
                 $p->setText(Json::pretty($data));
+                $output->colored('JSON from YAML:');
+                println($p->getText());
                 $itemParser = new Json5ItemParser;
                 $itemParser->setKeyField('name');
                 break;
