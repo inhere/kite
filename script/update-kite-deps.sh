@@ -1,13 +1,26 @@
 #!/usr/bin/env bash
+#
+# - update composer.lock
+# - update all depends package
+#
 
 # run: kite run --proxy update-kite-deps.sh
 # run: bash script/update-kite-deps.sh
 
 set -e
-#tmpKiteDir=~/Workspace/my-github/inhere/kite
-# windows
-tmpKiteDir=/f/work/php/inhere/kite-tmp
+
+osName=$(uname -s)
 usrKiteDir=~/.kite
+
+# macOS
+if [ "$osName" == "Darwin" ]; then
+    tmpKiteDir=~/Workspace/my-github/inhere/kite
+# windows: MINGW64_NT-10.0-19043
+elif [ "${osName:0:5}" == "MINGW" ]; then
+    tmpKiteDir=/f/work/php/inhere/kite-tmp
+else
+    tmpKiteDir=/tmp/kite-tmp
+fi
 
 set -x
 #kite env prox

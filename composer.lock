@@ -803,12 +803,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/inhere/php-console.git",
-                "reference": "202cef46c8198e244e94fd87b1af50cc61020f61"
+                "reference": "527fa73b39188fd45513ebf20efeb18de10ef729"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/inhere/php-console/zipball/202cef46c8198e244e94fd87b1af50cc61020f61",
-                "reference": "202cef46c8198e244e94fd87b1af50cc61020f61",
+                "url": "https://api.github.com/repos/inhere/php-console/zipball/527fa73b39188fd45513ebf20efeb18de10ef729",
+                "reference": "527fa73b39188fd45513ebf20efeb18de10ef729",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -867,7 +867,7 @@
                 "issues": "https://github.com/inhere/php-console/issues",
                 "source": "https://github.com/inhere/php-console/tree/master"
             },
-            "time": "2022-05-29T05:36:04+00:00"
+            "time": "2022-07-14T11:23:08+00:00"
         },
         {
             "name": "inhere/sroute",
@@ -3669,12 +3669,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/cli-utils.git",
-                "reference": "9583713c113ab2b9278e9cfa64fde872cb10b180"
+                "reference": "bc07930a1669372566d8bc9f521a57cc3bb5b499"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/cli-utils/zipball/9583713c113ab2b9278e9cfa64fde872cb10b180",
-                "reference": "9583713c113ab2b9278e9cfa64fde872cb10b180",
+                "url": "https://api.github.com/repos/php-toolkit/cli-utils/zipball/bc07930a1669372566d8bc9f521a57cc3bb5b499",
+                "reference": "bc07930a1669372566d8bc9f521a57cc3bb5b499",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3725,7 +3725,7 @@
                 "issues": "https://github.com/php-toolkit/cli-utils/issues",
                 "source": "https://github.com/php-toolkit/cli-utils/tree/v2.0.3"
             },
-            "time": "2022-06-15T06:49:18+00:00"
+            "time": "2022-06-15T08:50:01+00:00"
         },
         {
             "name": "toolkit/fsutil",
@@ -3788,16 +3788,16 @@
         },
         {
             "name": "toolkit/pflag",
-            "version": "v2.0.4",
+            "version": "v2.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/pflag.git",
-                "reference": "624654121e6b41c8427974b2aba9a53d2d09db6c"
+                "reference": "6628805d55af3516725d6bcac60d362aa264ebfe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/pflag/zipball/624654121e6b41c8427974b2aba9a53d2d09db6c",
-                "reference": "624654121e6b41c8427974b2aba9a53d2d09db6c",
+                "url": "https://api.github.com/repos/php-toolkit/pflag/zipball/6628805d55af3516725d6bcac60d362aa264ebfe",
+                "reference": "6628805d55af3516725d6bcac60d362aa264ebfe",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3832,9 +3832,9 @@
             "homepage": "https://github.com/php-toolkit/pflag",
             "support": {
                 "issues": "https://github.com/php-toolkit/pflag/issues",
-                "source": "https://github.com/php-toolkit/pflag/tree/v2.0.4"
+                "source": "https://github.com/php-toolkit/pflag/tree/v2.0.5"
             },
-            "time": "2022-01-25T05:50:24+00:00"
+            "time": "2022-07-19T05:19:11+00:00"
         },
         {
             "name": "toolkit/stdlib",
@@ -3904,16 +3904,16 @@
         },
         {
             "name": "toolkit/sys-utils",
-            "version": "v2.0.2",
+            "version": "v2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-toolkit/sys-utils.git",
-                "reference": "f060632a94c55b566fc87e0fd921855896b0e310"
+                "reference": "3d5c546341d6c2491f93ddb2c08ddeddf09bd6b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-toolkit/sys-utils/zipball/f060632a94c55b566fc87e0fd921855896b0e310",
-                "reference": "f060632a94c55b566fc87e0fd921855896b0e310",
+                "url": "https://api.github.com/repos/php-toolkit/sys-utils/zipball/3d5c546341d6c2491f93ddb2c08ddeddf09bd6b2",
+                "reference": "3d5c546341d6c2491f93ddb2c08ddeddf09bd6b2",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3957,9 +3957,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-toolkit/sys-utils/issues",
-                "source": "https://github.com/php-toolkit/sys-utils/tree/v2.0.2"
+                "source": "https://github.com/php-toolkit/sys-utils/tree/v2.0.3"
             },
-            "time": "2022-01-02T13:04:41+00:00"
+            "time": "2022-04-10T04:54:33+00:00"
         },
         {
             "name": "webmozart/assert",

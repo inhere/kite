@@ -2,7 +2,7 @@
 #SHELL = /bin/sh
 # 每行命令之前必须有一个tab键。如果想用其他键，可以用内置变量.RECIPEPREFIX 声明
 # mac 下这条声明 没起作用 !!
-.RECIPEPREFIX = >
+# .RECIPEPREFIX = >
 .PHONY: all usage help clean
 
 # 需要注意的是，每行命令在一个单独的shell中执行。这些Shell之间没有继承关系。
@@ -35,6 +35,12 @@ install:  ## Clean all created artifacts
 
 clean:  ## Clean all created artifacts
 	git clean --exclude=.idea/ -fdx
+
+up-dev-deps:  ## Update all kite dev depends on vendor
+	$(SHELL) script/update-kite-deps.sh
+
+up-dev-deps:  ## Update kite composer.lock and all depends on vendor
+	$(SHELL) script/upinit-kite-dev-deps.sh
 
 phar:  ## build kite application to phar package
 	php -d phar.readonly=0 bin/kite phar:pack -o kite.phar

@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+#
+# each dev packages and run composer update
+#
+#
 
 # run: kite run --proxy upinit-kite-dev-deps.sh
 # run: bash script/upinit-kite-dev-deps.sh
