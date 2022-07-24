@@ -15,6 +15,7 @@ use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\Obj\AbstractObj;
 use Toolkit\Stdlib\OS;
+use Toolkit\Stdlib\Str;
 use function array_filter;
 use function array_map;
 use function array_merge;
@@ -242,7 +243,7 @@ class ScriptRunner extends AbstractObj
         }
 
         if ($runArgs) {
-            $command .= ' ' . implode(' ', $runArgs);
+            $command .= ' ' . Str::shellQuotesToLine($runArgs);
         }
 
         $this->fire(self::EVT_ON_RUN_BEFORE, $binName, $runArgs);

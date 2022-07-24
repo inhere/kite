@@ -154,7 +154,7 @@ class RunCommand extends Command
                 return $runner->getErrCode();
             }
 
-            // - is an plugin
+            // - is a plugin
             if (Kite::plugManager()->isPlugin($name)) {
                 $output->notice("input is an plugin name, will run plugin: $name");
                 Kite::plugManager()->run($name, $this->app, $runArgs);

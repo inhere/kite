@@ -6,6 +6,7 @@
 
 # run: kite run --proxy upinit-kite-dev-deps.sh
 # run: bash script/upinit-kite-dev-deps.sh
+# run: proxy_on; bash script/upinit-kite-dev-deps.sh
 set -e
 
 # proxy_on

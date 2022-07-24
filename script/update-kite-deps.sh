@@ -6,6 +6,7 @@
 
 # run: kite run --proxy update-kite-deps.sh
 # run: bash script/update-kite-deps.sh
+# run: proxy_on; bash script/update-kite-deps.sh
 
 set -e
 
