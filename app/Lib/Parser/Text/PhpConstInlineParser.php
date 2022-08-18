@@ -52,7 +52,7 @@ class PhpConstInlineParser
             $this->valueType = is_numeric($value) ? Type::INTEGER : Type::STRING;
         }
 
-        $comment = ltrim($comment, '// ');
+        $comment = ltrim($comment, '/ ');
         if (!$this->withKey) {
             return [$name, $value, $comment];
         }
