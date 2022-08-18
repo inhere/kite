@@ -10,7 +10,9 @@ use Inhere\Route\Router;
 use PhpPkg\EasyTpl\EasyTemplate;
 
 $box->set('webRouter', function () {
-    return new Router();
+    return new Router([
+        'name' => 'kite-router',
+    ]);
 });
 
 $box->set('renderer', function () {
@@ -19,7 +21,9 @@ $box->set('renderer', function () {
 });
 
 $box->set('dispatcher', [
-    'class'        => Dispatcher::class,
+    'class'   => Dispatcher::class,
     // prop settings
-    'actionSuffix' => '',
+    'options' => [
+        'actionSuffix' => '',
+    ],
 ]);

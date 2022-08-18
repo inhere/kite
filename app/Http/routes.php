@@ -15,6 +15,7 @@ use Inhere\Kite\Kite;
 $router = Kite::webRouter();
 
 $router->get('/', HomeController::class . '@index');
+$router->get('/routes', HomeController::class . '@routes');
 $router->get('/json5', JsonController::class . '@json5');
 $router->get('/json', JsonController::class . '@format');
 

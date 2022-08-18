@@ -3,6 +3,7 @@
 namespace Inhere\Kite\Http;
 
 use Inhere\Kite\Kite;
+use function header;
 
 /**
  * Class Controller
@@ -17,6 +18,17 @@ abstract class Controller
      */
     protected function render(string $viewPath, array $vars = []): void
     {
-        Kite::webApp()->getRenderer()->renderOutput($viewPath, $vars);
+        Kite::webApp()->getRenderer()->render($viewPath, $vars);
+    }
+
+    /**
+     * @param string $html
+     *
+     * @return void
+     */
+    protected function renderHTML(string $html): void
+    {
+        header('Content-Type: text/html');
+        echo $html;
     }
 }
