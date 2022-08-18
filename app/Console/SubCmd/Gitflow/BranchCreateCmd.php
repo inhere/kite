@@ -5,7 +5,6 @@ namespace Inhere\Kite\Console\SubCmd\Gitflow;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Common\Cmd;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Helper\GitUtil;
 use Inhere\Kite\Kite;
@@ -92,13 +91,18 @@ class BranchCreateCmd extends Command
         //     ->afterOkRun("git push {$this->mainRemote} {$newBranch}");
 
         $output->info('fetch latest information from remote: ' . $this->mainRemote);
-        Git::new()->fetch($this->mainRemote);
+        Git::new()->fetch($this->mainRemote, '', [
+            'no-tags' => true,
+        ]);
 
         // TODO git fetch main, git branch -a | grep $newBranch
         $branches = GitUtil::matchBranch($newBranch);
         if ($branches) {
 
         }
+
+        // $repo = Repo::new();
+        // $repo->findBranch()
 
         // $dryRun = true;
         $dryRun = $fs->getOpt('dry-run');
