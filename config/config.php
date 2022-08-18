@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use Toolkit\Stdlib\OS;
 
@@ -6,6 +6,7 @@ $basePath = Inhere\Kite\Kite::basePath();
 
 return [
     'app'           => [
+        'debug'    => true,
         'rootPath' => BASE_PATH,
     ],
     'logger'        => [

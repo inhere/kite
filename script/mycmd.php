@@ -6,7 +6,6 @@ use Toolkit\Cli\Cli;
 use Toolkit\PFlag\CliCmd;
 use Toolkit\PFlag\FlagsParser;
 
-
 // load kite boot file, allow use all class in the kite.
 $kiteBootFile = getenv('KITE_BOOT_FILE');
 if (!$kiteBootFile || !is_file($kiteBootFile)) {
