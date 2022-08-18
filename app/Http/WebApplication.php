@@ -33,9 +33,13 @@ class WebApplication
     private EasyTemplate $renderer;
 
     /**
-     * @var array
+     * @var array = [
+     *     'debug' => false,
+     * ]
      */
-    private array $params = [];
+    private array $params = [
+        'debug' => false,
+    ];
 
     /**
      * The root path for project
@@ -96,7 +100,7 @@ class WebApplication
 
             Kite::webRouter()->dispatch($dispatcher);
         } catch (Throwable $e) {
-            (new ErrorHandler())->run($e);
+            (new ErrorHandler((bool)$this->params['debug']))->run($e);
         }
     }
 
