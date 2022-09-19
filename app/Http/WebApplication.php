@@ -11,6 +11,7 @@ namespace Inhere\Kite\Http;
 
 use Inhere\Kite\Concern\InitApplicationTrait;
 use Inhere\Kite\Kite;
+use Inhere\Route\Dispatcher\Dispatcher;
 use Inhere\Route\Router;
 use PhpPkg\EasyTpl\EasyTemplate;
 use Throwable;
@@ -97,6 +98,11 @@ class WebApplication
     {
         try {
             $dispatcher = Kite::dispatcher();
+
+            // 成功匹配路由
+            $dispatcher->on(Dispatcher::ON_FOUND, function ($uri, $cb) {
+                Kite::logger()->debug("Matched uri path: $uri, setting callback is: " . is_string($cb) ? $cb : get_class($cb));
+            });
 
             Kite::webRouter()->dispatch($dispatcher);
         } catch (Throwable $e) {

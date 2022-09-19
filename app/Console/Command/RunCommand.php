@@ -50,8 +50,7 @@ class RunCommand extends Command
 
     /**
      * @options
-     *  -l, --list          List information for all scripts or script files. type: file, cmd(default)
-     *  -s, --search        Display all matched scripts by the input name
+     *  -l, --list          List information for all scripts or script files. type: file, cmd
      *  -i, --info          Show information for give script name or script file
      *      --dry-run       bool;Mock running, not real execute.
      *  -p, --proxy         bool;Enable proxy ENV setting
@@ -199,24 +198,30 @@ class RunCommand extends Command
             'filterEmpty' => true,
         ];
 
-        if ($name && $this->sr->isScriptName($name)) {
-            $desc = '';
-            $item = $this->sr->getScript($name);
+        if ($name) {
+            if ($this->sr->isScriptName($name)) {
+                $desc = '';
+                $item = $this->sr->getScript($name);
 
-            // [_meta => [desc, ]]
-            if (is_array($item) && isset($item['_meta'])) {
-                $meta = $item['_meta'];
-                unset($item['_meta']);
+                // [_meta => [desc, ]]
+                if (is_array($item) && isset($item['_meta'])) {
+                    $meta = $item['_meta'];
+                    unset($item['_meta']);
 
-                $desc = $meta['desc'] ?? '';
-                // $output->colored(ucfirst($desc), 'cyan');
+                    $desc = $meta['desc'] ?? '';
+                    // $output->colored(ucfirst($desc), 'cyan');
+                }
+
+                $output->aList([
+                    'name'    => $name,
+                    'desc'    => $desc,
+                    'command' => $item,
+                ], "Script: $name", $listOpt);
+            } else {
+                $matched = $this->sr->searchScripts($name);
+                $number = \count($matched);
+                $output->aList($matched, "'$name' matched scripts(number: $number)", $listOpt);
             }
-
-            $output->aList([
-                'name'    => $name,
-                'desc'    => $desc,
-                'command' => $item,
-            ], "Script: $name", $listOpt);
         } else {
             $count = $this->sr->getScriptCount();
             $output->aList($this->sr->getScripts(), "registered scripts(total: $count)", $listOpt);

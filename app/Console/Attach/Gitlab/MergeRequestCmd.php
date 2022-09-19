@@ -94,7 +94,7 @@ class MergeRequestCmd extends Command
             $srcBranch = $curBranch;
         }
 
-        $open = $fs->getOpt('open');
+        $open = $gl->getRealBranchName($fs->getOpt('open'));
         // if input '@', 'head', use current branch name.
         if ($open) {
             if ($open === '@' || strtoupper($open) === 'HEAD') {
@@ -159,7 +159,7 @@ class MergeRequestCmd extends Command
         if ($open) {
             // $output->info('will auto open link on browser');
             AppHelper::openBrowser($link);
-            $output->success('Complete');
+            $output->success('Complete. at ' . date('Y-m-d H:i:s'));
         } else {
             $output->colored("PR LINK: ");
             $output->writeln('  ' . $link);
