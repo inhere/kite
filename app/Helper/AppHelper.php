@@ -115,6 +115,13 @@ class AppHelper
      */
     public static function genRandomStr(string $sname, int $length): string
     {
+        $aliases = [
+            'a' => 'alpha',
+            'an' => 'alpha_num',
+            'anu' => 'alpha_num_up',
+            'anc' => 'alpha_num_c',
+        ];
+
         $samples = [
             'alpha'        => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
             'alpha_num'    => '0123456789abcdefghijklmnopqrstuvwxyz',
@@ -122,6 +129,7 @@ class AppHelper
             'alpha_num_c'  => '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-+!@#$%&*',
         ];
 
+        $sname = $aliases[$sname] ?? $sname;
         $chars = $samples[$sname] ?? $samples['alpha_num'];
 
         $str = '';

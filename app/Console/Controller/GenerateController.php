@@ -7,6 +7,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\SubCmd\ToolCmd\HashCommand;
+use Inhere\Kite\Console\SubCmd\ToolCmd\RandomCommand;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
 use PhpPkg\EasyTpl\TextTemplate;
@@ -43,7 +44,7 @@ class GenerateController extends Controller
         return [
             'rpt'    => 'repeat',
             'tpl'    => 'template',
-            'random' => ['rdm', 'rand'],
+            'random' => RandomCommand::aliases(),
         ];
     }
 
@@ -51,6 +52,7 @@ class GenerateController extends Controller
     {
         return [
             HashCommand::class,
+            RandomCommand::class,
         ];
     }
     /**

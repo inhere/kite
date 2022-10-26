@@ -60,6 +60,8 @@ class ResolveConflictCmd  extends Command
         $runner->setDryRun($dryRun);
         $runner->add('git fetch');
         $runner->addf('git checkout %s', $branch);
+        $runner->addf('git push -u %s', $gl->getForkRemote());
+
         // git checkout --track origin/BRANCH
         // $runner->addf('git checkout --track %s/%s', $orgRemote, $branch);
         $runner->addf('git pull');

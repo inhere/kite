@@ -26,13 +26,17 @@ use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Arr;
 use Toolkit\Stdlib\Helper\JsonHelper;
+use Toolkit\Stdlib\Json;
 use function array_filter;
 use function array_merge;
 use function is_file;
 use function is_scalar;
+use function is_string;
 use function json_decode;
 use function str_contains;
 use function str_replace;
+use function str_starts_with;
+use function stripslashes;
 use function trim;
 use const JSON_THROW_ON_ERROR;
 
@@ -153,10 +157,17 @@ class JsonController extends Controller
     public function getCommand(FlagsParser $fs, Output $output): void
     {
         $source = $fs->getOpt('source');
+        // read and decode JSON
         $this->autoReadJSON($source);
 
         $path = $fs->getArg('path');
         $ret  = Arr::getByPath($this->data, $path);
+
+        // is json string
+        if (is_string($ret) && str_starts_with($ret, '{"')) {
+            $output->info("find '$path' value is JSON string, auto decode");
+            $ret = Json::decode($ret, true);
+        }
 
         if (!$ret || is_scalar($ret)) {
             $str = $ret;
@@ -201,6 +212,9 @@ class JsonController extends Controller
     /**
      * pretty and format JSON text.
      *
+     * @options
+     * --uq, --unquote      bool;unquote input string before format.
+     *
      * @arguments
      * json     The json text line. if empty will try read text from clipboard
      *
@@ -213,8 +227,8 @@ class JsonController extends Controller
             'loadedFile' => $this->dumpfile,
         ]);
 
-        if (!$json) {
-            throw new InvalidArgumentException('please input json text for pretty');
+        if ($fs->getOpt('unquote')) {
+            $json = stripslashes($json);
         }
 
         // $data = json_decode($json, true);

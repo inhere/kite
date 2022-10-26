@@ -17,6 +17,7 @@ use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Console\Component\ContentsAutoWriter;
 use Inhere\Kite\Console\SubCmd\ParseUrlQueryCmd;
 use Inhere\Kite\Console\SubCmd\ToolCmd\HashCommand;
+use Inhere\Kite\Console\SubCmd\ToolCmd\RandomCommand;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\KiteUtil;
 use Inhere\Kite\Kite;
@@ -74,6 +75,7 @@ class StringController extends Controller
             'process' => ['p', 'filter', 'f'],
             'replace' => ['r'],
             'parse'   => ['fields'],
+            'random'  => RandomCommand::aliases(),
             'dequery' => ParseUrlQueryCmd::aliases(),
         ];
     }
@@ -90,6 +92,7 @@ class StringController extends Controller
         return [
             ParseUrlQueryCmd::class,
             HashCommand::class,
+            RandomCommand::class,
         ];
     }
 
@@ -187,6 +190,7 @@ class StringController extends Controller
      *
      * @example
      *
+     * {binWithCmd} -s '\n' @c
      * {binWithCmd} --sep ',' --join-sep ',' -f "wrap:' " 'tom,john' # Output: 'tom', 'john'
      */
     public function splitCommand(FlagsParser $fs): void
@@ -385,8 +389,9 @@ class StringController extends Controller
      *          input '@FILEPATH'                   - will read from the filepath
      *
      * @options
-     *  -f, --from    The replace from char
-     *  -t, --to      The replace to chars
+     *  -f, -s, --from      The replace from chars
+     *  -t, --to            The replace to chars
+     *  --rm, --remove      array;Want remove some chars, allow multi
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -396,6 +401,11 @@ class StringController extends Controller
         $text = trim($fs->getArg('text'));
         $text = ContentsAutoReader::readFrom($text);
 
+        if ($rmList = $fs->getOpt('remove')) {
+            $output->writeRaw(str_replace($rmList, '', $text));
+            return;
+        }
+
         $from = $fs->getOpt('from');
         $to   = $fs->getOpt('to');
         if (!$from && !$to) {
@@ -403,6 +413,8 @@ class StringController extends Controller
             return;
         }
 
+        $from = TextParser::resolveSep($from);
+        $to   = TextParser::resolveSep($to);
         $output->writeRaw(str_replace($from, $to, $text));
     }
 

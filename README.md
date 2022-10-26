@@ -122,6 +122,7 @@ alias kg="kite git"
 alias kgit="kite git"
 alias kgl="kite gitlab"
 alias kgh="kite github"
+alias kjson="kite json"
 ```
 
 ## 使用说明

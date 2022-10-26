@@ -49,6 +49,7 @@ class SqlController extends Controller
      * @options
      *  -s,--source     string;The source code for convert. allow: FILEPATH, @clipboard;true
      *  -o,--output     The output target. default is stdout.
+     *  -l,--lang       The output language. allow:zh-CN,en;false;zh-CN
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -62,7 +63,9 @@ class SqlController extends Controller
             throw new InvalidArgumentException('empty source code for convert');
         }
 
-        $md = DBTable::fromSchemeSQL($source)->toMDTable();
+        $md = DBTable::fromSchemeSQL($source)
+            ->setLang($fs->getOpt('lang'))
+            ->toMDTable();
         $output->writeRaw($md);
         // $cm = new CliMarkdown();
         // $output->println($cm->parse($md));
