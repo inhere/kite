@@ -25,7 +25,26 @@ class DBTable
         'comment'   => '',
     ];
 
+    public const LANG_EN = 'en';
+    public const LANG_CN = 'zh-CN';
+
+    /**
+     * @var string
+     */
     protected string $source = '';
+
+    /**
+     * @var string
+     */
+    protected string $lang = self::LANG_CN;
+
+    /**
+     * @var array<string, string>
+     */
+    protected array $langTitles = [
+        'zh-CN' => ' 字段名 | 类型 | 是否为空 | 默认值 | 注释 ',
+        'en'    => ' Field | Type | Allow Null | Default | Comments ',
+    ];
 
     /**
      * @var string
@@ -164,6 +183,11 @@ class DBTable
         return $this;
     }
 
+    public function getLangTitle(): string
+    {
+        return $this->langTitles[$this->lang] ?? $this->langTitles[self::LANG_CN];
+    }
+
     /**
      * @return string
      */
@@ -232,7 +256,7 @@ TXT;
     public function toMDTable(): string
     {
         $mdNodes = [
-            ' 字段名 | 类型 | 是否为空 | 默认值 | 注释 ',
+            $this->getLangTitle(),
             '-------|------|---------|--------|-----'
         ];
 
@@ -354,5 +378,29 @@ TXT;
     public function setTableComment(string $tableComment): void
     {
         $this->tableComment = $tableComment;
+    }
+
+    /**
+     * @param string $lang
+     *
+     * @return DBTable
+     */
+    public function setLang(string $lang): self
+    {
+        if ($lang) {
+            $this->lang = $lang;
+        }
+        return $this;
+    }
+
+    /**
+     * @param array $langTitles
+     *
+     * @return DBTable
+     */
+    public function setLangTitles(array $langTitles): self
+    {
+        $this->langTitles = array_merge($this->langTitles, $langTitles);
+        return $this;
     }
 }
