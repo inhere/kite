@@ -510,7 +510,7 @@ CODE;
 
         Cmd::new('git')
             ->add('clone')
-            ->addf('%s/%s', GitHub::GITHUB_HOST, $repoPath)
+            ->addf('%s/%s', GitHub::HOST, $repoPath)
             ->add($pkgName)
             ->runAndPrint();
 
@@ -549,7 +549,7 @@ CODE;
             $pkgName = $composerInfo['name'];
         }
 
-        $homepage = GitHub::GITHUB_HOST . "/$pkgName";
+        $homepage = GitHub::HOST . "/$pkgName";
         if (!empty($composerInfo['homepage'])) {
             $homepage = $composerInfo['homepage'];
         }

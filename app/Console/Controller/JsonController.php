@@ -28,6 +28,7 @@ use Toolkit\Stdlib\Arr;
 use Toolkit\Stdlib\Helper\JsonHelper;
 use Toolkit\Stdlib\Json;
 use function array_filter;
+use function array_keys;
 use function array_merge;
 use function is_file;
 use function is_scalar;
@@ -145,12 +146,13 @@ class JsonController extends Controller
      * get data by path in the loaded JSON data.
      *
      * @arguments
-     * path     string;The key path for search get;required
+     * path     string;The key path for search get, use `$` get all;required
      *
      * @options
-     *     --type        The search type. allow: keys, path
-     * -s, --source      The json data source, default read stdin, allow: @load, @clipboard, @stdin
-     * -o, --output      The output, default is stdout, allow: @load, @clipboard, @stdout
+     *     --type           The search type. allow: keys, path
+     * -s, --source         The json data source, default read stdin, allow: @load, @clipboard, @stdin
+     * -o, --output         The output, default is stdout, allow: @load, @clipboard, @stdout
+     * --tk, --top-keys     bool;only output all top key names
      *
      * @throws Throwable
      */
@@ -161,7 +163,11 @@ class JsonController extends Controller
         $this->autoReadJSON($source);
 
         $path = $fs->getArg('path');
-        $ret  = Arr::getByPath($this->data, $path);
+        if ($path = trim($path, ' .$')) {
+            $ret  = Arr::getByPath($this->data, $path);
+        } else {
+            $ret = $this->data;
+        }
 
         // is json string
         if (is_string($ret) && str_starts_with($ret, '{"')) {
@@ -169,9 +175,15 @@ class JsonController extends Controller
             $ret = Json::decode($ret, true);
         }
 
-        if (!$ret || is_scalar($ret)) {
-            $str = $ret;
+        if ($ret === null) {
+            $str = 'NULL';
+        } elseif (is_scalar($ret)) {
+            $str = (string)$ret;
         } else {
+            if ($fs->getOpt('top-keys')) {
+                $ret = array_keys($ret);
+            }
+
             $str = $this->jsonRender()->renderData($ret);
         }
 
