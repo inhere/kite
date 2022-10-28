@@ -9,7 +9,7 @@ use RuntimeException;
  *
  * @package Inhere\Kite\Common\Git
  */
-class GitHub extends AbstractGitLocal
+class GitHub extends AbstractGitx
 {
     public const HOST = GitConst::GITHUB_HOST;
     public const GIT_HOST = GitConst::GITHUB_HOST;

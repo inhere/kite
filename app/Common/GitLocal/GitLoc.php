@@ -5,7 +5,7 @@ namespace Inhere\Kite\Common\GitLocal;
 /**
  * class GitLoc
  */
-class GitLoc extends AbstractGitLocal
+class GitLoc extends AbstractGitx
 {
-    
+
 }

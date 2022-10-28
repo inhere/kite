@@ -3,7 +3,7 @@
 namespace Inhere\Kite\Console\Component;
 
 use Inhere\Console\Controller;
-use Inhere\Kite\Console\Controller\Gitx\GitController;
+use Inhere\Kite\Console\Controller\Gitx\GitxController;
 use Inhere\Kite\Kite;
 use Throwable;
 use Toolkit\Cli\Cli;
@@ -38,7 +38,7 @@ class RedirectToGitGroup extends AbstractObj
         $app = $ctrl->getApp();
 
         // resolve alias
-        $gitCtrl = $app->getController(GitController::getName());
+        $gitCtrl = $app->getController(GitxController::getName());
         $action = $gitCtrl->resolveAlias($command);
         $group  = $ctrl->getRealGName();
 

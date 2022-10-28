@@ -6,7 +6,7 @@ use Inhere\Kite\Kite;
 use PhpGit\Repo;
 
 /**
- * class Gitflow
+ * class GitFactory
  *
  * @author inhere
  */
@@ -15,9 +15,9 @@ class GitFactory
     /**
      * @param string $repoDir
      *
-     * @return AbstractGitLocal
+     * @return AbstractGitx
      */
-    public static function make(string $repoDir = ''): AbstractGitLocal
+    public static function make(string $repoDir = ''): AbstractGitx
     {
         $repo = Repo::new($repoDir);
 
@@ -25,13 +25,13 @@ class GitFactory
         $configKey = $platform !== Repo::PLATFORM_CUSTOM ? $platform : 'git';
         $settings  = Kite::config()->getArray($configKey);
 
-        $typGit = match ($platform) {
+        $gx = match ($platform) {
             Repo::PLATFORM_GITHUB => new GitHub(null, $settings),
             Repo::PLATFORM_GITLAB => new GitLab(null, $settings),
             default => new GitLoc(null, $settings),
         };
 
-        $typGit->setRepo($repo);
-        return $typGit;
+        $gx->setRepo($repo);
+        return $gx;
     }
 }

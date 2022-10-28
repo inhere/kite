@@ -16,6 +16,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Console\Component\RedirectToGitGroup;
+use Inhere\Kite\Console\SubCmd\Gitflow\UpdateNoPushCmd;
 use Inhere\Kite\Console\SubCmd\Gitflow\UpdatePushCmd;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
@@ -56,7 +57,8 @@ class GitHubController extends Controller
             'pr'           => 'pullRequest',
             'redirectList' => ['rl'],
         ], [
-            UpdatePushCmd::getName() => UpdatePushCmd::aliases(),
+            UpdatePushCmd::getName()   => UpdatePushCmd::aliases(),
+            UpdateNoPushCmd::getName() => UpdateNoPushCmd::aliases(),
         ]);
     }
 
@@ -67,6 +69,7 @@ class GitHubController extends Controller
     {
         return [
             UpdatePushCmd::class,
+            UpdateNoPushCmd::class,
         ];
     }
 
@@ -77,7 +80,7 @@ class GitHubController extends Controller
     {
         return [
             '--try,--dry-run' => 'bool;Dry-run the workflow, dont real execute',
-            '-w, --workdir' => 'The command work dir, default is current dir.',
+            '-w, --workdir'   => 'The command work dir, default is current dir.',
             // '-y, --yes' => 'Direct execution without confirmation',
             // '-i, --interactive' => 'Run in an interactive environment[TODO]',
         ];
@@ -103,7 +106,7 @@ class GitHubController extends Controller
 
     /**
      * @param string $command
-     * @param array  $args
+     * @param array $args
      *
      * @return bool
      * @throws Throwable
@@ -124,7 +127,7 @@ class GitHubController extends Controller
     /**
      * Show a list of commands that will be redirected to git
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      */
     public function redirectListCommand(Input $input, Output $output): void
@@ -147,7 +150,7 @@ class GitHubController extends Controller
      *      --last          Use the latest tag for new release
      *      --next          Auto calc next version for new release
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      *
      * @example
@@ -269,7 +272,7 @@ class GitHubController extends Controller
         $repo = $fs->getArg('repo');
         $name = $fs->getArg('name');
 
-        $mirror = $fs->getOpt('mirror');
+        $mirror  = $fs->getOpt('mirror');
         $mirrors = [
             'fast'   => 'https://hub.fastgit.org',
             'cnpmjs' => 'https://github.com.cnpmjs.org',

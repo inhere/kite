@@ -45,25 +45,29 @@ class UpdatePushCmd extends Command
      */
     protected function execute(Input $input, Output $output): mixed
     {
-        $typGit = GitFactory::make();
+        $fs = $this->flags;
+        $gx = GitFactory::make();
 
-        $curBranch = $typGit->getCurBranch();
-        $upBranch = $this->flags->getOpt('remote-branch', $curBranch);
+        $curBranch = $gx->getCurBranch();
+        $upBranch = $fs->getOpt('remote-branch', $curBranch);
         $output->info("Current Branch: $curBranch, fetch remote branch: $upBranch");
 
         $runner = CmdRunner::new();
-        $runner->setDryRun($this->flags->getOpt('dry-run'));
+        $runner->setDryRun($fs->getOpt('dry-run'));
         $runner->add('git pull');
-        $runner->addf('git pull %s %s', $typGit->getMainRemote(), $upBranch);
+        $runner->addf('git pull %s %s', $gx->getMainRemote(), $upBranch);
 
-        $defBranch = $typGit->getDefaultBranch();
+        $defBranch = $gx->getDefaultBranch();
         if ($upBranch !== $defBranch) {
-            $runner->addf('git pull %s %s', $typGit->getMainRemote(), $defBranch);
+            $runner->addf('git pull %s %s', $gx->getMainRemote(), $defBranch);
         }
 
-        $si = $typGit->getStatusInfo();
+        $si = $gx->getStatusInfo();
 
-        $runner->addf('git push %s', $si->upRemote);
+        if (!$fs->getOpt('not-push')) {
+            $runner->addf('git push %s', $si->upRemote);
+        }
+
         $runner->run(true);
 
         $output->success('Complete. datetime: ' . date('Y-m-d H:i:s'));

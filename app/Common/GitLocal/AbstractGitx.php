@@ -20,7 +20,7 @@ use function trim;
  *
  * @package Inhere\Kite\Common\Git
  */
-abstract class AbstractGitLocal
+abstract class AbstractGitx
 {
     public const GITHUB_HOST = 'https://github.com';
 
@@ -502,7 +502,7 @@ abstract class AbstractGitLocal
     /**
      * @param string $workDir
      *
-     * @return AbstractGitLocal
+     * @return AbstractGitx
      */
     public function setWorkDir(string $workDir): self
     {

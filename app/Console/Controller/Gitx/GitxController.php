@@ -48,11 +48,9 @@ use function strtolower;
 use function trim;
 
 /**
- * Class GitController
- * - git:tag:push   add tag and push to remote
- * - git:tag:delete delete the tag on remote
+ * Class GitxController
  */
-class GitController extends Controller
+class GitxController extends Controller
 {
     protected static string $name = 'git';
 

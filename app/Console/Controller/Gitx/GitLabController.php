@@ -23,6 +23,8 @@ use Inhere\Kite\Console\Attach\Gitlab\MergeRequestCmd;
 use Inhere\Kite\Console\Attach\Gitlab\ProjectCmd;
 use Inhere\Kite\Console\Component\RedirectToGitGroup;
 use Inhere\Kite\Console\SubCmd\Gitflow\BranchCreateCmd;
+use Inhere\Kite\Console\SubCmd\Gitflow\UpdateNoPushCmd;
+use Inhere\Kite\Console\SubCmd\Gitflow\UpdatePushCmd;
 use Inhere\Kite\Console\SubCmd\GitlabCmd\ResolveConflictCmd;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
@@ -66,21 +68,24 @@ class GitLabController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'deleteBranch' => ['del-br', 'delbr', 'dbr', 'db'],
-            'newBranch'    => ['new-br', 'newbr', 'nbr', 'nb'],
-            'li'           => 'linkInfo',
-            'cf'           => 'config',
-            'conf'         => 'config',
-            'rc'           => 'resolve',
-            'new'          => 'create',
-            'up'           => 'update',
-            'updatePush'   => ['upp', 'up-push'],
-            'project'      => ['pj', 'info'],
-            'checkout'     => ['co'],
-            'branch'       => BranchCmd::aliases(),
-            MergeRequestCmd::getName()  => MergeRequestCmd::aliases(),
-            ResolveConflictCmd::getName()  => ResolveConflictCmd::aliases(),
-        ];
+                'deleteBranch' => ['del-br', 'delbr', 'dbr', 'db'],
+                'newBranch'    => ['new-br', 'newbr', 'nbr', 'nb'],
+                'li'           => 'linkInfo',
+                'cf'           => 'config',
+                'conf'         => 'config',
+                'rc'           => 'resolve',
+                'new'          => 'create',
+                'up'           => 'update',
+                'updatePush'   => ['upp', 'up-push'],
+                'project'      => ['pj', 'info'],
+                'checkout'     => ['co'],
+            ] + [
+                BranchCmd::getName()          => BranchCmd::aliases(),
+                MergeRequestCmd::getName()    => MergeRequestCmd::aliases(),
+                ResolveConflictCmd::getName() => ResolveConflictCmd::aliases(),
+                UpdatePushCmd::getName()      => UpdatePushCmd::aliases(),
+                UpdateNoPushCmd::getName()    => UpdateNoPushCmd::aliases(),
+            ];
     }
 
     /**
@@ -93,6 +98,8 @@ class GitLabController extends Controller
             ProjectCmd::class,
             MergeRequestCmd::class,
             ResolveConflictCmd::class,
+            UpdatePushCmd::class,
+            UpdateNoPushCmd::class,
         ];
     }
 
@@ -469,6 +476,7 @@ class GitLabController extends Controller
      *
      * @param FlagsParser $fs
      * @param Output $output
+     *
      * @example
      * {binWithCmd} group/repo
      */
@@ -488,7 +496,7 @@ class GitLabController extends Controller
             if (str_starts_with($remote, 'http')) {
                 $link = $remote;
             } else {
-                $link = $gitlab->getHost() . '/'. $remote;
+                $link = $gitlab->getHost() . '/' . $remote;
             }
         } else {
             $info = $gitlab->getRemoteInfo($remote);
@@ -652,39 +660,6 @@ class GitLabController extends Controller
         $run->run(true);
 
         $output->success("Create the '$name' ok!");
-    }
-
-    /**
-     * update codes from origin and main remote repository, then push to remote
-     *
-     * @param Output $output
-     *
-     * @throws Throwable
-     */
-    public function updatePushCommand(Output $output): void
-    {
-        // $args = $this->flags->getRawArgs();
-        // // add option - do push
-        // $args[] = '--push';
-        //
-        // // run updateCommand();
-        // $this->runActionWithArgs('update', $args);
-
-        $this->runUpdateByGit(true, $output);
-    }
-
-    /**
-     * update codes from origin and main remote repositories
-     *
-     * @options
-     *  -p, --push      bool;Push to origin remote after update
-     *
-     * @param FlagsParser $fs
-     * @param Output $output
-     */
-    public function updateCommand(FlagsParser $fs, Output $output): void
-    {
-        $this->runUpdateByGit($fs->getOpt('push'), $output);
     }
 
     /**

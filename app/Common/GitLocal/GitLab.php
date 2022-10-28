@@ -9,7 +9,7 @@ use Inhere\Kite\Common\GitLocal\GitLab\GlProject;
  *
  * @package Inhere\Kite\Common\Git
  */
-class GitLab extends AbstractGitLocal
+class GitLab extends AbstractGitx
 {
     /**
      * @var string
