@@ -45,6 +45,7 @@ return [
         // group
         'defaultGroup'     => 'swoft',
         'defaultForkGroup' => 'ulue',
+        'defaultBranch'   => 'main',
         'redirectGit'      => [
             '*'
         ],

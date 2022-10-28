@@ -16,11 +16,13 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Console\Component\RedirectToGitGroup;
+use Inhere\Kite\Console\SubCmd\Gitflow\UpdatePushCmd;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
 use PhpPkg\Http\Client\Client;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
+use function array_merge;
 use function str_contains;
 use function strtoupper;
 
@@ -48,11 +50,23 @@ class GitHubController extends Controller
 
     protected static function commandAliases(): array
     {
-        return [
+        return array_merge([
             'wf'           => 'workflow',
             'rls'          => 'release',
             'pr'           => 'pullRequest',
             'redirectList' => ['rl'],
+        ], [
+            UpdatePushCmd::getName() => UpdatePushCmd::aliases(),
+        ]);
+    }
+
+    /**
+     * @return array
+     */
+    protected function subCommands(): array
+    {
+        return [
+            UpdatePushCmd::class,
         ];
     }
 

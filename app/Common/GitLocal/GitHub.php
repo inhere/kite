@@ -11,6 +11,9 @@ use RuntimeException;
  */
 class GitHub extends AbstractGitLocal
 {
+    public const HOST = GitConst::GITHUB_HOST;
+    public const GIT_HOST = GitConst::GITHUB_HOST;
+
     /**
      * current project owner/group name
      *
@@ -30,7 +33,7 @@ class GitHub extends AbstractGitLocal
 
     protected function init(array $config): void
     {
-        $this->host = self::GITHUB_HOST;
+        $this->host = GitConst::GITHUB_HOST;
 
         parent::init($config);
     }

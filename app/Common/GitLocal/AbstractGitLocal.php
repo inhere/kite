@@ -5,6 +5,7 @@ namespace Inhere\Kite\Common\GitLocal;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Helper\GitUtil;
 use PhpGit\Info\RemoteInfo;
+use PhpGit\Info\StatusInfo;
 use PhpGit\Repo;
 use RuntimeException;
 use Toolkit\Stdlib\Obj;
@@ -146,6 +147,16 @@ abstract class AbstractGitLocal
     }
 
     /**
+     * @param Repo $repo
+     *
+     * @return void
+     */
+    public function setRepo(Repo $repo): void
+    {
+        $this->repo = $repo;
+    }
+
+    /**
      * @return Repo
      */
     public function getRepo(): Repo
@@ -230,6 +241,30 @@ abstract class AbstractGitLocal
     public function getCurBranch(): string
     {
         return $this->getRepo()->getCurrentBranch();
+    }
+
+    /**
+     * @return StatusInfo
+     */
+    public function getStatusInfo(): StatusInfo
+    {
+        return $this->getRepo()->getStatusInfo();
+    }
+
+    /**
+     * @return string eg: origin
+     */
+    public function getCurRemote(): string
+    {
+        return $this->getRepo()->getStatusInfo()->upRemote;
+    }
+
+    /**
+     * @return string eg: main
+     */
+    public function getCurRemoteBranch(): string
+    {
+        return $this->getRepo()->getStatusInfo()->upBranch;
     }
 
     /**
