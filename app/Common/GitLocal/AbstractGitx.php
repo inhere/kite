@@ -9,6 +9,7 @@ use PhpGit\Info\StatusInfo;
 use PhpGit\Repo;
 use RuntimeException;
 use Toolkit\Stdlib\Obj;
+use function array_merge;
 use function basename;
 use function count;
 use function explode;
@@ -94,7 +95,7 @@ abstract class AbstractGitx
     protected string $curForkGroup = '';
 
     /**
-     * @var string
+     * @var string repo name without group
      */
     protected string $curRepo = '';
 
@@ -116,13 +117,18 @@ abstract class AbstractGitx
     protected string $curPjName = '';
 
     /**
-     * @var array
+     * @var array = [
+     *  'name'      => 'name',
+     *  'repo'      => 'repo name', // default use name as repo name.
+     *  'group'     => 'group',
+     *  'forkGroup' => 'my-group',
+     * ]
      */
     protected array $curPjInfo = [];
 
     /**
      * @param Output|null $output
-     * @param array       $config
+     * @param array $config
      *
      * @return static
      */
@@ -135,7 +141,7 @@ abstract class AbstractGitx
      * Class constructor.
      *
      * @param Output|null $output
-     * @param array       $config
+     * @param array $config
      */
     public function __construct(Output $output = null, array $config = [])
     {
@@ -350,7 +356,7 @@ abstract class AbstractGitx
             // throw new RuntimeException("project '{$pjName}' is not found in the projects");
             $info = $this->getRemoteInfo($this->forkRemote);
             if ($info->isInvalid()) {
-                throw new RuntimeException("dynamic load project '{$pjName}' fail. not found git remote info");
+                throw new RuntimeException("dynamic load project '$pjName' fail. not found git remote info");
             }
 
             // load main remote info
@@ -386,7 +392,7 @@ abstract class AbstractGitx
 
     /**
      * @param string $repo
-     * @param bool   $useGitUrl
+     * @param bool $useGitUrl
      *
      * @return string
      */
@@ -685,5 +691,15 @@ abstract class AbstractGitx
     public function setDefaultBranch(string $defaultBranch): void
     {
         $this->defaultBranch = $defaultBranch;
+    }
+
+    /**
+     * @param array $curPjInfo
+     */
+    public function setCurPjInfo(array $curPjInfo): void
+    {
+        $this->curPjInfo = array_merge([
+            'forkGroup' => '',
+        ], $curPjInfo);
     }
 }

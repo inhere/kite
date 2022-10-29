@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Console\Attach\Gitlab;
+namespace Inhere\Kite\Console\SubCmd\GitlabCmd;
 
 use Inhere\Console\Command;
 use Inhere\Console\Exception\PromptException;
@@ -33,45 +33,54 @@ class MergeRequestCmd extends Command
      * generate an PR link for given project information
      *
      * @options
-     *  -s, --source        The source branch name. will auto prepend branchPrefix
-     *      --full-source   The full source branch name
+     *  -s, --source        The source branch name.
      *  -t, --target        The target branch name
-     *  -o, --open          Open the generated PR link on browser
+     *  -o, --open          Set target branch and open the PR link on browser
      *  -d, --direct        bool;The PR is direct from fork to main repository
      *      --new           bool;Open new pr page on browser. eg: http://my.gitlab.com/group/repo/merge_requests/new
      *
-     * @argument
-     *  project     The project key in 'gitlab' config. eg: group-name, name
+     * @arguments
+     *  project     The project name or path in self-host gitlab.
      *
      * @help
      * Special:
-     *   `@`, HEAD - Current branch.
-     *   `@s`      - Source branch.
-     *   `@t`      - Target branch.
+     *   `@`, H, HEAD - Current branch.
+     *   `@s`         - Source branch refer.
+     *   `@t`         - Target branch refer.
      *
+     * @param Input $input
+     * @param Output $output
+     *
+     * @return int
      * @example
      *   {binWithCmd}                       Will generate PR link for fork 'HEAD_BRANCH' to main 'HEAD_BRANCH'
      *   {binWithCmd} -o @                  Will open PR link for fork 'HEAD_BRANCH' to main 'HEAD_BRANCH' on browser
      *   {binWithCmd} -o qa                 Will open PR link for main 'HEAD_BRANCH' to main 'qa' on browser
      *   {binWithCmd} -t qa                 Will generate PR link for main 'HEAD_BRANCH' to main 'qa'
-     *   {binWithCmd} -t qa --direct       Will generate PR link for fork 'HEAD_BRANCH' to main 'qa'
+     *   {binWithCmd} -t qa --direct        Will generate PR link for fork 'HEAD_BRANCH' to main 'qa'
+     *   # Will generate PR link for 'group/repo', from 'dev' to 'qa' branch
+     *   {binWithCmd} -s dev -t qa group/repo
      *
-     * @param Input $input
-     * @param Output $output
-     *
-     * @return mixed
      */
-    protected function execute(Input $input, Output $output): mixed
+    protected function execute(Input $input, Output $output): int
     {
         $fs = $this->flags;
         $gl = AppHelper::newGitlab();
 
-        // http://gitlab.my.com/group/repo/merge_requests/new?utf8=%E2%9C%93&merge_request%5Bsource_project_id%5D=319&merge_request%5Bsource_branch%5D=fea_4_16&merge_request%5Btarget_project_id%5D=319&merge_request%5Btarget_branch%5D=qa
-        if (!$pjName = $gl->findProjectName()) {
-            $pjName = $fs->getArg('project');
+        $pjName = $fs->getArg('project');
+        if ($pjName) {
+            [$group, $repo] = \PhpGit\GitUtil::splitPath($pjName);
+            $pjInfo = [
+                'name'  => $repo,
+                'repo'  => $repo, // default use name as repo name.
+                'group' => $group,
+            ];
+            $gl->setCurPjInfo($pjInfo);
+        } else {
+            // auto parse info from workdir
+            $pjName = $gl->findProjectName();
+            $gl->loadProjectInfo($pjName);
         }
-
-        $gl->loadProjectInfo($pjName);
 
         $p = $gl->getCurProject();
 
@@ -83,21 +92,22 @@ class MergeRequestCmd extends Command
         $srcPjId = $p->getForkPid();
         $tgtPjId = $p->getMainPid();
 
-        $output->info('auto fetch current branch name');
-        $curBranch = GitUtil::getCurrentBranchName();
         $srcBranch = $fs->getOpt('source');
         $tgtBranch = $fs->getOpt('target');
 
-        if ($fullSBranch = $fs->getOpt('full-source')) {
-            $srcBranch = $fullSBranch;
-        } elseif (!$srcBranch) {
+        if (!$srcBranch) {
+            $output->info('auto fetch current branch name as source branch');
+            $curBranch = GitUtil::getCurrentBranchName();
             $srcBranch = $curBranch;
+        } else {
+            $curBranch = $srcBranch;
         }
 
         $open = $gl->getRealBranchName($fs->getOpt('open'));
         // if input '@', 'head', use current branch name.
         if ($open) {
-            if ($open === '@' || strtoupper($open) === 'HEAD') {
+            $upper = strtoupper($open);
+            if ($open === '@' || $upper === 'H' || $upper === 'HEAD') {
                 $open = $curBranch;
             } elseif ($open === '@s') {
                 $open = $srcBranch;
@@ -119,7 +129,7 @@ class MergeRequestCmd extends Command
 
         // deny as an source branch
         if ($denyBrs && $srcBranch !== $tgtBranch && in_array($srcBranch, $denyBrs, true)) {
-            throw new PromptException("the branch '$srcBranch' dont allow as source-branch for PR to other branch");
+            throw new PromptException("branch '$srcBranch' dont allow as source-branch for create PR");
         }
 
         $repo  = $p->repo;
