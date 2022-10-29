@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Console\Attach\Gitlab;
+namespace Inhere\Kite\Console\SubCmd\GitlabCmd;
 
 use Inhere\Console\Command;
 use Inhere\Console\Exception\PromptException;

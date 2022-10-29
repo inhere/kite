@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Console\Attach\Gitlab;
+namespace Inhere\Kite\Console\SubCmd\GitlabCmd;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
@@ -24,7 +24,7 @@ class ProjectCmd extends Command
     protected function subCommands(): array
     {
         return [
-            ProjectInit::class,
+            ProjectInitCmd::class,
         ];
     }
 

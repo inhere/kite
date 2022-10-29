@@ -13,7 +13,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
-use Inhere\Kite\Console\Attach\Golang\GenerateCmd;
+use Inhere\Kite\Console\SubCmd\Golang\GenerateCmd;
 use Toolkit\PFlag\FlagsParser;
 use function file_get_contents;
 
