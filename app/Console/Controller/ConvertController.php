@@ -16,6 +16,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Console\Component\ContentsAutoWriter;
+use Inhere\Kite\Console\SubCmd\ConvCmd\Ts2dateCmd;
 use Inhere\Kite\Helper\KiteUtil;
 use Inhere\Kite\Lib\Convert\JavaProperties;
 use Inhere\Kite\Lib\Parser\DBTable;
@@ -26,9 +27,7 @@ use Symfony\Component\Yaml\Yaml;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Json;
 use function base_convert;
-use function count;
 use function date;
-use function preg_match_all;
 use function strlen;
 use function strtotime;
 use function time;
@@ -58,16 +57,19 @@ class ConvertController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'ts2date'   => [
-                'tc',
-                'td',
-            ],
-            'date2ts'   => [
-                'dt',
-            ],
-            'yaml2json' => ['yml2json', 'y2j'],
-            'yaml2prop' => ['yml2prop', 'y2p'],
-            'prop2yaml' => ['prop2yml', 'p2y'],
+                'date2ts'   => ['dt',],
+                'yaml2json' => ['yml2json', 'y2j'],
+                'yaml2prop' => ['yml2prop', 'y2p'],
+                'prop2yaml' => ['prop2yml', 'p2y'],
+            ] + [
+                Ts2dateCmd::getName() => Ts2dateCmd::aliases(),
+            ];
+    }
+
+    public function subCommands(): array
+    {
+        return [
+            Ts2dateCmd::class,
         ];
     }
 
@@ -270,61 +272,6 @@ class ConvertController extends Controller
             'current time' => $curTime,
             'current date' => date('Y-m-d H:i:s', $curTime),
         ], 'today');
-    }
-
-    /**
-     * convert timestamp to datetime
-     *
-     * @arguments
-     * times    array;The want convert timestamps, allow @clipboard;true
-     *
-     * @param FlagsParser $fs
-     * @param Output $output
-     */
-    public function ts2dateCommand(FlagsParser $fs, Output $output): void
-    {
-        $args = $fs->getArg('times');
-
-        if (count($args) === 1 && KiteUtil::isClipboardAlias($args[0])) {
-            $text = Clipboard::new()->read();
-            $args = $text ? [$text] : [];
-
-            if (!$args) {
-                throw new PromptException('no contents in clipboard');
-            }
-        }
-
-        $output->info('Input Data:');
-        $output->writeRaw($args);
-
-        $data = [];
-        foreach ($args as $time) {
-            if (strlen($time) > 10) {
-                preg_match_all('/1\d{9}/', $time, $matches);
-                if (empty($matches[0])) {
-                    $output->warning("not found time in the: $time");
-                    continue;
-                }
-
-                foreach ($matches[0] as $match) {
-                    $data[] = [
-                        'timestamp' => $match,
-                        'datetime'  => date('Y-m-d H:i:s', (int)$match),
-                    ];
-                }
-                continue;
-            }
-
-            $data[] = [
-                'timestamp' => $time,
-                'datetime'  => date('Y-m-d H:i:s', (int)$time),
-            ];
-        }
-
-        $output->info('Parsed Result:');
-        $output->colored('- Current Time: ' . date('Y-m-d H:i:s'));
-        // opts
-        $output->table($data, 'Time to date', []);
     }
 
 }

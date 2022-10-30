@@ -35,7 +35,7 @@ class UpdatePushCmd extends Command
      *
      * @options
      *  --dr, --dry-run             bool;Dry-run the workflow, dont real execute
-     *  --np, --not-push            bool;Not push to remote repo after updated.
+     *  --np, --no-push             bool;Not push to remote repo after updated.
      *  --rb, --remote-branch       The remote branch name, default is current branch name.
      *
      * @param Input $input
@@ -64,7 +64,7 @@ class UpdatePushCmd extends Command
 
         $si = $gx->getStatusInfo();
 
-        if (!$fs->getOpt('not-push')) {
+        if (!$fs->getOpt('no-push')) {
             $runner->addf('git push %s', $si->upRemote);
         }
 

@@ -15,6 +15,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Console\Component\ContentsAutoWriter;
+use Inhere\Kite\Console\SubCmd\ConvCmd\Ts2dateCmd;
 use Inhere\Kite\Console\SubCmd\ParseUrlQueryCmd;
 use Inhere\Kite\Console\SubCmd\ToolCmd\HashCommand;
 use Inhere\Kite\Console\SubCmd\ToolCmd\RandomCommand;
@@ -70,14 +71,17 @@ class StringController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'join'    => ['implode', 'j'],
-            'split'   => ['s'],
-            'process' => ['p', 'filter', 'f'],
-            'replace' => ['r'],
-            'parse'   => ['fields'],
-            'random'  => RandomCommand::aliases(),
-            'dequery' => ParseUrlQueryCmd::aliases(),
-        ];
+                'join'    => ['implode', 'j'],
+                'split'   => ['s'],
+                'process' => ['p', 'filter', 'f'],
+                'replace' => ['r'],
+                'parse'   => ['fields'],
+            ] + [
+                RandomCommand::getName()    => RandomCommand::aliases(),
+                ParseUrlQueryCmd::getName() => ParseUrlQueryCmd::aliases(),
+                HashCommand::getName()    => HashCommand::aliases(),
+                Ts2dateCmd::getName()       => Ts2dateCmd::aliases(),
+            ];
     }
 
     protected function init(): void
@@ -90,6 +94,7 @@ class StringController extends Controller
     protected function subCommands(): array
     {
         return [
+            Ts2dateCmd::class,
             ParseUrlQueryCmd::class,
             HashCommand::class,
             RandomCommand::class,
