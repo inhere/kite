@@ -14,13 +14,11 @@ return [
         'logfile' => OS::userCacheDir('kite.log'),
     ],
     'git'           => [
-        // remote
-        'mainRemote' => 'main',
-        'forkRemote' => 'origin',
         // 'auto-sign' => true,
         // 'sign-text' => 'inhere <in.798@qq.com>',
-    ],
-    'gitflow'       => [
+
+        // ----- gitflow ----
+
         // remote
         'mainRemote' => 'main',
         'forkRemote' => 'origin',

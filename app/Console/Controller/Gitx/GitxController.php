@@ -81,7 +81,6 @@ class GitxController extends Controller
                 'rm-tag',
                 'rmtag',
             ],
-            'branch'       => ['br'],
             'branchUpdate' => ['brup', 'br-up', 'br-update', 'branch-up'],
             'update'       => ['up', 'pul', 'pull'],
             'batchPull'    => ['bp', 'bpul', 'bpull'],
@@ -97,7 +96,9 @@ class GitxController extends Controller
                 'tag-push',
             ],
             'tagInfo'      => ['tag-info', 'ti', 'tag-show'],
-        ];
+        ] + [
+            BranchCmd::getName() => BranchCmd::aliases(),
+            ];
     }
 
     /**

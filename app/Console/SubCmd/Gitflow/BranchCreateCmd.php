@@ -6,9 +6,10 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
-use Inhere\Kite\Helper\GitUtil;
-use Inhere\Kite\Kite;
-use PhpGit\Git;
+use Inhere\Kite\Common\GitLocal\AbstractGitx;
+use Inhere\Kite\Common\GitLocal\GitFactory;
+use PhpGit\Info\BranchInfos;
+use function date;
 
 /**
  * Class BranchCreateCmd
@@ -30,6 +31,8 @@ class BranchCreateCmd extends Command
      */
     private string $mainRemote = '';
 
+    private ?AbstractGitx $gx = null;
+
     public static function aliases(): array
     {
         return ['new', 'n'];
@@ -37,13 +40,13 @@ class BranchCreateCmd extends Command
 
     protected function configure(): void
     {
-        $this->initParams(Kite::config()->getArray('gitflow'));
+        $this->gx = GitFactory::make();
 
-        $this->forkRemote = $this->params->getString('forkRemote');
-        $this->mainRemote = $this->params->getString('mainRemote');
+        $this->forkRemote = $this->gx->getForkRemote();
+        $this->mainRemote = $this->gx->getMainRemote();
 
         if (!$this->forkRemote || !$this->mainRemote) {
-            $this->output->liteError('missing config for "forkRemote" and "mainRemote" on "gitflow"');
+            $this->output->liteError('missing config for "forkRemote" and "mainRemote" on "git"');
             return;
         }
 
@@ -82,47 +85,39 @@ class BranchCreateCmd extends Command
         $fs = $this->flags;
 
         $notToMain = $fs->getOpt('not-main');
-        $newBranch = $fs->getArg('branch');
+        $brName = $fs->getArg('branch');
 
-        // $cmd = CmdRunner::new('git checkout master')->do(true);
-        // $cmd->afterOkRun("git pull {$this->mainRemote} master")
-        //     ->afterOkRun("git checkout -b {$newBranch}")
-        //     ->afterOkRun("git push -u {$this->forkRemote} {$newBranch}")
-        //     ->afterOkRun("git push {$this->mainRemote} {$newBranch}");
+        $repo = $this->gx->getRepo();
 
         $output->info('fetch latest information from remote: ' . $this->mainRemote);
-        Git::new()->fetch($this->mainRemote, '', [
-            'no-tags' => true,
-        ]);
+        $repo->gitCmd('fetch', $this->mainRemote, '-n')->runAndPrint();
 
-        // TODO git fetch main, git branch -a | grep $newBranch
-        $branches = GitUtil::matchBranch($newBranch);
-        if ($branches) {
-
+        $bs = $repo->getBranchInfos();
+        if ($bs->hasBranch($brName, BranchInfos::FROM_ALL)) {
+            $output->warning("Branch '%s' has been exists, please use checkout to switch");
+            return 0;
         }
-
-        // $repo = Repo::new();
-        // $repo->findBranch()
 
         // $dryRun = true;
         $dryRun = $fs->getOpt('dry-run');
+        $defBr  = $this->gx->getDefaultBranch();
 
         $cmd = CmdRunner::new()
-            ->add('git checkout master')
-            ->addf('git pull %s master', $this->mainRemote)
+            ->addf('git checkout %s', $defBr)
+            ->addf('git pull %s %s', $this->mainRemote, $defBr)
             ->add('git push') // update to origin
-            ->addf('git checkout -b %s', $newBranch)
-            ->addf('git push -u %s %s', $this->forkRemote, $newBranch)
+            ->addf('git checkout -b %s', $brName)
+            ->addf('git push -u %s %s', $this->forkRemote, $brName)
             ->addWheref(static function () use ($notToMain) {
                 return $notToMain === false;
-            }, 'git push %s %s', $this->mainRemote, $newBranch)
+            }, 'git push %s %s', $this->mainRemote, $brName)
             // ->addf('git push %s %s', $this->mainRemote, $newBranch)
             ->setDryRun($dryRun)
             ->run(true);
 
         if ($cmd->isSuccess()) {
             // $output->error($cmd->getOutput() ?: 'Failure');
-            $output->success('Complete');
+            $output->success('Complete: ' . date('Y-m-d H:i:s'));
         }
 
         return 0;

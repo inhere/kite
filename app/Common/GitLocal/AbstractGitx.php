@@ -105,11 +105,6 @@ abstract class AbstractGitx
     protected string $defaultBranch = 'master';
 
     /**
-     * @var string
-     */
-    // protected $curBranch = '';
-
-    /**
      * current project name
      *
      * @var string
@@ -160,6 +155,8 @@ abstract class AbstractGitx
     public function setRepo(Repo $repo): void
     {
         $this->repo = $repo;
+        // sync repo dir as workdir
+        $this->workDir = $repo->getRepoDir();
     }
 
     /**
