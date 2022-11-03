@@ -6,11 +6,17 @@ $osName = OS::name();
 $basePath = Inhere\Kite\Kite::basePath();
 
 return [
-    // enable interactive
-    'no-interactive' => false,
+    // app config
     'app' => [
         // enable interactive
         'no-interactive' => false,
+    ],
+
+    'cliCommands' => [
+        // Inhere\Console\BuiltIn\DevServerCommand::class,
+    ],
+    'cliControllers' => [
+        // some class
     ],
 
     // --------- component object config -----------

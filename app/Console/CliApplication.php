@@ -21,6 +21,7 @@ use Inhere\Kite\Kite;
 use Throwable;
 use Toolkit\Stdlib\Obj\ObjectBox;
 use function date_default_timezone_set;
+use function is_callable;
 
 /**
  * Class Application
@@ -90,7 +91,25 @@ class CliApplication extends Application
             'desc' => 'set the global workdir for all commands'
         ]);
 
+        $this->loadRoutes($this);
+
         Kite::logger()->info('console app init completed');
+    }
+
+    /**
+     * @param CliApplication $app
+     *
+     * @return void
+     */
+    protected function loadRoutes(self $app): void
+    {
+        // register routes
+        require 'routes.php';
+
+        $func = Kite::config()->get('afterCliAppInit');
+        if ($func && is_callable($func)) {
+            $func($app);
+        }
     }
 
     // protected function buildVersionInfo(): array

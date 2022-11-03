@@ -40,4 +40,7 @@ Kite::setAliases([
     '@custom'       => Kite::getPath('custom'),
 ]);
 
+
+// do something ...
+
 return $loader;

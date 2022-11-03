@@ -13,7 +13,8 @@ if (!function_exists('env')) {
     }
 }
 
-function load_kite() {
+function load_kite(): void
+{
     if ($kiteDir = (string)getenv('KITE_PATH')) {
         require $kiteDir. '/app/boot.php';
     }

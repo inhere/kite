@@ -16,9 +16,6 @@ $app = new CliApplication([
     'updateAt'  => Kite::UPDATED_AT,
 ]);
 
-// register routes
-require dirname(__DIR__) . '/app/Console/routes.php';
-
 $app->addAliases('self:update', [
     'selfupdate',
     'self-update',
@@ -27,6 +24,10 @@ $app->addAliases('self:update', [
     'upself',
     'selfup'
 ]);
+
+// $app->prepare();
+
+
 
 // start application
 $app->run();

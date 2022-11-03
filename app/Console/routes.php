@@ -10,6 +10,7 @@
 
 use Inhere\Console\BuiltIn\PharController;
 use Inhere\Kite\Console\CliApplication;
+use Inhere\Kite\Kite;
 
 /** @var CliApplication $app */
 $app->registerCommands('Inhere\\Kite\\Console\\Command', __DIR__ . '/Command');
@@ -21,9 +22,13 @@ $app->registerGroups('Inhere\\Kite\\Console\\Controller', __DIR__ . '/Controller
 $app->addController(PharController::class);
 
 // load custom commands
-$commands = $app->config()->getArray('commands');
-if ($commands) {
+if ($commands = Kite::config()->getArray('cliCommands')) {
     $app->addCommands($commands);
+}
+
+// load custom controllers
+if ($controllers = Kite::config()->getArray('cliControllers')) {
+    $app->addControllers($controllers);
 }
 
 // load simple commands.

@@ -9,7 +9,9 @@ $osName = OS::name();
 
 return [
     // application config
-    'no-interactive' => false,
+    'app' => [
+        'no-interactive' => false,
+    ],
     'php:serve' => [
         'host' => '127.0.0.1:8552',
         // document root
