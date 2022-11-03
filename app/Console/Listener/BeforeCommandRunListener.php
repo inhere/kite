@@ -22,6 +22,6 @@ class BeforeCommandRunListener extends AbstractObj
         // auto set proxy
         $realCName = $handler->getRealCName();
         $groupName = $handler->getRealGName();
-        Kite::autoProxy()->applyProxyEnv($realCName, $groupName);
+        Kite::autoProxy()->applyProxyEnv($realCName, $groupName, $handler->getCommandId());
     }
 }

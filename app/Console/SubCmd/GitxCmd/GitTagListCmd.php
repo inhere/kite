@@ -23,13 +23,20 @@ class GitTagListCmd extends Command
         return ['ls'];
     }
 
+    protected function getArguments(): array
+    {
+        return [
+            'keywords' => 'match special tag by keywords',
+        ];
+    }
+
     protected function execute(Input $input, Output $output)
     {
         $fs = $this->flags;
 
         // git tag --sort=-creatordate 倒序排列
         $cmd = 'git tag -l -n2';
-        $kw  = $fs->getArg(0);
+        $kw  = $fs->getArg('keywords');
         if ($kw) {
             $cmd .= " | grep $kw";
         }

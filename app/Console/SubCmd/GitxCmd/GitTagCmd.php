@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Console\SubCmd;
+namespace Inhere\Kite\Console\SubCmd\GitxCmd;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Console\SubCmd\GitxCmd\GitTagListCmd;
 use Throwable;
 
 /**
@@ -23,6 +22,16 @@ class GitTagCmd extends Command
     {
         return [
             GitTagListCmd::class,
+            GitTagDelCmd::class,
+            GitTagCreateCmd::class,
+        ];
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            '--try,--dry-run' => 'bool;Dry-run the workflow, dont real execute',
+            '-y, --yes'       => 'bool;Direct execution without confirmation',
         ];
     }
 

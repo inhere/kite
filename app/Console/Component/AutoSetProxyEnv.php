@@ -52,16 +52,20 @@ class AutoSetProxyEnv extends AbstractObj
     /**
      * @param string $realCName
      * @param string $realGName
+     * @param string $cmdId
      *
      * @return bool
      */
-    public function applyProxyEnv(string $realCName, string $realGName = ''): bool
+    public function applyProxyEnv(string $realCName, string $realGName = '', string $cmdId = ''): bool
     {
         if (!$this->envSettings) {
             return false;
         }
 
-        $cmdId = $realGName ? $realGName . ':' . $realCName : $realCName;
+        if (!$cmdId) {
+            $cmdId = $realGName ? $realGName . ':' . $realCName : $realCName;
+        }
+
         if ($cmdId === $this->applyed) {
             return true;
         }
