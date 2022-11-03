@@ -26,6 +26,8 @@ use Inhere\Kite\Console\SubCmd\GitlabCmd\BranchDeleteCmd;
 use Inhere\Kite\Console\SubCmd\GitlabCmd\MergeRequestCmd;
 use Inhere\Kite\Console\SubCmd\GitlabCmd\ProjectCmd;
 use Inhere\Kite\Console\SubCmd\GitlabCmd\ResolveConflictCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitPushCmd;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
 use Throwable;
@@ -85,6 +87,8 @@ class GitLabController extends Controller
                 ResolveConflictCmd::getName() => ResolveConflictCmd::aliases(),
                 UpdatePushCmd::getName()      => UpdatePushCmd::aliases(),
                 UpdateNoPushCmd::getName()    => UpdateNoPushCmd::aliases(),
+                AddCommitCmd::getName()        => AddCommitCmd::aliases(),
+                AddCommitPushCmd::getName()   => AddCommitPushCmd::aliases(),
             ];
     }
 
@@ -100,6 +104,8 @@ class GitLabController extends Controller
             ResolveConflictCmd::class,
             UpdatePushCmd::class,
             UpdateNoPushCmd::class,
+            AddCommitCmd::class,
+            AddCommitPushCmd::class,
         ];
     }
 

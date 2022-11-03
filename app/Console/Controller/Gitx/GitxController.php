@@ -10,7 +10,6 @@
 namespace Inhere\Kite\Console\Controller\Gitx;
 
 use Inhere\Console\Controller;
-use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\Cmd;
@@ -19,7 +18,11 @@ use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Manager\GitBranchManager;
 use Inhere\Kite\Console\SubCmd\BranchCmd;
-use Inhere\Kite\Console\SubCmd\GitTagCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitPushCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\GitTagCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\GitTagCreateCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\GitTagDelCmd;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use Inhere\Kite\Kite;
@@ -40,12 +43,8 @@ use Toolkit\Stdlib\Obj\DataObject;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Proc\ProcTasks;
 use function abs;
-use function implode;
 use function realpath;
-use function sprintf;
-use function strlen;
 use function strtolower;
-use function trim;
 
 /**
  * Class GitxController
@@ -69,35 +68,37 @@ class GitxController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'changelog'    => ['chlog', 'clog', 'cl'],
-            'log'          => ['l', 'lg'],
-            'tagDelete'    => [
-                'tag-del',
-                'tagdel',
-                'tag:del',
-                'tag-rm',
-                'tagrm',
-                'tr',
-                'rm-tag',
-                'rmtag',
-            ],
-            'branchUpdate' => ['brup', 'br-up', 'br-update', 'branch-up'],
-            'update'       => ['up', 'pul', 'pull'],
-            'batchPull'    => ['bp', 'bpul', 'bpull'],
-            'tagFind'      => ['tagfind', 'tag-find'],
-            'tagNew'       => [
-                'tagnew',
-                'tag-new',
-                'tn',
-                'newtag',
-                'new-tag',
-                'tagpush',
-                'tp',
-                'tag-push',
-            ],
-            'tagInfo'      => ['tag-info', 'ti', 'tag-show'],
-        ] + [
-            BranchCmd::getName() => BranchCmd::aliases(),
+                'changelog'    => ['chlog', 'clog', 'cl'],
+                'log'          => ['l', 'lg'],
+                'tagDelete'    => [
+                    'tag-del',
+                    'tagdel',
+                    'tag:del',
+                    'tag-rm',
+                    'tagrm',
+                    'tr',
+                    'rm-tag',
+                    'rmtag',
+                ],
+                'branchUpdate' => ['brup', 'br-up', 'br-update', 'branch-up'],
+                'update'       => ['up', 'pul', 'pull'],
+                'batchPull'    => ['bp', 'bpul', 'bpull'],
+                'tagFind'      => ['tagfind', 'tag-find'],
+                'tagNew'       => [
+                    'tagnew',
+                    'tag-new',
+                    'tn',
+                    'newtag',
+                    'new-tag',
+                    'tagpush',
+                    'tp',
+                    'tag-push',
+                ],
+                'tagInfo'      => ['tag-info', 'ti', 'tag-show'],
+            ] + [
+                BranchCmd::getName()        => BranchCmd::aliases(),
+                AddCommitCmd::getName()        => AddCommitCmd::aliases(),
+                AddCommitPushCmd::getName() => AddCommitPushCmd::aliases(),
             ];
     }
 
@@ -109,6 +110,8 @@ class GitxController extends Controller
         return [
             BranchCmd::class,
             GitTagCmd::class,
+            AddCommitCmd::class,
+            AddCommitPushCmd::class,
         ];
     }
 
@@ -150,15 +153,10 @@ class GitxController extends Controller
      */
     protected function onNotFound(string $command, array $args): bool
     {
-        $this->output->info("git: input command '$command' is not found, will exec git command: `git $command`");
+        $this->output->info("input command '$command' is not found, will exec git command: `git $command`");
 
         $c = Cmd::git($command);
         $c->withIf(fn() => $c->addArgs(...$args), $args);
-
-        // if ($args) {
-        //     $c->addArgs(...$args);
-        // }
-
         $c->runAndPrint();
 
         return true;
@@ -459,80 +457,16 @@ class GitxController extends Controller
      *  --no-auto-add-v         bool;Not auto add 'v' for add tag version.
      *
      * @param FlagsParser $fs
-     * @param Input $input
      * @param Output $output
+     *
+     * @throws Throwable
+     * @deprecated
      */
-    public function tagNewCommand(FlagsParser $fs, Input $input, Output $output): void
+    public function tagNewCommand(FlagsParser $fs, Output $output): void
     {
-        $lTag = '';
-        $dir  = $input->getPwd();
-
-        if ($fs->getOpt('next')) {
-            $lTag = GitUtil::findTag($dir, false);
-            if (!$lTag) {
-                $output->error('No any tags found of the project');
-                return;
-            }
-
-            $tag = GitUtil::buildNextTag($lTag);
-        } else {
-            $tag = $fs->getOpt('version');
-            if (!$tag) {
-                $output->error('please input new tag version, like: -v v2.0.4');
-                return;
-            }
-        }
-
-        if (!AppHelper::isVersion($tag)) {
-            $output->error('please input an valid tag version, like: -v v2.0.4');
-            return;
-        }
-
-        $hashId = $fs->getOpt('hash');
-        $dryRun = $this->flags->getOpt('dry-run');
-
-        // $remotes = Git::new($dir)->remote->getList();
-        if ($tag[0] !== 'v' && !$fs->getOpt('no-auto-add-v')) {
-            $tag = 'v' . $tag;
-        }
-
-        $info = [
-            'Work Dir' => $dir,
-            'Hash ID'  => $hashId,
-            'Dry Run'  => $dryRun,
-            'New Tag'  => $tag,
-        ];
-
-        if ($lTag) {
-            $info['Old Tag'] = $lTag;
-        }
-
-        $msg = $fs->getOpt('message');
-        $msg = $msg ?: "Release $tag";
-
-        // add message
-        $info['Message'] = $msg;
-        $output->aList($info, 'Information', ['ucFirst' => false]);
-
-        if (
-            $this->isInteractive() &&
-            !$this->flags->getOpt('yes') &&
-            $output->unConfirm('please ensure create and push new tag')
-        ) {
-            $output->colored('  GoodBye!');
-            return;
-        }
-
-        // git tag -a $1 -m "Release $1"
-        // git push origin --tags
-        // $cmd = sprintf('git tag -a %s -m "%s" && git push origin %s', $tag, $msg, $tag);
-        $run = CmdRunner::new();
-        $run->setDryRun($dryRun);
-        $run->addf('git tag -a %s -m "%s" %s', $tag, $msg, $hashId);
-        $run->addf('git push origin %s', $tag);
-        $run->runAndPrint();
-
-        $output->success('Complete');
+        $output->warning('TIP: deprecated, please call `git tag create`');
+        $cmd = new GitTagCreateCmd($this->input, $output);
+        $cmd->run($fs->getFlags());
     }
 
     /**
@@ -545,143 +479,15 @@ class GitxController extends Controller
      *
      * @param FlagsParser $fs
      * @param Output $output
+     *
+     * @throws Throwable
+     * @deprecated
      */
     public function tagDeleteCommand(FlagsParser $fs, Output $output): void
     {
-        $tag = $fs->getOpt('tag');
-        if (!$tag) {
-            throw new PromptException('please input tag name');
-        }
-
-        $run = CmdRunner::new();
-        $run->addf('git tag -d %s', $tag);
-
-        if (false === $fs->getOpt('no-remote')) {
-            $remote = $fs->getOpt('remote', 'origin');
-
-            $run->addf('git push %s :refs/tags/%s', $remote, $tag);
-        }
-
-        $run->runAndPrint();
-
-        $output->success('Complete');
-    }
-
-    /**
-     * run git add/commit at once command
-     *
-     * @options
-     *  -m, --message    string;The commit message;required
-     *
-     * @arguments
-     *  files   Only add special files
-     *
-     * @throws Throwable
-     */
-    public function acCommand(): void
-    {
-        // $input->setLOpt('not-push', true);
-        /*
-         args:
-         array(3) {
-          [0]=> string(2) "ac"
-          [1]=> string(2) "-m"
-          [2]=> string(8) "some message"
-        }
-         */
-        $args   = $this->flags->getRawArgs();
-        $args[] = '--not-push';
-
-        $this->runActionWithArgs('acp', $args);
-    }
-
-    /**
-     * run git add/commit/push at once command
-     *
-     * @options
-     *  -m, --message             string;The commit message text
-     *      --nm, --no-message    bool;not input message, write message by git interactive shell.
-     *      --not-push            bool;Dont execute git push
-     *      --auto-sign           bool;Auto add sign string after message.
-     *      --sign-text           Custom setting the sign text.
-     *
-     * @arguments
-     *  files...   array;Only add special files
-     *
-     * @help
-     * commit types:
-     *  build     "Build system"
-     *  chore     "Chore"
-     *  ci        "CI"
-     *  docs      "Documentation"
-     *  feat      "Features"
-     *  fix       "Bug fixes"
-     *  perf      "Performance"
-     *  refactor  "Refactor"
-     *  style     "Style"
-     *  test      "Testing"
-     *
-     * @param FlagsParser $fs
-     * @param Output $output
-     */
-    public function acpCommand(FlagsParser $fs, Output $output): void
-    {
-        $message   = '';
-        $noMessage = $fs->getOpt('no-message');
-        if (!$noMessage) {
-            $message = $fs->getOpt('message');
-            if (!$message) {
-                $output->liteError('please input an message for git commit');
-                return;
-            }
-
-            $message = trim($message);
-            if (strlen($message) < 3) {
-                $output->liteError('the input commit message is too short');
-                return;
-            }
-        }
-
-        $added = '.';
-        if ($args = $fs->getArg('files')) {
-            $added = implode(' ', $args);
-        }
-
-        $signText = $fs->getOpt('sign-text', $this->settings->getString('sign-text'));
-        $autoSign = $fs->getOpt('auto-sign', $this->settings->getBool('auto-sign'));
-
-        // will auto fetch user info by git
-        if ($autoSign && !$signText) {
-            $git = Git::new();
-
-            $username  = $git->config->get('user.name');
-            $userEmail = $git->config->get('user.email');
-            // eg "Signed-off-by: inhere <in.798@qq.com>"
-            if ($username && $userEmail) {
-                $signText = "$username <$userEmail>";
-            }
-        }
-
-        $run = CmdRunner::new("git status $added");
-        $run->setDryRun($this->flags->getOpt('dry-run'));
-
-        $run->do(true);
-        $run->afterOkDo("git add $added");
-        if ($message) {
-            if ($signText) {
-                $message .= "\n\nSigned-off-by: $signText";
-            }
-
-            $run->afterOkDo(sprintf('git commit -m "%s"', $message));
-        } else {
-            $run->afterOkDo("git commit");
-        }
-
-        if (false === $fs->getOpt('not-push')) {
-            $run->afterOkDo('git push');
-        }
-
-        $output->success('Complete');
+        $output->warning('TIP: deprecated, please call `git tag delete`');
+        $cmd = new GitTagDelCmd($this->input, $output);
+        $cmd->run($fs->getFlags());
     }
 
     /**

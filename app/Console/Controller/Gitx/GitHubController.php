@@ -13,11 +13,14 @@ use Inhere\Console\Controller;
 use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Common\Cmd;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitHub;
-use Inhere\Kite\Console\Component\RedirectToGitGroup;
 use Inhere\Kite\Console\SubCmd\Gitflow\UpdateNoPushCmd;
 use Inhere\Kite\Console\SubCmd\Gitflow\UpdatePushCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitPushCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\GitTagCmd;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
 use PhpPkg\Http\Client\Client;
@@ -57,8 +60,10 @@ class GitHubController extends Controller
             'pr'           => 'pullRequest',
             'redirectList' => ['rl'],
         ], [
-            UpdatePushCmd::getName()   => UpdatePushCmd::aliases(),
-            UpdateNoPushCmd::getName() => UpdateNoPushCmd::aliases(),
+            UpdatePushCmd::getName()    => UpdatePushCmd::aliases(),
+            UpdateNoPushCmd::getName()  => UpdateNoPushCmd::aliases(),
+            AddCommitCmd::getName() => AddCommitCmd::aliases(),
+            AddCommitPushCmd::getName() => AddCommitPushCmd::aliases(),
         ]);
     }
 
@@ -68,8 +73,11 @@ class GitHubController extends Controller
     protected function subCommands(): array
     {
         return [
+            GitTagCmd::class,
             UpdatePushCmd::class,
             UpdateNoPushCmd::class,
+            AddCommitCmd::class,
+            AddCommitPushCmd::class,
         ];
     }
 
@@ -113,15 +121,15 @@ class GitHubController extends Controller
      */
     protected function onNotFound(string $command, array $args): bool
     {
-        if (!$this->app) {
-            return false;
-        }
+        $this->output->info("input command '$command' is not found, will exec git command: `git $command`");
 
-        $h = RedirectToGitGroup::new([
-            'cmdList' => $this->settings['redirectGit'] ?? [],
-        ]);
+        Kite::autoProxy()->applyProxyEnv($command, self::getName());
 
-        return $h->handle($this, $command, $args);
+        $c = Cmd::git($command);
+        $c->withIf(fn() => $c->addArgs(...$args), $args);
+        $c->runAndPrint();
+
+        return true;
     }
 
     /**
@@ -180,7 +188,6 @@ class GitHubController extends Controller
          */
 
         $http = Client::factory([]);
-
 
         $output->success('Complete');
     }
