@@ -18,7 +18,7 @@ use function date;
 class UpdatePushCmd extends Command
 {
     protected static string $name = 'up-push';
-    protected static string $desc = 'quick delete git branches from local, origin, main remote';
+    protected static string $desc = 'update codes from origin and main remote, then push to origin remote';
 
     public static function aliases(): array
     {
@@ -41,9 +41,9 @@ class UpdatePushCmd extends Command
      * @param Input $input
      * @param Output $output
      *
-     * @return mixed
+     * @return int
      */
-    protected function execute(Input $input, Output $output): mixed
+    protected function execute(Input $input, Output $output): int
     {
         $fs = $this->flags;
         $gx = GitFactory::make();
@@ -52,14 +52,19 @@ class UpdatePushCmd extends Command
         $upBranch = $fs->getOpt('remote-branch', $curBranch);
         $output->info("Current Branch: $curBranch, fetch remote branch: $upBranch");
 
+        $mainRemote = $gx->getMainRemote();
+
         $runner = CmdRunner::new();
         $runner->setDryRun($fs->getOpt('dry-run'));
         $runner->add('git pull');
-        $runner->addf('git pull %s %s', $gx->getMainRemote(), $upBranch);
+
+        if ($gx->getRepo()->hasBranch($upBranch, $mainRemote)) {
+            $runner->addf('git pull %s %s', $mainRemote, $upBranch);
+        }
 
         $defBranch = $gx->getDefaultBranch();
         if ($upBranch !== $defBranch) {
-            $runner->addf('git pull %s %s', $gx->getMainRemote(), $defBranch);
+            $runner->addf('git pull %s %s', $mainRemote, $defBranch);
         }
 
         $si = $gx->getStatusInfo();

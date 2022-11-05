@@ -12,14 +12,14 @@ namespace Inhere\Kite\Console\Controller;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Console\Component\ContentsAutoReader;
+use Inhere\Kite\Lib\Parser\DBTable;
+use Inhere\Kite\Lib\Parser\MySQL\TableField;
 use Toolkit\PFlag\FlagsParser;
 use function file_get_contents;
 
 /**
  * Class JavaController
- * - go:fmt   format go codes by go fmt
- * - go:lint  run go lint check
- *
  */
 class JavaController extends Controller
 {
@@ -30,8 +30,8 @@ class JavaController extends Controller
     protected static function commandAliases(): array
     {
         return [
-            'json2class' => ['json2c'],
-            'sql2class'  => ['sql2c'],
+            'json2class' => ['json2c', 'j2c'],
+            'sql2class'  => ['sql2c', 's2c'],
         ];
     }
 
@@ -39,7 +39,7 @@ class JavaController extends Controller
      * convert JSON/JSON5 contents to JAVA entity,dto class
      *
      * @options
-     *  -f,--file       The source code file. if input '@', will read from clipboard
+     *  -s,--source       The source code file or contents. if input '@', will read from clipboard
      *  -o,--output     The output target. default is stdout;;stdout
      *
      * @param Output $output
@@ -53,7 +53,7 @@ class JavaController extends Controller
      * convert create mysql table SQL to JAVA entity,dto class
      *
      * @options
-     *  -f,--file       The source code file. if input '@', will read from clipboard
+     *  -s,--source       The source code file or contents. if input '@', will read from clipboard
      *  -o,--output     The output target. default is stdout;;stdout
      *
      * @param FlagsParser $fs
@@ -61,6 +61,12 @@ class JavaController extends Controller
      */
     public function sql2classCommand(FlagsParser $fs, Output $output): void
     {
+        $source = $fs->getOpt('source');
+        $source = ContentsAutoReader::readFrom($source);
+
+        $dbt = DBTable::fromSchemeSQL($source);
+        $mp  = $dbt->getObjFields(TableField::class);
+
         $output->success('TODO');
     }
 

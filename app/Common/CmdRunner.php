@@ -2,9 +2,9 @@
 
 namespace Inhere\Kite\Common;
 
-use Toolkit\Sys\Cmd\AbstractCmdBuilder;
 use RuntimeException;
 use Toolkit\Cli\Color;
+use Toolkit\Sys\Cmd\AbstractCmdBuilder;
 use function is_array;
 use function is_string;
 use function sprintf;
@@ -277,7 +277,7 @@ class CmdRunner extends AbstractCmdBuilder
      */
     private function runCommands(array $commands): void
     {
-        Color::println('Starting Handle', 'suc');
+        Color::println('=========== Starting Handle ===========', 'suc');
 
         $step = 1;
         foreach ($commands as $command) {

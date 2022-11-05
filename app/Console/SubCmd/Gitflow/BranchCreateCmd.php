@@ -10,6 +10,8 @@ use Inhere\Kite\Common\GitLocal\AbstractGitx;
 use Inhere\Kite\Common\GitLocal\GitFactory;
 use PhpGit\Info\BranchInfos;
 use function date;
+use function str_contains;
+use function str_replace;
 
 /**
  * Class BranchCreateCmd
@@ -66,7 +68,7 @@ class BranchCreateCmd extends Command
      *  --dry-run           bool;Dry-run the workflow, dont real execute
      *
      * @arguments
-     *  branch      string;The new branch name. eg: fea_6_12;required
+     *  branch      string;The new branch name. eg: fea_220612;required
      *
      * @param Input $input
      * @param Output $output
@@ -84,13 +86,14 @@ class BranchCreateCmd extends Command
     {
         $fs = $this->flags;
 
-        $notToMain = $fs->getOpt('not-main');
+        $repo   = $this->gx->getRepo();
         $brName = $fs->getArg('branch');
-
-        $repo = $this->gx->getRepo();
+        if (str_contains($brName, '{ymd}')) {
+            $brName = str_replace('{ymd}', date('ymd'), $brName);
+        }
 
         $output->info('fetch latest information from remote: ' . $this->mainRemote);
-        $repo->gitCmd('fetch', $this->mainRemote, '-n')->runAndPrint();
+        $repo->gitCmd('fetch', $this->mainRemote, '-np')->runAndPrint();
 
         $bs = $repo->getBranchInfos();
         if ($bs->hasBranch($brName, BranchInfos::FROM_ALL)) {
@@ -98,6 +101,7 @@ class BranchCreateCmd extends Command
             return 0;
         }
 
+        $notToMain = $fs->getOpt('not-main');
         // $dryRun = true;
         $dryRun = $fs->getOpt('dry-run');
         $defBr  = $this->gx->getDefaultBranch();
