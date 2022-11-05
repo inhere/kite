@@ -18,6 +18,11 @@ class GitTagCmd extends Command
     protected static string $name = 'tag';
     protected static string $desc = 'git tag manage tool command. eg: list, add, del';
 
+    public static function aliases(): array
+    {
+        return ['tg'];
+    }
+
     protected function subCommands(): array
     {
         return [

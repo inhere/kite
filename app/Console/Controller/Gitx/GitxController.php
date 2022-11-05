@@ -20,6 +20,7 @@ use Inhere\Kite\Console\Manager\GitBranchManager;
 use Inhere\Kite\Console\SubCmd\BranchCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitPushCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\GitLogCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitTagCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitTagCreateCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitTagDelCmd;
@@ -42,7 +43,6 @@ use Toolkit\Stdlib\Helper\Assert;
 use Toolkit\Stdlib\Obj\DataObject;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Proc\ProcTasks;
-use function abs;
 use function realpath;
 use function strtolower;
 
@@ -69,7 +69,6 @@ class GitxController extends Controller
     {
         return [
                 'changelog'    => ['chlog', 'clog', 'cl'],
-                'log'          => ['l', 'lg'],
                 'tagDelete'    => [
                     'tag-del',
                     'tagdel',
@@ -97,6 +96,8 @@ class GitxController extends Controller
                 'tagInfo'      => ['tag-info', 'ti', 'tag-show'],
             ] + [
                 BranchCmd::getName()        => BranchCmd::aliases(),
+                GitTagCmd::getName()        => GitTagCmd::aliases(),
+                GitLogCmd::getName()        => GitLogCmd::aliases(),
                 AddCommitCmd::getName()        => AddCommitCmd::aliases(),
                 AddCommitPushCmd::getName() => AddCommitPushCmd::aliases(),
             ];
@@ -110,6 +111,7 @@ class GitxController extends Controller
         return [
             BranchCmd::class,
             GitTagCmd::class,
+            GitLogCmd::class,
             AddCommitCmd::class,
             AddCommitPushCmd::class,
         ];
@@ -488,50 +490,6 @@ class GitxController extends Controller
         $output->warning('TIP: deprecated, please call `git tag delete`');
         $cmd = new GitTagDelCmd($this->input, $output);
         $cmd->run($fs->getFlags());
-    }
-
-    /**
-     * display recently git commits information by `git log`
-     *
-     * @arguments
-     *  maxCommit       int;Max display how many commits;;15
-     *
-     * @options
-     *  --ac, --abbrev-commit     bool;Only display the abbrev commit ID
-     *  --exclude                 Exclude contains given sub-string. multi by comma split.
-     *  --file                    Export changelog message to file
-     *  --format                  The git log option `--pretty` value.
-     *                            can be one of oneline, short, medium, full, fuller, reference, email, raw, format:<string> and tformat:<string>.
-     *  --mc, --max-commit        int;Max display how many commits
-     *  --nc, --no-color          bool;Dont use color render git output
-     *  --nm, --no-merges         bool;No contains merge request logs
-     *
-     * @param FlagsParser $fs
-     * @param Output $output
-     */
-    public function logCommand(FlagsParser $fs, Output $output): void
-    {
-        $b = Git::new()->newCmd('log');
-
-        $noColor = $fs->getOpt('no-color');
-        $exclude = $fs->getOpt('exclude');
-
-        $noMerges  = $fs->getOpt('no-merges');
-        $abbrevID  = $fs->getOpt('abbrev-commit');
-        $maxCommit = $fs->getOpt('max-commit', $fs->getArg('maxCommit'));
-
-        // git log --color --graph --pretty=format:'%Cred%h%Creset:%C(ul yellow)%d%Creset %s (%Cgreen%cr%Creset, %C(bold blue)%an%Creset)' --abbrev-commit -10
-        $b->add('--graph');
-        $b->addIf('--color', !$noColor);
-        $b->add('--pretty=format:"%Cred%h%Creset:%C(ul yellow)%d%Creset %s (%Cgreen%cr%Creset, %C(bold blue)%an%Creset)"');
-        $b->addIf("--exclude=$exclude", $exclude);
-        $b->addIf('--abbrev-commit', $abbrevID);
-        $b->addIf('--no-merges', $noMerges);
-        $b->add('-' . abs($maxCommit));
-
-        $b->runAndPrint();
-
-        $output->success('Complete');
     }
 
     /**

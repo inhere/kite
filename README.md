@@ -1,7 +1,7 @@
 # Kite
 
 [![License](https://img.shields.io/packagist/l/inhere/console.svg?style=flat-square)](LICENSE)
-[![Php Version](https://img.shields.io/badge/php-%3E=8.0.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
+[![Php Version](https://img.shields.io/badge/php-%3E=8.1.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
 [![English](https://img.shields.io/badge/English-Readme-brightgreen.svg?maxAge=2592000)](README.en.md)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/inhere/kite)](https://github.com/inhere/kite)
 [![Actions Status](https://github.com/inhere/kite/workflows/Unit-Tests/badge.svg)](https://github.com/inhere/kite/actions)
@@ -17,10 +17,10 @@ PHP编写的，方便本地开发和使用的个人CLI工具应用。
 **系统环境依赖**
 
 - git
-- php 8.0+
+- php 8.1+
 - composer
 
-> TIP: 支持windows 10
+> TIP: 支持windows 10, linux, macOS
 
 **脚本安装(推荐)**
 
