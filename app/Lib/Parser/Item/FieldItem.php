@@ -113,6 +113,10 @@ class FieldItem extends AbstractObj implements JsonSerializable
             return sprintf('%s<%s>', JavaType::LIST, Str::upFirst($elemType));
         }
 
+        if (Str::hasSuffixIC($this->name, 'ids')) {
+            return sprintf('%s<%s>', JavaType::LIST, JavaType::LONG);
+        }
+
         if ($type === Type::OBJECT) {
             return Str::upFirst($name);
         }

@@ -5,6 +5,7 @@ namespace Inhere\Kite\Lib\Parser\MySQL;
 use Inhere\Kite\Lib\Generate\Java\JavaType;
 use Inhere\Kite\Lib\Parser\Item\FieldItem;
 use Toolkit\Stdlib\Str;
+use function sprintf;
 
 /**
  * class TableField
@@ -55,6 +56,10 @@ class TableField extends FieldItem
      */
     public function toJavaType(string $type, string $name): string
     {
+        if (Str::hasSuffixIC($this->name, 'ids')) {
+            return sprintf('%s<%s>', JavaType::LIST, JavaType::LONG);
+        }
+
         if ($type === DBType::JSON) {
             // return JavaType::OBJECT;
             return Str::upFirst($name);
