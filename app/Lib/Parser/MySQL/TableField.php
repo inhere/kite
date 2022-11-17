@@ -56,6 +56,10 @@ class TableField extends FieldItem
      */
     public function toJavaType(string $type, string $name): string
     {
+        if (Str::hasSuffixIC($this->name, 'id')) {
+            return JavaType::LONG;
+        }
+
         if (Str::hasSuffixIC($this->name, 'ids')) {
             return sprintf('%s<%s>', JavaType::LIST, JavaType::LONG);
         }
@@ -65,8 +69,7 @@ class TableField extends FieldItem
             return Str::upFirst($name);
         }
 
-        $type = DBType::toPhpType($type);
-        return Str::upFirst($type);
+        return Str::upFirst(DBType::toPhpType($type));
     }
 
     /**

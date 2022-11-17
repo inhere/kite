@@ -1,0 +1,47 @@
+{
+  "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+  "actions": [
+    {
+      "_class": "hudson.model.ParametersAction"
+    },
+    {
+      "_class": "hudson.model.CauseAction"
+    },
+    {},
+    {
+      "_class": "org.jenkinsci.plugins.workflow.cps.EnvActionImpl"
+    },
+    {},
+    {},
+    {},
+    {
+      "_class": "org.jenkinsci.plugins.pipeline.modeldefinition.actions.RestartDeclarativePipelineAction"
+    },
+    {},
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.views.FlowGraphAction"
+    },
+    {},
+    {}
+  ],
+  "artifacts": [],
+  "building": false,
+  "description": "发布版本：v2.0.20 ....",
+  "displayName": "1747 fix",
+  "duration": 57887,
+  "estimatedDuration": 56176,
+  "executor": null,
+  "fingerprint": [],
+  "fullDisplayName": "php-pipeline 1747 fix",
+  "id": "1747",
+  "keepLog": false,
+  "number": 1747,
+  "queueId": 21987,
+  "result": "SUCCESS",
+  "timestamp": 1668071294434,
+  "url": "http://my-jenkins.dev/php-pipeline/1747/",
+  "changeSets": [],
+  "culprits": [],
+  "nextBuild": null,
+  "previousBuild": {}
+}

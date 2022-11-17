@@ -22,6 +22,7 @@
     "gitonomy/gitlib": "^1.3",
     "psr/log": "^3.0",
     "psr/container": "^1.1",
+    "phppkg/jenkins-client": "dev-master",
     "phppkg/http-client": "dev-master",
     "phppkg/http-message": "^2.0",
     "phppkg/easytpl": "dev-main",

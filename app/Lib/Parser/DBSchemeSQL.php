@@ -157,11 +157,11 @@ class DBSchemeSQL
             return true;
         }
 
-        if (stripos($row, 'UNIQUE KEY') === 0) {
+        if (stripos($row, 'UNIQUE ') === 0) {
             return true;
         }
 
-        if (stripos($row, 'INDEX KEY') === 0) {
+        if (stripos($row, 'INDEX ') === 0) {
             return true;
         }
 

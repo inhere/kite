@@ -1,5 +1,6 @@
 <?php
 
+use Custom\Console\Controller\JenkinsController;
 use Toolkit\Stdlib\OS;
 
 $osName = OS::name();
@@ -17,6 +18,7 @@ return [
     ],
     'cliControllers' => [
         // some class
+        JenkinsController::class,
     ],
 
     // --------- component object config -----------

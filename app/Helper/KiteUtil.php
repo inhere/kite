@@ -20,18 +20,20 @@ use const IN_PHAR;
  */
 class KiteUtil
 {
-
     public const NL_CHAR    = 'NL';
+    public const TAB_CHAR   = 'TAB';
     public const SPACE_CHAR = 'SPACE';
 
     public const STDIN_ALIAS = [
         '@i',
+        '@si',
         '@stdin',
         'stdin',
     ];
 
     public const STDOUT_ALIAS = [
         '@o',
+        '@so',
         '@stdout',
         'stdout',
     ];

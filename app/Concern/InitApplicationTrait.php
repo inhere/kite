@@ -5,7 +5,7 @@ namespace Inhere\Kite\Concern;
 use Inhere\Kite\Common\GitAPI\GitHubV3API;
 use Inhere\Kite\Common\GitAPI\GitLabV4API;
 use Inhere\Kite\Kite;
-use Inhere\Kite\Lib\Jenkins\JenkinsClient;
+use Inhere\Kite\Lib\Jenkins\JenkinsFactory;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use PhpPkg\Config\ConfigBox;
@@ -129,7 +129,7 @@ trait InitApplicationTrait
 
         $box->set('jenkins', function () {
             $config = $this->config()->getArray('jenkins');
-            return new JenkinsClient($config);
+            return new JenkinsFactory($config);
         });
     }
 

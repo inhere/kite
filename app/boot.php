@@ -13,6 +13,7 @@ $loader->addPsr4("PhpPkg\\EasyTpl\\", $baseDir . '/vendor/phppkg/easytpl/src/');
 $loader->addPsr4("PhpPkg\\Config\\", $baseDir . '/vendor/phppkg/config/src/');
 $loader->addPsr4("PhpPkg\\Ini\\", $baseDir . '/vendor/phppkg/ini/src/');
 $loader->addPsr4("Custom\\Lib\\", $baseDir . '/custom/lib/');
+$loader->addPsr4("Custom\\Console\\", $baseDir . '/custom/console/');
 
 // save loader for plugin manager
 // Kite::$loader = $loader;

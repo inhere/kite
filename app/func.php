@@ -13,6 +13,17 @@ if (!function_exists('env')) {
     }
 }
 
+/**
+ * @param string $path
+ * @param bool $rmPharMark
+ *
+ * @return string
+ */
+function kite_path(string $path = '', bool $rmPharMark = true): string
+{
+    return Inhere\Kite\Kite::getPath($path, $rmPharMark);
+}
+
 function load_kite(): void
 {
     if ($kiteDir = (string)getenv('KITE_PATH')) {

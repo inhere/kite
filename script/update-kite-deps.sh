@@ -2,6 +2,8 @@
 #
 # - update composer.lock
 # - update all depends package
+# - skip .git existed dev package
+# - clone no .git existed dev package
 #
 
 # run: kite run --proxy update-kite-deps.sh
@@ -24,7 +26,7 @@ else
 fi
 
 set -x
-#kite env prox
+#kite env proxy
 cd $tmpKiteDir || exit 2
 git checkout .
 git pull

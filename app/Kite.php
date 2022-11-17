@@ -10,14 +10,13 @@
 namespace Inhere\Kite;
 
 use BadMethodCallException;
-use Composer\Autoload\ClassLoader;
 use Inhere\Kite\Component\ScriptRunner;
 use Inhere\Kite\Concern\StaticPathAliasTrait;
 use Inhere\Kite\Console\CliApplication;
 use Inhere\Kite\Console\Component\AutoSetProxyEnv;
 use Inhere\Kite\Console\Plugin\PluginManager;
 use Inhere\Kite\Http\WebApplication;
-use Inhere\Kite\Lib\Jenkins\JenkinsClient;
+use Inhere\Kite\Lib\Jenkins\JenkinsFactory;
 use Inhere\Kite\Lib\Jump\QuickJump;
 use Inhere\Route\Dispatcher\Dispatcher;
 use Inhere\Route\Router;
@@ -39,7 +38,7 @@ use const IN_PHAR;
  * @method static Router webRouter()
  * @method static Dispatcher dispatcher()
  * @method static ScriptRunner scriptRunner()
- * @method static JenkinsClient jenkins()
+ * @method static JenkinsFactory jenkins()
  *
  * @see Kite::__callStatic() for quick get object
  */
@@ -76,7 +75,7 @@ class Kite
      */
     private static WebApplication $webApp;
 
-    /**
+    /*
      * @var ClassLoader
      */
     // public static ClassLoader $loader;
