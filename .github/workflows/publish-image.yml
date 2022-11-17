@@ -47,7 +47,7 @@ jobs:
 
       - name: Install deps and run
         run: |
-          composer update --no-progress
+          composer update --no-progress -W
           php bin/kite
 
       # Login against a Docker registry except on PR
