@@ -23,7 +23,7 @@
     "psr/log": "^3.0",
     "psr/container": "^1.1",
     "phppkg/jenkins-client": "dev-main",
-    "phppkg/http-client": "dev-master",
+    "phppkg/http-client": "^3.0",
     "phppkg/http-message": "^2.0",
     "phppkg/easytpl": "dev-main",
     "phppkg/config": "dev-master",
