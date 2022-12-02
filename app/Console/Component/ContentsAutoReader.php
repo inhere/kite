@@ -33,8 +33,20 @@ class ContentsAutoReader extends AbstractObj
     protected string $srcType = self::TYPE_STRING;
 
     /**
+     * try read contents
+     *
+     * - input empty or '@i' or '@stdin'     - will read from STDIN
+     * - input '@c' or '@cb' or '@clipboard' - will read from Clipboard
+     * - input '@l' or '@load'               - will read from loaded file
+     * - input '@FILEPATH'                   - will read from the filepath.
+     *
      * @param string $source
-     * @param array{print: bool, loadedFile: string, throwOnEmpty: bool} $opts
+     * @param array $opts = [
+     *     'print'        => true,
+     *     'throwOnEmpty' => false,
+     *     'loadedFile'   => '',
+     *     'suffix'       => '.json',
+     * ]
      *
      * @return string
      */
@@ -52,7 +64,12 @@ class ContentsAutoReader extends AbstractObj
      * - input '@FILEPATH' or FILEPATH       - will read from the filepath.
      *
      * @param string $source the input text
-     * @param array{print: bool, loadedFile: string, throwOnEmpty: bool} $opts
+     * @param array $opts = [
+     *     'print'        => true,
+     *     'throwOnEmpty' => false,
+     *     'loadedFile'   => '',
+     *     'suffix'       => '.json',
+     * ]
      *
      * @return string
      */
@@ -88,9 +105,14 @@ class ContentsAutoReader extends AbstractObj
                 $print && Cli::info('try read contents from file: ' . $lFile);
                 $str = File::readAll($lFile);
             } else {
+                $suffix   = $opts['suffix'] ?? '';
                 $filepath = Kite::resolve($source);
+
+                // direct path to disk file
                 if ($filepath[0] === '@') {
                     $filepath = substr($filepath, 1);
+                } elseif ($suffix) {
+                    $filepath = File::appendSuffix($filepath, $suffix);
                 }
 
                 if (is_file($filepath)) {

@@ -19,7 +19,6 @@ use Inhere\Kite\Console\SubCmd\ConvCmd\Ts2dateCmd;
 use Inhere\Kite\Console\SubCmd\ParseUrlQueryCmd;
 use Inhere\Kite\Console\SubCmd\ToolCmd\HashCommand;
 use Inhere\Kite\Console\SubCmd\ToolCmd\RandomCommand;
-use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\KiteUtil;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Parser\Text\Json5ItemParser;
@@ -76,6 +75,7 @@ class StringController extends Controller
                 'process' => ['p', 'filter', 'f'],
                 'replace' => ['r'],
                 'parse'   => ['fields'],
+                'length'   => ['len', 'ln', 'count'],
             ] + [
                 RandomCommand::getName()    => RandomCommand::aliases(),
                 ParseUrlQueryCmd::getName() => ParseUrlQueryCmd::aliases(),
@@ -163,7 +163,7 @@ class StringController extends Controller
     public function joinCommand(FlagsParser $fs): void
     {
         $text = trim($fs->getArg('text'));
-        $text = AppHelper::tryReadContents($text, [
+        $text = ContentsAutoReader::readFrom($text, [
             'loadedFile' => $this->dumpfile,
         ]);
 
@@ -319,8 +319,8 @@ class StringController extends Controller
      * @param Output $output
      *
      * @example
-     *  {binWithCmd} --cut 'L,' # cut by = and remove left
-     *  {binWithCmd} --replace 'A/a' # replace A to a for each line
+     *  {binWithCmd} --cut 'L,'     # cut by ',' and remove left
+     *  {binWithCmd} -f "replace:A,a" # replace A to a for each line
      *  {binWithCmd} -f "wrap:'"
      *
      */
@@ -519,12 +519,31 @@ class StringController extends Controller
     public function caseCommand(FlagsParser $fs, Output $output): void
     {
         $source = $fs->getOpt('source');
-        $source = AppHelper::tryReadContents($source);
+        $source = ContentsAutoReader::readFrom($source, []);
 
         if (!$source) {
             throw new InvalidArgumentException('empty source code for convert');
         }
 
         $output->info('TODO');
+    }
+
+    /**
+     * Calc length for input string.
+     *
+     * @options
+     *  --nt, --not-trim       bool;dont run trim for input
+     *
+     * @arguments
+     *  source        string;The source code for calc. allow: string, @clipboard;true
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function lengthCommand(FlagsParser $fs, Output $output): void
+    {
+        $source = ContentsAutoReader::readFrom($fs->getArg('source'), []);
+
+        $output->colored('Length: ' . strlen(trim($source)));
     }
 }

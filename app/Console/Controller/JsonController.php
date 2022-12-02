@@ -15,7 +15,6 @@ use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Console\Component\ContentsAutoWriter;
-use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Generate\JsonToCode;
 use Inhere\Kite\Lib\Parser\Text\Json5ItemParser;
@@ -79,6 +78,16 @@ class JsonController extends Controller
         $this->dumpfile = Kite::getTmpPath('json-load.json');
     }
 
+    /**
+     * @param int $index
+     *
+     * @return string
+     */
+    private function getDumpfile(int $index = 0): string
+    {
+        return Kite::getTmpPath("json-load$index.json");
+    }
+
     protected function jsonRender(): JSONPretty
     {
         return JSONPretty::new([
@@ -91,7 +100,7 @@ class JsonController extends Controller
      */
     private function loadDumpfileJSON(): void
     {
-        $dumpfile = $this->dumpfile;
+        $dumpfile = $this->getDumpfile();
         if (!$dumpfile || !is_file($dumpfile)) {
             throw new InvalidArgumentException("the json temp file '$dumpfile' is not exists");
         }
@@ -108,7 +117,8 @@ class JsonController extends Controller
     private function autoReadJSON(string $source): void
     {
         $this->json = ContentsAutoReader::readFrom($source, [
-            'loadedFile' => $this->dumpfile,
+            'loadedFile' => $this->getDumpfile(),
+            'suffix'     => '.json',
         ]);
         if (!$this->json) {
             throw new InvalidArgumentException('the source json data is empty');
@@ -120,24 +130,41 @@ class JsonController extends Controller
     /**
      * load json string data from clipboard to an tmp file
      *
+     * @options
+     * -i, --index  int;set the loaded tmp file index number;false;0
+     *
      * @arguments
      * source   The source. allow: @clipboard, @stdin
+     * output   The output file, default is @tmp/json-load.json
      *
      * @param FlagsParser $fs
      * @param Output $output
      *
      * @throws Throwable
+     * @example
+     * {binWithCmd} @c l1                   # will save to @tmp/l1.json
+     * {binName} json load -s @tmp/l1 $
      */
     public function loadCommand(FlagsParser $fs, Output $output): void
     {
-        $json = AppHelper::tryReadContents($fs->getArg('source'));
+        $ext = '.json';
+        $json = ContentsAutoReader::readFrom($fs->getArg('source'), [
+            'suffix' => $ext,
+        ]);
         if (!$json) {
             throw new InvalidArgumentException('the input data is empty');
         }
 
         $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        if ($file = $fs->getArg('output')) {
+            $file = Kite::getTmpPath($file);
+            $file = File::appendSuffix($file, $ext);
+        } else {
+            $file = $this->dumpfile;
+        }
 
-        File::write(JsonHelper::prettyJSON($data), $this->dumpfile);
+        $output->info("load temp JSON data to file: $file");
+        File::write(JsonHelper::prettyJSON($data), $file);
 
         $output->success('Complete');
     }
@@ -150,11 +177,20 @@ class JsonController extends Controller
      *
      * @options
      *     --type           The search type. allow: keys, path
+     * --nc, --no-color     bool;dont render color for output result.
      * -s, --source         The json data source, default read stdin, allow: @load, @clipboard, @stdin
      * -o, --output         The output, default is stdout, allow: @load, @clipboard, @stdout
      * --tk, --top-keys     bool;only output all top key names
+     * -f, --filter         array;include filter by input keywords.
+     * -e, --exclude        array;exclude filter by input keywords.
      *
      * @throws Throwable
+     * @example
+     * {binWithCmd} -s @l --nc -e ' 0,' -e '[]' $   # exclude contains ' 0,' '[]' lines.
+     *
+     *   ## load to custom file and read
+     *   {binName} json load @c l1           # will save to @tmp/l1.json
+     *   {binWithCmd} -s @tmp/l1  $    # read and render from @tmp/l1.json
      */
     public function getCommand(FlagsParser $fs, Output $output): void
     {
@@ -164,7 +200,7 @@ class JsonController extends Controller
 
         $path = $fs->getArg('path');
         if ($path = trim($path, ' .$')) {
-            $ret  = Arr::getByPath($this->data, $path);
+            $ret = Arr::getByPath($this->data, $path);
         } else {
             $ret = $this->data;
         }
@@ -184,7 +220,12 @@ class JsonController extends Controller
                 $ret = array_keys($ret);
             }
 
-            $str = $this->jsonRender()->renderData($ret);
+            $render = $this->jsonRender()
+                ->setNoColor($fs->getOpt('no-color'))
+                ->setIncludes($fs->getOpt('filter'))
+                ->setExcludes($fs->getOpt('exclude'));
+
+            $str = $render->renderData($ret);
         }
 
         $outFile = $fs->getOpt('output');
@@ -228,14 +269,15 @@ class JsonController extends Controller
      * --uq, --unquote      bool;unquote input string before format.
      *
      * @arguments
-     * json     The json text line. if empty will try read text from clipboard
+     * json     The json text line.  allow: @load, @clipboard, @stdin
+     *          if empty will try read text from clipboard
      *
      * @throws Throwable
      */
     public function prettyCommand(FlagsParser $fs, Output $output): void
     {
         $json = $fs->getArg('json');
-        $json = AppHelper::tryReadContents($json, [
+        $json = ContentsAutoReader::readFrom($json, [
             'loadedFile' => $this->dumpfile,
         ]);
 
@@ -253,13 +295,14 @@ class JsonController extends Controller
      * collect field and comments from JSON5 contents
      *
      * @arguments
-     * json5     The json text line. if empty will try read text from clipboard
+     * json5     The json text line.  allow: @load, @clipboard, @stdin
+     *           if empty will try read text from clipboard
      *
      */
     public function fieldsCommand(FlagsParser $fs, Output $output): void
     {
         $json = $fs->getArg('json5');
-        $json = AppHelper::tryReadContents($json, [
+        $json = ContentsAutoReader::readFrom($json, [
             'loadedFile' => $this->dumpfile,
         ]);
 

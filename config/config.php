@@ -63,9 +63,10 @@ return [
         // 'https_proxy' => 'http://127.0.0.1:1081',
     ],
     'jenkins' => [
-        'hostUrl'  => getenv('JK_HOST_URL') ?: '',
-        'username' => getenv('JK_UNAME') ?: '',
-        'apiToken' => getenv('JK_API_TOKEN') ?: '',
+        'hostUrl'  => env('JK_HOST_URL'),
+        'username' => env('JK_UNAME'),
+        'password' => env('JK_PASSWD'),
+        'apiToken' => env('JK_API_TOKEN'),
     ],
     // tool command usage docs
     'manDocs'       => [

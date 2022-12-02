@@ -16,13 +16,14 @@ use Inhere\Kite\Console\CliApplication;
 use Inhere\Kite\Console\Component\AutoSetProxyEnv;
 use Inhere\Kite\Console\Plugin\PluginManager;
 use Inhere\Kite\Http\WebApplication;
-use Inhere\Kite\Lib\Jenkins\JenkinsFactory;
 use Inhere\Kite\Lib\Jump\QuickJump;
 use Inhere\Route\Dispatcher\Dispatcher;
 use Inhere\Route\Router;
 use Monolog\Logger;
 use PhpPkg\Config\ConfigBox;
+use PhpPkg\JenkinsClient\MultiJenkins;
 use Toolkit\FsUtil\Dir;
+use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Obj\ObjectBox;
 use Toolkit\Stdlib\Util\PhpDotEnv;
 use const BASE_PATH;
@@ -38,7 +39,7 @@ use const IN_PHAR;
  * @method static Router webRouter()
  * @method static Dispatcher dispatcher()
  * @method static ScriptRunner scriptRunner()
- * @method static JenkinsFactory jenkins()
+ * @method static MultiJenkins jenkins()
  *
  * @see Kite::__callStatic() for quick get object
  */
@@ -170,6 +171,10 @@ class Kite
      */
     public static function getTmpPath(string $path): string
     {
+        if (File::isAbsPath($path)) {
+            return $path;
+        }
+
         if (IN_PHAR) {
             // see app/boot.php
             return self::resolve('@user-tmp');
@@ -188,6 +193,10 @@ class Kite
     {
         if (!$path) {
             return self::basePath($rmPharMark);
+        }
+
+        if (File::isAbsPath($path)) {
+            return $path;
         }
 
         return self::basePath($rmPharMark) . '/' . $path;

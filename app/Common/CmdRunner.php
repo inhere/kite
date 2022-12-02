@@ -221,10 +221,11 @@ class CmdRunner extends AbstractCmdBuilder
     }
 
     /**
-     * @param array  $config
-     *                     - command STRING|ARRAY
-     *                     - workDir STRING
-     *                     - where  callable
+     * @param array  $config = [
+     *    'command' => 'STRING|ARRAY',
+     *    'workDir' => 'STRING',
+     *    'where'  =>  'callable',
+     * ]
      * @param string $key
      *
      * @return $this
@@ -254,6 +255,7 @@ class CmdRunner extends AbstractCmdBuilder
     public function run(bool $printOutput = false): static
     {
         $this->printOutput = $printOutput;
+
         if ($command = $this->cmdline) {
             $this->innerExecute($command, $this->workDir);
 

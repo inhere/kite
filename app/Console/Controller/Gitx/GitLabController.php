@@ -18,11 +18,9 @@ use Inhere\Kite\Common\Cmd;
 use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\GitLab;
 use Inhere\Kite\Console\Component\RedirectToGitGroup;
-use Inhere\Kite\Console\SubCmd\Gitflow\BranchCreateCmd;
 use Inhere\Kite\Console\SubCmd\Gitflow\UpdateNoPushCmd;
 use Inhere\Kite\Console\SubCmd\Gitflow\UpdatePushCmd;
 use Inhere\Kite\Console\SubCmd\GitlabCmd\BranchCmd;
-use Inhere\Kite\Console\SubCmd\GitlabCmd\BranchDeleteCmd;
 use Inhere\Kite\Console\SubCmd\GitlabCmd\MergeRequestCmd;
 use Inhere\Kite\Console\SubCmd\GitlabCmd\ProjectCmd;
 use Inhere\Kite\Console\SubCmd\GitlabCmd\ResolveConflictCmd;
@@ -71,8 +69,6 @@ class GitLabController extends Controller
     protected static function commandAliases(): array
     {
         return [
-                'deleteBranch' => ['del-br', 'delbr', 'dbr', 'db'],
-                'newBranch'    => ['new-br', 'newbr', 'nbr', 'nb'],
                 'li'           => 'linkInfo',
                 'cf'           => 'config',
                 'conf'         => 'config',
@@ -403,47 +399,6 @@ class GitLabController extends Controller
     }
 
     /**
-     * checkout an new branch for development. alias for `br new`
-     *
-     * @options
-     *  --nm, --not-main   bool;Dont push new branch to the main remote
-     *
-     * @arguments
-     *  branch      The new branch name. eg: fea_6_12
-     *
-     * @param FlagsParser $fs
-     * @param Output $output
-     *
-     * @throws Throwable
-     */
-    public function newBranchCommand(FlagsParser $fs, Output $output): void
-    {
-        $bcCmd = new BranchCreateCmd($this->input, $output);
-        $bcCmd->run($fs->getFlags());
-    }
-
-    /**
-     * delete branches from local, origin, main remote
-     *
-     * @options
-     * -f, --force              bool;Force execute delete command, ignore error
-     * --nm, --not-main         bool;Dont delete branch on the main remote
-     *
-     * @arguments
-     *  branches...   array;The want deleted branch name(s). eg: fea_6_12;required
-     *
-     * @param FlagsParser $fs
-     * @param Output $output
-     *
-     * @throws Throwable
-     */
-    public function deleteBranchCommand(FlagsParser $fs, Output $output): void
-    {
-        $bcCmd = new BranchDeleteCmd($this->input, $output);
-        $bcCmd->run($fs->getFlags());
-    }
-
-    /**
      * show gitlab project config information
      *
      * @options
@@ -663,6 +618,7 @@ class GitLabController extends Controller
         }
 
         $run->addf('git remote -v', $name);
+        $run->addf('git push -u origin master');
         $run->addf('git push main master');
 
         // $run->addf('git push -u origin master');

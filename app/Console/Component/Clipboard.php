@@ -2,11 +2,11 @@
 
 namespace Inhere\Kite\Console\Component;
 
-use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Obj\AbstractObj;
 use Toolkit\Stdlib\OS;
 use Toolkit\Sys\Exec;
 use function addslashes;
+use function file_put_contents;
 use function tempnam;
 
 /**
@@ -90,7 +90,8 @@ class Clipboard extends AbstractObj
         if ($multiLine) {
             $file = tempnam(OS::tempDir(), "tmp_");
 
-            File::write($contents, $file);
+            // File::write($contents, $file);
+            file_put_contents($file, $contents);
             $command = "$program < $file";
         } else {
             $command = "echo $contents | $program";

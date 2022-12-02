@@ -237,6 +237,7 @@ class AppHelper
      * @param array{print: bool, loadedFile: string} $opts
      *
      * @return string
+     * @deprecated
      */
     public static function tryReadContents(string $input, array $opts = []): string
     {
