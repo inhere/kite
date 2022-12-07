@@ -25,6 +25,7 @@ class HashHmacCommand extends Command
         // $this->flags->addOptByRule($name, $rule);
         $this->flags->addArg('str', 'want to signed string. allow: @c', 'string', true);
         $this->flags->addOpt('algo', 'a', 'Name of selected hashing algorithm. eg: md5, sha256', 'string', false, 'sha256');
+        $this->flags->addOpt('upper', 'u', 'Convert hashed value to upper case', 'bool');
         $this->flags->addOpt(
             'key', 'k',
             'Shared secret key used for generating the HMAC variant of the message digest.',
@@ -53,7 +54,9 @@ class HashHmacCommand extends Command
             $signStr = hash_hmac($algoName, $rawStr, $secKey);
         }
 
-        $signStr = strtoupper($signStr);
+        if ($fs->getOpt('upper')) {
+            $signStr = strtoupper($signStr);
+        }
 
         $output->colored('SIGN:');
         $output->println($signStr);

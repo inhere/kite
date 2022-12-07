@@ -40,6 +40,7 @@ use function sprintf;
 use function str_contains;
 use function strlen;
 use function trim;
+use function var_export;
 
 /**
  * Class GitGroup
@@ -80,6 +81,25 @@ class PhpController extends Controller
      */
     public function str2arrCommand(FlagsParser $fs, Output $output): void
     {
+        $output->success('Complete');
+    }
+
+    /**
+     * convert input JSON string to PHP array.
+     *
+     * @arguments
+     * source   The source. allow: @clipboard, @stdin
+     * output   The output target. default is stdout.
+     *
+     * @param FlagsParser $fs
+     * @param Output $output
+     */
+    public function json2arrCommand(FlagsParser $fs, Output $output): void
+    {
+        $json = ContentsAutoReader::readFrom($fs->getArg('source'), []);
+        $code = var_export(Json::decode($json, true), true);
+
+        $output->println($code);
         $output->success('Complete');
     }
 

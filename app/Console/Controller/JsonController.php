@@ -85,7 +85,11 @@ class JsonController extends Controller
      */
     private function getDumpfile(int $index = 0): string
     {
-        return Kite::getTmpPath("json-load$index.json");
+        if ($index > 0) {
+            return Kite::getTmpPath("json-load$index.json");
+        }
+
+        return Kite::getTmpPath("json-load.json");
     }
 
     protected function jsonRender(): JSONPretty
@@ -172,17 +176,18 @@ class JsonController extends Controller
     /**
      * get data by path in the loaded JSON data.
      *
+     * @options
+     *     --type               The search type. allow: keys, path
+     * --nc, --no-color         bool;dont render color for output result.
+     * -s, --source             The json data source, default read stdin, allow: @load, @clipboard, @stdin
+     * -o, --output             The output, default is stdout, allow: @load, @clipboard, @stdout
+     * -k, --keys               bool;only output all top key names for data.
+     * -f, --filter             array;include filter by input keywords, like use grep.
+     * -e, --exclude            array;exclude filter by input keywords.
+     * -m, --match, --search    array;search and high line by input keywords.
+     *
      * @arguments
      * path     string;The key path for search get, use `$` get all;required
-     *
-     * @options
-     *     --type           The search type. allow: keys, path
-     * --nc, --no-color     bool;dont render color for output result.
-     * -s, --source         The json data source, default read stdin, allow: @load, @clipboard, @stdin
-     * -o, --output         The output, default is stdout, allow: @load, @clipboard, @stdout
-     * --tk, --top-keys     bool;only output all top key names
-     * -f, --filter         array;include filter by input keywords.
-     * -e, --exclude        array;exclude filter by input keywords.
      *
      * @throws Throwable
      * @example
@@ -216,14 +221,15 @@ class JsonController extends Controller
         } elseif (is_scalar($ret)) {
             $str = (string)$ret;
         } else {
-            if ($fs->getOpt('top-keys')) {
+            if ($fs->getOpt('keys')) {
                 $ret = array_keys($ret);
             }
 
             $render = $this->jsonRender()
                 ->setNoColor($fs->getOpt('no-color'))
                 ->setIncludes($fs->getOpt('filter'))
-                ->setExcludes($fs->getOpt('exclude'));
+                ->setExcludes($fs->getOpt('exclude'))
+                ->setMatches($fs->getOpt('search'));
 
             $str = $render->renderData($ret);
         }

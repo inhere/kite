@@ -26,6 +26,7 @@ use Inhere\Kite\Console\SubCmd\GitlabCmd\ProjectCmd;
 use Inhere\Kite\Console\SubCmd\GitlabCmd\ResolveConflictCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitPushCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\GitEmojiCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitLogCmd;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
@@ -80,6 +81,7 @@ class GitLabController extends Controller
                 'checkout'     => ['co'],
             ] + [
                 GitLogCmd::getName()        => GitLogCmd::aliases(),
+                GitEmojiCmd::getName()        => GitEmojiCmd::aliases(),
                 BranchCmd::getName()          => BranchCmd::aliases(),
                 MergeRequestCmd::getName()    => MergeRequestCmd::aliases(),
                 ResolveConflictCmd::getName() => ResolveConflictCmd::aliases(),
@@ -98,6 +100,7 @@ class GitLabController extends Controller
         return [
             BranchCmd::class,
             GitLogCmd::class,
+            GitEmojiCmd::class,
             ProjectCmd::class,
             MergeRequestCmd::class,
             ResolveConflictCmd::class,

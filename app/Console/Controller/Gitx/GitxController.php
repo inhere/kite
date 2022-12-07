@@ -20,6 +20,7 @@ use Inhere\Kite\Console\Manager\GitBranchManager;
 use Inhere\Kite\Console\SubCmd\BranchCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitPushCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\GitEmojiCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitLogCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitTagCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitTagCreateCmd;
@@ -98,6 +99,7 @@ class GitxController extends Controller
                 BranchCmd::getName()        => BranchCmd::aliases(),
                 GitTagCmd::getName()        => GitTagCmd::aliases(),
                 GitLogCmd::getName()        => GitLogCmd::aliases(),
+                GitEmojiCmd::getName()        => GitEmojiCmd::aliases(),
                 AddCommitCmd::getName()        => AddCommitCmd::aliases(),
                 AddCommitPushCmd::getName() => AddCommitPushCmd::aliases(),
             ];
@@ -112,6 +114,7 @@ class GitxController extends Controller
             BranchCmd::class,
             GitTagCmd::class,
             GitLogCmd::class,
+            GitEmojiCmd::class,
             AddCommitCmd::class,
             AddCommitPushCmd::class,
         ];

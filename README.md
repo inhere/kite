@@ -277,6 +277,10 @@ kite gitlab {command} [arguments ...] [--options ...]
     // remote
     'mainRemote' => 'main',
     'forkRemote' => 'origin',
+    // 分支别名
+    'branchAliases'    => [
+        'h' => 'head',
+    ]
 ],
 ```
 
