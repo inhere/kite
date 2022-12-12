@@ -6,7 +6,7 @@ use Inhere\Console\Command;
 use Inhere\Console\Component\Symbol\GitEmoji;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Common\CmdRunner;
+use Inhere\Kite\Console\Component\ContentsAutoReader;
 
 /**
  * class GitTagListCmd
@@ -24,6 +24,13 @@ class GitEmojiCmd extends Command
         return ['moji', 'emj'];
     }
 
+    protected function getOptions(): array
+    {
+        return [
+            '-r, --replace' => 'replace :name: keywords to emoji for the input contents. allow: @c',
+        ];
+    }
+
     protected function getArguments(): array
     {
         return [
@@ -35,6 +42,14 @@ class GitEmojiCmd extends Command
     {
         $fs = $this->flags;
         $ge = GitEmoji::new();
+
+        if ($src = $fs->getOpt('replace')) {
+            $src = ContentsAutoReader::readFrom($src);
+
+            $output->colored('RESULT:');
+            $output->println($ge->render($src));
+            return;
+        }
 
         if ($kw = $fs->getArg('keywords')) {
             $matched = $ge->search($kw);
