@@ -192,7 +192,7 @@ class PhpController extends Controller
      *
      * @example
      * Use special php and phpunit:
-     * {binWithCmd} --php-bin php7 --phpunit /Users/inhere/.composer/vendor/phpunit/phpunit/phpunit -f KEYWORDS ./test
+     *   {binWithCmd} --php-bin php7 --phpunit /Users/inhere/.composer/vendor/phpunit/phpunit/phpunit -f KEYWORDS ./test
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -203,6 +203,8 @@ class PhpController extends Controller
         if (is_file($dir)) {
             $dir = dirname($dir);
         }
+
+        $output->info('unit tests code dir or file: ' . $dir);
 
         $runDir = KiteUtil::findPhpUnitConfigFile($dir);
         if (!$runDir) {

@@ -137,7 +137,7 @@ class KiteUtil
         $dir = FS::realpath($dir);
 
         while (true) {
-            if (!$dir) {
+            if (!trim($dir, '/')) {
                 break;
             }
 
