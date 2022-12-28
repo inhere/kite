@@ -6,6 +6,7 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Throwable;
+use function array_unshift;
 
 /**
  * class AddCommitCmd
@@ -39,9 +40,10 @@ class AddCommitCmd extends Command
     protected function execute(Input $input, Output $output): void
     {
         $flags = $this->flags->getFlags();
-        $flags[] = '--np';
+        array_unshift($flags, '--np');
 
         $upCmd = new AddCommitPushCmd($input, $output);
+        $upCmd->setParent($this->getParent());
         $upCmd->run($flags);
     }
 }

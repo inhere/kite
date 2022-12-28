@@ -7,7 +7,7 @@
  * @license  MIT
  */
 
-namespace Inhere\Kite\Console\Command;
+namespace Inhere\Kite\Console\SubCmd;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;

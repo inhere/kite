@@ -60,6 +60,8 @@ class UpdatePushCmd extends Command
 
         if ($gx->getRepo()->hasBranch($upBranch, $mainRemote)) {
             $runner->addf('git pull %s %s', $mainRemote, $upBranch);
+        } else {
+            $runner->addf('git fetch %s -np', $mainRemote);
         }
 
         $defBranch = $gx->getDefaultBranch();

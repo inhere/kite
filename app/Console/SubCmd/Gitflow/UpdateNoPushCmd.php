@@ -7,6 +7,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
+use function array_unshift;
 
 /**
  * Class UpdateNoPushCmd
@@ -44,9 +45,10 @@ class UpdateNoPushCmd extends Command
     protected function execute(Input $input, Output $output): int
     {
         $flags = $this->flags->getFlags();
-        $flags[] = '--np';
+        array_unshift($flags, '--np');
 
         $upCmd = new UpdatePushCmd($input, $output);
+        $upCmd->setParent($this->getParent());
         $upCmd->run($flags);
 
         return 0;
