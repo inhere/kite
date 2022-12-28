@@ -9,6 +9,7 @@ use Inhere\Console\Exception\PromptException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\PhpDevServe;
+use Inhere\Kite\Console\SubCmd\InitCommand;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\SysCmd;
 use Inhere\Kite\Kite;
@@ -63,6 +64,13 @@ class SelfController extends Controller
             'object' => [
                 'obj'
             ],
+        ];
+    }
+
+    protected function subCommands(): array
+    {
+        return [
+            InitCommand::class,
         ];
     }
 
@@ -253,7 +261,7 @@ class SelfController extends Controller
      * update {binName} to latest from github repository(by git pull)
      *
      * @options
-     *  --no-deps     bool;Not update deps by composer update
+     *  --deps     bool;whether update vendor deps by `composer update`
      *
      * @param FlagsParser $fs
      * @param Output $output
@@ -272,11 +280,9 @@ class SelfController extends Controller
         // [, $msg,] = Sys::run($cmd);
         SysCmd::quickExec($cmd, $dir);
 
-        if (!$fs->getOpt('no-deps')) {
+        if ($fs->getOpt('deps')) {
             Color::println('Run composer update:');
             $cmd = 'composer update';
-            // [, $msg,] = Sys::run($cmd);
-            // $output->writeln($msg);
             SysCmd::quickExec($cmd, $dir);
         }
 

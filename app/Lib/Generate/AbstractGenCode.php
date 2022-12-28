@@ -75,6 +75,7 @@ abstract class AbstractGenCode
             'package'   => 'YOUR.PKG.NAME',
             'modulePkg' => 'MODULE_PKG',
             'pkgName'   => 'PKG_NAME',
+            'subPkg'    => 'SUB_PKG',
         ]);
     }
 

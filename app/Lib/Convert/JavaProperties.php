@@ -84,11 +84,11 @@ class JavaProperties
     }
 
     /**
-     * @param Traversable|array $data
+     * @param iterable $data
      *
      * @return string
      */
-    public function encode(Traversable|array $data): string
+    public function encode(iterable $data): string
     {
         $flatMap = [];
         $this->flattenData($data, $flatMap);
@@ -97,11 +97,11 @@ class JavaProperties
     }
 
     /**
-     * @param Traversable|array $data
+     * @param iterable $data
      * @param string $parentPath
      * @param array $flatMap
      */
-    private function flattenData(Traversable|array $data, array &$flatMap = [], string $parentPath = ''): void
+    private function flattenData(iterable $data, array &$flatMap = [], string $parentPath = ''): void
     {
         foreach ($data as $key => $val) {
             if ($parentPath) {

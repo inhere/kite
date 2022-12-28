@@ -29,6 +29,7 @@ use InvalidArgumentException;
 use Throwable;
 use Toolkit\FsUtil\File;
 use Toolkit\PFlag\FlagsParser;
+use Toolkit\Stdlib\Arr;
 use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\Str;
 use function array_pad;
@@ -433,7 +434,7 @@ class StringController extends Controller
      *       --fields               The field names, split by ','
      *       --get-cols             Only get the provide index cols, start is 0. eg: 1,5
      *   -o, --output               The output target. default is stdout.
-     *  --of, --out-fmt             The output format. allow: raw, md-table
+     *  --of, --out-fmt             The output format. allow: raw, md/md-table, table, json
      *  --is, --item-sep            The item sep char. default is NL.
      *  --vn, --value-num           int;The item value number. default get from first line.
      *  --vs, --value-sep           The item value sep char for 'space' parser. default is SPACE
@@ -457,6 +458,12 @@ class StringController extends Controller
             $p->setItemParser(TextParser::charSplitParser($valueSep));
         }
 
+        $indexes   = [];
+        $idxString = $fs->getOpt('get-cols');
+        if ($idxString && !$indexes = Str::toInts($idxString)) {
+            throw new InvalidArgumentException('please provide valid column index string.');
+        }
+
         switch ($fs->getOpt('item-parser')) {
             case 'json':
             case 'json5':
@@ -466,7 +473,8 @@ class StringController extends Controller
             default:
                 $valueSep   = $fs->getOpt('value-sep', ' ');
                 $itemParser = TextParser::charSplitParser($valueSep);
-                break;
+                // $itemParser = TextItemParser::new($valueSep, $indexes);
+            break;
         }
 
         $p->setItemParser($itemParser);
@@ -475,6 +483,7 @@ class StringController extends Controller
         $result   = '';
         $doOutput = true;
         switch ($fs->getOpt('out-fmt')) {
+            case 'md':
             case 'mdtable':
             case 'mdTable':
             case 'md-table':
@@ -488,7 +497,12 @@ class StringController extends Controller
                 $result = $head . "\n" . $line . "\n" . implode("\n", $rows);
                 break;
             case 'raw':
-                $result = $text;
+            case 'text':
+                $rows = $p->stream()->eachToArray(function (array $item) use ($indexes) {
+                    return implode('  ', Arr::gets($item, $indexes));
+                });
+
+                $result = implode("\n", $rows);
                 break;
             case 'table':
                 Table::show($p->getData());
