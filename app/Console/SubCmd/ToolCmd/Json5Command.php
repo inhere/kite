@@ -7,7 +7,7 @@
  * @license  MIT
  */
 
-namespace Inhere\Kite\Console\Command;
+namespace Inhere\Kite\Console\SubCmd\ToolCmd;
 
 use ColinODell\Json5\Json5Decoder;
 use Inhere\Console\Command;

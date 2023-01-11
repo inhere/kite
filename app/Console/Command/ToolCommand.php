@@ -13,12 +13,16 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\SubCmd\OpenCmd;
+use Inhere\Kite\Console\SubCmd\ToolCmd\BatchCommand;
+use Inhere\Kite\Console\SubCmd\ToolCmd\CatCommand;
+use Inhere\Kite\Console\SubCmd\ToolCmd\ExprCommand;
+use Inhere\Kite\Console\SubCmd\ToolCmd\FindCommand;
 use Inhere\Kite\Console\SubCmd\ToolCmd\HashCommand;
 use Inhere\Kite\Console\SubCmd\ToolCmd\HashHmacCommand;
-use Inhere\Kite\Console\SubCmd\ToolCmd\InstallCommand;
-use Inhere\Kite\Console\SubCmd\ToolCmd\ListToolCommand;
+use Inhere\Kite\Console\SubCmd\ToolCmd\Json5Command;
 use Inhere\Kite\Console\SubCmd\ToolCmd\LnCommand;
-use Inhere\Kite\Console\SubCmd\ToolCmd\UpdateCommand;
+use Inhere\Kite\Console\SubCmd\ToolCmd\MarkdownCommand;
+use Inhere\Kite\Console\SubCmd\ToolCmd\SearchCommand;
 
 /**
  * Class ToolCommand
@@ -38,9 +42,13 @@ class ToolCommand extends Command
             LnCommand::class,
             HashHmacCommand::class,
             HashCommand::class,
-            InstallCommand::class,
-            UpdateCommand::class,
-            ListToolCommand::class,
+            Json5Command::class,
+            ExprCommand::class,
+            MarkdownCommand::class,
+            BatchCommand::class,
+            CatCommand::class,
+            FindCommand::class,
+            SearchCommand::class,
         ];
     }
 

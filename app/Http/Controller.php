@@ -18,7 +18,7 @@ abstract class Controller
      */
     protected function render(string $viewPath, array $vars = []): void
     {
-        Kite::webApp()->getRenderer()->render($viewPath, $vars);
+        Kite::webApp()->getRenderer()->display($viewPath, $vars);
     }
 
     /**

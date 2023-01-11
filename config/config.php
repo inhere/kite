@@ -34,7 +34,7 @@ return [
             '*'
         ],
         // gitlab api config
-        'baseUrl'          => '',
+        'baseApi'          => '',
     ],
     'github'        => [
         // remote
@@ -48,7 +48,7 @@ return [
             '*'
         ],
         // github api config
-        // 'baseUrl' => '',
+        // 'baseApi' => '',
     ],
     'osEnv'         => [
         // env settings
