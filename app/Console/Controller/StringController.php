@@ -196,8 +196,8 @@ class StringController extends Controller
      *
      * @example
      *
-     * {binWithCmd} -s '\n' @c
-     * {binWithCmd} --sep ',' --join-sep ',' -f "wrap:' " 'tom,john' # Output: 'tom', 'john'
+     *   {binWithCmd} -s '\n' @c
+     *   {binWithCmd} --sep ',' --join-sep ', ' -f "wrap:'" 'tom,john' # Output: 'tom', 'john'
      */
     public function splitCommand(FlagsParser $fs): void
     {
@@ -401,6 +401,8 @@ class StringController extends Controller
      *
      * @param FlagsParser $fs
      * @param Output $output
+     * @example
+     *   {binWithCmd} -f '"' 'a "abc" "abc"' # Output: a abc abc
      */
     public function replaceCommand(FlagsParser $fs, Output $output): void
     {

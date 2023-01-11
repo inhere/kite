@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Console\SubCmd\ToolCmd;
+namespace Inhere\Kite\Console\SubCmd\PkgmCmd;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
@@ -10,51 +10,41 @@ use Inhere\Kite\Kite;
 use Toolkit\Stdlib\Helper\Assert;
 
 /**
- * class UpdateCommand
+ * class InstallCommand
  *
  * @author inhere
  */
-class UpdateCommand extends Command
+class ListCommand extends Command
 {
-    protected static string $name = 'update';
-    protected static string $desc = 'update bin tool form configure scripts';
+    protected static string $name = 'list';
+    protected static string $desc = 'list all packages form configure';
 
     public static function aliases(): array
     {
-        return ['up', 'u'];
+        return ['l', 'ls'];
     }
 
     protected function configure(): void
     {
-        $this->flags->addArgByRule('name', 'string;want updated tool name;true');
+        $this->flags->addArgByRule('name', 'show the tool detail info by name');
+        // $this->flags->addOpt('show', 's', 'show the tool info', 'bool');
         // $this->flags->addOpt('list', 'l', 'list all can be installed tools', 'bool');
     }
 
-    /**
-     * @param Input $input
-     * @param Output $output
-     */
     protected function execute(Input $input, Output $output)
     {
         $fs = $this->flags;
-
         /** @var ToolManager $tm */
         $tm = Kite::get('toolManager');
         Assert::isFalse($tm->isEmpty(), 'not config any tools information');
 
         $name = $fs->getArg('name');
-        $tool = $tm->getToolModel($name);
-
-        $command = 'update';
-        $output->info("Will $command the tool: $name");
-
-        $cr = $tool->buildCmdRunner($command);
-
-        if ($p = $this->getParent()) {
-            $cr->setDryRun($p->getFlags()->getOpt('dry-run'));
+        if ($name) {
+            $tool = $tm->getToolModel($name);
+            $output->aList($tool->toArray());
+            return;
         }
 
-        // $cr->setEnvVars();
-        $tool->run($command, $cr);
+        $output->aList($tm->getToolsInfo(), 'Tools management');
     }
 }
