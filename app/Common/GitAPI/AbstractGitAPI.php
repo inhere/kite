@@ -2,11 +2,8 @@
 
 namespace Inhere\Kite\Common\GitAPI;
 
-use JsonException;
 use PhpPkg\Http\Client\AbstractClient;
 use PhpPkg\Http\Client\Client;
-use PhpPkg\Http\Client\ClientInterface;
-use Toolkit\Stdlib\Helper\JsonHelper;
 use Toolkit\Stdlib\Obj\AbstractObj;
 use function explode;
 use function implode;
@@ -20,9 +17,11 @@ abstract class AbstractGitAPI extends AbstractObj
     public const DEFAULT_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.119 Safari/537.36';
 
     /**
+     * base API url
+     *
      * @var string
      */
-    protected string $baseUrl = 'https://gitlab.example.com/api/v4';
+    protected string $baseApi = 'https://gitlab.example.com/api/v4';
 
     /**
      * The repository owner user/group
@@ -146,54 +145,75 @@ abstract class AbstractGitAPI extends AbstractObj
     }
 
     /**
-     * @return ClientInterface|AbstractClient
+     * @return AbstractClient
      */
     public function newClient(): AbstractClient
     {
-        // $http = new HttpClient();
-        $http = Client::factory([]);
-        $http->setOptions([
+        // $cli = new HttpClient();
+        $cli = Client::factory([]);
+        $cli->setOptions([
             'headers' => [
+                // github
                 // 'Authorization' => 'Basic ' . $this->token,
-                'Authorization' => 'Token ' . $this->token,
+                // 'Authorization' => 'Token ' . $this->token,
+                // gitlab
+                'Private-Token' => $this->token,
                 'User-Agent'    => self::DEFAULT_UA,
+                'Content-Type'  => 'application/json',
             ],
         ]);
 
-        return $http;
+        // $cli->setDebug(true);
+
+        return $cli;
+    }
+
+    /**
+     * @param string $method
+     * @param string $uri
+     * @param array $data
+     *
+     * @return AbstractClient
+     */
+    public function sendThen(string $method, string $uri, array $data = []): AbstractClient
+    {
+        return $this->newClient()->request($this->baseApi . $uri, $data, $method);
+    }
+
+    /**
+     * @param string $method
+     * @param string $uri
+     * @param array $data
+     *
+     * @return array
+     */
+    public function sendRequest(string $method, string $uri, array $data = []): array
+    {
+        return $this->sendThen($method, $uri, $data)->getJsonArray();
     }
 
     /**
      * @param string $uri
+     * @param array $query
      *
      * @return array
      */
-    public function sendGET(string $uri): array
+    public function sendGET(string $uri, array $query = []): array
     {
-        /** @var AbstractClient $client */
-        $client = $this->newClient()->get($this->baseUrl . $uri);
-
-        return $client->getJsonArray();
+        return $this->sendRequest('GET', $uri, $query);
     }
 
     /**
-     * @param string $uriPath
+     * @param string $uri
      * @param array  $data
      *
      * @return array
      */
-    public function sendPOST(string $uriPath, array $data): array
+    public function sendPOST(string $uri, array $data): array
     {
         // curl -u username:token https://api.github.com/user
         // curl -H "Authorization: token OAUTH-TOKEN" https://api.github.com
-        $http = $this->newClient();
-        $resp = $http->byJson()->post($this->baseUrl . $uriPath, $data);
-
-        if (!$json = $resp->getBody()->getContents()) {
-            return [];
-        }
-
-        return JsonHelper::decode($json, true);
+        return $this->sendRequest('POST', $uri, $data);
     }
 
     /**
@@ -255,16 +275,16 @@ abstract class AbstractGitAPI extends AbstractObj
     /**
      * @return string
      */
-    public function getBaseUrl(): string
+    public function getBaseApi(): string
     {
-        return $this->baseUrl;
+        return $this->baseApi;
     }
 
     /**
-     * @param string $baseUrl
+     * @param string $baseApi
      */
-    public function setBaseUrl(string $baseUrl): void
+    public function setBaseApi(string $baseApi): void
     {
-        $this->baseUrl = $baseUrl;
+        $this->baseApi = $baseApi;
     }
 }

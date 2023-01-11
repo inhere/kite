@@ -30,6 +30,7 @@ class BranchCmd extends Command
             BranchCreateCmd::class,
             BranchListCmd::class,
             BranchDeleteCmd::class,
+            BranchCleanCmd::class,
         ];
     }
 
