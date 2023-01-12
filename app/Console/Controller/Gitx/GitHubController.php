@@ -20,6 +20,7 @@ use Inhere\Kite\Console\SubCmd\Gitflow\UpdateNoPushCmd;
 use Inhere\Kite\Console\SubCmd\Gitflow\UpdatePushCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitPushCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\ChangelogCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitEmojiCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitTagCmd;
 use Inhere\Kite\Helper\AppHelper;
@@ -66,6 +67,7 @@ class GitHubController extends Controller
             UpdateNoPushCmd::getName()  => UpdateNoPushCmd::aliases(),
             AddCommitCmd::getName()     => AddCommitCmd::aliases(),
             AddCommitPushCmd::getName() => AddCommitPushCmd::aliases(),
+            ChangelogCmd::getName()   => ChangelogCmd::aliases(),
         ]);
     }
 
@@ -79,6 +81,7 @@ class GitHubController extends Controller
             GitEmojiCmd::class,
             UpdatePushCmd::class,
             UpdateNoPushCmd::class,
+            ChangelogCmd::class,
             AddCommitCmd::class,
             AddCommitPushCmd::class,
         ];

@@ -26,6 +26,7 @@ use Inhere\Kite\Console\SubCmd\GitlabCmd\ProjectCmd;
 use Inhere\Kite\Console\SubCmd\GitlabCmd\ResolveConflictCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitPushCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\ChangelogCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitEmojiCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitLogCmd;
 use Inhere\Kite\Helper\AppHelper;
@@ -89,6 +90,7 @@ class GitLabController extends Controller
                 UpdateNoPushCmd::getName()    => UpdateNoPushCmd::aliases(),
                 AddCommitCmd::getName()        => AddCommitCmd::aliases(),
                 AddCommitPushCmd::getName()   => AddCommitPushCmd::aliases(),
+                ChangelogCmd::getName()   => ChangelogCmd::aliases(),
             ];
     }
 
@@ -108,6 +110,7 @@ class GitLabController extends Controller
             UpdateNoPushCmd::class,
             AddCommitCmd::class,
             AddCommitPushCmd::class,
+            ChangelogCmd::class,
         ];
     }
 
