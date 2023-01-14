@@ -7,7 +7,7 @@
  * @license  MIT
  */
 
-namespace Inhere\Kite\Console\Controller;
+namespace Inhere\Kite\Console\Controller\Tool;
 
 use Inhere\Console\Component\Formatter\JSONPretty;
 use Inhere\Console\Controller;

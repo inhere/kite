@@ -37,7 +37,6 @@ class GoController extends Controller
             'pkgUp'     => [
                 'up', 'pkgup'
             ],
-            'generate' => GenerateCmd::aliases(),
         ];
     }
 

@@ -33,8 +33,6 @@ class HttpController extends Controller
     {
         return [
             'bulk2query'          => ['2query', 'to-query'],
-            'dequery'             => ParseUrlQueryCmd::aliases(),
-            OpenUrlCmd::getName() => ['open', 'open-url'],
         ];
     }
 

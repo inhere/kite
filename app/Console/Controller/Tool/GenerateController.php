@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Console\Controller;
+namespace Inhere\Kite\Console\Controller\Tool;
 
 use Exception;
 use Inhere\Console\Controller;
@@ -10,7 +10,7 @@ use Inhere\Kite\Console\SubCmd\ToolCmd\HashCommand;
 use Inhere\Kite\Console\SubCmd\ToolCmd\RandomCommand;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
-use PhpPkg\EasyTpl\TextTemplate;
+use PhpPkg\EasyTpl\EasyTemplate;
 use PhpPkg\Ini\Ini;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
@@ -44,7 +44,6 @@ class GenerateController extends Controller
         return [
             'rpt'    => 'repeat',
             'tpl'    => 'template',
-            'random' => RandomCommand::aliases(),
         ];
     }
 
@@ -106,7 +105,7 @@ class GenerateController extends Controller
         $vars = Ini::decode(trim($varDefine));
         $output->aList($vars, 'template vars', ['ucFirst' => false]);
 
-        $logic  = TextTemplate::new();
+        $logic  = EasyTemplate::textTemplate();
         $result = $logic->renderString(trim($template), $vars);
 
         $output->success('Render Result:');

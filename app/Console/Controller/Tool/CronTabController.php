@@ -7,13 +7,12 @@
  * @license  MIT
  */
 
-namespace Inhere\Kite\Console\Controller;
+namespace Inhere\Kite\Console\Controller\Tool;
 
 use Cron\CronExpression;
 use Exception;
 use HuCron\HuCron;
 use Inhere\Console\Controller;
-use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Toolkit\PFlag\FlagsParser;
 
