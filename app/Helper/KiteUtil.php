@@ -4,7 +4,6 @@ namespace Inhere\Kite\Helper;
 
 use Inhere\Kite\Kite;
 use PhpPkg\EasyTpl\EasyTemplate;
-use PhpPkg\EasyTpl\TextTemplate;
 use Toolkit\FsUtil\FS;
 use Toolkit\Stdlib\OS;
 use Toolkit\Stdlib\Str;
@@ -111,7 +110,7 @@ class KiteUtil
      */
     public static function newTplEngine(array $config = []): EasyTemplate
     {
-        return TextTemplate::new($config)
+        return EasyTemplate::textTemplate($config)
             ->setPathResolver([Kite::class, 'resolve'])
             ->configThis(function (EasyTemplate $tpl) {
                 $tpl->tmpDir = Kite::getTmpPath('tplCache');

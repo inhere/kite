@@ -9,7 +9,6 @@ use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use PhpPkg\Config\ConfigBox;
 use PhpPkg\EasyTpl\EasyTemplate;
-use PhpPkg\EasyTpl\TextTemplate;
 use PhpPkg\JenkinsClient\MultiJenkins;
 use Toolkit\Stdlib\Arr\ArrayHelper;
 use Toolkit\Stdlib\Obj\ObjectBox;
@@ -109,7 +108,7 @@ trait InitApplicationTrait
         });
 
         $box->set('txtRender', function () {
-            return TextTemplate::new()->disableEchoFilter();
+            return EasyTemplate::textTemplate()->disableEchoFilter();
         });
 
         $box->set('htmlRender', function () {
