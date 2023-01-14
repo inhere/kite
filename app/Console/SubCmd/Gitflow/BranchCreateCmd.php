@@ -9,9 +9,10 @@ use Inhere\Kite\Common\CmdRunner;
 use Inhere\Kite\Common\GitLocal\AbstractGitx;
 use Inhere\Kite\Common\GitLocal\GitFactory;
 use PhpGit\Info\BranchInfos;
+use Toolkit\Stdlib\Helper\Assert;
 use function date;
+use function preg_replace_callback;
 use function str_contains;
-use function str_replace;
 
 /**
  * Class BranchCreateCmd
@@ -68,13 +69,15 @@ class BranchCreateCmd extends Command
      *  --dry-run           bool;Dry-run the workflow, dont real execute
      *
      * @arguments
-     *  branch      string;The new branch name. eg: fea_220612;required
+     *  branch      string;The new branch name, allow var: {ymd};required
      *
      * @param Input $input
      * @param Output $output
      *
      * @return mixed
      * @example
+     *   {binWithCmd} fea_220612
+     *   {binWithCmd} fix_{ymd}
      * Workflow:
      *  1. git checkout to master
      *  2. git pull <info>{mainRemote}</info> master
@@ -86,13 +89,15 @@ class BranchCreateCmd extends Command
     {
         $fs = $this->flags;
 
-        $repo   = $this->gx->getRepo();
         $brName = $fs->getArg('branch');
-        if (str_contains($brName, '{ymd}')) {
-            $brName = str_replace('{ymd}', date('ymd'), $brName);
+        if (str_contains($brName, '{')) {
+            $brName = preg_replace_callback('/{([\w-]+)}/', static fn(array $m) => date($m[1]) ?: $m[0], $brName);
+
+            Assert::isFalse(str_contains($brName, '{'), 'invalid name var for create branch');
         }
 
         $output->info('fetch latest information from remote: ' . $this->mainRemote);
+        $repo = $this->gx->getRepo();
         $repo->gitCmd('fetch', $this->mainRemote, '-np')->runAndPrint();
 
         $bs = $repo->getBranchInfos();

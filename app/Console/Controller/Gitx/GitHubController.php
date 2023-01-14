@@ -20,6 +20,7 @@ use Inhere\Kite\Console\SubCmd\Gitflow\UpdateNoPushCmd;
 use Inhere\Kite\Console\SubCmd\Gitflow\UpdatePushCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitPushCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\BatchCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\ChangelogCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitEmojiCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitTagCmd;
@@ -56,19 +57,12 @@ class GitHubController extends Controller
 
     protected static function commandAliases(): array
     {
-        return array_merge([
+        return [
             'wf'           => 'workflow',
             'rls'          => 'release',
             'pr'           => 'pullRequest',
             'redirectList' => ['rl'],
-        ], [
-            GitEmojiCmd::getName()      => GitEmojiCmd::aliases(),
-            UpdatePushCmd::getName()    => UpdatePushCmd::aliases(),
-            UpdateNoPushCmd::getName()  => UpdateNoPushCmd::aliases(),
-            AddCommitCmd::getName()     => AddCommitCmd::aliases(),
-            AddCommitPushCmd::getName() => AddCommitPushCmd::aliases(),
-            ChangelogCmd::getName()   => ChangelogCmd::aliases(),
-        ]);
+        ];
     }
 
     /**
@@ -77,6 +71,7 @@ class GitHubController extends Controller
     protected function subCommands(): array
     {
         return [
+            BatchCmd::class,
             GitTagCmd::class,
             GitEmojiCmd::class,
             UpdatePushCmd::class,

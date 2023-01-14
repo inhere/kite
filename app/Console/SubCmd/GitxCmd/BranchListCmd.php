@@ -1,12 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Console\SubCmd\Gitflow;
+namespace Inhere\Kite\Console\SubCmd\GitxCmd;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use PhpGit\Repo;
-use Toolkit\Stdlib\Str;
 use function array_keys;
 use function implode;
 use function strlen;
@@ -51,32 +50,23 @@ class BranchListCmd extends Command
 
         $remote = '';
         $inline = $fs->getOpt('inline');
+        $search = $fs->getOpt('search');
+
         if ($fs->getOpt('all')) {
             $opts['all'] = true;
         } elseif ($remote = $fs->getOpt('remote')) {
             $opts['remotes'] = true;
         }
 
-        $list = $repo->getGit()->branch->getList($opts);
-
-        $onlyName = $fs->getOpt('only-name');
-        $keyword  = $fs->getOpt('search');
-        $keyword  = strlen($keyword) > 1 ? $keyword : '';
+        $list = $repo->getGit()->branch->getList($opts, $search);
 
         $msg = 'Branch List';
         if (strlen($remote) > 1) {
             $msg .= " Of '$remote'";
         }
 
-        $exclude = '';
-        if ($keyword) {
-            $msg .= "(keyword: $keyword)";
-            if ($keyword[0] === '^') {
-                $exclude = Str::splitTrimmed(substr($keyword, 1));
-                $keyword = '';
-            } else {
-                $keyword = Str::splitTrimmed($keyword);
-            }
+        if (strlen($search) > 1) {
+            $msg .= "(keyword: $search)";
         }
 
         $output->colored($msg . ':');
@@ -93,24 +83,13 @@ class BranchListCmd extends Command
                 $name = substr($name, $rmtLen);
             }
 
-            // 排除匹配
-            if ($exclude) {
-                if (Str::has($name, $exclude)) {
-                    continue;
-                }
-
-                // 包含匹配搜索
-            } elseif ($keyword && !Str::has($name, $keyword)) {
-                continue;
-            }
-
             $matched[$name] = $item;
         }
 
         // \vdump($keyword, $remote, $list);
         if ($inline) {
             $output->println(implode(',', array_keys($matched)));
-        } elseif ($onlyName) {
+        } elseif ($fs->getOpt('only-name')) {
             $output->println(array_keys($matched));
         } else {
             $output->table($matched, 'Git Branches');

@@ -29,6 +29,7 @@ class GitTagCmd extends Command
             GitTagListCmd::class,
             GitTagDelCmd::class,
             GitTagCreateCmd::class,
+            GitTagInfoCmd::class,
         ];
     }
 

@@ -18,18 +18,16 @@ use Inhere\Kite\Common\GitLocal\GitHub;
 use Inhere\Kite\Console\Manager\GitBranchManager;
 use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\AddCommitPushCmd;
+use Inhere\Kite\Console\SubCmd\GitxCmd\BatchCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\BranchCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\ChangelogCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitEmojiCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitLogCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitTagCmd;
-use Inhere\Kite\Console\SubCmd\GitxCmd\GitTagCreateCmd;
-use Inhere\Kite\Console\SubCmd\GitxCmd\GitTagDelCmd;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Helper\GitUtil;
 use Inhere\Kite\Kite;
 use PhpGit\Repo;
-use Throwable;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\Util\Clog;
 use Toolkit\FsUtil\FS;
@@ -75,25 +73,6 @@ class GitxController extends Controller
                 'update'       => ['up', 'pul', 'pull'],
                 'batchPull'    => ['bp', 'bpul', 'bpull'],
                 'tagFind'      => ['tagfind', 'tag-find'],
-                'tagNew'       => [
-                    'tagnew',
-                    'tag-new',
-                    'tn',
-                    'newtag',
-                    'new-tag',
-                    'tagpush',
-                    'tp',
-                    'tag-push',
-                ],
-                'tagInfo'      => ['tag-info', 'ti', 'tag-show'],
-            ] + [
-                BranchCmd::getName()        => BranchCmd::aliases(),
-                GitTagCmd::getName()        => GitTagCmd::aliases(),
-                GitLogCmd::getName()        => GitLogCmd::aliases(),
-                GitEmojiCmd::getName()        => GitEmojiCmd::aliases(),
-                ChangelogCmd::getName()        => ChangelogCmd::aliases(),
-                AddCommitCmd::getName()        => AddCommitCmd::aliases(),
-                AddCommitPushCmd::getName() => AddCommitPushCmd::aliases(),
             ];
     }
 
@@ -103,6 +82,7 @@ class GitxController extends Controller
     protected function subCommands(): array
     {
         return [
+            BatchCmd::class,
             BranchCmd::class,
             GitTagCmd::class,
             GitLogCmd::class,
@@ -322,7 +302,6 @@ class GitxController extends Controller
         $info = $repo->getRemoteInfo($remote);
 
         AppHelper::openBrowser($info->getHttpUrl());
-
         $output->success('Complete');
     }
 
@@ -421,71 +400,6 @@ class GitxController extends Controller
         }
 
         $output->printf($title, $tagName);
-    }
-
-    /**
-     * display git tag information by `git show TAG`
-     *
-     * @arguments
-     *  tag     string;Tag name for show info;required
-     *
-     * @param FlagsParser $fs
-     * @param Output $output
-     */
-    public function tagInfoCommand(FlagsParser $fs, Output $output): void
-    {
-        $tag = $fs->getArg('tag');
-
-        $commands = [
-            "git show $tag",
-        ];
-
-        CmdRunner::new()->batch($commands)->runAndPrint();
-        $output->success('Complete');
-    }
-
-    /**
-     * Add new tag version and push to the remote git repos
-     *
-     * @options
-     *  -v, --version           The new tag version. e.g: v2.0.4
-     *  -m, --message           The message for add new tag.
-     *  --hash                  The hash ID for add new tag. default is HEAD
-     *  -n, --next              bool;Auto calc next version for add new tag.
-     *  --no-auto-add-v         bool;Not auto add 'v' for add tag version.
-     *
-     * @param FlagsParser $fs
-     * @param Output $output
-     *
-     * @throws Throwable
-     * @deprecated
-     */
-    public function tagNewCommand(FlagsParser $fs, Output $output): void
-    {
-        $output->warning('TIP: deprecated, please call `git tag create`');
-        $cmd = new GitTagCreateCmd($this->input, $output);
-        $cmd->run($fs->getFlags());
-    }
-
-    /**
-     * delete an local and remote tag by `git tag`
-     *
-     * @options
-     *  -r, --remote        The remote name. default <comment>origin</comment>
-     *  -v, --tag           The tag version. eg: v2.0.3
-     *      --no-remote     bool;Only delete local tag
-     *
-     * @param FlagsParser $fs
-     * @param Output $output
-     *
-     * @throws Throwable
-     * @deprecated
-     */
-    public function tagDeleteCommand(FlagsParser $fs, Output $output): void
-    {
-        $output->warning('TIP: deprecated, please call `git tag delete`');
-        $cmd = new GitTagDelCmd($this->input, $output);
-        $cmd->run($fs->getFlags());
     }
 
 }

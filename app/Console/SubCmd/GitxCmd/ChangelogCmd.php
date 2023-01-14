@@ -24,7 +24,7 @@ use Toolkit\Stdlib\Str;
 class ChangelogCmd extends Command
 {
     protected static string $name = 'changelog';
-    protected static string $desc = 'git branch manage tool command';
+    protected static string $desc = 'collect git change log information by `git log`';
 
     public static function aliases(): array
     {

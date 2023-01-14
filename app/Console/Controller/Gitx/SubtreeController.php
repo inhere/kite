@@ -31,7 +31,7 @@ use const PHP_EOL;
  *
  * @author inhere
  */
-class GitSubtreeController extends Controller
+class SubtreeController extends Controller
 {
     public const TYPE_SSL   = 'git@github.com:';
     public const TYPE_HTTPS = 'https://github.com/';

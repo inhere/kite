@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Console\SubCmd;
+namespace Inhere\Kite\Console\SubCmd\GitxCmd;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Console\SubCmd\Gitflow\BranchListCmd;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
 
@@ -26,6 +25,7 @@ class BranchCmd extends Command
     {
         return [
             BranchListCmd::class,
+            BranchCleanCmd::class,
         ];
     }
 
@@ -45,7 +45,8 @@ class BranchCmd extends Command
     protected function execute(Input $input, Output $output): void
     {
         // default run
-        $bcCmd = new BranchListCmd($input, $output);
-        $bcCmd->run($this->flags->getFlags());
+        $this->showHelp();
+        // $bcCmd = new BranchListCmd($input, $output);
+        // $bcCmd->run($this->flags->getFlags());
     }
 }

@@ -23,7 +23,7 @@ class BranchCleanCmd extends Command
 
     public static function aliases(): array
     {
-        return ['clear'];
+        return ['clear', 'clr'];
     }
 
     protected function configFlags(FlagsParser $fs): void

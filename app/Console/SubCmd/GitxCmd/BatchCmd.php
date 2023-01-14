@@ -1,36 +1,31 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Console\SubCmd\GitlabCmd;
+namespace Inhere\Kite\Console\SubCmd\GitxCmd;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Console\SubCmd\Gitflow\BranchCreateCmd;
-use Inhere\Kite\Console\SubCmd\GitxCmd\BranchListCmd;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
 
 /**
  * Class BranchCmd
  */
-class BranchCmd extends Command
+class BatchCmd extends Command
 {
-    protected static string $name = 'branch';
-    protected static string $desc = 'git branch manage for gitlab project';
+    protected static string $name = 'batch';
+    protected static string $desc = 'batch run or handle git commands';
 
     public static function aliases(): array
     {
-        return ['br'];
+        return ['bat'];
     }
 
     protected function subCommands(): array
     {
         return [
-            BranchInitCmd::class,
-            BranchCreateCmd::class,
-            BranchListCmd::class,
-            BranchDeleteCmd::class,
-            BranchCleanCmd::class,
+            BatchStatusCmd::class,
+            BatchRunCmd::class,
         ];
     }
 
@@ -51,7 +46,5 @@ class BranchCmd extends Command
     {
         // default run
         $this->showHelp();
-        // $bcCmd = new BranchListCmd($input, $output);
-        // $bcCmd->run($this->flags->getFlags());
     }
 }

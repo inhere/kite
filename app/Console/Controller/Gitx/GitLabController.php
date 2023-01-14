@@ -74,23 +74,9 @@ class GitLabController extends Controller
                 'li'           => 'linkInfo',
                 'cf'           => 'config',
                 'conf'         => 'config',
-                'rc'           => 'resolve',
                 'new'          => 'create',
-                'up'           => 'update',
-                'updatePush'   => ['upp', 'up-push'],
                 'project'      => ['pj', 'info'],
                 'checkout'     => ['co'],
-            ] + [
-                GitLogCmd::getName()        => GitLogCmd::aliases(),
-                GitEmojiCmd::getName()        => GitEmojiCmd::aliases(),
-                BranchCmd::getName()          => BranchCmd::aliases(),
-                MergeRequestCmd::getName()    => MergeRequestCmd::aliases(),
-                ResolveConflictCmd::getName() => ResolveConflictCmd::aliases(),
-                UpdatePushCmd::getName()      => UpdatePushCmd::aliases(),
-                UpdateNoPushCmd::getName()    => UpdateNoPushCmd::aliases(),
-                AddCommitCmd::getName()        => AddCommitCmd::aliases(),
-                AddCommitPushCmd::getName()   => AddCommitPushCmd::aliases(),
-                ChangelogCmd::getName()   => ChangelogCmd::aliases(),
             ];
     }
 
