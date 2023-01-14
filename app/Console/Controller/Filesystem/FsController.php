@@ -12,6 +12,8 @@ namespace Inhere\Kite\Console\Controller\Filesystem;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Show;
+use Inhere\Kite\Console\SubCmd\ToolCmd\FindCommand;
+use Inhere\Kite\Console\SubCmd\ToolCmd\FindExeCommand;
 use Toolkit\Cli\Util\Download;
 use Toolkit\FsUtil\Dir;
 use Toolkit\FsUtil\File;
@@ -47,6 +49,14 @@ class FsController extends Controller
             'rn'        => 'rename',
             'mkdir'     => ['create-dir'],
             'mkSubDirs' => ['mk-subDirs', 'mk-subs'],
+        ];
+    }
+
+    protected function subCommands(): array
+    {
+        return [
+            FindCommand::class,
+            FindExeCommand::class,
         ];
     }
 
@@ -104,16 +114,6 @@ class FsController extends Controller
 
         Show::success('ddd');
         // $output->success('hello');
-    }
-
-    /**
-     * find file or dir
-     *
-     * @param Output $output
-     */
-    public function findCommand(Output $output): void
-    {
-        $output->info('Please use the `kite find` command for find file,dir');
     }
 
     /**

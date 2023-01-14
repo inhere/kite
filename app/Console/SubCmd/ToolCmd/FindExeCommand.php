@@ -5,7 +5,11 @@ namespace Inhere\Kite\Console\SubCmd\ToolCmd;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Toolkit\PFlag\FlagsParser;
 use Toolkit\Sys\Sys;
+use function array_merge;
+use function file_exists;
+use function glob;
 
 /**
  * class FindExeCommand
@@ -25,24 +29,35 @@ class FindExeCommand extends Command
         return ['find-bin'];
     }
 
-    protected function configure(): void
+    protected function configFlags(FlagsParser $fs): void
     {
-        $this->flags->addArgByRule('keywords', 'string;The keywords for search;true');
-        // $this->flags->addOpt('show', 's', 'show the tool info', 'bool');
-        // $this->flags->addOpt('list', 'l', 'list all can be installed tools', 'bool');
+        $fs->addOpt('match', 'm', 'use name for like search', 'bool');
+        $fs->addOpt('verbose', 'v', 'display more information', 'bool');
+        $fs->addArgByRule('name', 'string;The executable name for find;true');
     }
 
     protected function execute(Input $input, Output $output)
     {
         $fs = $this->flags;
 
-        $words = $fs->getArg('keywords');
+        $more = $fs->getOpt('verbose');
+        $like = $fs->getOpt('match');
+
         $paths = Sys::getEnvPaths();
-        $output->aList($paths, "ENV PATH");
+        $name  = $fs->getArg('name');
+        $more && $output->aList($paths, "ENV PATH");
 
         $result = [];
         foreach ($paths as $path) {
-            $matches = glob($path. "/*$words*");
+            if (!$like) {
+                if (file_exists($binFile = $path . "/$name")) {
+                    $output->println($more ? "RESULT: $binFile" : $binFile);
+                    return;
+                }
+                continue;
+            }
+
+            $matches = glob($path . "/*$name*");
             if ($matches) {
                 /** @noinspection SlowArrayOperationsInLoopInspection */
                 $result = array_merge($result, $matches);
@@ -50,6 +65,5 @@ class FindExeCommand extends Command
         }
 
         $output->aList($result, 'RESULT');
-        $output->info('TODO');
     }
 }

@@ -61,8 +61,6 @@ class ConvertController extends Controller
                 'yaml2json' => ['yml2json', 'y2j'],
                 'yaml2prop' => ['yml2prop', 'y2p'],
                 'prop2yaml' => ['prop2yml', 'p2y'],
-            ] + [
-                Ts2dateCmd::getName() => Ts2dateCmd::aliases(),
             ];
     }
 

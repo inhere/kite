@@ -76,12 +76,7 @@ class StringController extends Controller
                 'process' => ['p', 'filter', 'f'],
                 'replace' => ['r'],
                 'parse'   => ['fields'],
-                'length'   => ['len', 'ln', 'count'],
-            ] + [
-                RandomCommand::getName()    => RandomCommand::aliases(),
-                ParseUrlQueryCmd::getName() => ParseUrlQueryCmd::aliases(),
-                HashCommand::getName()    => HashCommand::aliases(),
-                Ts2dateCmd::getName()       => Ts2dateCmd::aliases(),
+                'length'  => ['len', 'ln', 'count'],
             ];
     }
 
