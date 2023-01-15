@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Console\SubCmd\Golang;
+namespace Inhere\Kite\Console\SubCmd\GolangCmd;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;

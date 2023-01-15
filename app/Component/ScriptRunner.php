@@ -198,18 +198,18 @@ class ScriptRunner extends AbstractObj
         // #!/usr/bin/bash
         $line = File::readFirstLine($scriptFile);
 
-        // must start withs '#!'
-        if (!$line || !str_starts_with($line, '#!')) {
+        if ($this->autoScriptBin && isset($this->scriptExt2bin[$extName])) {
+            $binName = $this->scriptExt2bin[$extName];
+            $command = "$binName $scriptFile";
+
+            Cli::colored("will direct run the script file: $filename(bin: $binName)", 'cyan');
+        } elseif (!$line || !str_starts_with($line, '#!')) {
+            // not start withs '#!'
             $command = $scriptFile;
 
             // auto use bin by file ext.
             if ($this->autoScriptBin) {
-                if (isset($this->scriptExt2bin[$extName])) {
-                    $binName = $this->scriptExt2bin[$extName];
-                    $command = "$binName $scriptFile";
-                } else {
-                    $binName = ltrim($extName, '.');
-                }
+                $binName = ltrim($extName, '.');
             }
 
             Cli::colored("will direct run the script file: $filename(bin: $binName)", 'cyan');

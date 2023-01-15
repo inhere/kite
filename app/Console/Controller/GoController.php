@@ -13,7 +13,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
-use Inhere\Kite\Console\SubCmd\Golang\GenerateCmd;
+use Inhere\Kite\Console\SubCmd\GolangCmd\GenerateCmd;
 use Toolkit\PFlag\FlagsParser;
 use function file_get_contents;
 
@@ -28,6 +28,11 @@ class GoController extends Controller
     protected static string $name = 'go';
 
     protected static string $desc = 'Some useful tool commands for go development';
+
+    public static function isEnabled(): bool
+    {
+        return false;
+    }
 
     protected static function commandAliases(): array
     {

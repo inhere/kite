@@ -2,6 +2,7 @@
 
 namespace Inhere\Kite\Component;
 
+use PhpPkg\EasyTpl\Contract\TemplateInterface;
 use PhpPkg\EasyTpl\EasyTemplate;
 use Toolkit\FsUtil\File;
 
@@ -14,9 +15,9 @@ use Toolkit\FsUtil\File;
 class FileTreeBuilder extends \Toolkit\FsUtil\Extra\FileTreeBuilder
 {
     /**
-     * @var EasyTemplate|null
+     * @var TemplateInterface|null
      */
-    private ?EasyTemplate $tplEng = null;
+    private ?TemplateInterface $tplEng = null;
 
     /**
      * @param string $tplFile
@@ -28,6 +29,10 @@ class FileTreeBuilder extends \Toolkit\FsUtil\Extra\FileTreeBuilder
     protected function doRender(string $tplFile, string $dstFile, array $tplVars = []): self
     {
         if (!$this->dryRun) {
+            if ($this->tplVars) {
+                $tplVars = array_merge($this->tplVars, $tplVars);
+            }
+
             $content = $this->getTplEng()->renderFile($tplFile, $tplVars);
             File::putContents($dstFile, $content);
         }
@@ -36,9 +41,9 @@ class FileTreeBuilder extends \Toolkit\FsUtil\Extra\FileTreeBuilder
     }
 
     /**
-     * @return EasyTemplate
+     * @return TemplateInterface
      */
-    public function getTplEng(): EasyTemplate
+    public function getTplEng(): TemplateInterface
     {
         if (!$this->tplEng) {
             $this->tplEng = new EasyTemplate(['tplDir' => $this->tplDir]);
