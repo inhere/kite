@@ -211,7 +211,7 @@ class JsonController extends Controller
         }
 
         // is json string
-        if (is_string($ret) && str_starts_with($ret, '{"')) {
+        if (is_string($ret) && (str_starts_with($ret, '{"') || str_starts_with($ret, '[{"'))) {
             $output->info("find '$path' value is JSON string, auto decode");
             $ret = Json::decode($ret, true);
         }

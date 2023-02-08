@@ -136,20 +136,29 @@ class TextParser
 
     /**
      * @param string $text
+     * @param callable|null $setFn = function($p TextParser) {}
      *
      * @return self
      */
-    public static function new(string $text = ''): self
+    public static function new(string $text = '', callable $setFn = null): self
     {
-        return new self($text);
+        $self = new self($text);
+
+        if ($setFn) {
+            $setFn($self);
+        }
+        return $self;
     }
 
     /**
+     * @param string $text
+     * @param callable|null $setFn = function($p TextParser) {}
+     *
      * @return static
      */
-    public static function parseText(string $text): self
+    public static function parseText(string $text, callable $setFn = null): self
     {
-        return (new self($text))->parse();
+        return (new self($text, $setFn))->parse();
     }
 
     /**
@@ -163,6 +172,7 @@ class TextParser
     }
 
     /**
+     * @param string $text
      * @param callable(string):array $itemParser
      *
      * @return static
