@@ -30,7 +30,7 @@ class MergeRequestCmd extends Command
     }
 
     /**
-     * generate an PR link for given project information
+     * Create new merge requests(PR/MR) by given project information
      *
      * @options
      *  -s, --source        The source branch name.
@@ -151,6 +151,7 @@ class MergeRequestCmd extends Command
         ];
 
         $tipInfo = array_merge([
+            'direct' => $isDirect,
             'name'   => $pjName,
             'glPath' => "$group/$repo",
         ], $prInfo);

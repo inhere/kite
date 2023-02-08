@@ -5,7 +5,6 @@ namespace Inhere\Kite\Console\SubCmd\GitlabCmd;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Kite\Console\SubCmd\Gitflow\BranchCreateCmd;
 use Inhere\Kite\Console\SubCmd\GitxCmd\BranchListCmd;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;

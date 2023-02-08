@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Console\SubCmd\Gitflow;
+namespace Inhere\Kite\Console\SubCmd\GitlabCmd;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
@@ -65,8 +65,8 @@ class BranchCreateCmd extends Command
      * checkout an new branch for development
      *
      * @options
-     *  --nm, --not-main    bool;Dont push new branch to the main remote
-     *  --dry-run           bool;Dry-run the workflow, dont real execute
+     *  --nm, --not-main        bool;Dont push new branch to the main remote
+     *  --dry, --dry-run        bool;Dry-run the workflow, dont real execute
      *
      * @arguments
      *  branch      string;The new branch name, allow var: {ymd};required
@@ -102,7 +102,7 @@ class BranchCreateCmd extends Command
 
         $bs = $repo->getBranchInfos();
         if ($bs->hasBranch($brName, BranchInfos::FROM_ALL)) {
-            $output->warning("Branch '%s' has been exists, please use checkout to switch");
+            $output->warning("Branch '$brName' has been exists, please use checkout to switch");
             return 0;
         }
 

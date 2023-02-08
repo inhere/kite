@@ -61,7 +61,7 @@ class GlProject extends GitProject
      */
     public function getForkGroup(): string
     {
-        return $this->forkGroup;
+        return $this->forkGroup ?: $this->group;
     }
 
     /**
@@ -82,7 +82,7 @@ class GlProject extends GitProject
     {
         if (!$this->forkPid) {
             // string pid: group + %2F + repo
-            $this->forkPid = $this->forkGroup . self::PID_SEP . $this->repo;
+            $this->forkPid = $this->getForkGroup() . self::PID_SEP . $this->repo;
         }
 
         return $this->forkPid;
