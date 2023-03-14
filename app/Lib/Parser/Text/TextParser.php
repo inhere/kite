@@ -30,10 +30,10 @@ class TextParser
     public const APPEND  = 2;
     public const DISCARD = 3;
 
-    public const NL_CHAR = 'NL';
+    public const NL_CHAR    = 'NL';
     public const SPACE_CHAR = 'SPACE';
 
-    public const NL = "\n";
+    public const NL    = "\n";
     public const SPACE = ' ';
 
     /**
@@ -70,6 +70,11 @@ class TextParser
      * @var string
      */
     public string $headerSep = "\n###\n";
+
+    /**
+     * @var true replace TAB to SPACE
+     */
+    private bool $tabToSpace = false;
 
     /**
      * @var bool
@@ -186,10 +191,15 @@ class TextParser
      * Class constructor.
      *
      * @param string $text
+     * @param callable|null $setFn = function($p TextParser) {}
      */
-    public function __construct(string $text = '')
+    public function __construct(string $text = '', callable $setFn = null)
     {
         $this->text = $text;
+
+        if ($setFn) {
+            $setFn($this);
+        }
     }
 
     /**
@@ -264,6 +274,9 @@ class TextParser
             $this->parseHeaderSettings($header);
         }
 
+        if ($this->tabToSpace) {
+            $text = str_replace("\t", " ", $text);
+        }
         $this->textBody = $text;
 
         // fallback: init field number from fields list.
@@ -761,5 +774,16 @@ class TextParser
     public function getCount(): int
     {
         return count($this->data);
+    }
+
+    /**
+     * @param bool $tabToSpace
+     *
+     * @return TextParser
+     */
+    public function setTabToSpace(bool $tabToSpace): self
+    {
+        $this->tabToSpace = $tabToSpace;
+        return $this;
     }
 }

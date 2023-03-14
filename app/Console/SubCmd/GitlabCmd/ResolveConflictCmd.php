@@ -17,7 +17,7 @@ use Inhere\Kite\Helper\AppHelper;
 class ResolveConflictCmd  extends Command
 {
     protected static string $name = 'resolve';
-    protected static string $desc = 'create a new branch for git project';
+    protected static string $desc = 'Resolve conflicts preparing for current git branch.';
 
     public static function aliases(): array
     {

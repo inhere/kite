@@ -6,11 +6,12 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Common\CmdRunner;
-use Inhere\Kite\Kite;
+use Inhere\Kite\Helper\KiteUtil;
 use PhpGit\Git;
-use Toolkit\Stdlib\Obj\DataObject;
+use Toolkit\Stdlib\Str;
 use function implode;
 use function sprintf;
+use function str_contains;
 use function strlen;
 use function trim;
 
@@ -34,17 +35,19 @@ class AddCommitPushCmd extends Command
      * run git add/commit/push at once command
      *
      * @options
-     *  -m, --message             string;The commit message text
-     *      --nm, --no-message    bool;not input message, write message by git interactive shell.
-     *  --np, --not-push          bool;Dont execute git push
-     *      --auto-sign           bool;Auto add sign string after message.
-     *      --sign-text           Custom setting the sign text.
+     *  -m, --message               string;The commit message text
+     *      --nm, --no-message      bool;not input message, write message by git interactive shell.
+     *  --np, --not-push            bool;Dont execute git push
+     *      --auto-sign             bool;Auto add sign string after message.
+     *      --sign-text             Custom setting the sign text.
+     *      --template              template for commit message
+     *      --nt, --no-template     bool;disable template for commit message
      *
      * @arguments
      *  files...   array;Only add special files
      *
      * @help
-     * commit types:
+     * Commit types:
      *  build     "Build system"
      *  chore     "Chore"
      *  ci        "CI"
@@ -56,6 +59,10 @@ class AddCommitPushCmd extends Command
      *  style     "Style"
      *  test      "Testing"
      *
+     * Template Variables:
+     *  branch  - Current branch name
+     *  message - Commit message
+     *
      * @param Input $input
      * @param Output $output
      *
@@ -65,7 +72,11 @@ class AddCommitPushCmd extends Command
     {
         $fs = $this->flags;
 
-        $settings = DataObject::new(Kite::config()->getArray('git'));
+        // command settings. id like: 'cmd:git:acp' 'cmd:gitlab:acp'
+        $settings = KiteUtil::getCmdConfig($this->getCommandId());
+        if (!$settings->isEmpty()) {
+            $output->aList($settings->toArray(), "Command Settings");
+        }
 
         $message   = '';
         $noMessage = $fs->getOpt('no-message');
@@ -90,11 +101,11 @@ class AddCommitPushCmd extends Command
 
         $signText = $fs->getOpt('sign-text', $settings->getString('sign-text'));
         $autoSign = $fs->getOpt('auto-sign', $settings->getBool('auto-sign'));
+        $template = $fs->getOpt('template', $settings->getString('template'));
 
+        $git = Git::new();
         // will auto fetch user info by git
         if ($autoSign && !$signText) {
-            $git = Git::new();
-
             $username  = $git->config->get('user.name');
             $userEmail = $git->config->get('user.email');
             // eg "Signed-off-by: inhere <in.798@qq.com>"
@@ -115,6 +126,15 @@ class AddCommitPushCmd extends Command
         $run->do(true);
         $run->afterOkDo("git add $added");
         if ($message) {
+            if ($template) {
+                $template = str_contains($template, '{message}') ? $template : "$template {message}";
+                $tplVars = [
+                    'message' => $message,
+                    'branch'  => $git->getCurrentBranch(),
+                ];
+                $message = Str::renderVars($template, $tplVars, '{%s}');
+            }
+
             if ($signText) {
                 $message .= "\n\nSigned-off-by: $signText";
             }

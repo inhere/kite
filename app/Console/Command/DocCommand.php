@@ -21,7 +21,9 @@ use Inhere\Kite\Lib\ManDoc\Document;
 use Toolkit\Cli\Color;
 use Toolkit\PFlag\FlagType;
 use Toolkit\Sys\Proc\ProcWrapper;
+use function array_keys;
 use function array_pop;
+use function count;
 use function dirname;
 use function implode;
 use function rtrim;
@@ -79,6 +81,7 @@ class DocCommand extends Command
 
         $fs->addOpt('lang', '', 'use the language for find topic document', FlagType::STRING, false, $lang);
         $fs->addOpt('create', '', 'create an new topic document', FlagType::BOOL);
+        $fs->addOpt('config', '', 'show config for document settings', FlagType::BOOL);
         $fs->addOpt('cat', '', 'see the document file contents', FlagType::BOOL);
         $fs->addOpt('edit', 'e', 'edit an topic document', FlagType::BOOL);
         $fs->addOpt('editor', '', 'editor for edit the topic document', FlagType::STRING, false, 'vim');
@@ -120,7 +123,7 @@ TXT;
     }
 
     /**
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      */
     protected function execute(Input $input, Output $output): void
@@ -132,6 +135,18 @@ TXT;
 
         if (!$man->getRealPaths()) {
             $output->liteError('paths is empty! please config manDocs.paths');
+            return;
+        }
+
+        $fs = $this->flags;
+        if ($fs->getOpt('config')) {
+            $tNames = array_keys($man->getTopicNames());
+            $total  = count($tNames);
+            $output->aList([
+                'Language'    => $man->getLang(),
+                'Docs paths'  => $man->getPaths(),
+                "Topic names(total: $total)" => $tNames,
+            ]);
             return;
         }
 
@@ -190,8 +205,8 @@ TXT;
 
     /**
      * @param Document $doc
-     * @param Output   $output
-     * @param string   $nameString
+     * @param Output $output
+     * @param string $nameString
      */
     private function createTopic(Document $doc, Output $output, string $nameString): void
     {
@@ -235,7 +250,7 @@ TXT;
 
     /**
      * @param Document $man
-     * @param string   $nameString
+     * @param string $nameString
      */
     private function listTopicInfo(Document $man, string $nameString): void
     {

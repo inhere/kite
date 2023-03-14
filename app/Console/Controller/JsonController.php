@@ -33,10 +33,10 @@ use function is_file;
 use function is_scalar;
 use function is_string;
 use function json_decode;
+use function preg_replace;
 use function str_contains;
 use function str_replace;
 use function str_starts_with;
-use function stripslashes;
 use function trim;
 use const JSON_THROW_ON_ERROR;
 
@@ -151,7 +151,7 @@ class JsonController extends Controller
      */
     public function loadCommand(FlagsParser $fs, Output $output): void
     {
-        $ext = '.json';
+        $ext  = '.json';
         $json = ContentsAutoReader::readFrom($fs->getArg('source'), [
             'suffix' => $ext,
         ]);
@@ -273,6 +273,7 @@ class JsonController extends Controller
      *
      * @options
      * --uq, --unquote      bool;unquote input string before format.
+     * --simple             bool; simple split to multi line, not use json_decode
      *
      * @arguments
      * json     The json text line.  allow: @load, @clipboard, @stdin
@@ -287,8 +288,29 @@ class JsonController extends Controller
             'loadedFile' => $this->dumpfile,
         ]);
 
+        if ($fs->getOpt('simple')) {
+            $output->writeRaw(str_replace(',', ",\n", $json));
+            return;
+        }
+
         if ($fs->getOpt('unquote')) {
-            $json = stripslashes($json);
+            $regexMap = [
+                '#"\{"#'   => '{"',
+                '#:"\[#'   => ':[',
+                '#"\[\{"#' => '[{"',
+                '#\}\]"#'  => '}]',
+                '#\}"#'    => '}',
+                '#\]"#'    => ']',
+                '#\\\\+#'  => '',
+            ];
+            $output->aList($regexMap, 'regex map', [
+                'sepChar' => '  =>  ',
+            ]);
+
+            foreach ($regexMap as $pattern => $replace) {
+                $json = preg_replace($pattern, $replace, $json);
+            }
+            // $output->writeRaw(str_replace(',', ",\n", $json));
         }
 
         // $data = json_decode($json, true);

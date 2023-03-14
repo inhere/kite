@@ -5,8 +5,10 @@ namespace Inhere\Kite\Helper;
 use Inhere\Kite\Kite;
 use PhpPkg\EasyTpl\EasyTemplate;
 use Toolkit\FsUtil\FS;
+use Toolkit\Stdlib\Obj\DataObject;
 use Toolkit\Stdlib\OS;
 use Toolkit\Stdlib\Str;
+use function array_merge;
 use function defined;
 use function dirname;
 use function in_array;
@@ -151,5 +153,28 @@ class KiteUtil
         }
 
         return $dir;
+    }
+
+    /**
+     * command settings. id like: 'cmd:git:acp' 'cmd:gitlab:acp'
+     *
+     * @param string $commandId
+     * @param string $parentKey
+     *
+     * @return DataObject
+     */
+    public static function getCmdConfig(string $commandId, string $parentKey = ''): DataObject
+    {
+        // command settings. id like: 'cmd:git:acp' 'cmd:gitlab:acp'
+        $confKey = "cmd:$commandId";
+
+        if ($parentKey) {
+            $config = Kite::config()->getArray($parentKey);
+            $config = array_merge($config, Kite::config()->getArray($confKey));
+        } else {
+            $config = Kite::config()->getArray($confKey);
+        }
+
+        return DataObject::new($config);
     }
 }

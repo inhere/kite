@@ -32,14 +32,17 @@ use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Arr;
 use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\Str;
+use function array_combine;
 use function array_pad;
 use function array_shift;
 use function count;
 use function explode;
 use function implode;
 use function is_file;
+use function preg_replace;
 use function str_contains;
 use function str_replace;
+use function str_split;
 use function strlen;
 use function substr;
 use function trim;
@@ -71,13 +74,13 @@ class StringController extends Controller
     protected static function commandAliases(): array
     {
         return [
-                'join'    => ['implode', 'j'],
-                'split'   => ['s'],
-                'process' => ['p', 'filter', 'f'],
-                'replace' => ['r'],
-                'parse'   => ['fields'],
-                'length'  => ['len', 'ln', 'count'],
-            ];
+            'join'    => ['implode', 'j'],
+            'split'   => ['s'],
+            'process' => ['p', 'filter', 'f'],
+            'replace' => ['r'],
+            'parse'   => ['fields'],
+            'length'  => ['len', 'ln', 'count'],
+        ];
     }
 
     protected function init(): void
@@ -181,11 +184,12 @@ class StringController extends Controller
      *          input '@FILEPATH'                   - will read from the filepath
      *
      * @options
-     *  -s, --sep        The separator char. defaults is an SPACE.
-     *  --join-sep       The sep char for join all items for output. defaults: NL
-     *  -f, --filter     array;apply there filters for each substr.
-     *                   allow:
-     *                   - wrap eg `wrap:'` wrap char(') for each item
+     *  -s, --sep           The separator char. defaults is an SPACE.
+     *  --len, --length     int;Split by length.
+     *  --join-sep          The sep char for join all items for output. defaults: NL
+     *  -f, --filter        array;apply there filters for each substr.
+     *                      allow:
+     *                      - wrap eg `wrap:'` wrap char(') for each item
      *
      * @param FlagsParser $fs
      *
@@ -199,10 +203,16 @@ class StringController extends Controller
         $text = trim($fs->getArg('text'));
         $text = ContentsAutoReader::readFrom($text);
 
-        $sep = $fs->getOpt('sep', ' ');
-        $sep = KiteUtil::resolveSep($sep);
+        $len = $fs->getOpt('length');
+        if ($len > 0) {
+            $items = str_split($text, $len);
+        } else {
+            $sep = $fs->getOpt('sep', ' ');
+            $sep = KiteUtil::resolveSep($sep);
 
-        $items = explode($sep, $text);
+            $items = explode($sep, $text);
+        }
+
         if ($filters = $fs->getOpt('filter')) {
             foreach ($items as &$item) {
                 $item = $this->applyFilters($item, $filters);
@@ -390,12 +400,14 @@ class StringController extends Controller
      *          input '@FILEPATH'                   - will read from the filepath
      *
      * @options
-     *  -f, -s, --from      The replace from chars
-     *  -t, --to            The replace to chars
+     *  -f, --from          array;The replace from chars
+     *  -t, --to            array;The replace to chars
      *  --rm, --remove      array;Want remove some chars, allow multi
+     *  --regex             bool; mark the from is regex expr string.
      *
      * @param FlagsParser $fs
      * @param Output $output
+     *
      * @example
      *   {binWithCmd} -f '"' 'a "abc" "abc"' # Output: a abc abc
      */
@@ -416,9 +428,26 @@ class StringController extends Controller
             return;
         }
 
-        $from = TextParser::resolveSep($from);
-        $to   = TextParser::resolveSep($to);
-        $output->writeRaw(str_replace($from, $to, $text));
+        if ($fs->getOpt('regex')) {
+            $output->aList(array_combine($from, $to), 'regex map');
+            foreach ($from as $i => $pattern) {
+                $text = preg_replace($pattern, $to[$i] ?? '', $text);
+            }
+
+            $output->writeRaw($text);
+            return;
+        }
+
+        $search = $replace = [];
+        foreach ($from as $item) {
+            $search[] = TextParser::resolveSep($item);
+        }
+        foreach ($to as $item) {
+            $replace[] = TextParser::resolveSep($item);
+        }
+
+        $output->aList(array_combine($search, $replace), 'replace map');
+        $output->writeRaw(str_replace($search, $replace, $text));
     }
 
     /**
@@ -471,10 +500,11 @@ class StringController extends Controller
                 $valueSep   = $fs->getOpt('value-sep', ' ');
                 $itemParser = TextParser::charSplitParser($valueSep);
                 // $itemParser = TextItemParser::new($valueSep, $indexes);
-            break;
+                break;
         }
 
         $p->setItemParser($itemParser);
+        $p->setFields($fs->getOptStrAsArray('fields'));
         $p->parse();
 
         $result   = '';
@@ -502,11 +532,11 @@ class StringController extends Controller
                 $result = implode("\n", $rows);
                 break;
             case 'table':
-                Table::show($p->getData());
+                Table::show($p->getData(true));
                 $doOutput = false;
                 break;
             default:
-                $result = Json::pretty($p->getData());
+                $result = Json::pretty($p->getData(true));
                 break;
         }
 
@@ -544,6 +574,7 @@ class StringController extends Controller
      *
      * @options
      *  --nt, --not-trim       bool;dont run trim for input
+     *  -s, --sep              Split by the sep char, then count elements
      *
      * @arguments
      *  source        string;The source code for calc. allow: string, @clipboard;true
@@ -553,8 +584,17 @@ class StringController extends Controller
      */
     public function lengthCommand(FlagsParser $fs, Output $output): void
     {
-        $source = ContentsAutoReader::readFrom($fs->getArg('source'), []);
+        $source  = ContentsAutoReader::readFrom($fs->getArg('source'));
+        $trimmed = trim($source);
+        $output->println("INPUT: $source");
 
-        $output->colored('Length: ' . strlen(trim($source)));
+        if ($sep = $fs->getOpt('sep')) {
+            $list  = Str::explode($trimmed, $sep);
+            $count = count($list);
+        } else {
+            $count = strlen($trimmed);
+        }
+
+        $output->colored('Length: ' . $count);
     }
 }

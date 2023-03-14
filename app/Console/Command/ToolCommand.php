@@ -12,6 +12,7 @@ namespace Inhere\Kite\Console\Command;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Console\SubCmd\GitxCmd\GitEmojiCmd;
 use Inhere\Kite\Console\SubCmd\OpenCmd;
 use Inhere\Kite\Console\SubCmd\ToolCmd\BatchCommand;
 use Inhere\Kite\Console\SubCmd\ToolCmd\CatCommand;
@@ -49,6 +50,7 @@ class ToolCommand extends Command
             CatCommand::class,
             FindCommand::class,
             SearchCommand::class,
+            GitEmojiCmd::class,
         ];
     }
 

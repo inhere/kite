@@ -6,7 +6,6 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Toolkit\PFlag\FlagsParser;
-use Toolkit\PFlag\Validator\EnumValidator;
 
 /**
  * class LinuxCommand
@@ -54,5 +53,6 @@ class LinuxCommand extends Command
     protected function execute(Input $input, Output $output)
     {
         // TODO: Implement execute() method.
+        $output->info('TODO');
     }
 }

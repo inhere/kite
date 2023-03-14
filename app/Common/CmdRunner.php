@@ -3,6 +3,7 @@
 namespace Inhere\Kite\Common;
 
 use RuntimeException;
+use Toolkit\Cli\Cli;
 use Toolkit\Cli\Color;
 use Toolkit\Sys\Cmd\AbstractCmdBuilder;
 use function is_array;
@@ -151,6 +152,17 @@ class CmdRunner extends AbstractCmdBuilder
         $this->commands = $commands;
 
         return $this;
+    }
+
+    /**
+     * @param string $subCmd
+     * @param ...$args
+     *
+     * @return $this
+     */
+    public function git(string $subCmd, ...$args): self
+    {
+        return $this->add(Cli::toCmdline($args, "git $subCmd"));
     }
 
     /**
