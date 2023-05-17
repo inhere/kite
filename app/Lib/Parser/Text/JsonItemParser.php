@@ -62,7 +62,7 @@ class JsonItemParser
     public static function matchField(string $line): array
     {
         // is value of array.
-        if (!str_contains($line, '": ')) {
+        if (!str_contains($line, '":')) {
             return [];
         }
 

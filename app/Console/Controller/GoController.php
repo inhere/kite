@@ -29,11 +29,6 @@ class GoController extends Controller
 
     protected static string $desc = 'Some useful tool commands for go development';
 
-    public static function isEnabled(): bool
-    {
-        return false;
-    }
-
     protected static function commandAliases(): array
     {
         return [

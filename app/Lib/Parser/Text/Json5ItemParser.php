@@ -42,7 +42,6 @@ class Json5ItemParser extends JsonItemParser
             }
             return [];
         }
-
         // url
         if (str_contains($line, '://')) {
             $line = preg_replace('/https?:\/\//', 'XX', $line);

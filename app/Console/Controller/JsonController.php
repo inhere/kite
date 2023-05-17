@@ -380,7 +380,7 @@ class JsonController extends Controller
      *  -o, --output               The output target. default is STDOUT.
      *      --tpl-dir              The custom template file dir path.
      *      --tpl, --tpl-file      The custom template file name or path.
-     *  -t, --type                 string;the generate code language type, allow: java, php;;php
+     *  -t, --type                 string;the generate code language type, allow: java, php, go;;php
      *  -c, --ctx                  array;provide context data, allow multi, format KEY:VALUE
      *
      * @param FlagsParser $fs
@@ -421,6 +421,7 @@ class JsonController extends Controller
             ->setSource($json)
             ->configThis($config)
             ->loadVarsFromStrings($fs->getOpt('ctx'))
+            ->addTplVar('genMark', $this->input->getFullScript(true))
             ->setPathResolver([Kite::class, 'resolve'])
             ->prepare();
 

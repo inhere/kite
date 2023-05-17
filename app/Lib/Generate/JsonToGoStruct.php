@@ -8,4 +8,12 @@ namespace Inhere\Kite\Lib\Generate;
 class JsonToGoStruct extends AbstractJsonToCode
 {
     public const TYPE = 'go';
+
+    /**
+     * @return string
+     */
+    public function getLang(): string
+    {
+        return self::TYPE;
+    }
 }

@@ -4,6 +4,7 @@ namespace Inhere\Kite\Lib\Parser\Item;
 
 use Inhere\Kite\Lib\Generate\Java\JavaType;
 use Inhere\Kite\Lib\Generate\LangName;
+use Inhere\Kite\Lib\Generate\Type\GolangType;
 use JsonSerializable;
 use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\Obj\AbstractObj;
@@ -69,11 +70,11 @@ class FieldItem extends AbstractObj implements JsonSerializable
      */
     public function golangType(): string
     {
-        if ($this->type === 'long') {
-            return 'int64';
-        }
-
-        return $this->type;
+        return match ($this->type) {
+            JavaType::LONG => GolangType::INT64,
+            Type::INTEGER => Type::INT,
+            default => $this->type,
+        };
     }
 
     /**

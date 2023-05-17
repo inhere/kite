@@ -139,7 +139,7 @@ TYPE:
 
         $tplFile = $fs->getOpt('tpl-file');
         if (!$tplFile) {
-            $tplFile = "$tplDir/struct.tpl";
+            $tplFile = "$tplDir/dto.tpl";
         }
 
         $config = array_merge($config, array_filter([
