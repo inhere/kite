@@ -1088,16 +1088,16 @@
         },
         {
             "name": "laktak/hjson",
-            "version": "v2.2.0",
+            "version": "v2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hjson/hjson-php.git",
-                "reference": "f2c9eb194c5d294ed5e6a2dbcf79e5d7f4c3fb83"
+                "reference": "dc722dabdd06eaf0ba533e1f007e9f2d23bcb5f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hjson/hjson-php/zipball/f2c9eb194c5d294ed5e6a2dbcf79e5d7f4c3fb83",
-                "reference": "f2c9eb194c5d294ed5e6a2dbcf79e5d7f4c3fb83",
+                "url": "https://api.github.com/repos/hjson/hjson-php/zipball/dc722dabdd06eaf0ba533e1f007e9f2d23bcb5f6",
+                "reference": "dc722dabdd06eaf0ba533e1f007e9f2d23bcb5f6",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1143,9 +1143,9 @@
             ],
             "support": {
                 "issues": "https://github.com/hjson/hjson-php/issues",
-                "source": "https://github.com/hjson/hjson-php/tree/v2.2.0"
+                "source": "https://github.com/hjson/hjson-php/tree/v2.2.1"
             },
-            "time": "2021-12-27T17:39:24+00:00"
+            "time": "2023-09-14T11:20:34+00:00"
         },
         {
             "name": "monolog/monolog",
