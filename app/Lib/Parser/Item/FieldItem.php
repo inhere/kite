@@ -101,7 +101,7 @@ class FieldItem extends AbstractObj implements JsonSerializable
      */
     public function toJavaType(string $type, string $name): string
     {
-        if (Str::hasSuffixIC($this->name, 'id')) {
+        if ($type === Type::INTEGER && Str::hasSuffixIC($this->name, 'id')) {
             return JavaType::LONG;
         }
 

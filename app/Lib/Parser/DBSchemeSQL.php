@@ -48,6 +48,9 @@ class DBSchemeSQL
             throw new InvalidArgumentException('invalid create table SQL for parse');
         }
 
+        // match end \s*\)\s*(\w+\s*=.*);
+        $createSQL .= ";";
+
         $tableRows = explode("\n", $createSQL);
         $tableName = trim(array_shift($tableRows), '( ');
         $tableName = trim(substr($tableName, 12), " \t\n\r\0\x0B`");
@@ -55,21 +58,24 @@ class DBSchemeSQL
         $tableComment = '';
         $tableEngine  = array_pop($tableRows);
         if (($pos = stripos($tableEngine, ' comment')) !== false) {
-            $tableComment = trim(substr($tableEngine, $pos + 9), '=;\'"');
+            $tableInfo = $this->parseTableMeta($tableEngine);
+            $tableComment = $tableInfo['comment'];
         }
 
         $dbt->setTableName($tableName);
         $dbt->setTableComment($tableComment);
 
         $indexes = [];
+        $endstr = '';
         foreach ($tableRows as $row) {
-            $row = trim($row, ', ');
+            $row = trim($row, ", \t\n\r\0\x0B");
             if (!$row) {
                 continue;
             }
 
             // eg: "(", ") ENGINE=some"
-            if ($row[0] === '(' || $row[0] === ')') {
+            if ($row[0] === '(' || $row[0] === ')' || !str_contains($row, ' ')) {
+                $endstr .= $row;
                 continue;
             }
 
@@ -107,7 +113,14 @@ class DBSchemeSQL
         }
 
         if (($pos = stripos($other, 'comment ')) !== false) {
-            $comment = trim(substr($other, $pos + 9), '\'"');
+            $endPos = stripos($other, 'COLLATE ');
+            // vdump($other, $endPos);
+            if ($endPos > 0) {
+                $comment = trim(substr($other, $pos + 9, $endPos - $pos - 11), '\'"');
+            } else {
+                $comment = trim(substr($other, $pos + 9), '\'"');
+            }
+
             $other   = substr($other, 0, $pos);
         } else {
             $comment = ucfirst(str_replace('_', ' ', $field));
@@ -170,6 +183,19 @@ class DBSchemeSQL
         }
 
         return false;
+    }
+
+    protected function parseTableMeta(string $str): array
+    {
+        $info = [];
+        $kvNodes = explode(' ', trim($str, " );\n"));
+
+        foreach ($kvNodes as $value) {
+            [$k, $v] = explode('=', $value, 2);
+
+            $info[strtolower($k)] = trim($v, ' "\'');
+        }
+        return $info;
     }
 
 }
