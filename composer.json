@@ -72,5 +72,10 @@
   },
   "scripts": {
     "test": "php vender/bin/phpunit"
+  },
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
   }
 }

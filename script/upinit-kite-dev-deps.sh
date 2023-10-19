@@ -11,6 +11,7 @@ set -e
 
 # proxy_on
 kiteDir=~/.kite
+# kiteDir=~/workspace/phpdev/gh-repos/kite
 ghHost=https://github.com
 cd $kiteDir
 
