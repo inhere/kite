@@ -46,14 +46,15 @@ class DBMdTable
         $dbt->setSource($mdTable);
 
         $lines = array_values(
-            array_filter(
-                explode("\n", trim($mdTable))
-            )
+            array_filter(explode("\n", trim($mdTable)), function ($line) {
+                return trim($line) !== '';
+            })
         );
 
-        // $table = trim($lines[0], '# ');
-        [$tableComment, $tableName] = array_filter(explode(' ', trim($lines[0], '`：#\' ')));
-
+        // parse first line: "### 应用表(app)"
+        $first = trim(trim($lines[0]), ')）`：#\' ');
+        $first = str_replace(['(', '（'], ' ', $first);
+        [$tableComment, $tableName] = array_filter(explode(' ', $first));
         $tableName = trim($tableName, '` ');
         $titleLine = trim($lines[1], '| ');
         $colNumber = count(explode('|', $titleLine));
