@@ -1873,16 +1873,16 @@
         },
         {
             "name": "phppkg/cli-markdown",
-            "version": "v2.0.1",
+            "version": "v2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phppkg/cli-markdown.git",
-                "reference": "263bf6857a10ac5f1cae254b7d7836e8349cc80b"
+                "reference": "941b003b9a45da47e4348cb849d5925b5ae17d2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phppkg/cli-markdown/zipball/263bf6857a10ac5f1cae254b7d7836e8349cc80b",
-                "reference": "263bf6857a10ac5f1cae254b7d7836e8349cc80b",
+                "url": "https://api.github.com/repos/phppkg/cli-markdown/zipball/941b003b9a45da47e4348cb849d5925b5ae17d2c",
+                "reference": "941b003b9a45da47e4348cb849d5925b5ae17d2c",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1917,9 +1917,9 @@
             "homepage": "https://github.com/phppkg/cli-markdown",
             "support": {
                 "issues": "https://github.com/phppkg/cli-markdown/issues",
-                "source": "https://github.com/phppkg/cli-markdown/tree/v2.0.1"
+                "source": "https://github.com/phppkg/cli-markdown/tree/v2.0.2"
             },
-            "time": "2022-08-06T15:00:13+00:00"
+            "time": "2023-11-10T02:56:32+00:00"
         },
         {
             "name": "phppkg/config",
@@ -4266,5 +4266,5 @@
         "ext-posix": "*",
         "ext-readline": "*"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
