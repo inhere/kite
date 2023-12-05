@@ -2,6 +2,8 @@
 
 namespace Inhere\Kite\Lib\Parser\MySQL;
 
+use Inhere\Kite\Lib\Generate\Java\JavaType;
+use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Type;
 use function strtolower;
 
@@ -11,6 +13,8 @@ use function strtolower;
 class DBType
 {
     public const INT = 'int';
+
+    public const BIGINT = 'bigint';
 
     public const CHAR = 'char';
 
@@ -28,11 +32,11 @@ class DBType
     public static function isStringType(string $dbType): bool
     {
         if (str_contains($dbType, 'text')) {
-            return  true;
+            return true;
         }
 
         if (str_contains($dbType, 'char')) {
-            return  true;
+            return true;
         }
 
         return false;
@@ -46,7 +50,7 @@ class DBType
     public static function isIntType(string $dbType): bool
     {
         if (str_contains($dbType, 'int')) {
-            return  true;
+            return true;
         }
 
         return false;

@@ -52,30 +52,30 @@ class DBSchemeSQL
         $createSQL .= ";";
 
         $tableRows = explode("\n", $createSQL);
-        $tableName = trim(array_shift($tableRows), '( ');
+        $tableName = trim(array_shift($tableRows), " \t\n\r\0\x0B(");
         $tableName = trim(substr($tableName, 12), " \t\n\r\0\x0B`");
 
-        $tableComment = '';
         $tableEngine  = array_pop($tableRows);
-        if (($pos = stripos($tableEngine, ' comment')) !== false) {
+        if (stripos($tableEngine, ' comment') !== false) {
             $tableInfo = $this->parseTableMeta($tableEngine);
-            $tableComment = $tableInfo['comment'];
+            $dbt->setTableComment($tableInfo['comment']);
+        } else {
+            $tableRows[] = $tableEngine;
         }
 
         $dbt->setTableName($tableName);
-        $dbt->setTableComment($tableComment);
 
         $indexes = [];
-        $endstr = '';
+        $endStr = '';
         foreach ($tableRows as $row) {
-            $row = trim($row, ", \t\n\r\0\x0B");
+            $row = trim($row, ";, \t\n\r\0\x0B");
             if (!$row) {
                 continue;
             }
 
-            // eg: "(", ") ENGINE=some"
+            // eg: "(", ") ENGINE=some" table info 在多行
             if ($row[0] === '(' || $row[0] === ')' || !str_contains($row, ' ')) {
-                $endstr .= $row;
+                $endStr .= ' ' . $row;
                 continue;
             }
 
@@ -89,6 +89,11 @@ class DBSchemeSQL
         }
 
         $dbt->setIndexes($indexes);
+
+        if ($endStr && !$dbt->tableComment) {
+            $tableInfo = $this->parseTableMeta($endStr);
+            $dbt->setTableComment($tableInfo['comment']);
+        }
 
         return $dbt;
     }

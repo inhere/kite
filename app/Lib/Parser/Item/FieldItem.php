@@ -94,7 +94,7 @@ class FieldItem extends AbstractObj implements JsonSerializable
     }
 
     /**
-     * @param string $type
+     * @param string $type PHP type
      * @param string $name
      *
      * @return string
@@ -121,7 +121,6 @@ class FieldItem extends AbstractObj implements JsonSerializable
         if ($type === Type::OBJECT) {
             return Str::upFirst($name);
         }
-
         return Str::upFirst($type);
     }
 

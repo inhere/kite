@@ -49,27 +49,19 @@ class TableField extends FieldItem
     }
 
     /**
-     * @param string $type
+     * @param string $type DB type
      * @param string $name
      *
      * @return string
      */
     public function toJavaType(string $type, string $name): string
     {
-        if (Str::hasSuffixIC($this->name, 'id')) {
-            return JavaType::LONG;
-        }
-
-        if (Str::hasSuffixIC($this->name, 'ids')) {
-            return sprintf('%s<%s>', JavaType::LIST, JavaType::LONG);
-        }
-
         if ($type === DBType::JSON) {
-            // return JavaType::OBJECT;
             return Str::upFirst($name);
         }
 
-        return Str::upFirst(DBType::toPhpType($type));
+        $phpType = DBType::toPhpType($type);
+        return parent::toJavaType($phpType, $name);
     }
 
     /**
