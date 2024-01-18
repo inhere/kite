@@ -10,6 +10,8 @@
 namespace Inhere\Kite\Console\Command;
 
 use Inhere\Console\Command;
+use Inhere\Console\Handler\CallableCommand;
+use Inhere\Console\Handler\CommandWrapper;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\SubCmd\GitxCmd\GitEmojiCmd;
@@ -24,6 +26,8 @@ use Inhere\Kite\Console\SubCmd\ToolCmd\Json5Command;
 use Inhere\Kite\Console\SubCmd\ToolCmd\LnCommand;
 use Inhere\Kite\Console\SubCmd\ToolCmd\MarkdownCommand;
 use Inhere\Kite\Console\SubCmd\ToolCmd\SearchCommand;
+use Toolkit\PFlag\FlagsParser;
+use Toolkit\Sys\Sys;
 
 /**
  * Class ToolCommand
@@ -34,10 +38,24 @@ class ToolCommand extends Command
     public const OPT_PROXY_ENV = 'proxy-env';
 
     protected static string $name = 'tool';
-    protected static string $desc = 'some little tool commands';
+    protected static string $desc = 'provide some little tool commands';
 
     protected function subCommands(): array
     {
+        $this->addSub('which', CallableCommand::wrap(
+            fn(FlagsParser $fs, Output $output) => $this->runWhichCmd($fs, $output),
+            [
+                'desc'      => 'find bin file path, like system `which`',
+                'aliases'   => ['where', 'whereis'],
+                'options'   => [
+                    // '--clean' => 'bool;clean output, only output path.'
+                ],
+                'arguments' => [
+                    'binName' => 'string;the target bin file name for find;true',
+                ],
+            ])
+        );
+
         return [
             OpenCmd::class,
             LnCommand::class,
@@ -61,11 +79,24 @@ class ToolCommand extends Command
     }
 
     /**
-     * @param Input $input
+     * @param Input  $input
      * @param Output $output
      */
-    protected function execute(Input $input, Output $output)
+    protected function execute(Input $input, Output $output): void
     {
         $this->showHelp();
+    }
+
+    protected function runWhichCmd(FlagsParser $fs, Output $output): void
+    {
+        $name = $fs->getArg('binName');
+        $path = Sys::findExecutable($name);
+        if (!$path) {
+            $output->println('Not found in PATH');
+            return;
+        }
+
+        // $clean = $fs->getOpt('clean');
+        $output->colored($path);
     }
 }

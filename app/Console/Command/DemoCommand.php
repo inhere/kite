@@ -27,6 +27,12 @@ class DemoCommand extends Command
         return false;
     }
 
+    protected function subCommands(): array
+    {
+        return [
+        ];
+    }
+
     /**
      * do execute
      * @param  Input $input

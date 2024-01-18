@@ -4,7 +4,7 @@
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\CliApplication;
-use Inhere\Kite\Console\Command\DocCommand;
+use Inhere\Kite\Console\SubCmd\ExtCmd\DocCommand;
 
 require dirname(__DIR__) . '/app/boot.php';
 

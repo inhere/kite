@@ -7,7 +7,7 @@
  * @license  MIT
  */
 
-namespace Inhere\Kite\Console\Command;
+namespace Inhere\Kite\Console\SubCmd\DevCmd;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
@@ -27,7 +27,6 @@ use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
 use function implode;
-use function strpos;
 use function substr;
 use function trim;
 

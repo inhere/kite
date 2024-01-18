@@ -17,13 +17,14 @@ $loader->addPsr4("Custom\\Console\\", $baseDir . '/custom/console/');
 
 // save loader for plugin manager
 // Kite::$loader = $loader;
+$kiteUserDir = OS::userHomeDir('.kite');
 
 // user kite dirs
 Kite::setAliases([
-    '@user-kite'    => OS::userHomeDir('.kite'),
-    '@user-tmp'     => OS::userHomeDir('.kite/tmp'),
-    '@user-res'     => OS::userHomeDir('.kite/resource'),
-    '@user-custom'  => OS::userHomeDir('.kite/custom'),
+    '@user-kite'    => $kiteUserDir,
+    '@user-tmp'     => $kiteUserDir . '/tmp',
+    '@user-res'     => $kiteUserDir . '/resource',
+    '@user-custom'  => $kiteUserDir . '/custom',
 ]);
 
 // kite dir

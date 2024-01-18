@@ -7,13 +7,14 @@
  * @license  MIT
  */
 
-namespace Inhere\Kite\Console\Command;
+namespace Inhere\Kite\Console\SubCmd\ExtCmd;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
 use Inhere\Kite\Component\CliMarkdown;
+use Inhere\Kite\Console\SubCmd\DevCmd\LinuxCommand;
 use Inhere\Kite\Helper\AppHelper;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\ManDoc\DocTopic;

@@ -40,7 +40,7 @@ class EnvCommand extends Command
      * @param  Input $input
      * @param  Output $output
      */
-    protected function execute(Input $input, Output $output)
+    protected function execute(Input $input, Output $output): void
     {
         $keywords = $this->flags->getOpt('search');
 
