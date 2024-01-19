@@ -7,28 +7,8 @@ use function ucfirst;
 
 /**
  * class JavaType
+ * @deprecated class
  */
-class JavaType
+class JavaType extends \Inhere\Kite\Lib\Defines\DataType\JavaType
 {
-    public const LONG = 'Long';
-
-    public const LIST = 'List';
-
-    public const OBJECT = 'Object';
-
-    /**
-     * @param string $type
-     *
-     * @return string
-     */
-    public static function php2javaType(string $type): string
-    {
-        if ($type === 'int') {
-            $type = Type::INTEGER;
-        } elseif ($type === Type::ARRAY) {
-            $type = Type::OBJECT;
-        }
-
-        return ucfirst($type);
-    }
 }

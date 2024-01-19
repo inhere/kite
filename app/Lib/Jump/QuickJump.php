@@ -78,7 +78,7 @@ class QuickJump
         }
 
         $this->engine = new JumpStorage($this->datafile);
-        $this->engine->init();
+        $this->engine->initObj();
         $this->engine->loadNamedPaths($this->aliases);
         $this->engine->dump();
     }

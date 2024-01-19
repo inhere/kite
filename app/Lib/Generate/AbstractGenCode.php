@@ -3,7 +3,7 @@
 namespace Inhere\Kite\Lib\Generate;
 
 use Inhere\Kite\Helper\KiteUtil;
-use Inhere\Kite\Lib\Generate\Json\JsonField;
+use Inhere\Kite\Lib\Defines\DataField\JsonField;
 use InvalidArgumentException;
 use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Obj;

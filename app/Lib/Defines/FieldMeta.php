@@ -1,25 +1,21 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Kite\Lib\Parser\Item;
+namespace Inhere\Kite\Lib\Defines;
 
-use Inhere\Kite\Lib\Generate\Java\JavaType;
+use Inhere\Kite\Lib\Defines\DataType\GoType;
+use Inhere\Kite\Lib\Defines\DataType\JavaType;
 use Inhere\Kite\Lib\Generate\LangName;
-use Inhere\Kite\Lib\Generate\Type\GolangType;
-use JsonSerializable;
 use Toolkit\Stdlib\Json;
-use Toolkit\Stdlib\Obj\AbstractObj;
+use Toolkit\Stdlib\Obj\BaseObject;
 use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Type;
-use function in_array;
-use function preg_match;
-use function sprintf;
 
 /**
- * class FieldItem
+ * Field Metadata
  *
  * @author inhere
  */
-class FieldItem extends AbstractObj implements JsonSerializable
+class FieldMeta extends BaseObject
 {
     /**
      * @var string
@@ -71,7 +67,7 @@ class FieldItem extends AbstractObj implements JsonSerializable
     public function golangType(): string
     {
         return match ($this->type) {
-            JavaType::LONG => GolangType::INT64,
+            JavaType::LONG => GoType::INT64,
             Type::INTEGER => Type::INT,
             default => $this->type,
         };
@@ -195,11 +191,4 @@ class FieldItem extends AbstractObj implements JsonSerializable
         return Json::encodeCN($this->toArray());
     }
 
-    /**
-     * @return array
-     */
-    public function jsonSerialize(): array
-    {
-        return $this->toArray();
-    }
 }

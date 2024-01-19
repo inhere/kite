@@ -102,7 +102,7 @@ class JumpStorage implements JsonSerializable
         $this->windowsOS  = OS::isWindows();
     }
 
-    public function init(): void
+    public function initObj(): void
     {
         if ($this->datafile) {
             $this->loadFile($this->datafile, true);

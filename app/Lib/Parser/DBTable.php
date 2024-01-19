@@ -2,7 +2,7 @@
 
 namespace Inhere\Kite\Lib\Parser;
 
-use Inhere\Kite\Lib\Parser\MySQL\DBType;
+use Inhere\Kite\Lib\Defines\DataType\DBType;
 use Inhere\Kite\Lib\Stream\MapStream;
 use Toolkit\Stdlib\Str;
 use function array_merge;

@@ -2,17 +2,16 @@
 
 namespace Inhere\Kite\Lib\Parser\MySQL;
 
-use Inhere\Kite\Lib\Generate\Java\JavaType;
-use Inhere\Kite\Lib\Parser\Item\FieldItem;
+use Inhere\Kite\Lib\Defines\DataType\DBType;
+use Inhere\Kite\Lib\Defines\FieldMeta;
 use Toolkit\Stdlib\Str;
-use function sprintf;
 
 /**
  * class TableField
  *
  * @author inhere
  */
-class TableField extends FieldItem
+class TableField extends FieldMeta
 {
     /**
      * eg: 10

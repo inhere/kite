@@ -2,7 +2,7 @@
 
 namespace Inhere\Kite\Lib\Generate;
 
-use Inhere\Kite\Lib\Generate\Json\JsonField;
+use Inhere\Kite\Lib\Defines\DataField\JsonField;
 use InvalidArgumentException;
 use function trim;
 

@@ -3,7 +3,7 @@
 namespace Inhere\Kite\Lib\Generate;
 
 use ColinODell\Json5\Json5Decoder;
-use Inhere\Kite\Lib\Generate\Json\JsonField;
+use Inhere\Kite\Lib\Defines\DataField\JsonField;
 use Inhere\Kite\Lib\Parser\Text\Json5ItemParser;
 use Inhere\Kite\Lib\Parser\Text\TextParser;
 use Toolkit\Stdlib\Obj\AbstractObj;

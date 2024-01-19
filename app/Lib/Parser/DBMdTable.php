@@ -2,7 +2,7 @@
 
 namespace Inhere\Kite\Lib\Parser;
 
-use Inhere\Kite\Lib\Parser\MySQL\DBType;
+use Inhere\Kite\Lib\Defines\DataType\DBType;
 use function array_filter;
 use function array_map;
 use function array_values;
