@@ -9,7 +9,7 @@ namespace Inhere\Kite\Console\Plugin;
  */
 interface PluginInterface
 {
-    public function init(): void;
+    public function initObj(): void;
 
     /**
      * @return array

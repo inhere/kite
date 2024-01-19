@@ -49,7 +49,7 @@ abstract class AbstractPlugin implements PluginInterface
         // $this->createFlags();
     }
 
-    public function init(): void
+    public function initObj(): void
     {
         $this->metadata = array_merge([
             'author'  => 'inhere',

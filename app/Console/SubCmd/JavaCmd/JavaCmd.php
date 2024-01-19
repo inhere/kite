@@ -19,7 +19,8 @@ class JavaCmd extends Command
     {
         return [
             ClassToJsonCmd::class,
-            JsonToDTOCmd::class,
+            GenerateDTOCmd::class,
+            MetadataCmd::class,
         ];
     }
 

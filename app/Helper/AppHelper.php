@@ -237,7 +237,7 @@ class AppHelper
      * @param array{print: bool, loadedFile: string} $opts
      *
      * @return string
-     * @deprecated
+     * @deprecated use {@see ContentsAutoReader::readFrom()}
      */
     public static function tryReadContents(string $input, array $opts = []): string
     {

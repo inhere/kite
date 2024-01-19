@@ -225,7 +225,7 @@ class PluginManager
         $pluginObj->setName($name);
         $pluginObj->setFilepath($filename);
         $pluginObj->setClassname($className);
-        $pluginObj->init();
+        $pluginObj->initObj();
 
         $this->plugins[$name] = $pluginObj;
         return $pluginObj;

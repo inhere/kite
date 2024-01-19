@@ -44,16 +44,7 @@ class ToolCommand extends Command
     {
         $this->addSub('which', CallableCommand::wrap(
             fn(FlagsParser $fs, Output $output) => $this->runWhichCmd($fs, $output),
-            [
-                'desc'      => 'find bin file path, like system `which`',
-                'aliases'   => ['where', 'whereis'],
-                'options'   => [
-                    // '--clean' => 'bool;clean output, only output path.'
-                ],
-                'arguments' => [
-                    'binName' => 'string;the target bin file name for find;true',
-                ],
-            ])
+            $this->whichCmdConfig())
         );
 
         return [
@@ -85,6 +76,20 @@ class ToolCommand extends Command
     protected function execute(Input $input, Output $output): void
     {
         $this->showHelp();
+    }
+
+    protected function whichCmdConfig(): array
+    {
+        return [
+            'desc'      => 'find bin file path, like system `which`',
+            'aliases'   => ['where', 'whereis'],
+            'options'   => [
+                // '--clean' => 'bool;clean output, only output path.'
+            ],
+            'arguments' => [
+                'binName' => 'string;the target bin file name for find;true',
+            ],
+        ];
     }
 
     protected function runWhichCmd(FlagsParser $fs, Output $output): void
