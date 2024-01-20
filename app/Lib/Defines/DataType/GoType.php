@@ -2,6 +2,8 @@
 
 namespace Inhere\Kite\Lib\Defines\DataType;
 
+use InvalidArgumentException;
+
 /**
  * class GolangType
  *
@@ -37,7 +39,9 @@ class GoType
 
     public const STRING = 'string';
 
-    public const ARRAY = 'array';
+    // ------ complex types ------
+
+    public const ARRAY  = 'array';
 
     public const SLICE = 'slice';
 
@@ -45,6 +49,31 @@ class GoType
 
     public const STRUCT = 'struct';
 
+    // ------ special type ------
+
+    public const NIL = 'nil';
+
     public const ANY = 'interface{}';
 
+    /**
+     * @param string $type go type
+     * @param bool $userObject type as user class
+     *
+     * @return string
+     */
+    public static function toUniformType(string $type, bool $userObject = true): string
+    {
+        return match ($type) {
+            self::INT, self::INT8, self::INT16, self::INT32 => UniformType::INT,
+            self::UINT, self::UINT8, self::UINT16, self::UINT32 => UniformType::UINT,
+            self::INT64 => UniformType::INT64,
+            self::UINT64 => UniformType::UINT64,
+            self::FLOAT32 => UniformType::FLOAT,
+            self::FLOAT64 => UniformType::DOUBLE,
+            self::STRING => UniformType::STRING,
+            self::ANY => UniformType::MIXED,
+            self::NIL => UniformType::NULL,
+            default => $userObject ? ucfirst($type) : throw new InvalidArgumentException('un-support converted go type: ' . $type),
+        };
+    }
 }

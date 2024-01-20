@@ -18,4 +18,9 @@ class ProgramLang
     public const JAVA = 'java';
 
     public const JAVASCRIPT = 'javascript';
+
+    public const KOTLIN = 'kotlin';
+
+    public const SQL = 'sql';
+
 }
