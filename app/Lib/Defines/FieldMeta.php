@@ -31,7 +31,7 @@ class FieldMeta extends BaseObject
     public string $type = UniformType::STRING;
 
     /**
-     * sub-elem type on type is array
+     * sub-elem type on type is array, map, object.
      *
      * @var string
      */
@@ -57,6 +57,7 @@ class FieldMeta extends BaseObject
      */
     public ?FieldMeta $elem = null;
 
+    /** @var string uniform type */
     private string $_uniformType = '';
 
     /**
@@ -90,22 +91,15 @@ class FieldMeta extends BaseObject
      */
     public function langType(string $lang, string $name = ''): string
     {
-        $name = $name ?: $this->name;
         $type = $this->type;
+        $name = $name ?: $this->name;
 
-        if ($lang === ProgramLang::PHP) {
-            return $this->toPhpType($type, $name);
-        }
-
-        if ($lang === ProgramLang::JAVA) {
-            return $this->toJavaType($type, $name);
-        }
-
-        if ($lang === ProgramLang::GO) {
-            return $this->toGoType($type, $name);
-        }
-
-        throw new InvalidArgumentException('unknown language: ' . $lang);
+        return match ($lang) {
+            ProgramLang::PHP => $this->toPhpType($type, $name),
+            ProgramLang::JAVA => $this->toJavaType($type, $name),
+            ProgramLang::GO => $this->toGoType($type, $name),
+            default => throw new InvalidArgumentException('unknown language: ' . $lang),
+        };
     }
 
     private function toGoType(string $type, string $name = ''): string
@@ -131,21 +125,10 @@ class FieldMeta extends BaseObject
         }
 
         if ($type === UniformType::ARRAY) {
-            $elemType = $this->subType ?: $name;
-            if ($elemType === 'List') {
-                $elemType .= '_KW';
-            }
-
+            $elemType = $this->subType ?: $name . '_KW';
             return sprintf('%s<%s>', JavaType::LIST, Str::upFirst($elemType));
         }
 
-        if (Str::hasSuffixIC($name, 'ids')) {
-            return sprintf('%s<%s>', JavaType::LIST, JavaType::LONG);
-        }
-
-        if ($type === UniformType::OBJECT) {
-            return Str::upFirst($name);
-        }
         return Str::upFirst($type);
     }
 
@@ -181,7 +164,7 @@ class FieldMeta extends BaseObject
     {
         if ($this->example !== '') {
             $value = $this->example;
-        } elseif ($this->isString()) {
+        } elseif ($this->isUniType(UniformType::STRING)) {
             $value = $this->type;
         } else {
             $value = $this->zeroValue();
@@ -228,7 +211,6 @@ class FieldMeta extends BaseObject
         if (preg_match('/[A-Z]/', $this->name)) {
             return true;
         }
-
         return false;
     }
 
@@ -271,14 +253,6 @@ class FieldMeta extends BaseObject
     }
 
     /**
-     * @return bool
-     */
-    public function isString(): bool
-    {
-        return $this->isUniType(UniformType::STRING);
-    }
-
-    /**
      * @param string $type
      *
      * @return bool
@@ -312,6 +286,16 @@ class FieldMeta extends BaseObject
         //     return false;
         // }
         return false;
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return void
+     */
+    public function setType(string $type): void
+    {
+        $this->type = $type;
     }
 
     /**

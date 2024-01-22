@@ -4,6 +4,7 @@ namespace Inhere\Kite\Lib\Parser\Java;
 
 use Inhere\Kite\Lib\Defines\DataType\JavaType;
 use Inhere\Kite\Lib\Defines\FieldMeta;
+use function substr;
 
 /**
  * @author inhere
@@ -16,7 +17,7 @@ class JavaField extends FieldMeta
     public array $annotations = [];
 
     /**
-     * @var string
+     * @var string access modifier. eg: public
      */
     public string $accessModifier = '';
 
@@ -24,6 +25,27 @@ class JavaField extends FieldMeta
      * @var string[] other modifiers: final|static
      */
     public array $otherModifiers = [];
+
+    /**
+     * @param string $type
+     *
+     * @return void
+     */
+    public function setType(string $type): void
+    {
+        if (str_contains($type, '<')) {
+            $str = $type;
+            $pos1 = strpos($str, '<');
+            $type = substr($type, 0, $pos1);
+
+            // sub type
+            if ($type === JavaType::LIST) {
+                $this->subType = substr($str, $pos1+1, -1);
+            }
+        }
+
+        $this->type = $type;
+    }
 
     /**
      * get uniform type

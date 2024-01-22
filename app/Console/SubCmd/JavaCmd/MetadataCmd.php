@@ -6,7 +6,9 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
-use Inhere\Kite\Lib\Parser\Java\JavaDtoParser;
+use Inhere\Kite\Console\Component\ContentsAutoWriter;
+use Inhere\Kite\Lib\Parser\Java\JavaDTOParser;
+use Toolkit\Stdlib\Json;
 
 /**
  * Class MetadataCmd
@@ -14,7 +16,7 @@ use Inhere\Kite\Lib\Parser\Java\JavaDtoParser;
 class MetadataCmd extends Command
 {
     protected static string $name = 'metadata';
-    protected static string $desc = 'parse java DTO class, collect field metadata information';
+    protected static string $desc = 'parse java DTO class, collect metadata information';
 
     public static function aliases(): array
     {
@@ -45,9 +47,16 @@ class MetadataCmd extends Command
         $source = $fs->getOpt('source');
         $source = ContentsAutoReader::readFrom($source);
 
-        $p = JavaDtoParser::parse($source);
+        $m = JavaDTOParser::parse($source);
 
-        $output->prettyJSON($p->toArray());
+        $distOut = $fs->getOpt('output');
+        if ($distOut === 'stdout') {
+            $output->prettyJSON($m->toArray());
+        } else {
+            $str = Json::pretty($m->toArray());
+            ContentsAutoWriter::writeTo($distOut, $str);
+        }
+
         return 0;
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Inhere\KiteTest\Lib\Parser;
 
+use Inhere\Kite\Lib\Defines\DataType\DBType;
 use Inhere\Kite\Lib\Parser\DBMdTable;
 use Inhere\Kite\Lib\Parser\DBTable;
-use Inhere\Kite\Lib\Parser\MySQL\DBType;
 use Inhere\KiteTest\BaseKiteTestCase;
 
 /**
@@ -12,7 +12,7 @@ use Inhere\KiteTest\BaseKiteTestCase;
  */
 class DBTableTest extends BaseKiteTestCase
 {
-    private $mdTable1 = <<<MD
+    private string $mdTable1 = <<<MD
 ### 用户的订单记录表 `user_order`
 
 字段名 | 类型 | 是否为空 | 默认值 | 注释
@@ -26,7 +26,7 @@ class DBTableTest extends BaseKiteTestCase
 > INDEXES: PRIMARY KEY (`id`), UNIQUE KEY `uni_uid_orderno` (`uid`, `orderno`)
 MD;
 
-    private $createSql1 = <<<SQL
+    private string $createSql1 = <<<SQL
 CREATE TABLE `user_order` (
   `id` INT(11) UNSIGNED NOT NULL DEFAULT 'AUTO_INCREMENT' COMMENT 'id',
   `uid` INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT '下单用户ID',

@@ -4,7 +4,6 @@ namespace Inhere\Kite\Lib\Parser\MySQL;
 
 use Inhere\Kite\Lib\Defines\DataType\DBType;
 use Inhere\Kite\Lib\Defines\FieldMeta;
-use Toolkit\Stdlib\Str;
 
 /**
  * class TableField
@@ -40,27 +39,13 @@ class TableField extends FieldMeta
     public string $default = '';
 
     /**
-     * @return string
-     */
-    public function phpType(): string
-    {
-        return DBType::toPhpType($this->type);
-    }
-
-    /**
-     * @param string $type DB type
-     * @param string $name
+     * get uniform type
      *
      * @return string
      */
-    public function toJavaType(string $type, string $name): string
+    protected function toUniformType(): string
     {
-        if ($type === DBType::JSON) {
-            return Str::upFirst($name);
-        }
-
-        $phpType = DBType::toPhpType($type);
-        return parent::toJavaType($phpType, $name);
+        return DBType::toUniformType($this->type);
     }
 
     /**

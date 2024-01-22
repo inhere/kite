@@ -2,67 +2,60 @@
 
 namespace Inhere\Kite\Lib\Parser\Java;
 
+use Inhere\Kite\Lib\Defines\ClassMeta;
+use Inhere\Kite\Lib\Defines\FieldMeta;
+use Inhere\Kite\Lib\Parser\AbstractDTOParser;
+use Inhere\Kite\Lib\Parser\DTOParser;
 use Toolkit\Stdlib\Helper\Assert;
+use Toolkit\Stdlib\Obj;
 use Toolkit\Stdlib\Str;
-use function file_get_contents;
-use function preg_match;
 use function rtrim;
 
 /**
  * @author inhere
  */
-class JavaDTOParser extends JavaDTOMeta
+class JavaDTOParser extends AbstractDTOParser
 {
-    /**
-     * @var string source code
-     */
-    private string $content = '';
-
-    private array $tokens = [];
-
     /**
      * Quick parse from source string
      *
      * @param string $content
+     * @param array  $options for parser.
      *
-     * @return static
+     * @return JavaDTOMeta
      */
-    public static function parse(string $content): static
+    public static function parse(string $content, array $options = []): JavaDTOMeta
     {
         $obj = new static();
         $obj->setContent($content);
-        return $obj->do();
+        Obj::init($obj, $options);
+        return $obj->doParse();
     }
 
-    /**
-     * Quick parse from source file
-     *
-     * @param string $filePath
-     *
-     * @return static
-     */
-    public static function parseFromFile(string $filePath): static
-    {
-        $content = file_get_contents($filePath);
-        return self::parse($content);
-    }
-
+    /** @var int contain: package, imports statement */
     public const POS_HEADER = 0;
-    public const POS_CLASS  = 1;
-    public const POS_BODY   = 2;
+
+    /** @var int contain: class comment and class define */
+    public const POS_CLASS = 1;
+
+    /** @var int contain: fields and methods */
+    public const POS_BODY = 2;
+
+    private int $startPos = self::POS_HEADER;
 
     /**
      * Do parse the source code
      *
-     * @return $this
+     * @return JavaDTOMeta
      */
-    public function do(): static
+    public function doParse(): JavaDTOMeta
     {
+        $pos = $this->startPos;
         $src = trim($this->content);
         Assert::notEmpty($src, 'The content can not be empty');
 
         $field = null;
-        $pos   = self::POS_HEADER;
+        $meta  = new JavaDTOMeta();
 
         // split to array by \n
         $inComment = false;
@@ -73,7 +66,7 @@ class JavaDTOParser extends JavaDTOMeta
 
             if ($inComment) {
                 if ($pos < self::POS_BODY) {
-                    $this->addComment($line);
+                    $meta->addComment($line);
                 } else {
                     $field->addComment($line);
                 }
@@ -85,14 +78,14 @@ class JavaDTOParser extends JavaDTOMeta
             }
 
             if (Str::startWith($line, 'package ')) {
-                $this->package = substr($line, 8, -1);
+                $meta->package = substr($line, 8, -1);
                 continue;
             }
 
             if (Str::startWith($line, 'import ')) {
                 $pos = self::POS_CLASS;
 
-                $this->imports[] = substr($line, 7, -1);
+                $meta->imports[] = substr($line, 7, -1);
                 continue;
             }
 
@@ -101,10 +94,10 @@ class JavaDTOParser extends JavaDTOMeta
                 $inComment = true;
                 if ($pos < self::POS_BODY) {
                     $pos = self::POS_CLASS;
-                    $this->addComment($line);
+                    $meta->addComment($line);
                 } else { // in body
                     if ($field) {
-                        $this->fields[] = $field;
+                        $meta->fields[] = $field;
                     }
 
                     // start new field
@@ -118,7 +111,7 @@ class JavaDTOParser extends JavaDTOMeta
             // annotations
             if (Str::startWith($line, '@')) {
                 if ($pos < self::POS_BODY) {
-                    $this->annotations[] = substr($line, 1);
+                    $meta->annotations[] = substr($line, 1);
                 } else {
                     if (!$field) {
                         $field = new JavaField();
@@ -131,7 +124,7 @@ class JavaDTOParser extends JavaDTOMeta
             // class or interface or enum
             if ($pos === self::POS_CLASS && Str::contains($line, [' class ', ' interface ', ' enum '])) {
                 $pos = self::POS_BODY;
-                $this->parseClassLine($line);
+                $this->parseClassLine($line, $meta);
                 continue;
             }
 
@@ -142,13 +135,13 @@ class JavaDTOParser extends JavaDTOMeta
         }
 
         if ($field) {
-            $this->fields[] = $field;
+            $meta->fields[] = $field;
         }
 
-        return $this;
+        return $meta;
     }
 
-    private function parseClassLine(string $line): void
+    protected function parseClassLine(string $line, ClassMeta $meta): void
     {
         $nodes = Str::splitTrimmed($line, ' ');
 
@@ -163,29 +156,29 @@ class JavaDTOParser extends JavaDTOMeta
             }
 
             if ($isIFace) {
-                $this->interfaces[] = $node;
+                $meta->interfaces[] = $node;
                 continue;
             }
 
             // is access modifier
-            if ($this->isAccessModifier($node)) {
-                $this->accessModifier = $node;
-            } elseif ($this->isClassType($node)) {
-                $this->type = $node;
-                $this->name = $nodes[$i + 1]; // class name
+            if (DTOParser::isAccessModifier($node)) {
+                $meta->accessModifier = $node;
+            } elseif (DTOParser::isClassType($node)) {
+                $meta->type = $node;
+                $meta->name = $nodes[$i + 1]; // class name
                 $skipNext   = true;
             } elseif ($node === 'extends') {
-                $this->extends = $nodes[$i + 1];
+                $meta->extends = $nodes[$i + 1];
                 $skipNext      = true;
             } elseif ($node === 'implements') {
                 $isIFace = true;
             } else { // final|static
-                $this->otherModifiers[] = $node;
+                $meta->otherModifiers[] = $node;
             }
         }
     }
 
-    private function parseFieldLine(string $line, ?JavaField $field): JavaField
+    protected function parseFieldLine(string $line, ?FieldMeta $field): FieldMeta
     {
         if (!$field) {
             $field = new JavaField();
@@ -193,12 +186,12 @@ class JavaDTOParser extends JavaDTOMeta
 
         $nodes = Str::splitTrimmed($line, ' ');
         foreach ($nodes as $i => $node) {
-            if ($this->isAccessModifier($node)) {
+            if (DTOParser::isAccessModifier($node)) {
                 $field->accessModifier = $node;
-            } elseif ($this->isOtherModifier($node)) {
+            } elseif (DTOParser::isOtherModifier($node)) {
                 $field->otherModifiers[] = $node;
             } else {
-                $field->type = $node;
+                $field->setType($node);
                 $field->name = rtrim($nodes[$i + 1], ' ;');
                 break;
             }
@@ -207,35 +200,9 @@ class JavaDTOParser extends JavaDTOMeta
         return $field;
     }
 
-    /**
-     * @param string $s
-     *
-     * @return bool
-     */
-    private function isClassType(string $s): bool
+    public function setStartPos(int $startPos): void
     {
-        return preg_match('#^(class|interface|enum)$#', $s) === 1;
+        $this->startPos = $startPos;
     }
-
-    /**
-     * @param string $s
-     *
-     * @return bool
-     */
-    private function isAccessModifier(string $s): bool
-    {
-        return preg_match('#^(public|private|protected)$#i', $s) === 1;
-    }
-
-    private function isOtherModifier(string $s): bool
-    {
-        return preg_match('#^(final|static)$#i', $s) === 1;
-    }
-
-    public function setContent(string $content): void
-    {
-        $this->content = $content;
-    }
-
 
 }

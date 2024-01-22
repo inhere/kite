@@ -5,6 +5,11 @@ namespace Inhere\Kite\Console\SubCmd\JavaCmd;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Kite\Console\Component\ContentsAutoReader;
+use Inhere\Kite\Console\Component\ContentsAutoWriter;
+use Inhere\Kite\Lib\Parser\Java\JavaDTOParser;
+use Toolkit\Stdlib\Json;
+use Toolkit\Stdlib\Str\StrBuilder;
 
 /**
  * Class ClassToJsonCmd
@@ -12,20 +17,24 @@ use Inhere\Console\IO\Output;
 class ClassToJsonCmd extends Command
 {
     protected static string $name = 'to-json';
-    protected static string $desc = 'parse java DTO class, convert fields to json';
+    protected static string $desc = 'parse java DTO class, convert fields to json or json5';
+
+    public static function aliases(): array
+    {
+        return ['json'];
+    }
 
     protected function configure(): void
     {
-        // $this->flags->addOptByRule($name, $rule);
         $this->flags->addOptsByRules([
-            'class' => 'string;The class code or path to parse;required',
-            'json5,5' => 'bool;set output json5 format data',
+            'source,s'  => 'string;The class code or filepath to parse. allow use @c for clipboard;required',
+            'output,o'  => 'string;The output target for result;;stdout',
+            'json5,5'   => 'bool;set output json5 format data, will with comment',
+            'start,pos' => 'int;The start position for parse. 0=header, 1=class, 2=body;;0',
         ]);
     }
 
     /**
-     * Do execute command
-     *
      * @param Input  $input
      * @param Output $output
      *
@@ -33,7 +42,38 @@ class ClassToJsonCmd extends Command
      */
     protected function execute(Input $input, Output $output): int
     {
-        $output->println(__METHOD__);
+        $fs = $this->flags;
+
+        $source = $fs->getOpt('source');
+        $source = ContentsAutoReader::readFrom($source);
+
+        $m = JavaDTOParser::parse($source, [
+            'startPos' => $fs->getOpt('start'),
+        ]);
+
+        // output json
+        if (!$fs->getOpt('json5')) {
+            $map = [];
+            foreach ($m->fields as $field) {
+                $map[$field->name] = $field->exampleValue();
+            }
+
+            $str = Json::pretty($map);
+        } else {
+            // output json5
+            $sb = StrBuilder::new("{\n");
+            $sb->append("\n");
+            foreach ($m->fields as $field) {
+                $sb->writef("  // %s\n", $field->comment);
+                $sb->writef("  \"%s\": %s,\n", $field->name, $field->exampleValue(true));
+            }
+
+            $sb->append('}');
+
+            $str = $sb->getAndClear();
+        }
+
+        ContentsAutoWriter::writeTo($fs->getOpt('output'), $str);
         return 0;
     }
 }
