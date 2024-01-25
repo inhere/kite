@@ -137,7 +137,6 @@ class JavaDTOParser extends AbstractDTOParser
         if ($field) {
             $meta->fields[] = $field;
         }
-
         return $meta;
     }
 

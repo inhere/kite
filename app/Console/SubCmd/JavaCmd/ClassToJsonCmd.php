@@ -27,10 +27,11 @@ class ClassToJsonCmd extends Command
     protected function configure(): void
     {
         $this->flags->addOptsByRules([
-            'source,s'  => 'string;The class code or filepath to parse. allow use @c for clipboard;required',
-            'output,o'  => 'string;The output target for result;;stdout',
-            'json5,5'   => 'bool;set output json5 format data, will with comment',
-            'start,pos' => 'int;The start position for parse. 0=header, 1=class, 2=body;;0',
+            'source,s'          => 'string;The class code or filepath to parse. allow use @c for clipboard;required',
+            'output,o'          => 'string;The output target for result;;stdout',
+            'json5,5'           => 'bool;set output json5 format data, will with comment',
+            'start,pos'         => 'int;The start position for parse. 0=header, 1=class, 2=body;;0',
+            'inline-comment,ic' => 'bool;use inline comment on output the json5 data',
         ]);
     }
 
@@ -61,15 +62,21 @@ class ClassToJsonCmd extends Command
             $str = Json::pretty($map);
         } else {
             // output json5
+            $inlineComment = $fs->getOpt('inline-comment');
+
             $sb = StrBuilder::new("{\n");
             $sb->append("\n");
             foreach ($m->fields as $field) {
-                $sb->writef("  // %s\n", $field->comment);
-                $sb->writef("  \"%s\": %s,\n", $field->name, $field->exampleValue(true));
+                $value = $field->exampleValue(true);
+                if ($inlineComment) {
+                    $sb->writef("  \"%s\": %s, // %s\n", $field->name, $value, $field->comment);
+                } else {
+                    $sb->writef("  // %s\n", $field->comment);
+                    $sb->writef("  \"%s\": %s,\n", $field->name, $value);
+                }
             }
 
             $sb->append('}');
-
             $str = $sb->getAndClear();
         }
 

@@ -125,6 +125,14 @@ class KiteUtil
                 'snake'   => function (string $str): string {
                     return Str::toSnake($str);
                 },
+                // prepend on not empty.
+                'prepend' => function ($str, $char) {
+                    return $str ? $char . $str : $str;
+                },
+                // append on not empty.
+                'append'  => function ($str, $char) {
+                    return $str ? $str . $char : $str;
+                },
             ]);
     }
 
