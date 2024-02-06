@@ -3,6 +3,7 @@
 namespace Inhere\Kite\Lib\Parser;
 
 use Inhere\Kite\Lib\Defines\DataType\DBType;
+use Inhere\Kite\Lib\Parser\MySQL\TableField;
 use Inhere\Kite\Lib\Stream\MapStream;
 use Toolkit\Stdlib\Str;
 use function array_merge;
@@ -321,7 +322,7 @@ TXT;
     /**
      * @param class-string $fieldClass
      *
-     * @return array[]
+     * @return array<string, TableField> map: {field: object,}
      */
     public function getObjFields(string $fieldClass): array
     {

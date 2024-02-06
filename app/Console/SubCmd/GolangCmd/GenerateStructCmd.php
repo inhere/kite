@@ -9,6 +9,7 @@ use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Console\Component\ContentsAutoWriter;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Defines\DataField\JsonField;
+use Inhere\Kite\Lib\Defines\ProgramLang;
 use Inhere\Kite\Lib\Generate\GenCodeFactory;
 use Inhere\Kite\Lib\Parser\Text\Json5ItemParser;
 use Inhere\Kite\Lib\Parser\Text\TextItemParser;
@@ -131,7 +132,7 @@ TYPE:
             throw new InvalidArgumentException('no field data collected from the source.');
         }
 
-        $lang = GenCodeFactory::LANG_GO;
+        $lang = ProgramLang::GO;
 
         $config = Kite::config()->getArray('gen_code');
         $tplDir = $fs->getOpt('tpl-dir', $config['tplDir'] ?? '');

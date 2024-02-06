@@ -9,7 +9,6 @@ use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Console\Component\ContentsAutoWriter;
 use Inhere\Kite\Lib\Parser\Java\JavaDTOParser;
 use Toolkit\Stdlib\Json;
-use Toolkit\Stdlib\Str\StrBuilder;
 
 /**
  * Class ClassToJsonCmd
@@ -62,22 +61,9 @@ class ClassToJsonCmd extends Command
             $str = Json::pretty($map);
         } else {
             // output json5
-            $inlineComment = $fs->getOpt('inline-comment');
-
-            $sb = StrBuilder::new("{\n");
-            $sb->append("\n");
-            foreach ($m->fields as $field) {
-                $value = $field->exampleValue(true);
-                if ($inlineComment) {
-                    $sb->writef("  \"%s\": %s, // %s\n", $field->name, $value, $field->comment);
-                } else {
-                    $sb->writef("  // %s\n", $field->comment);
-                    $sb->writef("  \"%s\": %s,\n", $field->name, $value);
-                }
-            }
-
-            $sb->append('}');
-            $str = $sb->getAndClear();
+            $str = $m->toJSON5([
+                'inlineComment' => $fs->getOpt('inline-comment'),
+            ]);
         }
 
         ContentsAutoWriter::writeTo($fs->getOpt('output'), $str);

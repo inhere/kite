@@ -41,7 +41,20 @@ class JavaDTOParser extends AbstractDTOParser
     /** @var int contain: fields and methods */
     public const POS_BODY = 2;
 
+    /** @var int contain: method comment and method define + body */
+    public const POS_METHOD = 3;
+
     private int $startPos = self::POS_HEADER;
+
+    /**
+     * @var JavaDTOParser|null sub parser
+     */
+    protected ?self $subParser = null;
+
+    /**
+     * @var array sub class code lines
+     */
+    protected array $subLines = [];
 
     /**
      * Do parse the source code
@@ -54,18 +67,44 @@ class JavaDTOParser extends AbstractDTOParser
         $src = trim($this->content);
         Assert::notEmpty($src, 'The content can not be empty');
 
-        $field = null;
+        $field = new FieldMeta();
         $meta  = new JavaDTOMeta();
 
         // split to array by \n
         $inComment = false;
         foreach (Str::splitTrimmed($src, "\n") as $line) {
-            if (empty($line)) {
+            if (empty($line) || str_starts_with($line, '//')) {
+                continue;
+            }
+
+            // in sub class
+            if ($this->subParser) {
+                $this->subLines[] = $line;
+
+                // end sub class
+                if ($line === '}') {
+                    $this->subParser->setStartPos(self::POS_CLASS);
+                    $this->subParser->setContent(implode("\n", $this->subLines));
+
+                    $sub = $this->subParser->doParse();
+                    if ($field) {
+                        $sub->comments = $field->comments;
+                        $sub->description = $field->comment;
+                        $sub->annotations = $field->annotations;
+                        $field = new FieldMeta();
+                    }
+
+                    $meta->addChildren($sub);
+                    // reset
+                    $this->subParser = null;
+                    $this->subLines  = [];
+                }
                 continue;
             }
 
             if ($inComment) {
                 if ($pos < self::POS_BODY) {
+                    $pos = self::POS_CLASS;
                     $meta->addComment($line);
                 } else {
                     $field->addComment($line);
@@ -77,16 +116,15 @@ class JavaDTOParser extends AbstractDTOParser
                 continue;
             }
 
-            if (Str::startWith($line, 'package ')) {
-                $meta->package = substr($line, 8, -1);
-                continue;
-            }
-
-            if (Str::startWith($line, 'import ')) {
-                $pos = self::POS_CLASS;
-
-                $meta->imports[] = substr($line, 7, -1);
-                continue;
+            if ($pos === self::POS_HEADER) {
+                if (Str::startWith($line, 'package ')) {
+                    $meta->package = substr($line, 8, -1);
+                    continue;
+                }
+                if (Str::startWith($line, 'import ')) {
+                    $meta->imports[] = substr($line, 7, -1);
+                    continue;
+                }
             }
 
             // comments start
@@ -96,7 +134,7 @@ class JavaDTOParser extends AbstractDTOParser
                     $pos = self::POS_CLASS;
                     $meta->addComment($line);
                 } else { // in body
-                    if ($field) {
+                    if ($field->name) {
                         $meta->fields[] = $field;
                     }
 
@@ -111,6 +149,8 @@ class JavaDTOParser extends AbstractDTOParser
             // annotations
             if (Str::startWith($line, '@')) {
                 if ($pos < self::POS_BODY) {
+                    $pos = self::POS_CLASS;
+
                     $meta->annotations[] = substr($line, 1);
                 } else {
                     if (!$field) {
@@ -128,13 +168,26 @@ class JavaDTOParser extends AbstractDTOParser
                 continue;
             }
 
+            // start sub class
+            if ($pos === self::POS_BODY && self::isInnerClass($line)) {
+                if ($field && $field->name) {
+                    $meta->fields[] = $field;
+                    // make new field
+                    $field = new JavaField();
+                }
+
+                $this->subLines[] = $line; // save subLines
+                $this->subParser = new JavaDTOParser();
+                continue;
+            }
+
             // field line: protected|private|public
             if (Str::pregMatch('#^p[a-zA-Z]{5,} .*;$#', $line)) {
                 $field = $this->parseFieldLine($line, $field);
             }
         }
 
-        if ($field) {
+        if ($field->name) {
             $meta->fields[] = $field;
         }
         return $meta;
@@ -197,6 +250,16 @@ class JavaDTOParser extends AbstractDTOParser
         }
 
         return $field;
+    }
+
+    /**
+     * @param string $s
+     *
+     * @return bool
+     */
+    public static function isInnerClass(string $s): bool
+    {
+        return preg_match('#^(public|private|protected).*class\s+\w+\s+\{$#i', $s) === 1;
     }
 
     public function setStartPos(int $startPos): void
