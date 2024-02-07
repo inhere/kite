@@ -334,6 +334,20 @@ TXT;
     }
 
     /**
+     * @param class-string $fieldClass
+     *
+     * @return array<string, TableField> map: {field: object,}
+     */
+    public function getObjFieldList(string $fieldClass): array
+    {
+        $map = [];
+        foreach ($this->fields as $field => $info) {
+            $map[$field] = new $fieldClass($info);
+        }
+        return $map;
+    }
+
+    /**
      * @return array
      */
     public function getIndexes(): array

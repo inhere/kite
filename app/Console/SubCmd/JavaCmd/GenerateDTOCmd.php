@@ -7,13 +7,8 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Console\Component\ContentsAutoWriter;
-use Inhere\Kite\Lib\Defines\FieldMeta;
-use Inhere\Kite\Lib\Generate\Json5Data;
-use Inhere\Kite\Lib\Parser\DBTable;
-use Inhere\Kite\Lib\Parser\MySQL\TableField;
-use Inhere\Kite\Lib\Parser\Text\TextParser;
-use Inhere\Kite\Lib\Stream\ListStream;
-use InvalidArgumentException;
+use Inhere\Kite\Lib\Defines\ProgramLang;
+use Inhere\Kite\Lib\Generate\DTOGenerator;
 
 /**
  * Class GenerateDTOCmd
@@ -86,49 +81,11 @@ s - skip, skip write exists file;;s
             }
         }
 
-        $subObjects = [];
-        switch ($srcType) {
-            case 'txt':
-                $p  = TextParser::new($source)->parse();
-                $mp = ListStream::new($p->getData())
-                    ->filter(function (array $item) {
-                        return count($item) >= 3;
-                    })
-                    ->eachToMap(function (array $item) {
-                        return [
-                            $item[0],
-                            FieldMeta::new([
-                                'name'    => $item[0],
-                                'type'    => $item[1],
-                                'comment' => $item[2],
-                            ])
-                        ];
-                    });
-
-                break;
-            case 'sql':
-                $dbt = DBTable::fromSchemeSQL($source);
-                $mp  = $dbt->getObjFields(TableField::class);
-
-                break;
-            case 'md':
-                $dbt = DBTable::fromMdTable($source);
-                $mp  = $dbt->getObjFields(TableField::class);
-
-                // $mp = MapStream::new($dbt->getFields())
-                //     ->eachToMap($this->dbTableInfoHandler());
-                break;
-            case 'json':
-            case 'json5':
-                $jd = Json5Data::new()->loadFrom($source);
-                $mp = $jd->getFields();
-
-                $subObjects = $jd->getSubObjects();
-                $this->config->load($jd->getSettings());
-                break;
-            default:
-                throw new InvalidArgumentException("unsupported source type: $srcType");
-        }
+        $lang = ProgramLang::JAVA;
+        $dg = DTOGenerator::new()
+            ->setLang($lang)
+            ->setSource($source)
+            ->setSourceType($srcType);
 
         $mainName = $this->config->getString('name');
         if (!$mainName) {
@@ -141,7 +98,7 @@ s - skip, skip write exists file;;s
         $this->config->set('className', ucfirst($mainName));
 
         $tplFile = $fs->getOpt('tpl-file');
-        $tplFile = $tplFile ?: "@custom/template/java-code-tpl/req_dto.tpl";
+        $tplFile = $tplFile ?: "@custom/template/$lang-code-tpl/req_dto.tpl";
         $outFile = $fs->getOpt('output');
 
         if ($fs->getOpt('show-info')) {
@@ -151,7 +108,7 @@ s - skip, skip write exists file;;s
             $ctx['outFile'] = $outFile;
             $output->mList([
                 'info'   => $ctx,
-                'fields' => $mp,
+                'fields' => $dg->getFields(),
             ]);
             return;
         }

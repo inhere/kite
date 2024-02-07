@@ -10,7 +10,7 @@ use Inhere\Kite\Console\Component\ContentsAutoWriter;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Defines\DataField\JsonField;
 use Inhere\Kite\Lib\Defines\ProgramLang;
-use Inhere\Kite\Lib\Generate\GenCodeFactory;
+use Inhere\Kite\Lib\Generate\DTOGenerator;
 use Inhere\Kite\Lib\Parser\Text\Json5ItemParser;
 use Inhere\Kite\Lib\Parser\Text\TextItemParser;
 use Inhere\Kite\Lib\Parser\Text\TextParser;
@@ -144,6 +144,7 @@ TYPE:
         }
 
         $config = array_merge($config, array_filter([
+            'lang'    =>  $lang,
             'tplDir'  => $tplDir,
             'tplFile' => $tplFile,
             'parser'  => get_class($itemParser),
@@ -151,7 +152,7 @@ TYPE:
 
         $output->aList($config);
 
-        $gen = GenCodeFactory::create($lang)
+        $gen = DTOGenerator::new()
             ->setClassName($fs->getOpt('name'))
             ->addTplVar('genMark', $input->getFullScript(true))
             ->configThis($config)

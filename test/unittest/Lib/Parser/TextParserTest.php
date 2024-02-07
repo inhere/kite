@@ -4,8 +4,6 @@ namespace Inhere\KiteTest\Lib\Parser;
 
 use Inhere\Kite\Lib\Parser\Text\TextParser;
 use Inhere\KiteTest\BaseKiteTestCase;
-use function preg_split;
-use function vdump;
 
 /**
  * class TextParserTest

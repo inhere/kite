@@ -80,6 +80,27 @@ class ClassMeta extends BaseObject
     public array $children = [];
 
     /**
+     * @param array $fields
+     *
+     * @return void
+     */
+    public function setFields(array $fields): void
+    {
+        if (!$fields) {
+            return;
+        }
+
+        $first = reset($fields);
+        if ($first instanceof FieldMeta) {
+            $this->fields = $fields;
+        } else {
+            foreach ($fields as $field) {
+                $this->fields[] = FieldMeta::new($field);
+            }
+        }
+    }
+
+    /**
      * @param string $comment
      *
      * @return void

@@ -8,20 +8,11 @@ namespace Inhere\Kite\Lib\Generate;
 class JsonToCode
 {
     /**
-     * @param string $type
+     * @param string $lang
      *
-     * @return AbstractJsonToCode
      */
-    public static function create(string $type = 'php'): AbstractJsonToCode
+    public static function create(string $lang): DTOGenerator
     {
-        if ($type === JsonToPHPClass::TYPE) {
-            return new JsonToPHPClass();
-        }
-
-        if ($type === JsonToGoStruct::TYPE) {
-            return new JsonToGoStruct();
-        }
-
-        return new JsonToJavaClass();
+        return new DTOGenerator(['lang' => $lang]);
     }
 }

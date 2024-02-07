@@ -3,6 +3,7 @@
 namespace Inhere\Kite\Lib\Generate;
 
 use ColinODell\Json5\Json5Decoder;
+use ColinODell\Json5\SyntaxError;
 use Inhere\Kite\Lib\Defines\DataField\JsonField;
 use Inhere\Kite\Lib\Parser\Text\Json5ItemParser;
 use Inhere\Kite\Lib\Parser\Text\TextParser;
@@ -38,6 +39,16 @@ class Json5Data extends AbstractObj
     private array $fields = [];
 
     /**
+     * Sub-objects in the data
+     *
+     * ```json
+     * {
+     *  ObjectName: {
+     *      FieldName: JsonField,
+     *  },
+     * }
+     * ```
+     *
      * @var array<string, array<string, JsonField>>
      */
     private array $subObjects = [];
@@ -46,6 +57,7 @@ class Json5Data extends AbstractObj
      * @param string $json
      *
      * @return $this
+     * @throws SyntaxError
      */
     public function loadFrom(string $json): self
     {
@@ -155,7 +167,7 @@ class Json5Data extends AbstractObj
     }
 
     /**
-     * @return Json\JsonField[][]
+     * @return array<string, array<string, JsonField>>
      */
     public function getSubObjects(): array
     {
