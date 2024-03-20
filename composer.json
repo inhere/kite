@@ -31,6 +31,7 @@
     "phppkg/hucron": "dev-master",
     "phppkg/phpgit": "dev-master",
     "phppkg/cli-markdown": "^2.0",
+    "toolkit/extlib": "dev-main",
     "toolkit/fsutil": "^2.0",
     "laktak/hjson": "^2.2",
     "knplabs/github-api": "^3.5",

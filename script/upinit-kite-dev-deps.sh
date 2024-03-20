@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# each dev packages and run composer update
+# Into each dev package dir and run git update
 #
 #
 

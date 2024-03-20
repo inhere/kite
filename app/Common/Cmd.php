@@ -2,38 +2,11 @@
 
 namespace Inhere\Kite\Common;
 
-use Toolkit\Cli\Color;
-use Toolkit\Sys\Cmd\CmdBuilder;
-
 /**
  * class Cmd builder
+ * @deprecated use \Toolkit\Extlib\Exec\Cmd
  */
-class Cmd extends CmdBuilder
+class Cmd extends \Toolkit\Extlib\Exec\Cmd
 {
-    /**
-     * @param string $msg
-     * @param string $scene
-     */
-    protected function printMessage(string $msg, string $scene): void
-    {
-        self::printByScene($msg, $scene);
-    }
 
-    /**
-     * @param string $msg
-     * @param string $scene
-     */
-    public static function printByScene(string $msg, string $scene): void
-    {
-        $color = 'info';
-        if ($scene === self::PRINT_CMD) {
-            $color = 'yellow';
-        } elseif ($scene === self::PRINT_DRY_RUN) {
-            $color = 'cyan';
-        } elseif ($scene === self::PRINT_ERROR) {
-            $color = 'red';
-        }
-
-        Color::println($msg, $color);
-    }
 }

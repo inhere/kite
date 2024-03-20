@@ -6,7 +6,7 @@
 # - clone no .git existed dev package
 #
 
-# run: kite run --proxy update-kite-deps.sh
+# run: kitep run --proxy update-kite-deps.sh
 # run: bash script/update-kite-deps.sh
 # run: proxy_on; bash script/update-kite-deps.sh
 
@@ -20,12 +20,18 @@ if [ "$osName" == "Darwin" ]; then
     tmpKiteDir=~/Workspace/my-github/inhere/kite
 # windows: MINGW64_NT-10.0-19043
 elif [ "${osName:0:5}" == "MINGW" ]; then
-    tmpKiteDir=/f/work/php/inhere/kite-tmp
+    tmpKiteDir=/c/Users/inhere/workspace/phpdev/tmp/kite-latest
 else
     tmpKiteDir=/tmp/kite-tmp
 fi
 
 set -x
+if ! test -d $tmpKiteDir; then
+    echo "- Source dir not exist, clone kite ..."
+    mkdir -p $tmpKiteDir
+    git clone https://github.com/inhere/kite $tmpKiteDir
+fi
+
 #kite env proxy
 cd $tmpKiteDir || exit 2
 git checkout .
