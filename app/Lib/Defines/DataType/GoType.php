@@ -61,18 +61,18 @@ class GoType
      *
      * @return string
      */
-    public static function toUniformType(string $type, bool $userObject = true): string
+    public static function toUniType(string $type, bool $userObject = true): string
     {
         return match ($type) {
-            self::INT, self::INT8, self::INT16, self::INT32 => UniformType::INT,
-            self::UINT, self::UINT8, self::UINT16, self::UINT32 => UniformType::UINT,
-            self::INT64 => UniformType::INT64,
-            self::UINT64 => UniformType::UINT64,
-            self::FLOAT32 => UniformType::FLOAT,
-            self::FLOAT64 => UniformType::DOUBLE,
-            self::STRING => UniformType::STRING,
-            self::ANY => UniformType::MIXED,
-            self::NIL => UniformType::NULL,
+            self::INT, self::INT8, self::INT16, self::INT32 => UniType::INT,
+            self::UINT, self::UINT8, self::UINT16, self::UINT32 => UniType::UINT,
+            self::INT64 => UniType::INT64,
+            self::UINT64 => UniType::UINT64,
+            self::FLOAT32 => UniType::FLOAT,
+            self::FLOAT64 => UniType::DOUBLE,
+            self::STRING => UniType::STRING,
+            self::ANY => UniType::MIXED,
+            self::NIL => UniType::NULL,
             default => $userObject ? ucfirst($type) : throw new InvalidArgumentException('un-support converted go type: ' . $type),
         };
     }

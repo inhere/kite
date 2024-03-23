@@ -14,13 +14,13 @@ class GoField extends FieldMeta
 {
 
     /**
-     * get uniform type
+     * get universal type
      *
      * @return string
      */
-    public function toUniformType(): string
+    public function toUniType(): string
     {
-        return GoType::toUniformType($this->type);
+        return GoType::toUniType($this->type);
     }
 
 }

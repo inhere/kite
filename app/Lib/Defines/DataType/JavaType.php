@@ -53,20 +53,42 @@ class JavaType
      *
      * @return string
      */
-    public static function toUniformType(string $type, bool $userObject = true): string
+    public static function toUniType(string $type, bool $userObject = true): string
     {
         return match ($type) {
-            self::INTEGER => UniformType::INT,
-            self::LONG => UniformType::INT64,
-            self::FLOAT => UniformType::FLOAT,
-            self::DOUBLE => UniformType::DOUBLE,
-            self::BOOLEAN => UniformType::BOOL,
-            self::STRING => UniformType::STRING,
-            self::NULL => UniformType::NULL,
-            self::LIST => UniformType::ARRAY,
-            self::MAP => UniformType::MAP,
-            self::OBJECT => UniformType::OBJECT,
+            self::INTEGER => UniType::INT,
+            self::LONG => UniType::INT64,
+            self::FLOAT => UniType::FLOAT,
+            self::DOUBLE => UniType::DOUBLE,
+            self::BOOLEAN => UniType::BOOL,
+            self::STRING => UniType::STRING,
+            self::NULL => UniType::NULL,
+            self::LIST => UniType::ARRAY,
+            self::MAP => UniType::MAP,
+            self::OBJECT => UniType::OBJECT,
             default => $userObject ? ucfirst($type) : throw new InvalidArgumentException('un-support java type: ' . $type),
+        };
+    }
+
+    /**
+     * @param string $uType
+     *
+     * @return string
+     */
+    public static function fromUniType(string $uType): string
+    {
+        return match ($uType) {
+            UniType::INT => self::INTEGER,
+            UniType::INT64 => self::LONG,
+            UniType::FLOAT => self::FLOAT,
+            UniType::DOUBLE => self::DOUBLE,
+            UniType::BOOL => self::BOOLEAN,
+            UniType::STRING => self::STRING,
+            UniType::NULL => self::NULL,
+            UniType::ARRAY => self::LIST,
+            UniType::MAP => self::MAP,
+            UniType::OBJECT => self::OBJECT,
+            default => $uType,
         };
     }
 

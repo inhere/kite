@@ -3,7 +3,7 @@
 namespace Inhere\Kite\Lib\Defines;
 
 use Inhere\Kite\Lib\Defines\DataType\JavaType;
-use Inhere\Kite\Lib\Defines\DataType\UniformType;
+use Inhere\Kite\Lib\Defines\DataType\UniType;
 use InvalidArgumentException;
 use RuntimeException;
 use Toolkit\Stdlib\Json;
@@ -28,7 +28,7 @@ class FieldMeta extends BaseObject
      *
      * @var string
      */
-    public string $type = UniformType::STRING;
+    public string $type = UniType::STRING;
 
     /**
      * sub-elem type on type is array, map, object.
@@ -57,20 +57,28 @@ class FieldMeta extends BaseObject
      */
     public ?FieldMeta $elem = null;
 
-    /** @var string uniform type */
+    /** @var string universal type */
     private string $_uniformType = '';
 
     /**
-     * get uniform type
+     * @return string
+     */
+    public function uniType(): string
+    {
+        return $this->getUniType();
+    }
+
+    /**
+     * get universal type
      *
      * @return string
      */
-    public function uniformType(): string
+    public function getUniType(): string
     {
         // in case of child class
         if (static::class !== self::class) {
             if (!$this->_uniformType) {
-                $this->_uniformType = $this->toUniformType();
+                $this->_uniformType = $this->toUniType();
             }
             return $this->_uniformType;
         }
@@ -78,7 +86,7 @@ class FieldMeta extends BaseObject
         return $this->type;
     }
 
-    protected function toUniformType(): string
+    protected function toUniType(): string
     {
         throw new RuntimeException('please implement in child class');
     }
@@ -91,45 +99,41 @@ class FieldMeta extends BaseObject
      */
     public function langType(string $lang, string $name = ''): string
     {
-        $type = $this->type;
         $name = $name ?: $this->name;
+        $uType = $this->getUniType();
 
         return match ($lang) {
-            ProgramLang::PHP => $this->toPhpType($type, $name),
-            ProgramLang::JAVA => $this->toJavaType($type, $name),
-            ProgramLang::GO => $this->toGoType($type, $name),
+            ProgramLang::PHP => $this->toPhpType($uType, $name),
+            ProgramLang::JAVA => $this->toJavaType($uType, $name),
+            ProgramLang::GO => $this->toGoType($uType, $name),
             default => throw new InvalidArgumentException('unknown language: ' . $lang),
         };
     }
 
-    private function toGoType(string $type, string $name = ''): string
+    private function toGoType(string $uType, string $name = ''): string
     {
-        return $type;
+        return $uType;
     }
 
-    private function toPhpType(string $type, string $name = ''): string
+    private function toPhpType(string $uType, string $name = ''): string
     {
-        return $type;
+        return $uType;
     }
 
     /**
-     * @param string $type PHP type
+     * @param string $uType uniform type
      * @param string $name field name
      *
      * @return string
      */
-    public function toJavaType(string $type, string $name = ''): string
+    public function toJavaType(string $uType, string $name = ''): string
     {
-        if ($type === UniformType::INT && Str::hasSuffixIC($name, 'id')) {
-            return JavaType::LONG;
-        }
-
-        if ($type === UniformType::ARRAY) {
+        if ($uType === UniType::ARRAY) {
             $elemType = $this->subType ?: $name . '_KW';
             return sprintf('%s<%s>', JavaType::LIST, Str::upFirst($elemType));
         }
 
-        return Str::upFirst($type);
+        return JavaType::fromUniType($uType);
     }
 
     /**
@@ -137,19 +141,19 @@ class FieldMeta extends BaseObject
      */
     public function zeroValue(): string|int|float
     {
-        $uType = $this->uniformType();
-        if ($uType === UniformType::STRING) {
+        $uType = $this->getUniType();
+        if ($uType === UniType::STRING) {
             return '';
         }
 
-        if (UniformType::isAnyInt($uType)) {
+        if (UniType::isAnyInt($uType)) {
             return 0;
         }
-        if (UniformType::isFloat($uType)) {
+        if (UniType::isFloat($uType)) {
             return 0.0;
         }
 
-        if ($uType === UniformType::ARRAY) {
+        if ($uType === UniType::ARRAY) {
             return '[]';
         }
 
@@ -164,7 +168,7 @@ class FieldMeta extends BaseObject
     {
         if ($this->example !== '') {
             $value = $this->example;
-        } elseif ($this->isUniType(UniformType::STRING)) {
+        } elseif ($this->isUniType(UniType::STRING)) {
             $value = $this->type;
         } else {
             $value = $this->zeroValue();
@@ -196,7 +200,7 @@ class FieldMeta extends BaseObject
      */
     public function isComplexType(): bool
     {
-        return UniformType::isComplex($this->uniformType());
+        return UniType::isComplex($this->getUniType());
     }
 
     /**
@@ -233,7 +237,7 @@ class FieldMeta extends BaseObject
      */
     public function isInt(): bool
     {
-        return Str::icontains($this->uniformType(), UniformType::INT);
+        return Str::icontains($this->getUniType(), UniType::INT);
     }
 
     /**
@@ -241,7 +245,7 @@ class FieldMeta extends BaseObject
      */
     public function isIntX(): bool
     {
-        return in_array($this->uniformType(), [UniformType::INT, UniformType::UINT], true);
+        return in_array($this->getUniType(), [UniType::INT, UniType::UINT], true);
     }
 
     /**
@@ -249,7 +253,7 @@ class FieldMeta extends BaseObject
      */
     public function isInt64X(): bool
     {
-        return in_array($this->uniformType(), [UniformType::INT64, UniformType::UINT64], true);
+        return in_array($this->getUniType(), [UniType::INT64, UniType::UINT64], true);
     }
 
     /**
@@ -259,7 +263,7 @@ class FieldMeta extends BaseObject
      */
     public function isUniType(string $type): bool
     {
-        return $type === $this->uniformType();
+        return $type === $this->getUniType();
     }
 
     /**
@@ -277,12 +281,12 @@ class FieldMeta extends BaseObject
      */
     public function isNeedQuote(): bool
     {
-        $uType = $this->uniformType();
-        if ($uType === UniformType::STRING) {
+        $uType = $this->getUniType();
+        if ($uType === UniType::STRING) {
             return true;
         }
 
-        // if (UniformType::isNumber($uType)) {
+        // if (UniType::isNumber($uType)) {
         //     return false;
         // }
         return false;

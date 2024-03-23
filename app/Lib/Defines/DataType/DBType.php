@@ -110,13 +110,13 @@ class DBType
      *
      * @return string
      */
-    public static function toUniformType(string $type): string
+    public static function toUniType(string $type): string
     {
         return match ($type) {
-            self::INT, self::TINYINT, self::SMALLINT, self::MEDIUMINT => UniformType::INT,
-            self::BIGINT => UniformType::INT64,
-            self::CHAR, self::VARCHAR, self::TEXT, self::LONGTEXT => UniformType::STRING,
-            self::JSON => UniformType::OBJECT,
+            self::INT, self::TINYINT, self::SMALLINT, self::MEDIUMINT => UniType::INT,
+            self::BIGINT => UniType::INT64,
+            self::CHAR, self::VARCHAR, self::TEXT, self::LONGTEXT => UniType::STRING,
+            self::JSON => UniType::OBJECT,
             default => throw new InvalidArgumentException('un-support converted db type: ' . $type),
         };
     }

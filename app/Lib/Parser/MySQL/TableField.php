@@ -39,13 +39,13 @@ class TableField extends FieldMeta
     public string $default = '';
 
     /**
-     * get uniform type
+     * get universal type
      *
      * @return string
      */
-    protected function toUniformType(): string
+    protected function toUniType(): string
     {
-        return DBType::toUniformType($this->type);
+        return DBType::toUniType($this->type);
     }
 
     /**

@@ -10,7 +10,7 @@ use function in_array;
  *
  * @author inhere
  */
-class UniformType
+class UniType
 {
     public const BOOL = 'bool';
 
@@ -88,7 +88,7 @@ class UniformType
      */
     public static function isShortInt(string $type): bool
     {
-        return in_array($type, [UniformType::INT, UniformType::UINT], true);
+        return in_array($type, [UniType::INT, UniType::UINT], true);
     }
 
     /**

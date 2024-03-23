@@ -16,19 +16,19 @@ class PhpType extends Type
      *
      * @return string
      */
-    public static function toUniformType(string $type, bool $userObject = true): string
+    public static function toUniType(string $type, bool $userObject = true): string
     {
         return match ($type) {
-            self::BOOL, self::BOOLEAN => UniformType::BOOL,
-            self::INT, self::INTEGER => UniformType::INT,
-            self::STRING => UniformType::STRING,
-            self::FLOAT => UniformType::FLOAT,
-            self::DOUBLE => UniformType::DOUBLE,
-            self::NULL => UniformType::NULL,
-            self::ARRAY => UniformType::ARRAY,
-            // self::MAP => UniformType::MAP,
-            self::OBJECT => UniformType::OBJECT,
-            self::MiXED => UniformType::MIXED,
+            self::BOOL, self::BOOLEAN => UniType::BOOL,
+            self::INT, self::INTEGER => UniType::INT,
+            self::STRING => UniType::STRING,
+            self::FLOAT => UniType::FLOAT,
+            self::DOUBLE => UniType::DOUBLE,
+            self::NULL => UniType::NULL,
+            self::ARRAY => UniType::ARRAY,
+            // self::MAP => UniType::MAP,
+            self::OBJECT => UniType::OBJECT,
+            self::MiXED => UniType::MIXED,
             default => $userObject ? ucfirst($type) : throw new InvalidArgumentException('un-support converted php type: ' . $type),
         };
     }

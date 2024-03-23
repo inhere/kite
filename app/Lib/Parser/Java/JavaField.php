@@ -48,13 +48,13 @@ class JavaField extends FieldMeta
     }
 
     /**
-     * get uniform type
+     * get universal type
      *
      * @return string
      */
-    protected function toUniformType(): string
+    protected function toUniType(): string
     {
-        return JavaType::toUniformType($this->type);
+        return JavaType::toUniType($this->type);
     }
 
     public function toArray(): array

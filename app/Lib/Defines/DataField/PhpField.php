@@ -14,13 +14,13 @@ class PhpField extends FieldMeta
 {
 
     /**
-     * get uniform type
+     * get universal type
      *
      * @return string
      */
-    public function toUniformType(): string
+    public function toUniType(): string
     {
-        return PhpType::toUniformType($this->type);
+        return PhpType::toUniType($this->type);
     }
 
 }
