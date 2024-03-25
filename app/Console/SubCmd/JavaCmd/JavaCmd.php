@@ -21,6 +21,7 @@ class JavaCmd extends Command
             ClassToJsonCmd::class,
             GenerateDTOCmd::class,
             MetadataCmd::class,
+            InitProjectCmd::class,
         ];
     }
 

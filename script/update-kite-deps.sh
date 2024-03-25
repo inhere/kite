@@ -21,6 +21,7 @@ if [ "$osName" == "Darwin" ]; then
 # windows: MINGW64_NT-10.0-19043
 elif [ "${osName:0:5}" == "MINGW" ]; then
     tmpKiteDir=/c/Users/inhere/workspace/phpdev/tmp/kite-latest
+    usrKiteDir=/c/Users/inhere/workspace/phpdev/gh-repos/kite
 else
     tmpKiteDir=/tmp/kite-tmp
 fi
