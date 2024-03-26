@@ -2,7 +2,7 @@
 
 namespace Inhere\KiteTest\Lib\Parser;
 
-use Inhere\Kite\Lib\Parser\Text\TextParser;
+use Inhere\Kite\Lib\Parser\TextParser;
 use Inhere\KiteTest\BaseKiteTestCase;
 
 /**

@@ -2,6 +2,7 @@
 
 namespace Inhere\Kite\Lib\Parser\Text;
 
+use Inhere\Kite\Lib\Parser\TextParser;
 use Toolkit\Stdlib\Str;
 use function array_combine;
 use function count;

@@ -3,7 +3,6 @@
 namespace Inhere\Kite\Lib\Convert;
 
 use Toolkit\Stdlib\Arr;
-use Traversable;
 use function array_shift;
 use function count;
 use function explode;
@@ -21,6 +20,16 @@ use function trim;
 class JavaProperties
 {
     /**
+     * @param string $text
+     *
+     * @return array
+     */
+    public static function parseString(string $text): array
+    {
+        return (new self())->decode($text);
+    }
+
+    /**
      * @param string $str
      *
      * @return array
@@ -28,7 +37,7 @@ class JavaProperties
     public function decode(string $str): array
     {
         $decoded = [];
-        $rawData = (array)parse_ini_string($str, false);
+        $rawData = (array)parse_ini_string($str);
 
         foreach ($rawData as $path => $value) {
             $path = trim($path, '.');

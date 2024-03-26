@@ -6,7 +6,7 @@ use ColinODell\Json5\Json5Decoder;
 use ColinODell\Json5\SyntaxError;
 use Inhere\Kite\Lib\Defines\DataField\JsonField;
 use Inhere\Kite\Lib\Parser\Text\Json5ItemParser;
-use Inhere\Kite\Lib\Parser\Text\TextParser;
+use Inhere\Kite\Lib\Parser\TextParser;
 use Toolkit\Stdlib\Obj\AbstractObj;
 use Toolkit\Stdlib\Type;
 use function count;

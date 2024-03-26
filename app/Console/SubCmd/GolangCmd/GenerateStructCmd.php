@@ -13,7 +13,7 @@ use Inhere\Kite\Lib\Defines\ProgramLang;
 use Inhere\Kite\Lib\Generate\DTOGenerator;
 use Inhere\Kite\Lib\Parser\Text\Json5ItemParser;
 use Inhere\Kite\Lib\Parser\Text\TextItemParser;
-use Inhere\Kite\Lib\Parser\Text\TextParser;
+use Inhere\Kite\Lib\Parser\TextParser;
 use InvalidArgumentException;
 use PhpPkg\Config\ConfigUtil;
 use Toolkit\PFlag\FlagsParser;

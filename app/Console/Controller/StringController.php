@@ -22,7 +22,7 @@ use Inhere\Kite\Console\SubCmd\ToolCmd\RandomCommand;
 use Inhere\Kite\Helper\KiteUtil;
 use Inhere\Kite\Kite;
 use Inhere\Kite\Lib\Parser\Text\Json5ItemParser;
-use Inhere\Kite\Lib\Parser\Text\TextParser;
+use Inhere\Kite\Lib\Parser\TextParser;
 use Inhere\Kite\Lib\Stream\ListStream;
 use Inhere\Kite\Lib\Stream\StringStream;
 use InvalidArgumentException;

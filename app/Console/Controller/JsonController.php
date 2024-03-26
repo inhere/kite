@@ -16,9 +16,9 @@ use Inhere\Kite\Console\Component\Clipboard;
 use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Console\Component\ContentsAutoWriter;
 use Inhere\Kite\Kite;
-use Inhere\Kite\Lib\Generate\JsonToCode;
+use Inhere\Kite\Lib\Generate\DTOGenerator;
 use Inhere\Kite\Lib\Parser\Text\Json5ItemParser;
-use Inhere\Kite\Lib\Parser\Text\TextParser;
+use Inhere\Kite\Lib\Parser\TextParser;
 use InvalidArgumentException;
 use Throwable;
 use Toolkit\FsUtil\File;
@@ -417,7 +417,7 @@ class JsonController extends Controller
         $output->aList($config);
 
         // @user-custom/template/java-service-tpl/dto.tpl
-        $gen = JsonToCode::create($type)
+        $gen = DTOGenerator::create($type)
             ->setSource($json)
             ->configThis($config)
             ->loadVarsFromStrings($fs->getOpt('ctx'))

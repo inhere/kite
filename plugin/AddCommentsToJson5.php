@@ -6,7 +6,7 @@ use Inhere\Kite\Console\Component\ContentsAutoReader;
 use Inhere\Kite\Console\Component\ContentsAutoWriter;
 use Inhere\Kite\Console\Plugin\AbstractPlugin;
 use Inhere\Kite\Kite;
-use Inhere\Kite\Lib\Parser\Text\TextParser;
+use Inhere\Kite\Lib\Parser\TextParser;
 use Inhere\Kite\Lib\Stream\ListStream;
 use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Str;

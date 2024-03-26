@@ -5,7 +5,7 @@ namespace Inhere\Kite\Lib\Generate;
 use Inhere\Kite\Lib\Defines\FieldMeta;
 use Inhere\Kite\Lib\Parser\DBTable;
 use Inhere\Kite\Lib\Parser\MySQL\TableField;
-use Inhere\Kite\Lib\Parser\Text\TextParser;
+use Inhere\Kite\Lib\Parser\TextParser;
 use InvalidArgumentException;
 use PhpPkg\Config\ConfigUtil;
 use Toolkit\Stdlib\Helper\Assert;
