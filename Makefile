@@ -36,7 +36,7 @@ install:  ## Clean all created artifacts
 clean:  ## Clean all created artifacts
 	git clean --exclude=.idea/ -fdx
 
-up-dev-deps:  ## Update all kite dev depends on vendor
+up-all-deps:  ## Update all kite dev depends on vendor
 	$(SHELL) script/update-kite-deps.sh
 
 up-dev-deps:  ## Update kite composer.lock and all depends on vendor
