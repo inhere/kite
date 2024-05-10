@@ -1,6 +1,7 @@
 .buildpath
 .settings/
-.project
+.project/
+.fleet/
 *.patch
 .idea/
 .git/
