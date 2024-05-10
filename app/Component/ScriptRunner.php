@@ -93,7 +93,7 @@ class ScriptRunner extends AbstractObj
      *
      * @var array
      */
-    private array $scriptExts = ['.sh', '.zsh', '.bash', '.php', '.go', '.gop', '.kts', '.gry', '.java', '.groovy'];
+    private array $scriptExts = ['.sh', '.zsh', '.bash', '.py', '.php', '.go', '.gop', '.kts', '.gry', '.java', '.groovy'];
 
     /**
      * @var array

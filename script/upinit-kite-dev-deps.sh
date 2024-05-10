@@ -3,17 +3,31 @@
 # Into each dev package dir and run git update
 #
 #
-
-# run: kite run --proxy upinit-kite-dev-deps.sh
+# run: kitep run --proxy upinit-kite-dev-deps.sh
+# run: kite run --proxy bash script/upinit-kite-dev-deps.sh
+#
 # run: bash script/upinit-kite-dev-deps.sh
 # run: proxy_on; bash script/upinit-kite-dev-deps.sh
 set -e
 
+
+osName=$(uname -s)
+#usrKiteDir=~/.kite
+
+# macOS
+if [ "$osName" == "Darwin" ]; then
+    kiteSrcDir=~/.kite
+# windows: MINGW64_NT-10.0-19043
+elif [ "${osName:0:5}" == "MINGW" ]; then
+    kiteSrcDir=/f/work/php/inhere/kite-tmp
+else
+    kiteSrcDir=/tmp/kite-tmp
+fi
+
 # proxy_on
-kiteDir=~/.kite
-# kiteDir=~/workspace/phpdev/gh-repos/kite
 ghHost=https://github.com
-cd $kiteDir
+echo "Goto src dir: $kiteSrcDir"
+cd $kiteSrcDir
 
 # create array
 groups=(inhere phppkg toolkit)
@@ -27,7 +41,7 @@ for dir in "${groups[@]}"; do
         ghGrp="php-$dir"
     fi
 
-    pDir=$kiteDir/vendor/$dir
+    pDir=$kiteSrcDir/vendor/$dir
     for path in "$pDir"/*; do
         pkg=$(basename "$path")
 
