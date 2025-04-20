@@ -19,14 +19,15 @@ if [ "$osName" == "Darwin" ]; then
     kiteSrcDir=~/.kite
 # windows: MINGW64_NT-10.0-19043
 elif [ "${osName:0:5}" == "MINGW" ]; then
-    kiteSrcDir=/f/work/php/inhere/kite-tmp
+    kiteSrcDir=~/.kite
+    # kiteSrcDir=/f/work/php/inhere/kite-tmp
 else
     kiteSrcDir=/tmp/kite-tmp
 fi
 
 # proxy_on
 ghHost=https://github.com
-echo "Goto src dir: $kiteSrcDir"
+echo "Goto kite src dir: $kiteSrcDir"
 cd $kiteSrcDir
 
 # create array
@@ -34,7 +35,7 @@ groups=(inhere phppkg toolkit)
 
 echo "Update kite dev depends packages."
 for dir in "${groups[@]}"; do
-    echo "- ✅ Update the vendor/$dir"
+    echo "✅ Update the vendor/$dir"
 
     ghGrp=$dir
     if [ "$dir" == "toolkit" ]; then
@@ -52,12 +53,12 @@ for dir in "${groups[@]}"; do
             ghPkg="php-srouter"
         fi
 
-        echo " - package: $dir/$pkg"
+        echo "Package: 【$dir/$pkg】"
         if [ -d "$path"/.git ]; then
             echo "   founded the .git dir, do update"
             echo "   into $path"
             cd "$path"
-            echo "   update by git pull"
+            echo "   【update】 by git pull"
             git pull
         else
             echo "   not found .git dir, do clone"
@@ -68,6 +69,7 @@ for dir in "${groups[@]}"; do
             echo "   git clone $ghHost/$ghGrp/$ghPkg $pkg"
             git clone "$ghHost/$ghGrp/$ghPkg" "$pkg"
         fi
+        echo '-------------------------------------------------------------------'
     done
 done
 

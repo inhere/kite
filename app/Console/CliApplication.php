@@ -60,9 +60,8 @@ class CliApplication extends Application
 
     public function handleException(Throwable $e): void
     {
-        Kite::logger()->error((string)$e);
-
         parent::handleException($e);
+        Kite::logger()->error((string)$e);
     }
 
     /**
