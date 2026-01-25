@@ -127,7 +127,7 @@ abstract class AbstractGitx
      *
      * @return static
      */
-    public static function new(Output $output = null, array $config = []): self
+    public static function new(?Output $output = null, array $config = []): self
     {
         return new static($output, $config);
     }
@@ -138,7 +138,7 @@ abstract class AbstractGitx
      * @param Output|null $output
      * @param array $config
      */
-    public function __construct(Output $output = null, array $config = [])
+    public function __construct(?Output $output = null, array $config = [])
     {
         if ($output) {
             $this->output = $output;
